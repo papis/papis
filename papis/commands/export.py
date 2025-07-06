@@ -13,17 +13,24 @@ Some examples of its usage are:
 
     papis export --format bibtex 'author : einstein'
 
-or export all of them:
+- Note that BibTeX is the default format. The ``--format`` flag can be omitted:
 
 .. code:: sh
 
-    papis export --format bibtex --all 'author : einstein'
+    papis export 'author : einstein'
 
-- Export all documents to BibTeX and save them into a ``lib.bib`` file:
+- Export all documents with author Einstein to BibTeX:
 
 .. code:: sh
 
-    papis export --all --format bibtex --out lib.bib
+    papis export --all 'author : einstein'
+
+- Export all documents in your default library to BibTeX and save them into a
+  ``lib.bib`` file:
+
+.. code:: sh
+
+    papis export --all --out lib.bib
 
 - Export a folder of one of the documents matching the word ``krebs``
   into a folder named ``interesting-document``:
