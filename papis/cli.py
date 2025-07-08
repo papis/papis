@@ -1,6 +1,7 @@
 from typing import Optional, Any, Callable, List, Tuple, Union
 
 import click
+from click.shell_completion import CompletionItem
 
 import papis.config
 import papis.pick
@@ -31,6 +32,30 @@ class FormatPatternParamType(click.ParamType):
 
     def __repr__(self) -> str:
         return "FORMATPATTERN"
+
+
+class LibraryParamType(click.ParamType):
+    name: str = "library"
+
+    def shell_complete(self,
+                       ctx: click.Context,
+                       param: click.Parameter,
+                       incomplete: str) -> List[CompletionItem]:
+
+        # Named libraries from Papis config
+        completions = [
+            CompletionItem(lib)
+            for lib in papis.config.get_libs()
+            if lib.startswith(incomplete)
+        ]
+
+        # Unnamed libraries (paths)
+        # Only shown if prefix exists
+        if incomplete:
+            paths = click.Path(exists=True, file_okay=False)
+            completions += paths.shell_complete(ctx, param, incomplete)
+
+        return completions
 
 
 def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
