@@ -16,7 +16,7 @@ class FormatPatternParamType(click.ParamType):
     #: Name of the parameter type (shown in the command-line).
     name: str = "pattern"
 
-    def convert(self,
+    def convert(self,  # noqa: PLR6301
                 value: Any,
                 param: Optional[click.Parameter],
                 ctx: Optional[click.Context]) -> Any:

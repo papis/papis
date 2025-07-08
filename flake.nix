@@ -22,32 +22,6 @@
         python = pkgs.python3.override {
           packageOverrides = final: prev: {
 
-            flake8-pyproject = final.buildPythonPackage {
-              pname = "flake8-pyproject";
-              version = "1.2.3";
-              pyproject = true;
-
-              src = pkgs.fetchFromGitHub {
-                owner = "john-hen";
-                repo = "Flake8-pyproject";
-                rev = "30b8444781d16edd54c11df08210a7c8fb79258d";
-                hash = "sha256-bPRIj7tYmm6I9eo1ZjiibmpVmGcHctZSuTvnKX+raPg=";
-              };
-
-              doCheck = false;
-              checkInputs = [ ];
-              propagatedBuildInputs = [
-                final.flit-core
-                final.flake8
-              ];
-
-              meta = with pkgs.lib; {
-                homepage = "https://github.com/john-hen/Flake8-pyproject";
-                description = "Flake8 plug-in loading the configuration from pyproject.toml";
-                license = licenses.mit;
-              };
-            };
-
             types-pygments = final.buildPythonPackage rec {
               pname = "types-Pygments";
               version = "2.19.0.20250305";

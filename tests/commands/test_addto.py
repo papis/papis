@@ -44,10 +44,12 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     inputfiles = [tmp_library.create_random_file("pdf")
                   for i in range(nfiles)]
 
+    from itertools import chain
     cli_runner = PapisRunner()
-    result = cli_runner.invoke(cli, sum([
-        ["--files", f] for f in inputfiles
-        ], []) + ["author:krishnamurti"])
+    result = cli_runner.invoke(cli, [
+        *chain.from_iterable(["--files", f] for f in inputfiles),
+        "author:krishnamurti"
+        ])
     assert result.exit_code == 0
 
     db = papis.database.get()

@@ -574,9 +574,8 @@ def move(document: Document, path: str) -> None:
     path = os.path.expanduser(path)
     if os.path.exists(path):
         raise FileExistsError(
-            "There is already a document at '{}' that should be checked. A temporary"
-            "document has been stored at '{}'"
-            .format(path, folder)
+            f"There is already a document at '{path}' that should be checked. "
+            f"A temporary document has been stored at '{folder}'"
         )
 
     import shutil

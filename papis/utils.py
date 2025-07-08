@@ -189,7 +189,7 @@ def general_open(file_name: str,
 
     # NOTE: 'opener' can be a command with arguments, so we split it properly
     is_windows = sys.platform == "win32"
-    cmd = shlex.split(str(opener), posix=not is_windows) + [file_name]
+    cmd = [*shlex.split(str(opener), posix=not is_windows), file_name]
 
     import shutil
     if shutil.which(cmd[0]) is None:
@@ -284,8 +284,8 @@ def locate_document_in_lib(document: papis.document.Document,
         if docs:
             return docs[0]
 
-    raise IndexError("Document not found in library: '{}'"
-                     .format(papis.document.describe(document)))
+    raise IndexError(
+        f"Document not found in library: '{papis.document.describe(document)}'")
 
 
 def locate_document(
