@@ -59,11 +59,14 @@ def run(document: papis.document.Document,
     import shutil
     from papis.paths import symlink, rename_document_files
 
-    new_file_list = rename_document_files(
-        document, filepaths, file_name_format=file_name
+    orig_files, new_file_list = rename_document_files(
+        document, filepaths, file_name_format=file_name, allow_remote=True
     )
 
-    for in_file_path, out_file_name in zip(filepaths, new_file_list):
+    for (in_file_path, out_file_name) in zip(orig_files, new_file_list):
+        # if it was an URL, but remote is not allowed, might be empty
+        if not in_file_path:
+            continue
         out_file_path = os.path.join(doc_folder, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)

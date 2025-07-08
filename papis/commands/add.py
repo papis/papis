@@ -286,7 +286,7 @@ def run(paths: List[str],
     # rename all the given file names
     from papis.paths import symlink, rename_document_files
 
-    renamed_file_list = rename_document_files(
+    (_, renamed_file_list) = rename_document_files(
         tmp_document, in_document_paths,
         file_name_format=file_name)
 
