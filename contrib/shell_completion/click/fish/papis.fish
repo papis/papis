@@ -1,9 +1,5 @@
 function _papis_completion;
-    set -l response;
-
-    for value in (env _PAPIS_COMPLETE=fish_complete COMP_WORDS=(commandline -cp) COMP_CWORD=(commandline -t) papis);
-        set response $response $value;
-    end;
+    set -l response (env _PAPIS_COMPLETE=fish_complete COMP_WORDS=(commandline -cp) COMP_CWORD=(commandline -t) papis);
 
     for completion in $response;
         set -l metadata (string split "," $completion);
