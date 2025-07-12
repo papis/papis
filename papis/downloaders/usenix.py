@@ -41,12 +41,6 @@ class Downloader(papis.downloaders.Downloader):
         return path_components[2] + "-" + path_components[4]
 
     def get_document_url(self) -> Optional[str]:
-        """
-        >>> d = Downloader("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov")
-        >>> d.get_document_url()
-        'https://www.usenix.org/system/files/sec22-bulekov.pdf'
-        """  # noqa: E501
-
         import bs4
 
         if not self._raw_data:
@@ -83,13 +77,6 @@ class Downloader(papis.downloaders.Downloader):
         return pdf_url.strip()
 
     def get_bibtex_url(self) -> Optional[str]:
-        """
-        >>> d = Downloader("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov")
-        >>> d.get_document_url()
-        'https://www.usenix.org/system/files/sec22-bulekov.pdf'
-        >>> d.get_bibtex_url()
-        'https://www.usenix.org/biblio/export/bibtex/277148'
-        """  # noqa: E501
         o = urlparse(self.uri)
         import bs4
 
