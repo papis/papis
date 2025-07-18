@@ -77,7 +77,7 @@ def run(document: papis.document.Document,
             filepaths.append((filepath,
                               link if not is_remote_file(orig_filepath) else False))
         else:
-            logger.warning("Skipping non-existant file: %r", filepath)
+            logger.warning("Skipping non-existent file: %r", filepath)
 
     if not filepaths:
         logger.error("No valid files provided")
