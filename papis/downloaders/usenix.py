@@ -129,7 +129,7 @@ class Downloader(papis.downloaders.Downloader):
         response = self.session.get(url, cookies=self.cookies)
         self.bibtex_data = response.content.decode().strip()
         if self.bibtex_data.startswith("<!DOCTYPE html>"):
-            self.logger.debug("downloaded bibtex data: %s", self.bibtex_data)
+            self.logger.debug("Downloaded BibTeX data:\n%s", self.bibtex_data)
             self.bibtex_data = None
 
         if self.bibtex_data:
@@ -156,8 +156,6 @@ class Downloader(papis.downloaders.Downloader):
         if finds:
             div = finds[0]
             text = div.text.replace("<br/>", "\n")
-            # self.logger.debug("got bibtex from html: %s", text)
-
             self.bibtex_data = text
         else:
-            self.logger.debug("failed to identify bibtex content in usenix html page!")
+            self.logger.debug("Failed to identify BibTeX content in USENIX HTML page!")
