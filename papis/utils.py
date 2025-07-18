@@ -435,9 +435,9 @@ def get_matching_importer_or_downloader(
                         importer.fetch_data()
                     except NotImplementedError:
                         importer.fetch()
-            except Exception:
+            except Exception as exc:
                 logger.debug("%s (%s) failed to fetch query: '%s'.",
-                             name, importer.name, uri)
+                             name, importer.name, uri, exc_info=exc)
             else:
                 logger.info(
                     "{c.Back.BLACK}{c.Fore.GREEN}%s (%s) fetched data for query '%s'!"
