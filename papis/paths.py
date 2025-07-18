@@ -337,15 +337,38 @@ def get_document_unique_folder(
     return _make_unique_folder(out_folder_path)
 
 
-def _is_remote(uri: str) -> bool:
+def is_remote_file(uri: str) -> bool:
     return uri.startswith("http://") or uri.startswith("https://")
+
+
+def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str]]:
+    """
+    Download all remote filepaths that are provided in the document list.
+
+    :param in_document_paths: a list of filename paths and URLs.
+    :returns: a list of files, where each remote file is replaced with a
+        temporary local file. If there is an error while downloading the
+        remote file, *None* is used instead.
+    """
+
+    from papis.downloaders import download_document
+
+    new_files: List[Optional[str]] = []
+    for in_file_path in in_document_paths:
+        if is_remote_file(in_file_path):
+            local_in_file_path = download_document(in_file_path)
+        else:
+            local_in_file_path = in_file_path
+        new_files.append(local_in_file_path)
+
+    return new_files
 
 
 def rename_document_files(
         doc: DocumentLike,
         in_document_paths: Iterable[str], *,
+        allow_remote: Optional[bool] = None,
         file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
-        allow_remote: bool = True,
         ) -> List[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
@@ -369,6 +392,11 @@ def rename_document_files(
         except ValueError:
             file_name_format = None
 
+    if allow_remote is not None:
+        warn("The argument `allow_remote` to `rename_document_files` is deprecated "
+             "and will be removed in version 0.16.",
+             DeprecationWarning, stacklevel=2)
+
     from collections import Counter
 
     # find next suffix for each extension
@@ -376,39 +404,29 @@ def rename_document_files(
     exts = Counter([pathlib.Path(d).suffix for d in known_files])
     suffixes = {ext: unique_suffixes(skip=n - 1) for ext, n in exts.items()}
 
-    from papis.downloaders import download_document
-
     new_files = []
     for in_file_path in in_document_paths:
         if not in_file_path:
             continue
 
-        if _is_remote(in_file_path):
-            if allow_remote:
-                local_in_file_path = download_document(in_file_path)
-            else:
-                local_in_file_path = ""
-        else:
-            local_in_file_path = in_file_path
-
-        if not local_in_file_path:
-            logger.info("Skipping renaming file: '%s'.", in_file_path)
+        if is_remote_file(in_file_path):
+            logger.warning("Skipping renaming remote file: '%s'.", in_file_path)
             continue
 
         # get suffix
-        _, ext = os.path.splitext(local_in_file_path)
+        _, ext = os.path.splitext(in_file_path)
         isuffix = suffixes.get(ext)
         if not isuffix:
             suffixes[ext] = isuffix = unique_suffixes()
 
         # ensure a unique file name
         new_filename = get_document_file_name(
-            doc, local_in_file_path,
+            doc, in_file_path,
             file_name_format=file_name_format)
 
         while new_filename in known_files:
             new_filename = get_document_file_name(
-                doc, local_in_file_path,
+                doc, in_file_path,
                 suffix=next(isuffix),
                 file_name_format=file_name_format)
 
