@@ -3,7 +3,7 @@ import papis.database
 
 from papis.testing import TemporaryLibrary, PapisRunner
 
-PDF_URL = "https://pdfa.org/download-area/smallest-possible-pdf/smallest-possible-pdf-2.0.pdf"
+PDF_URL = "https://pdfa.org/download-area/smallest-possible-pdf/smallest-possible-pdf-2.0.pdf"  # noqa
 PDF_URL_BASE = "smallest-possible-pdf-2.0"
 BAD_PDF_URL = "http://example.com/some/nonexisting/pdf/file.pdf"
 
@@ -79,7 +79,8 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary) -> None:
     inputfile = tmp_library.create_random_file("pdf")
 
     cli_runner = PapisRunner()
-    result = cli_runner.invoke(cli, ["--files", inputfile] + ["--urls", PDF_URL] + ["author:popper"])
+    args = ["--files", inputfile, "--urls", PDF_URL, "author:popper"]
+    result = cli_runner.invoke(cli, args)
     assert result.exit_code == 0
 
     db = papis.database.get()

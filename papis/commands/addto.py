@@ -48,7 +48,7 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        filepaths: List[str],
+        filepaths_arg: List[str],
         file_name: Optional[str] = None,
         link: bool = False,
         git: bool = False) -> None:
@@ -57,35 +57,63 @@ def run(document: papis.document.Document,
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     import shutil
-    from papis.paths import symlink, rename_document_files
+    from papis.paths import (symlink, rename_document_files,
+                             download_remote_files, is_remote_file)
 
-    new_file_list = rename_document_files(
-        document, filepaths, file_name_format=file_name
+    # ensure all remote files are downloaded, before we start renaming.
+    # the number of
+    local_files = download_remote_files(filepaths_arg)
+
+    # we only symlink a file it isn't a downloaded file that is stored in
+    # a temporary directory. We keep track of a boolean per file that
+    # tells us whether to link
+    filepaths: List[Tuple[str, bool]] = []
+    for orig_filepath, filepath in zip(filepaths_arg, local_files):
+        # skip remote files that haven't been properly downloaded
+        if not filepath:
+            continue
+
+        if os.path.exists(filepath):
+            filepaths.append((filepath,
+                              link if not is_remote_file(orig_filepath) else False))
+        else:
+            logger.warning("Skipping non-existant file: %r", filepath)
+
+    if not filepaths:
+        logger.error("No valid files provided")
+        return
+
+    # new_filenames is a list of renamed filenames. rename_document_files ensures
+    # that here is no name collision even after renaming so we can be sure that
+    # there is a unique filename for every file in the filepaths list.
+    new_filenames = rename_document_files(
+        document, [f[0] for f in filepaths], file_name_format=file_name
     )
 
-    for in_file_path, out_file_name in zip(filepaths, new_file_list):
+    for (in_file_path, link_file), out_file_name in zip(filepaths, new_filenames):
+
         out_file_path = os.path.join(doc_folder, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
             continue
 
-        if link:
-            logger.info("[LN] '%s' to '%s'.", in_file_path, out_file_name)
+        if link_file:
+            logger.debug("[LN] '%s' to '%s'.", in_file_path, out_file_name)
             symlink(in_file_path, out_file_path)
         else:
-            logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_name)
+            logger.debug("[CP] '%s' to '%s'.", in_file_path, out_file_name)
             shutil.copy(in_file_path, out_file_path)
 
     if "files" not in document:
         document["files"] = []
 
-    document["files"] += new_file_list
+    document["files"] += new_filenames
     papis.api.save_doc(document)
 
     if git:
         papis.git.add_and_commit_resources(
             doc_folder,
-            new_file_list + [document.get_info_file()],
+            new_filenames + [document.get_info_file()],
             "Add new files to '{}'".format(papis.document.describe(document)))
 
 
@@ -96,10 +124,9 @@ def run(document: papis.document.Document,
 @papis.cli.sort_option()
 @click.option("-f",
               "--files",
-              help="File fullpaths to documents.",
-              multiple=True,
-              type=click.Path(exists=True))
-@click.option("-u", "--urls", help="URLs to documents.", multiple=True)
+              help="File paths or URLs to documents.",
+              multiple=True)
+@click.option("-u", "--urls", help="(deprecated) use -f", multiple=True)
 @click.option("--file-name",
               help="File name format for the document.",
               type=papis.cli.FormatPatternParamType(),
@@ -137,4 +164,5 @@ def cli(query: str,
     try:
         run(document, files + urls, file_name=file_name, git=git, link=link)
     except Exception as exc:
-        logger.error("Failed to add files.", exc_info=exc)
+        logger.debug("Failed to add files.", exc_info=exc)
+        raise
