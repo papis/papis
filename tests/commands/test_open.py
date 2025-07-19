@@ -38,7 +38,7 @@ def test_open_cli(tmp_library: TemporaryLibrary) -> None:
         catch_exceptions=True)
     assert result.exit_code != 0
     assert result.exc_info is not None
-    assert result.exc_info[0] == FileNotFoundError
+    assert result.exc_info[0] is FileNotFoundError
 
     result = cli_runner.invoke(
         cli,
