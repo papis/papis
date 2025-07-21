@@ -3,8 +3,11 @@ import time
 import papis.database
 import logging
 import pytest
+import random
 
 from papis.testing import TemporaryLibrary, PapisRunner
+
+from typing import Optional
 
 # PDF_URL = "https://pdfa.org/download-area/smallest-possible-pdf/smallest-possible-pdf-2.0.pdf"  # noqa
 PDF_URL = "http://localhost:8000/single-page-test.pdf"  # noqa
@@ -14,17 +17,22 @@ BAD_PDF_URL = "http://localhost:8000/some/nonexisting/pdf/file.pdf"
 PDF_RESOURCES = os.path.join(os.path.dirname(__file__), "..", "resources", "pdf")
 
 __SERVER_THREAD = None
+__SERVER_STR = None
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
-@pytest.fixture(autouse=True, scope="session")
-def local_http_server() -> None:
+@pytest.fixture(scope="session")
+def local_http_server() -> Optional[str]:
     global __SERVER_THREAD
+    global __SERVER_STR
+
     if __SERVER_THREAD is not None:
-        return
+        return __SERVER_STR
 
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
     import threading
     from http.server import SimpleHTTPRequestHandler
@@ -32,7 +40,7 @@ def local_http_server() -> None:
 
     # Define the server address and port
     host = "localhost"
-    port = 8000
+    port = 8000 + random.randint(0, 999)
 
     # Create a custom request handler
     class CustomHandler(SimpleHTTPRequestHandler):
@@ -41,7 +49,7 @@ def local_http_server() -> None:
 
         # Optionally, override methods like do_GET to customize behavior
         def do_GET(self) -> None: # noqa
-            logger.debug("GET %s", self.path)
+            logger.debug("GET %s", repr(self.path))
             # Add custom logic here if needed
             super().do_GET()
 
@@ -54,13 +62,10 @@ def local_http_server() -> None:
                     httpd.serve_forever()
                 break
             except OSError as exc:
-                logger.debug("failed to setup http server", exc_info=exc)
+                logger.error("failed to setup http server", exc_info=exc)
                 if i == 10:
                     raise
                 time.sleep(1)
-
-    # potentially wait for the OS to make the port available.
-    time.sleep(1)
 
     __SERVER_THREAD = threading.Thread(target=run_http_server)
     __SERVER_THREAD.daemon = True
@@ -68,6 +73,9 @@ def local_http_server() -> None:
 
     # Optionally, you can add a small delay to ensure the server is up
     time.sleep(1)
+
+    __SERVER_STR = f"http://{host}:{port}/"
+    return __SERVER_STR
 
 
 def test_addto_run_no_files(tmp_library: TemporaryLibrary) -> None:
@@ -131,7 +139,11 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         list(zip(files, inputfiles)))
 
 
-def test_addto_cli_urls(tmp_library: TemporaryLibrary) -> None:
+def test_addto_cli_urls(tmp_library: TemporaryLibrary, local_http_server) -> None:
+    local_http = local_http_server
+    assert local_http
+    pdf_url = local_http + "/single-page-test.pdf"
+
     from papis.commands.addto import cli
 
     db = papis.database.get()
@@ -159,7 +171,13 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary) -> None:
         assert outfile.startswith(PDF_URL_BASE) or outfile.startswith(input_base)
 
 
-def test_addto_cli_badfiles(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
+def test_addto_cli_badfiles(tmp_library: TemporaryLibrary, local_http_server, nfiles: int = 5) -> None:
+
+    local_http = local_http_server
+    assert local_http
+    pdf_url = local_http + "/single-page-test.pdf"
+    bad_pdf_url = local_http + "/some/nonexisting/pdf/file.pdf"
+
     db = papis.database.get()
     doc, = db.query_dict({"author": "popper"})
     assert len(doc.get_files()) == 0
@@ -172,7 +190,7 @@ def test_addto_cli_badfiles(tmp_library: TemporaryLibrary, nfiles: int = 5) -> N
     cli_runner = PapisRunner()
     args = (["--files", "/path/to/nonexistant/file.pdf"] + sum([
         ["--files", f] for f in inputfiles
-        ], []) + ["--urls", PDF_URL] + ["--urls", BAD_PDF_URL])
+        ], []) + ["--urls", pdf_url] + ["--urls", bad_pdf_url])
     result = cli_runner.invoke(cli, args + ["author:popper"])
     assert result.exit_code == 0
 
