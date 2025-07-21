@@ -139,7 +139,9 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         list(zip(files, inputfiles)))
 
 
-def test_addto_cli_urls(tmp_library: TemporaryLibrary, local_http_server) -> None:
+# mypy: disable-error-code=no-untyped-def
+def test_addto_cli_urls(tmp_library: TemporaryLibrary,
+                        local_http_server) -> None:
     local_http = local_http_server
     assert local_http
     pdf_url = local_http + "/single-page-test.pdf"
@@ -171,7 +173,10 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary, local_http_server) -> Non
         assert outfile.startswith(PDF_URL_BASE) or outfile.startswith(input_base)
 
 
-def test_addto_cli_badfiles(tmp_library: TemporaryLibrary, local_http_server, nfiles: int = 5) -> None:
+# mypy: disable-error-code=no-untyped-def
+def test_addto_cli_badfiles(tmp_library: TemporaryLibrary,
+                            local_http_server,
+                            nfiles: int = 5) -> None:
 
     local_http = local_http_server
     assert local_http

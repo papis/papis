@@ -48,7 +48,7 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        filepaths_arg: List[str],
+        filepaths: List[str],
         file_name: Optional[str] = None,
         link: bool = False,
         git: bool = False) -> None:
@@ -61,36 +61,36 @@ def run(document: papis.document.Document,
                              download_remote_files, is_remote_file)
 
     # ensure all remote files are downloaded, before we start renaming.
-    # the number of
-    local_files = download_remote_files(filepaths_arg)
+    local_files = download_remote_files(filepaths)
 
     # we only symlink a file it isn't a downloaded file that is stored in
     # a temporary directory. We keep track of a boolean per file that
     # tells us whether to link
-    filepaths: List[Tuple[str, bool]] = []
-    for orig_filepath, filepath in zip(filepaths_arg, local_files):
+    new_filepaths: List[Tuple[str, bool]] = []
+    for orig_filepath, filepath in zip(filepaths, local_files):
         # skip remote files that haven't been properly downloaded
         if not filepath:
             continue
 
         if os.path.exists(filepath):
-            filepaths.append((filepath,
-                              link if not is_remote_file(orig_filepath) else False))
+            new_filepaths.append((filepath,
+                                  link if not is_remote_file(orig_filepath) else False))
         else:
             logger.warning("Skipping non-existent file: %r", filepath)
 
-    if not filepaths:
+    if not new_filepaths:
         logger.error("No valid files provided")
         return
 
     # new_filenames is a list of renamed filenames. rename_document_files ensures
     # that here is no name collision even after renaming so we can be sure that
-    # there is a unique filename for every file in the filepaths list.
+    # there is a unique filename for every file in the new_filepaths list.
     new_filenames = rename_document_files(
-        document, [f[0] for f in filepaths], file_name_format=file_name
+        document, [f[0] for f in new_filepaths], file_name_format=file_name
     )
+    assert len(new_filepaths) == len(new_filenames)
 
-    for (in_file_path, link_file), out_file_name in zip(filepaths, new_filenames):
+    for (in_file_path, link_file), out_file_name in zip(new_filepaths, new_filenames):
 
         out_file_path = os.path.join(doc_folder, out_file_name)
         if os.path.exists(out_file_path):
@@ -164,5 +164,4 @@ def cli(query: str,
     try:
         run(document, files + urls, file_name=file_name, git=git, link=link)
     except Exception as exc:
-        logger.debug("Failed to add files.", exc_info=exc)
-        raise
+        logger.error("Failed to add files.", exc_info=exc)

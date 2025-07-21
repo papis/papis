@@ -359,7 +359,6 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
             if local_in_file_path:
                 new_files.append(local_in_file_path)
             else:
-                logger.debug("skipping failed remote path '%r'", in_file_path)
                 new_files.append(None)
         else:
             new_files.append(in_file_path)
@@ -370,7 +369,8 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
 def rename_document_files(
         doc: DocumentLike,
         in_document_paths: Iterable[str], *,
-        file_name_format: Optional[Union[AnyString, Literal[False]]] = None
+        allow_remote: Optional[bool] = None,
+        file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
         ) -> List[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
@@ -393,6 +393,10 @@ def rename_document_files(
             file_name_format = papis.config.getformatpattern("add-file-name")
         except ValueError:
             file_name_format = None
+
+    if allow_remote is not None:
+        warn("The argument `allow_remote` to `rename_document_files` is deprecated",
+             DeprecationWarning)
 
     from collections import Counter
 
