@@ -138,10 +138,11 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary) -> None:
     doc, = db.query_dict({"author": "popper"})
     assert len(doc.get_files()) == 0
 
-    inputfile = tmp_library.create_random_file("pdf")
+    input_base = "poppler-test-pdf"
+    inputfile = tmp_library.create_random_file("pdf", input_base)
 
     cli_runner = PapisRunner()
-    args = ["--files", inputfile, "--urls", PDF_URL, "author:popper"]
+    args = ["--files", inputfile, "--urls", pdf_url, "author:popper"]
     result = cli_runner.invoke(cli, args)
     assert result.exit_code == 0
 
@@ -153,7 +154,6 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary) -> None:
 
     # print(f"author:popper files: {files!r}")
 
-    input_base, _ = os.path.splitext(os.path.basename(inputfile))
     for f in files:
         outfile, _ = os.path.splitext(os.path.basename(f))
         assert outfile.startswith(PDF_URL_BASE) or outfile.startswith(input_base)
