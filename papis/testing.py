@@ -64,6 +64,7 @@ def create_random_file(filetype: Optional[str] = None,
     else:
         raise ValueError("Unknown file type: '{}'".format(filetype))
 
+    # TODO: there seems to be a problem with using the prefix argument on windows
     with tempfile.NamedTemporaryFile(
             dir=dir, suffix=suffix, prefix=prefix,
             delete=False) as fd:

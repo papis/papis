@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import papis.database
 import logging
@@ -140,6 +141,7 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
 
 
 # mypy: disable-error-code=no-untyped-def
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="doesn't work on windows")
 def test_addto_cli_urls(tmp_library: TemporaryLibrary,
                         local_http_server) -> None:
     local_http = local_http_server
