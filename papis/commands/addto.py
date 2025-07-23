@@ -79,7 +79,7 @@ def run(document: papis.document.Document,
             logger.warning("Skipping non-existent file: %r", filepath)
 
     if not new_filepaths:
-        logger.error("No valid files provided")
+        logger.error("No valid files provided.")
         return
 
     # new_filenames is a list of renamed filenames. rename_document_files ensures

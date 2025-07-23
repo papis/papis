@@ -347,7 +347,8 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
 
     :param in_document_paths: a list of filename paths and URLs.
     :returns: a list of files, where each remote file is replaced with a
-        temporary local file.
+        temporary local file. If there is an error while downloading the 
+        remote file, *None* is used instead.
     """
 
     from papis.downloaders import download_document
@@ -356,12 +357,9 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
     for in_file_path in in_document_paths:
         if is_remote_file(in_file_path):
             local_in_file_path = download_document(in_file_path)
-            if local_in_file_path:
-                new_files.append(local_in_file_path)
-            else:
-                new_files.append(None)
         else:
-            new_files.append(in_file_path)
+        	local_in_file_path = in_file_path
+        new_files.append(local_in_file_path)
 
     return new_files
 
@@ -395,8 +393,11 @@ def rename_document_files(
             file_name_format = None
 
     if allow_remote is not None:
-        warn("The argument `allow_remote` to `rename_document_files` is deprecated",
-             DeprecationWarning)
+        warn("The argument `allow_remote` to `rename_document_files` is deprecated "
+             "and will be removed in version 0.16.",
+             DeprecationWarning, stacklevel=2)
+    else:
+        allow_remote = True
 
     from collections import Counter
 
