@@ -347,7 +347,7 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
 
     :param in_document_paths: a list of filename paths and URLs.
     :returns: a list of files, where each remote file is replaced with a
-        temporary local file. If there is an error while downloading the 
+        temporary local file. If there is an error while downloading the
         remote file, *None* is used instead.
     """
 
@@ -358,7 +358,7 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
         if is_remote_file(in_file_path):
             local_in_file_path = download_document(in_file_path)
         else:
-        	local_in_file_path = in_file_path
+            local_in_file_path = in_file_path
         new_files.append(local_in_file_path)
 
     return new_files
