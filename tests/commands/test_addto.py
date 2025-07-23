@@ -1,7 +1,82 @@
 import os
+# import sys
+import time
 import papis.database
+import logging
+import pytest
+import random
 
 from papis.testing import TemporaryLibrary, PapisRunner
+
+from typing import Optional
+
+# PDF_URL = "https://pdfa.org/download-area/smallest-possible-pdf/smallest-possible-pdf-2.0.pdf"  # noqa
+PDF_URL = "http://localhost:8000/single-page-test.pdf"  # noqa
+PDF_URL_BASE = "single-page-test.pdf"
+BAD_PDF_URL = "http://localhost:8000/some/nonexisting/pdf/file.pdf"
+
+PDF_RESOURCES = os.path.join(os.path.dirname(__file__), "..", "resources", "pdf")
+
+__SERVER_THREAD = None
+__SERVER_STR = None
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+@pytest.fixture(scope="session")
+def local_http_server() -> Optional[str]:
+    global __SERVER_THREAD
+    global __SERVER_STR
+
+    if __SERVER_THREAD is not None:
+        return __SERVER_STR
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
+    import threading
+    from http.server import SimpleHTTPRequestHandler
+    from socketserver import ThreadingTCPServer
+
+    # Define the server address and port
+    host = "localhost"
+    port = 8000 + random.randint(0, 999)
+
+    # Create a custom request handler
+    class CustomHandler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):  # type: ignore
+            super().__init__(*args, directory=PDF_RESOURCES, **kwargs)
+
+        # Optionally, override methods like do_GET to customize behavior
+        def do_GET(self) -> None: # noqa
+            logger.debug("GET %s", repr(self.path))
+            # Add custom logic here if needed
+            super().do_GET()
+
+    # Start the server in a separate thread
+    def run_http_server() -> None:
+        for i in range(10):
+            try:
+                logger.debug("starting http server on %s:%d", host, port)
+                with ThreadingTCPServer((host, port), CustomHandler) as httpd:
+                    httpd.serve_forever()
+                break
+            except OSError as exc:
+                logger.error("failed to setup http server", exc_info=exc)
+                if i == 10:
+                    raise
+                time.sleep(1)
+
+    __SERVER_THREAD = threading.Thread(target=run_http_server)
+    __SERVER_THREAD.daemon = True
+    __SERVER_THREAD.start()
+
+    # Optionally, you can add a small delay to ensure the server is up
+    time.sleep(1)
+
+    __SERVER_STR = f"http://{host}:{port}/"
+    return __SERVER_STR
 
 
 def test_addto_run_no_files(tmp_library: TemporaryLibrary) -> None:
@@ -63,3 +138,73 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
 
     assert all(eq(outfile, infile) for outfile, infile in zip(files, inputfiles)), (
         list(zip(files, inputfiles)))
+
+
+# mypy: disable-error-code=no-untyped-def
+# @pytest.mark.skipif(sys.platform.startswith("win"), reason="doesn't work on windows")
+def test_addto_cli_urls(tmp_library: TemporaryLibrary,
+                        local_http_server) -> None:
+    local_http = local_http_server
+    assert local_http
+    pdf_url = local_http + "/single-page-test.pdf"
+
+    from papis.commands.addto import cli
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "popper"})
+    assert len(doc.get_files()) == 0
+
+    input_base = "poppler-test-pdf"
+    inputfile = tmp_library.create_random_file("pdf", input_base)
+
+    cli_runner = PapisRunner()
+    args = ["--files", inputfile, "--urls", pdf_url, "author:popper"]
+    result = cli_runner.invoke(cli, args)
+    assert result.exit_code == 0
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "popper"})
+    files = [os.path.basename(f) for f in doc.get_files()]
+    
+    logger.debug("author:popper files: %r", files)
+    assert len(files) == 2
+
+    for f in files:
+        outfile, _ = os.path.splitext(os.path.basename(f))
+        logger.debug("(previously) checking file %r with file prefix %r", f, outfile)
+        outfile = os.path.basename(f)
+        logger.debug("checking file %r with file prefix %r", f, outfile)
+        assert outfile.startswith(PDF_URL_BASE) or outfile.startswith(input_base)
+
+
+# mypy: disable-error-code=no-untyped-def
+def test_addto_cli_badfiles(tmp_library: TemporaryLibrary,
+                            local_http_server,
+                            nfiles: int = 5) -> None:
+
+    local_http = local_http_server
+    assert local_http
+    pdf_url = local_http + "/single-page-test.pdf"
+    bad_pdf_url = local_http + "/some/nonexisting/pdf/file.pdf"
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "popper"})
+    assert len(doc.get_files()) == 0
+
+    from papis.commands.addto import cli
+
+    inputfiles = [tmp_library.create_random_file("pdf")
+                  for _i in range(nfiles)]
+
+    cli_runner = PapisRunner()
+    args = (["--files", "/path/to/nonexistant/file.pdf"] + sum([
+        ["--files", f] for f in inputfiles
+        ], []) + ["--urls", pdf_url] + ["--urls", bad_pdf_url])
+    result = cli_runner.invoke(cli, args + ["author:popper"])
+    assert result.exit_code == 0
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "popper"})
+    files = [os.path.basename(f) for f in doc.get_files()]
+
+    assert len(files) == (nfiles + 1)
