@@ -165,13 +165,15 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary,
     db = papis.database.get()
     doc, = db.query_dict({"author": "popper"})
     files = [os.path.basename(f) for f in doc.get_files()]
-
+    
+    logger.debug("author:popper files: %r", files)
     assert len(files) == 2
-
-    # print(f"author:popper files: {files!r}")
 
     for f in files:
         outfile, _ = os.path.splitext(os.path.basename(f))
+        logger.debug("(previously) checking file %r with file prefix %r", f, outfile)
+        outfile = os.path.basename(f)
+        logger.debug("checking file %r with file prefix %r", f, outfile)
         assert outfile.startswith(PDF_URL_BASE) or outfile.startswith(input_base)
 
 

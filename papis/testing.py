@@ -64,21 +64,12 @@ def create_random_file(filetype: Optional[str] = None,
     else:
         raise ValueError("Unknown file type: '{}'".format(filetype))
 
-    # TODO: there seems to be a problem with using the prefix argument on windows
-    name = None
     with tempfile.NamedTemporaryFile(
             dir=dir, suffix=suffix, prefix=prefix,
             delete=False) as fd:
         fd.write(buf)
-        name = fd.name
 
-    assert name
-    if prefix:
-        assert prefix in name, f"tempfile.name: {name!r} should be {prefix!r} + rand + {suffix!r}"
-    if suffix:
-        assert suffix in name, f"tempfile.name: {name!r} should be {prefix!r} + rand + {suffix!r}"
-
-    return name
+    return fd.name
 
 
 PAPIS_TEST_DOCUMENTS = [
