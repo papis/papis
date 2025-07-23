@@ -1,5 +1,5 @@
 import os
-import sys
+# import sys
 import time
 import papis.database
 import logging
