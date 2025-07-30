@@ -394,8 +394,16 @@ def rename_document_files(
 
     if allow_remote is not None:
         warn("The argument `allow_remote` to `rename_document_files` is deprecated "
-             "and will be removed in version 0.16.",
+             "and will be removed in version 0.16. Use `download_remote_files` "
+             "instead to ensure all files are local.",
              DeprecationWarning, stacklevel=2)
+    else:
+        allow_remote = True
+
+    if allow_remote:
+        warn("`rename_document_files` will stop automatically downloading remote "
+             "files starting with version 0.16. Use `download_remote_files` "
+             "instead.", DeprecationWarning, stacklevel=2)
 
     from collections import Counter
 
@@ -404,29 +412,36 @@ def rename_document_files(
     exts = Counter([pathlib.Path(d).suffix for d in known_files])
     suffixes = {ext: unique_suffixes(skip=n - 1) for ext, n in exts.items()}
 
+    from papis.downloaders import download_document
+
     new_files = []
     for in_file_path in in_document_paths:
         if not in_file_path:
             continue
 
         if is_remote_file(in_file_path):
-            logger.warning("Skipping renaming remote file: '%s'.", in_file_path)
+            local_in_file_path = download_document(in_file_path) if allow_remote else ""
+        else:
+            local_in_file_path = in_file_path
+
+        if not local_in_file_path:
+            logger.info("Skipping renaming file: '%s'.", in_file_path)
             continue
 
         # get suffix
-        _, ext = os.path.splitext(in_file_path)
+        _, ext = os.path.splitext(local_in_file_path)
         isuffix = suffixes.get(ext)
         if not isuffix:
             suffixes[ext] = isuffix = unique_suffixes()
 
         # ensure a unique file name
         new_filename = get_document_file_name(
-            doc, in_file_path,
+            doc, local_in_file_path,
             file_name_format=file_name_format)
 
         while new_filename in known_files:
             new_filename = get_document_file_name(
-                doc, in_file_path,
+                doc, local_in_file_path,
                 suffix=next(isuffix),
                 file_name_format=file_name_format)
 

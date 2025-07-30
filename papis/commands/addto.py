@@ -86,7 +86,8 @@ def run(document: papis.document.Document,
     # that here is no name collision even after renaming so we can be sure that
     # there is a unique filename for every file in the new_filepaths list.
     new_filenames = rename_document_files(
-        document, [f[0] for f in new_filepaths], file_name_format=file_name
+        document, [f[0] for f in new_filepaths],
+        file_name_format=file_name, allow_remote=False,
     )
     assert len(new_filepaths) == len(new_filenames)
 

@@ -288,7 +288,7 @@ def run(paths: List[str],
 
     renamed_file_list = rename_document_files(
         tmp_document, in_document_paths,
-        file_name_format=file_name)
+        file_name_format=file_name, allow_remote=False)
 
     import shutil
 

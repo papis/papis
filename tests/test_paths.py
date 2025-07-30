@@ -213,7 +213,7 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
     new_files = rename_document_files(doc, [
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("text", suffix=".md"),
-        ], file_name_format="x {doc[year]} {doc[author]}")
+        ], file_name_format="x {doc[year]} {doc[author]}", allow_remote=False)
 
     assert new_files == ["x-1913-niels-bohr.pdf", "x-1913-niels-bohr.md"]
 
@@ -222,14 +222,14 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("text", suffix=".md"),
-        ])
+        ], allow_remote=False)
 
     new_files = rename_document_files(doc, [
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("pdf"),
         tmp_config.create_random_file("text", suffix=".md"),
         tmp_config.create_random_file("djvu"),
-        ])
+        ], allow_remote=False)
 
     assert new_files == [
         "1913-niels-bohr-b.pdf",
@@ -244,7 +244,9 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
         tmp_config.create_random_file("text", suffix=".md"),
         tmp_config.create_random_file("djvu"),
         ]
-    new_files = rename_document_files(doc, orig_files, file_name_format=False)
+    new_files = rename_document_files(doc, orig_files,
+                                      file_name_format=False,
+                                      allow_remote=False)
 
     from papis.paths import normalize_path
     assert new_files == [
