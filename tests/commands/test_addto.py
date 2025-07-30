@@ -104,7 +104,6 @@ def _mock_download_document(
     return create_random_file(filetype=filetype, prefix=prefix, suffix=suffix)
 
 
-# @pytest.mark.skipif(sys.platform.startswith("win"), reason="doesn't work on windows")
 def test_addto_cli_urls(tmp_library: TemporaryLibrary,
                         monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.commands.addto import cli
