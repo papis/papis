@@ -56,10 +56,12 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     inputfiles = [tmp_library.create_random_file("pdf")
                   for i in range(nfiles)]
 
+    from itertools import chain
     cli_runner = PapisRunner()
-    result = cli_runner.invoke(cli, sum([
-        ["--files", f] for f in inputfiles
-        ], []) + ["author:krishnamurti"])
+    result = cli_runner.invoke(cli, [
+        *chain.from_iterable(["--files", f] for f in inputfiles),
+        "author:krishnamurti"
+        ])
     assert result.exit_code == 0
 
     db = papis.database.get()
@@ -94,12 +96,12 @@ def _mock_download_document(
     elif filename:
         _, filetype = os.path.splitext(os.path.basename(filename))
     else:
-        filetype = url.split(".")[-1]
+        _, filetype = url.rsplit(".", maxsplit=1)
 
     if filename:
         prefix = filename
     else:
-        prefix = url.split("/")[-1]
+        _, prefix = url.rsplit("/", maxsplit=1)
 
     return create_random_file(filetype=filetype, prefix=prefix, suffix=suffix)
 
@@ -151,13 +153,18 @@ def test_addto_cli_badfiles(tmp_library: TemporaryLibrary,
     inputfiles = [tmp_library.create_random_file("pdf")
                   for _i in range(nfiles)]
 
+    from itertools import chain
+
     with monkeypatch.context() as mp:
         mp.setattr("papis.downloaders.download_document", _mock_download_document)
         cli_runner = PapisRunner()
-        args = (["--files", "/path/to/nonexistant/file.pdf"] + sum([
-            ["--files", f] for f in inputfiles
-            ], []) + ["--urls", PDF_URL] + ["--urls", BAD_PDF_URL])
-        result = cli_runner.invoke(cli, args + ["author:popper"])
+        args = [
+            "--files", "/path/to/nonexistant/file.pdf",
+            *chain.from_iterable(["--files", f] for f in inputfiles),
+            "--urls", PDF_URL,
+            "--urls", BAD_PDF_URL,
+        ]
+        result = cli_runner.invoke(cli, [*args, "author:popper"])
         assert result.exit_code == 0
 
     db = papis.database.get()

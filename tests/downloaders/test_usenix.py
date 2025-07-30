@@ -27,7 +27,8 @@ def test_usenix_match() -> None:
         "https://usenix.org/conference",
         "http://usenix.org/conference",
         "https://usenix.org/bogus22/link/author",
-        ) + tuple(url for url, _ in USENIX_LINK_URLS)
+        *(url for url, _ in USENIX_LINK_URLS)
+        )
     invalid_urls = (
         "https://usewin.org/article/123",
         "https://usenix.com/article/123",
@@ -53,8 +54,8 @@ def test_usenix_fetch(tmp_config: TemporaryConfiguration,
     assert isinstance(down, Downloader)
 
     uid = os.path.basename(url)
-    infile = "USENIX_{}.bib".format(uid)
-    outfile = "USENIX_{}_Out.json".format(uid)
+    infile = f"USENIX_{uid}.bib"
+    outfile = f"USENIX_{uid}_Out.json"
 
     monkeypatch.setattr(down, "download_document", lambda: None)
     monkeypatch.setattr(down, "get_bibtex_url", lambda: bibtex)

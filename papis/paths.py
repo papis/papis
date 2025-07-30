@@ -38,7 +38,7 @@ def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]
     >>> s = unique_suffixes(skip=3)
     >>> next(s)
     'd'
-    """  # noqa: E501
+    """
 
     import string
     from itertools import count, product, islice
@@ -133,7 +133,8 @@ def symlink(src: PathLike, dst: PathLike) -> None:
             raise OSError(exc.errno,
                           "Failed to link due to insufficient permissions. You "
                           "can try again after enabling the 'Developer mode' "
-                          "and restarting.", exc.filename, exc.winerror, exc.filename2)
+                          "and restarting.", exc.filename, exc.winerror, exc.filename2
+                          ) from None
 
 
 def get_document_file_name(

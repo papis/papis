@@ -14,7 +14,7 @@ def sed_replace(filename: str) -> None:
 def echo(filename: str) -> None:
     # NOTE: this function is used by 'test_open_run' to provide a cross-platform
     # custom command that shows it tried to open a file
-    print("Attempted to open '{}'".format(filename))
+    print(f"Attempted to open '{filename}'")
 
 
 def ls(filename: str) -> None:
