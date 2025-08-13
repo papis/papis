@@ -89,6 +89,7 @@ def normalize_path(path: str, *,
         regex_pattern = fr"[^a-zA-Z0-9.{extra_chars}]+"
 
     # fix slugify forcefully replacing hyphens
+    # see https://github.com/un33k/python-slugify/issues/107
     if "-" in extra_chars:
         placeholder = "slugifyhyphenfixer"
         path = path.replace("\u2010", placeholder).replace("-", placeholder)
