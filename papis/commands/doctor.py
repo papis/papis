@@ -15,6 +15,8 @@ implemented
 * ``biblatex-type-alias``: checks that the BibLaTeX type of the document is not
   a known type alias (usually defined for backwards compatibility reasons), as
   defined by :data:`~papis.bibtex.bibtex_type_aliases`.
+* ``biblatex-key-convert``: checks if some known BibLaTeX keys should be converted
+  based on their values (e.g. a numeric "issue" is better used as a "number").
 * ``bibtex-type``: checks that the document type matches a known BibLaTeX type
   from :data:`papis.bibtex.bibtex_types`.
 * ``duplicated-keys``: checks that the keys provided by
@@ -633,12 +635,85 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
             if not any(key in doc or aliases.get(key) in doc for key in keys)]
 
 
+BIBLATEX_KEY_CONVERT_CHECK_NAME = "biblatex-key-convert"
+BIBLATEX_KEY_CONVERT_NUMBER_REGEX = re.compile(
+    r"^(?:(?:no\.?|nr\.?|suppl\.?)\s*)?"  # optional "No." / "Nr." / "Suppl."
+    r"(?:"
+    r"\d+(?:\s*[-–]\s*\d+)?"           # pure numeric or range, e.g. 3, 3–4
+    r"|[A-Za-z]?\s*\d+(?:[A-Za-z]+)?"  # letter+number combos, e.g. S1, 4B, 4es
+    r"|[A-Za-z]+\s*[-–]\s*\d+"         # letter-hyphen-number, e.g. A-1, Suppl-A-3
+    r")$",
+    re.I
+)
+
+
+def biblatex_key_convert_check(doc: papis.document.Document) -> List[Error]:
+    """
+    Check if any BibLaTeX keys in the document are incorrectly assigned.
+
+    Note that this is a heuristic in most cases, as we cannot always determine
+    allowable values. Implemented checks include:
+
+    * ``issue`` entries that should be ``number``: issue is generally reserved
+      for periodicals (e.g. "Spring" issue) and not meant as short designator
+      for a publication (see Section 2.3.11 from the BibLaTeX manual).
+
+    :returns: a list of errors for each key that appears misassigned.
+    """
+
+    folder = doc.get_main_folder() or ""
+
+    def issue_to_number_fixer() -> None:
+        if "issue" in doc and "number" not in doc:
+            logger.info("[FIX] Renaming BibLaTeX field 'issue' to 'number'.")
+            doc["number"] = doc.pop("issue")
+
+    def is_number_like(value: Any) -> bool:
+        if isinstance(value, int):
+            return True
+
+        # NOTE: most things are just a single digit, so this check should be
+        # pretty fast, while the regex acts as a fallback for fancy cases
+        value = value.strip()
+        return (
+            value.isdigit()
+            or (len(value) <= 2 and value.isalpha())
+            or BIBLATEX_KEY_CONVERT_NUMBER_REGEX.match(value) is not None)
+
+    results = []
+    for key in ("issue",):
+        if key not in doc:
+            continue
+
+        value = doc[key]
+        fix_action = None
+        if key == "issue":
+            if is_number_like(value):
+                msg = f"Document key 'issue' looks like a 'number': '{value}'"
+                fix_action = issue_to_number_fixer
+
+        if fix_action is None:
+            continue
+
+        results.append(
+            Error(name=BIBLATEX_KEY_CONVERT_CHECK_NAME,
+                  path=folder,
+                  msg=msg,
+                  suggestion_cmd=f"papis edit --doc-folder {folder}",
+                  fix_action=fix_action,
+                  payload=key,
+                  doc=doc)
+            )
+
+    return results
+
+
 KEY_TYPE_CHECK_NAME = "key-type"
 
 
 def get_key_type_check_keys() -> Dict[str, type]:
     """
-    Check the `doctor-key-type-keys` configuration entry for correctness.
+    Check the ``doctor-key-type-keys`` configuration entry for correctness.
 
     The :confval:`doctor-key-type-keys` configuration entry
     defines a mapping of keys and their expected types. If the desired type is
@@ -919,6 +994,7 @@ register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
 register_check(BIBLATEX_TYPE_ALIAS_CHECK_NAME, biblatex_type_alias_check)
 register_check(BIBLATEX_KEY_ALIAS_CHECK_NAME, biblatex_key_alias_check)
 register_check(BIBLATEX_REQUIRED_KEYS_CHECK_NAME, biblatex_required_keys_check)
+register_check(BIBLATEX_KEY_CONVERT_CHECK_NAME, biblatex_key_convert_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
