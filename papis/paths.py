@@ -18,6 +18,8 @@ PathLike = Union[pathlib.Path, str]
 # NOTE: private error codes for Windows
 WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
 
+_SLUGIFY_HYPHEN_PLACEHOLDER = "slugifyhyphenfixer"
+
 
 def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
     """Creates an infinite list of suffixes based on *chars*.
@@ -91,11 +93,11 @@ def normalize_path(path: str, *,
     # fix slugify forcefully replacing hyphens
     # see https://github.com/un33k/python-slugify/issues/107
     if "-" in extra_chars:
-        placeholder = "slugifyhyphenfixer"
-        path = path.replace("\u2010", placeholder).replace("-", placeholder)
+        path = path.replace("\u2010", _SLUGIFY_HYPHEN_PLACEHOLDER).\
+                    replace("-", _SLUGIFY_HYPHEN_PLACEHOLDER)
 
         def replace_hyphen(s: str) -> str:
-            return s.replace(placeholder, "-")
+            return s.replace(_SLUGIFY_HYPHEN_PLACEHOLDER, "-")
     else:
         def replace_hyphen(s: str) -> str: return s
 
