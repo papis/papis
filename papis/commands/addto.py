@@ -73,7 +73,7 @@ def run(document: papis.document.Document,
     # a temporary directory. We keep track of a boolean per file that
     # tells us whether to link
     new_filepaths: List[Tuple[str, bool]] = []
-    for orig_filepath, filepath in zip(filepaths, local_files):
+    for orig_filepath, filepath in zip(filepaths, local_files, strict=True):
         # skip remote files that haven't been properly downloaded
         if not filepath:
             continue
@@ -97,8 +97,8 @@ def run(document: papis.document.Document,
     )
     assert len(new_filepaths) == len(new_filenames)
 
-    for (in_file_path, link_file), out_file_name in zip(new_filepaths, new_filenames):
-
+    for (in_file_path, link_file), out_file_name in (
+            zip(new_filepaths, new_filenames, strict=True)):
         out_file_path = os.path.join(doc_folder, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)

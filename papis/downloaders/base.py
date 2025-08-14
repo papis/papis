@@ -155,7 +155,7 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
         attrs={"name": "citation_author_institution"})
 
     if affs and len(authors) == len(affs):
-        authors_and_affs: Iterator[Tuple[Any, Any]] = zip(authors, affs)
+        authors_and_affs: Iterator[Tuple[Any, Any]] = zip(authors, affs, strict=True)
     else:
         authors_and_affs = ((a, None) for a in authors)
 
