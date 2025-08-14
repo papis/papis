@@ -51,12 +51,34 @@ papis --set csl-style harvard1 export --format csl <QUERY>
 ## Other noteworthy features
 
 - Use the current directory as a "default-library" if configured
-  [#979](https://github.com/papis/papis/pull/979).
+  ([#979](https://github.com/papis/papis/pull/979)).
+- Improve abstract cleanup in `papis doctor`
+  ([#1008](https://github.com/papis/papis/pull/1008)).
+- Remove the `dissem.in` importer as it is out of service
+  ([#1015](https://github.com/papis/papis/pull/1015)).
+- Improve scraping page information from Google Scholar tags
+  ([#1022](https://github.com/papis/papis/pull/1022)).
+- Improve scraping page information for APS journals
+  ([#1025](https://github.com/papis/papis/pull/1025)).
+- Allow overwriting files on `papis export --out FILENAME`
+  ([#1036](https://github.com/papis/papis/pull/1036)).
+- Add shell completions for libraries on `papis --lib <TAB>`
+  ([#1039](https://github.com/papis/papis/pull/1039)).
+- Update USENIX downloader to bypass cloudflare if possible
+  ([#1045](https://github.com/papis/papis/pull/1045)).
 
 ## Bug Fixes
 
 - Fix crash on `papis cache reset` when using `whoosh`
-  [#977](https://github.com/papis/papis/pull/977).
+  ([#977](https://github.com/papis/papis/pull/977)).
+- Fix crash on a faulty `notes` key in the `info.yaml` file
+  ([#1026](https://github.com/papis/papis/pull/1026)).
+- Fix lack of colors in `fzf` picker
+  ([#1028](https://github.com/papis/papis/pull/1028)).
+- Fix passing URLs to `papis addto --url URL`
+  ([#1034](https://github.com/papis/papis/pull/1034)).
+- Fix crash in `typst` exporter for unknown document parent types
+  ([#1035](https://github.com/papis/papis/pull/1035)).
 
 # VERSION 0.14.1 (March 1, 2025)
 
@@ -68,13 +90,13 @@ papis --set csl-style harvard1 export --format csl <QUERY>
 ## Bug Fixes
 
 - Do not run tests that need git when unavailable
-  [#945](https://github.com/papis/papis/pull/945).
+  ([#945](https://github.com/papis/papis/pull/945)).
 - Fix `--no-open` and `--confirm` when adding files
-  [#957](https://github.com/papis/papis/pull/957).
+  ([#957](https://github.com/papis/papis/pull/957)).
 - Fix `--file-name` being ignored when adding files
-  [#964](https://github.com/papis/papis/pull/964).
+  ([#964](https://github.com/papis/papis/pull/964)).
 - Fix piping output from the default picker
-  [#969](https://github.com/papis/papis/pull/969).
+  ([#969](https://github.com/papis/papis/pull/969)).
 
 # VERSION 0.14 (November 8, 2024)
 
