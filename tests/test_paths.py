@@ -14,10 +14,11 @@ def test_unique_suffixes() -> None:
         "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
         "AA", "AB", "AC", "AD"
     ]
-    for value, output in zip(expected, unique_suffixes(string.ascii_uppercase)):
+    for value, output in zip(expected, unique_suffixes(string.ascii_uppercase),
+                             strict=False):
         assert output == value
 
-    for value, output in zip(expected[3:], unique_suffixes(skip=3)):
+    for value, output in zip(expected[3:], unique_suffixes(skip=3), strict=False):
         assert output == value.lower()
 
 

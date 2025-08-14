@@ -292,7 +292,8 @@ def run(paths: List[str],
     import shutil
 
     document_file_list = []
-    for in_file_path, out_file_name in zip(in_document_paths, renamed_file_list):
+    for in_file_path, out_file_name in (
+            zip(in_document_paths, renamed_file_list, strict=True)):
         out_file_path = os.path.join(temp_dir, out_file_name)
         if os.path.exists(out_file_path):
             logger.warning("File '%s' already exists. Skipping...", out_file_path)
