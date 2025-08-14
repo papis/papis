@@ -414,3 +414,107 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
         error.fix_action()
         assert "issue" not in doc
         assert doc["number"] == value
+
+
+def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import STRING_CLEANER_AUTHOR_DOTS_REGEX
+
+    def dotify(value: str) -> str:
+        return (
+            STRING_CLEANER_AUTHOR_DOTS_REGEX.sub(r"\1\2. ", value)
+            .replace("  ", " ")
+            .strip())
+
+    assert dotify("F") == "F."
+    assert dotify("F.") == "F."
+    assert dotify("A B") == "A. B."
+    assert dotify("A B C") == "A. B. C."
+    assert dotify("J.R.R.") == "J. R. R."
+    assert dotify("J.R.R") == "J. R. R."
+    assert dotify("A. B.C") == "A. B. C."
+    assert dotify("J.R.R. Tolkien") == "J. R. R. Tolkien"
+
+
+def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import string_cleaner_check
+
+    doc = papis.document.from_data({
+        "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+        "title": "DNA sequencing with chain-terminating inhibitors",
+        "abstract":
+            "A new method for determining nucleotide sequences in DNA is described. "
+            "It is similar to the “plus and minus” method [Sanger, F. & Coulson, "
+            "A. R. (1975) J. Mol. Biol. 94, 441-448] but makes use of the "
+            "2′,3′-dideoxy and arabinonucleoside analogues of the normal "  # noqa: RUF001
+            "deoxynucleoside triphosphates, which act as specific chain-terminating "
+            "inhibitors of DNA polymerase. The technique has been applied to the "
+            "DNA of bacteriophage ϕX174 and is more rapid and more accurate than "
+            "either the plus or the minus method."
+        })
+
+    # check newline fixer
+    orig_value = doc["title"]
+
+    doc["title"] = "DNA sequencing with\n chain-terminating inhibitors"
+    errornl, errorws = string_cleaner_check(doc)
+
+    assert errornl.payload == "title"
+    assert errornl.fix_action is not None
+    errornl.fix_action()
+    assert doc["title"] == "DNA sequencing with  chain-terminating inhibitors"
+
+    assert errorws.payload == "title"
+    assert errorws.fix_action is not None
+    errorws.fix_action()
+    assert doc["title"] == orig_value
+
+    # check white space remover
+    doc["title"] = "DNA sequencing    with chain-terminating     inhibitors"
+
+    errorws, = string_cleaner_check(doc)
+    assert errorws.payload == "title"
+    assert errorws.fix_action is not None
+
+    errorws.fix_action()
+    assert doc["title"] == orig_value
+
+    # check abstract remover
+    orig_value = doc["abstract"]
+
+    doc["abstract"] = f" :ABSTRACT: -- {orig_value}"
+    error, = string_cleaner_check(doc)
+    assert error.payload == "abstract"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["abstract"] == orig_value
+
+    # check author with no dot
+    orig_value = doc["author"]
+
+    doc["author"] = "Sanger, F and Nicklen, S and Coulson, A. R."
+    doc["author_list"] = (
+        papis.document.split_authors_name(doc["author"], separator="and"))
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author"] == orig_value
+    assert doc["author_list"][0]["given"] == "F."
+    assert doc["author_list"][1]["given"] == "S."
+
+    # check author with no space
+    doc["author"] = "Sanger, F. and Nicklen, S. and Coulson, A.R."
+    doc["author_list"] = (
+        papis.document.split_authors_name(doc["author"], separator="and"))
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author"] == orig_value
+    assert doc["author_list"][0]["given"] == "F."
+    assert doc["author_list"][2]["given"] == "A. R."
