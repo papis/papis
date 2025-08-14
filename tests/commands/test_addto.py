@@ -1,11 +1,11 @@
-import os
-import papis.database
 import logging
+import os
+from typing import Any, Dict, Optional
+
 import pytest
 
-from papis.testing import TemporaryLibrary, PapisRunner, create_random_file
-
-from typing import Optional, Dict, Any
+import papis.database
+from papis.testing import PapisRunner, TemporaryLibrary, create_random_file
 
 PDF_URL = "http://example.com/single-page-test.pdf"
 PDF_URL_BASE = "single-page-test.pdf"

@@ -1,21 +1,33 @@
+import functools
 import os
 import re
-import functools
 from typing import (
-    Optional, Any, List, Generic, Sequence,
-    Callable, Tuple, Pattern, TypeVar, Union)
-
-from prompt_toolkit.formatted_text import HTML, AnyFormattedText, FormattedText
-from prompt_toolkit.data_structures import Point
-from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.containers import (
-    Window, ConditionalContainer, WindowAlign, ScrollOffsets
+    Any,
+    Callable,
+    Generic,
+    List,
+    Optional,
+    Pattern,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
 )
-from prompt_toolkit.filters import Filter, has_focus
 
-import papis.utils
+from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.data_structures import Point
+from prompt_toolkit.filters import Filter, has_focus
+from prompt_toolkit.formatted_text import HTML, AnyFormattedText, FormattedText
+from prompt_toolkit.layout.containers import (
+    ConditionalContainer,
+    ScrollOffsets,
+    Window,
+    WindowAlign,
+)
+from prompt_toolkit.layout.controls import FormattedTextControl
+
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -278,8 +290,8 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         """Creates the body of the list, which is just a list of tuples,
         where the tuples follow the FormattedText structure.
         """
-        import time
         import operator
+        import time
 
         self.update_cursor()
         begin_t = time.time()

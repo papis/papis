@@ -1,7 +1,6 @@
 import dominate.tags as t
 
 import papis.document
-
 import papis.web.document
 import papis.web.html as wh
 import papis.web.paths as wp

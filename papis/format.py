@@ -2,10 +2,10 @@ import string
 from typing import Any, ClassVar, Dict, List, Optional
 
 import papis.config
-import papis.plugin
-import papis.strings
 import papis.document
 import papis.logging
+import papis.plugin
+import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 

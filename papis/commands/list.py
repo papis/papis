@@ -55,13 +55,13 @@ from typing import List, Optional, Sequence, Tuple
 
 import click
 
-import papis.id
 import papis.cli
 import papis.config
-import papis.strings
 import papis.document
 import papis.format
+import papis.id
 import papis.logging
+import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -76,6 +76,7 @@ def list_plugins(show_paths: bool = False,
                  show_doctor: bool = False,
                  verbose: bool = False) -> List[str]:
     import colorama as c
+
     from papis.plugin import get_extension_manager
 
     def _format(name: str, ids: str) -> str:

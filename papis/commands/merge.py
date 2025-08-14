@@ -58,23 +58,23 @@ Command-line interface
 """
 
 import os
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import click
 
 import papis
 import papis.api
-import papis.pick
-import papis.utils
-import papis.config
 import papis.cli
+import papis.commands.rm
+import papis.commands.update
+import papis.config
 import papis.database
 import papis.document
 import papis.format
-import papis.strings
-import papis.commands.rm
-import papis.commands.update
 import papis.logging
+import papis.pick
+import papis.strings
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

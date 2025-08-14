@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.projecteuclid import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 PROJECT_EUCLID_URLS = (
     "https://projecteuclid.org/journals/advances-in-differential-equations/volume-19/"

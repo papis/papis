@@ -34,7 +34,7 @@ the schema you will not be able to search for the publisher through a query.
 """
 
 import os
-from typing import List, Dict, Optional, KeysView, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, KeysView, List, Optional
 
 import papis.config
 import papis.logging
@@ -45,8 +45,8 @@ from papis.id import ID_KEY_NAME
 from papis.library import Library
 
 if TYPE_CHECKING:
+    from whoosh.fields import FieldType, Schema
     from whoosh.index import Index
-    from whoosh.fields import Schema, FieldType
     from whoosh.writing import IndexWriter
 
 logger = papis.logging.get_logger(__name__)
@@ -133,7 +133,8 @@ class Database(DatabaseBase):
         logger.debug("Querying database for '%s'.", query_string)
 
         import time
-        from whoosh.qparser import MultifieldParser, FuzzyTermPlugin
+
+        from whoosh.qparser import FuzzyTermPlugin, MultifieldParser
 
         index = self._get_index()
         qp = MultifieldParser(["title", "author", "tags"], schema=index.schema)
@@ -207,7 +208,7 @@ class Database(DatabaseBase):
         index. It is quite expensive and will only be called if no index is present
         or a rebuild is necessary.
         """
-        from papis.utils import get_folders, folders_to_documents
+        from papis.utils import folders_to_documents, get_folders
 
         logger.debug("Indexing the library, this might take a while...")
         folders = [f for path in self.lib.paths for f in get_folders(path)]
@@ -241,7 +242,7 @@ class Database(DatabaseBase):
             (see :meth:`_create_schema`).
         """
         # NOTE: these are imported here so that `eval` sees them
-        from whoosh.fields import TEXT, ID, KEYWORD, STORED  # noqa: F401
+        from whoosh.fields import ID, KEYWORD, STORED, TEXT  # noqa: F401
 
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(papis.config.getstring("whoosh-schema-prototype"))

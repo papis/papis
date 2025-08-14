@@ -1,7 +1,6 @@
 import pytest
 
 import papis.config
-
 from papis.testing import TemporaryConfiguration
 
 
@@ -18,7 +17,6 @@ def test_config_single_option(tmp_config: TemporaryConfiguration) -> None:
 def test_config_section(tmp_config: TemporaryConfiguration) -> None:
     # NOTE: imported to register the `bibtex` default settings
     import papis.commands.bibtex
-
     from papis.commands.config import run
     section = papis.config.get_general_settings_name()
     config = papis.config.get_configuration()

@@ -1,11 +1,11 @@
 import re
 import subprocess as sp
 from abc import ABC, abstractmethod
-from typing import Callable, Sequence, TypeVar, List, Optional, Generic, Pattern, Tuple
+from typing import Callable, Generic, List, Optional, Pattern, Sequence, Tuple, TypeVar
 
-import papis.pick
 import papis.config
 import papis.format
+import papis.pick
 
 T = TypeVar("T")
 

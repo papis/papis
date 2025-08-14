@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Optional, Any, List
+from typing import Any, Dict, List, Optional
 
 import papis.document
 import papis.downloaders

@@ -1,7 +1,15 @@
 import re
 from typing import (
-    Any, List, Dict, Iterator, Tuple, Union, Pattern,
-    TypedDict, TYPE_CHECKING)
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Pattern,
+    Tuple,
+    TypedDict,
+    Union,
+)
 
 import papis.config
 import papis.document

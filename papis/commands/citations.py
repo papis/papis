@@ -52,11 +52,13 @@ import click
 import papis.cli
 import papis.document
 import papis.logging
-from papis.citations import (has_citations,
-                             has_cited_by,
-                             update_and_save_citations_from_database_from_doc,
-                             fetch_and_save_citations,
-                             fetch_and_save_cited_by_from_database)
+from papis.citations import (
+    fetch_and_save_citations,
+    fetch_and_save_cited_by_from_database,
+    has_citations,
+    has_cited_by,
+    update_and_save_citations_from_database_from_doc,
+)
 
 logger = papis.logging.get_logger(__name__)
 

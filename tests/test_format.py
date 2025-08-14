@@ -1,8 +1,7 @@
 import pytest
 
-import papis.format
 import papis.document
-
+import papis.format
 from papis.testing import TemporaryConfiguration
 
 

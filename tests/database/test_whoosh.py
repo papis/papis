@@ -1,9 +1,9 @@
 import os
+
 import pytest
 
 import papis.config
 import papis.database
-
 from papis.testing import TemporaryLibrary
 
 

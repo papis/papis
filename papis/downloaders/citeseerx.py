@@ -2,9 +2,9 @@ import os
 import re
 from typing import Any, ClassVar, Dict, Optional
 
-import papis.utils
 import papis.document
 import papis.downloaders
+import papis.utils
 
 _K = papis.document.KeyConversionPair
 article_key_conversion = [

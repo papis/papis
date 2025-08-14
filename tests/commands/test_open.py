@@ -1,8 +1,9 @@
 import os
 import sys
+
 import pytest
 
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def get_mock_script(name: str) -> str:

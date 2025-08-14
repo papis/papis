@@ -1,7 +1,7 @@
 import re
 import tempfile
 
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def test_explore_cli(tmp_library: TemporaryLibrary) -> None:

@@ -23,10 +23,9 @@ a document. However, for this script the following formats are supported:
 """
 
 import re
+from typing import Set
 
 import click
-
-from typing import Set
 
 import papis.api
 import papis.cli

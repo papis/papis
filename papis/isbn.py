@@ -1,5 +1,5 @@
 # See https://github.com/xlcnd/isbnlib for details
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import click
 from isbnlib.registry import services as isbn_services

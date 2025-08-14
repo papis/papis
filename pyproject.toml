@@ -281,6 +281,7 @@ select = [
     "E",   # pycodestyle
     "F",   # pyflakes
     "G",   # flake8-logging-format
+    "I",   # flake8-isort
     "N",   # pep8-naming
     "PL",  # pylint
     "Q",   # flake8-quotes
@@ -313,6 +314,9 @@ ignore-overlong-task-comments = true
 docstring-quotes = "double"
 inline-quotes = "double"
 multiline-quotes = "double"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
 
 [tool.mypy]
 strict = true

@@ -4,8 +4,7 @@ import shutil
 import pytest
 
 import papis.config
-
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 @pytest.mark.skipif(

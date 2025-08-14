@@ -1,14 +1,14 @@
-import re
 import os
+import re
 import tempfile
-from typing import List, Optional, Any, Sequence, Type, Dict, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Type, Union
 
 import papis.config
 import papis.document
 import papis.importer
+import papis.logging
 import papis.plugin
 import papis.utils
-import papis.logging
 
 if TYPE_CHECKING:
     import bs4

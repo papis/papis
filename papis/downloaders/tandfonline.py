@@ -4,7 +4,6 @@ from typing import Any, ClassVar, Dict, Optional
 import papis.document
 import papis.downloaders.base
 
-
 tf_to_bibtex_converter = {
     # FIXME: what other types are there?
     "research-article": "article",

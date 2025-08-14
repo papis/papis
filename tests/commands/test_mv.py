@@ -2,7 +2,6 @@ import os
 import tempfile
 
 import papis.database
-
 from papis.testing import TemporaryLibrary
 
 

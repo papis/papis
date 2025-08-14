@@ -198,7 +198,7 @@ class Database(DatabaseBase):
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
         elif self.lib.paths:
-            from papis.utils import get_folders, folders_to_documents
+            from papis.utils import folders_to_documents, get_folders
 
             logger.info("Indexing library. This might take a while...")
             folders = [f for path in self.lib.paths for f in get_folders(path)]

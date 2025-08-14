@@ -2,8 +2,7 @@ import pytest
 
 import papis.downloaders
 from papis.downloaders.fallback import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 FALLBACK_URLS = (
     "https://peerj.com/articles/4886/",

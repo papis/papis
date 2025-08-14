@@ -103,29 +103,28 @@ Command-line interface
 """
 
 import os
-from typing import List, Any, Optional, Dict, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from warnings import warn
 
 import click
 
 import papis.api
-import papis.pick
-import papis.utils
-import papis.hooks
-import papis.tui.utils
-import papis.filetype
+import papis.citations
+import papis.cli
+import papis.commands.doctor
 import papis.config
 import papis.document
-import papis.importer
-import papis.cli
-import papis.strings
 import papis.downloaders
-import papis.git
+import papis.filetype
 import papis.format
-import papis.citations
+import papis.git
+import papis.hooks
+import papis.importer
 import papis.logging
-import papis.commands.doctor
-
+import papis.pick
+import papis.strings
+import papis.tui.utils
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -284,7 +283,7 @@ def run(paths: List[str],
         base_path = os.path.join(base_path, subfolder)
 
     # rename all the given file names
-    from papis.paths import symlink, rename_document_files
+    from papis.paths import rename_document_files, symlink
 
     renamed_file_list = rename_document_files(
         tmp_document, in_document_paths,

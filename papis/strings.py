@@ -1,4 +1,4 @@
-from typing import Any, Optional, NamedTuple, Tuple, Union
+from typing import Any, NamedTuple, Optional, Tuple, Union
 
 
 class FormatPattern(NamedTuple):

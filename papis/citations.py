@@ -1,13 +1,13 @@
 import os
-from typing import Dict, Any, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import papis.config
-import papis.database
 import papis.crossref
-import papis.yaml
-import papis.utils
-import papis.logging
+import papis.database
 import papis.document
+import papis.logging
+import papis.utils
+import papis.yaml
 
 logger = papis.logging.get_logger(__name__)
 

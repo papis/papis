@@ -31,14 +31,14 @@ Command-line interface
     :prog: papis init
 """
 
-from typing import NamedTuple, Optional
 import os
+from typing import NamedTuple, Optional
 
 import click
 
-import papis.utils
 import papis.config
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

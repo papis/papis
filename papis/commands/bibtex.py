@@ -123,13 +123,13 @@ Command-line interface
 
 import os
 import re
-
 from typing import List, Optional, Tuple
+
 import click
 
-import papis.database
 import papis.cli
 import papis.config
+import papis.database
 import papis.format
 import papis.logging
 import papis.strings

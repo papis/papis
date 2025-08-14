@@ -1,4 +1,5 @@
 import pytest
+
 from papis.testing import TemporaryConfiguration
 
 ARXIV_TEST_URLS = [
@@ -41,7 +42,7 @@ def test_find_arxiv_id(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
-    from papis.arxiv import Downloader, ARXIV_ABS_URL
+    from papis.arxiv import ARXIV_ABS_URL, Downloader
 
     down = Downloader.match("arxiv.org/sdf")
     assert isinstance(down, Downloader)
@@ -64,8 +65,8 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
     ])
 def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
                                    url: str) -> None:
-    from papis.downloaders import get_matching_downloaders
     from papis.arxiv import Downloader
+    from papis.downloaders import get_matching_downloaders
 
     downs = get_matching_downloaders(url)
     assert len(downs) >= 1

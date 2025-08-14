@@ -1,7 +1,7 @@
 import pytest
 
-from papis.testing import TemporaryConfiguration
 from papis.downloaders.thesesfr import Downloader
+from papis.testing import TemporaryConfiguration
 
 
 def test_match(tmp_config: TemporaryConfiguration) -> None:

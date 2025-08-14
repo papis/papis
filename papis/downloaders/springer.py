@@ -1,8 +1,8 @@
 import re
 from typing import Any, ClassVar, Dict, Optional
 
-import papis.downloaders.base
 import papis.document
+import papis.downloaders.base
 
 
 class Downloader(papis.downloaders.Downloader):

@@ -90,27 +90,27 @@ Command-line interface
     :nested: full
 """
 
-from typing import List, Optional, TYPE_CHECKING, Tuple
 import shlex
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import click
 
-import papis.utils
-import papis.tui.utils
-import papis.commands
-import papis.document
-import papis.config
-import papis.strings
+import papis.api
+import papis.citations
 import papis.cli
+import papis.commands
 import papis.commands.add
 import papis.commands.export
-import papis.api
-import papis.pick
-import papis.format
+import papis.config
 import papis.crossref
-import papis.plugin
-import papis.citations
+import papis.document
+import papis.format
 import papis.logging
+import papis.pick
+import papis.plugin
+import papis.strings
+import papis.tui.utils
+import papis.utils
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager

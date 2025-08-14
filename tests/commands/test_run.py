@@ -2,8 +2,8 @@ import os
 import sys
 
 import pytest
-import papis.config
 
+import papis.config
 from papis.testing import TemporaryLibrary
 
 

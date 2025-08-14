@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.acs import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 ACS_URLS = (
     "https://pubs.acs.org/doi/abs/10.1021/jp003647e",

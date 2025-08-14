@@ -1,12 +1,11 @@
 import os
 
 import papis.database
-
 from papis.testing import TemporaryLibrary
 
 
 def test_list_run(tmp_library: TemporaryLibrary) -> None:
-    from papis.commands.list import list_plugins, list_documents
+    from papis.commands.list import list_documents, list_plugins
 
     assert papis.config.get_lib_name() == tmp_library.libname
 

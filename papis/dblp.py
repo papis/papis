@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Optional
 
 import click
 
-import papis.utils
 import papis.config
-import papis.importer
 import papis.document
+import papis.importer
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

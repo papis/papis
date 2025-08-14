@@ -1,11 +1,11 @@
 import os
-import pytest
 from typing import Any, Dict
+
+import pytest
 
 import papis.database
 from papis.document import Document
-
-from papis.testing import TemporaryLibrary, PapisRunner, ResourceCache
+from papis.testing import PapisRunner, ResourceCache, TemporaryLibrary
 
 
 def _get_resource_file(filename: str) -> str:

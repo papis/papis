@@ -1,7 +1,8 @@
 import os
 import sys
-import pytest
 import tempfile
+
+import pytest
 
 from papis.testing import TemporaryConfiguration
 

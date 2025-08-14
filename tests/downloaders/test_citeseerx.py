@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.citeseerx import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 CITESEERX_URLS = (
     "https://citeseerx.ist.psu.edu/doc_view/pid/497490d0d3ab2724e58b03765055f7a134ce89d3",

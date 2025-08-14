@@ -1,6 +1,6 @@
-import tempfile
-import pickle
 import os
+import pickle
+import tempfile
 
 import pytest
 
@@ -82,8 +82,8 @@ def test_main_features() -> None:
 
 
 def test_to_bibtex(tmp_config: TemporaryConfiguration) -> None:
-    import papis.config
     import papis.bibtex
+    import papis.config
 
     papis.config.set("bibtex-journal-key", "journal_abbrev")
     doc = papis.document.from_data({
@@ -205,6 +205,7 @@ def test_multiple_authors_separator(tmp_config: TemporaryConfiguration,
 
 def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None:
     import re
+
     from papis.document import guess_authors_separator, split_authors_name
 
     def is_comma_and_re(sep: str) -> None:

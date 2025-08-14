@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+
 import pytest
 
 from papis.testing import TemporaryConfiguration

@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.annualreviews import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 ANNUAL_REVIEWS_URLS = (
     "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",

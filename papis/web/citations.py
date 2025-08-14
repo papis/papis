@@ -1,14 +1,13 @@
-from typing import Any, Callable, Dict
 import urllib.parse
+from typing import Any, Callable, Dict
 
 import dominate.tags as t
 
-import papis.document
 import papis.citations
-
-import papis.web.timeline
+import papis.document
 import papis.web.document
 import papis.web.html as wh
+import papis.web.timeline
 
 
 def render(doc: papis.document.Document,

@@ -1,13 +1,13 @@
+import pytest
+
 import papis.config
 import papis.database
-
-import pytest
 from papis.testing import TemporaryLibrary
 
 PAPIS_DB_BACKENDS = ["papis"]
 
 try:
-    import whoosh       # noqa: F401
+    import whoosh  # noqa: F401
     PAPIS_DB_BACKENDS.append("whoosh")
 except ImportError:
     pass

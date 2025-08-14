@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.springer import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 SPRINGER_LINK_URLS = (
     "https://link.springer.com/article/10.1007/s10924-010-0192-1",

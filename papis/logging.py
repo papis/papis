@@ -1,11 +1,10 @@
+import logging
 import os
 import sys
-import logging
 from typing import Any, Optional, Tuple, Union
 
 import click
 import colorama as c
-
 
 PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
 LEVEL_TO_COLOR = {

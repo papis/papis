@@ -1,8 +1,7 @@
 import os
 
 import papis.database
-
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def _get_resource_file(filename: str) -> str:

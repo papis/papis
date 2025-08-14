@@ -8,7 +8,6 @@ import dominate.tags as t
 import dominate.util as tu
 
 import papis.document
-
 import papis.web.paths as wp
 
 

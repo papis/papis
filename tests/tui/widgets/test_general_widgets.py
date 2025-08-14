@@ -1,7 +1,7 @@
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.formatted_text.html import HTML
 
-from papis.tui.widgets import MessageToolbar, InfoWindow, HelpWindow
+from papis.tui.widgets import HelpWindow, InfoWindow, MessageToolbar
 
 
 def test_message_toolbar() -> None:

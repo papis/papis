@@ -1,22 +1,24 @@
 import os
-from typing import Optional, List, Dict, Any, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
-import yaml
 import click
+import yaml
 
-import papis.utils
 import papis.config
-import papis.importer
 import papis.document
+import papis.importer
 import papis.logging
+import papis.utils
 
 # NOTE: try to use the CLoader when possible, as it's a lot faster than the
 # python version, at least at the time of writing
 try:
     from yaml import CSafeDumper as Dumper, CSafeLoader as Loader
 except ImportError:
-    from yaml import SafeDumper as Dumper  # type: ignore[assignment]
-    from yaml import SafeLoader as Loader  # type: ignore[assignment]
+    from yaml import (
+        SafeDumper as Dumper,  # type: ignore[assignment]
+        SafeLoader as Loader,  # type: ignore[assignment]
+    )
 
 logger = papis.logging.get_logger(__name__)
 

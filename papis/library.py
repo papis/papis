@@ -1,5 +1,5 @@
-import os
 import glob
+import os
 from itertools import chain
 from typing import List, Sequence
 

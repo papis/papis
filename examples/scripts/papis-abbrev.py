@@ -41,8 +41,8 @@ Command Options
     in the journal title.
 """
 
-import os
 import json
+import os
 from typing import Dict, Optional
 
 import papis.api

@@ -57,17 +57,17 @@ from typing import Optional, Tuple
 
 import click
 
-import papis.config
 import papis.cli
-import papis.format
-import papis.utils
+import papis.config
 import papis.database
-import papis.strings
-import papis.git
-import papis.pick
 import papis.document
-import papis.tui.utils
+import papis.format
+import papis.git
 import papis.logging
+import papis.pick
+import papis.strings
+import papis.tui.utils
+import papis.utils
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)

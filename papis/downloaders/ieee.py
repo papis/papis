@@ -1,8 +1,8 @@
 import re
-from typing import Optional, Tuple, Dict
+from typing import Dict, Optional, Tuple
 
-import papis.utils
 import papis.downloaders.base
+import papis.utils
 
 
 class Downloader(papis.downloaders.Downloader):

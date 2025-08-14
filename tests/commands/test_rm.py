@@ -1,11 +1,11 @@
 import os
-import pytest
 import shutil
+
+import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 import papis.database
-
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def test_rm_run(tmp_library: TemporaryLibrary) -> None:
@@ -139,7 +139,6 @@ def test_rm_files_cli(tmp_library: TemporaryLibrary,
                       confirm: bool, pick: bool) -> None:
     import papis.pick
     import papis.tui.utils
-
     from papis.commands.rm import cli
     cli_runner = PapisRunner()
 

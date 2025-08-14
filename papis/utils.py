@@ -1,8 +1,20 @@
 import os
-import sys
 import re
-from typing import (Optional, List, Iterator, Iterable, Any, Dict,
-                    Union, Callable, Sequence, TypeVar, Tuple, TYPE_CHECKING)
+import sys
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from warnings import warn
 
 try:

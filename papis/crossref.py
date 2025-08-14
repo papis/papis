@@ -1,17 +1,17 @@
-import re
 import os
+import re
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import doi
 import click
+import doi
 
 import papis.config
-import papis.pick
-import papis.filetype
 import papis.document
-import papis.importer
 import papis.downloaders.base
+import papis.filetype
+import papis.importer
 import papis.logging
+import papis.pick
 
 logger = papis.logging.get_logger(__name__)
 
@@ -223,6 +223,7 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def _get_crossref_works(**kwargs: Any) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     import habanero
+
     from papis import PAPIS_USER_AGENT
 
     cr = habanero.Crossref(

@@ -51,7 +51,7 @@ def test_valid_dblp_key(tmp_config: TemporaryConfiguration,
 def test_importer_match(tmp_config: TemporaryConfiguration,
                         monkeypatch: pytest.MonkeyPatch,
                         has_connection: bool = True) -> None:
-    from papis.dblp import Importer, DBLP_URL_FORMAT
+    from papis.dblp import DBLP_URL_FORMAT, Importer
 
     with monkeypatch.context() as m:
         if not has_connection:
@@ -81,7 +81,7 @@ def test_importer_match(tmp_config: TemporaryConfiguration,
 def test_importer_fetch(tmp_config: TemporaryConfiguration,
                         monkeypatch: pytest.MonkeyPatch,
                         resource_cache: ResourceCache) -> None:
-    from papis.dblp import Importer, DBLP_URL_FORMAT
+    from papis.dblp import DBLP_URL_FORMAT, Importer
 
     url = DBLP_URL_FORMAT.format(uri=DBLP_KEYS_VALID[-1])
     infile = "dblp_1.bin"

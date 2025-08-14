@@ -1,5 +1,6 @@
 import os
 import re
+
 import pytest
 
 from papis.testing import ResourceCache, TemporaryConfiguration
@@ -151,7 +152,6 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
 
 def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
-
     from papis.bibtex import to_bibtex
     from papis.document import from_data
 
@@ -192,7 +192,6 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
                      monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.bibtex
     import papis.config
-
     from papis.bibtex import to_bibtex
     from papis.document import from_data
 

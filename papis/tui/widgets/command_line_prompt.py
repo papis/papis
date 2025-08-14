@@ -1,17 +1,15 @@
-from typing import Any, List, Callable, Optional
+from typing import Any, Callable, List, Optional
 
 from prompt_toolkit.application import Application
-from prompt_toolkit.layout.processors import BeforeInput
+from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.layout.containers import (
-    Window, ConditionalContainer
-)
+from prompt_toolkit.filters import has_focus
+from prompt_toolkit.layout.containers import ConditionalContainer, Window
 from prompt_toolkit.layout.controls import (
     BufferControl,
 )
-from prompt_toolkit.application.current import get_app
-from prompt_toolkit.filters import has_focus
+from prompt_toolkit.layout.processors import BeforeInput
 
 
 class Command:

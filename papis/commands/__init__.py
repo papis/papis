@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, Optional, NamedTuple
+from typing import Dict, NamedTuple, Optional
 
 import click.core
 

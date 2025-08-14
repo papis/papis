@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from packaging.version import Version
 import subprocess
 from typing import Literal
 
-import pytest
 import click
+import pytest
+from packaging.version import Version
 
 Mode = Literal["python", "msi"]
 

@@ -1,7 +1,8 @@
 import os
-import yaml
 from functools import partial
-from typing import Any, List, Optional, Pattern, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Tuple
+
+import yaml
 
 from papis.testing import TemporaryConfiguration
 

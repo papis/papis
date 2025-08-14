@@ -57,7 +57,7 @@ Command-line interface
 
 """
 
-from typing import List, Optional, Tuple, Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 import click
 
@@ -132,7 +132,7 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
-    from papis.commands.update import run_append, run_remove, run_drop, run_rename, run
+    from papis.commands.update import run, run_append, run_drop, run_remove, run_rename
 
     key_types: Dict[str, type] = {"tags": list}
 
