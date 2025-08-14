@@ -1,6 +1,5 @@
 import hashlib
 import random
-from typing import Optional
 from warnings import warn
 
 import papis.logging
@@ -14,7 +13,7 @@ logger = papis.logging.get_logger(__name__)
 ID_KEY_NAME: str = "papis_id"
 
 
-def compute_an_id(doc: Document, separator: Optional[str] = None) -> str:
+def compute_an_id(doc: Document, separator: str | None = None) -> str:
     """Make an ID for the input document *doc*.
 
     This is a non-deterministic function if *separator* is *None* (a random value

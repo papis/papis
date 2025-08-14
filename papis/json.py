@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 
 import papis.document
@@ -8,7 +6,7 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-def exporter(documents: List[papis.document.Document]) -> str:
+def exporter(documents: list[papis.document.Document]) -> str:
     """Convert document to the JSON format"""
     import json
     return json.dumps([papis.document.to_dict(doc) for doc in documents],

@@ -1,16 +1,15 @@
 import os
+import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Tuple
+from typing import Any
 
 import yaml
 
+from papis.document import Document
 from papis.testing import TemporaryConfiguration
 
-if TYPE_CHECKING:
-    from papis.document import Document
 
-
-def get_docs() -> List["Document"]:
+def get_docs() -> list["Document"]:
     from papis.document import from_data
 
     yamlfile = os.path.join(os.path.dirname(__file__), "data", "licl.yaml")
@@ -19,11 +18,11 @@ def get_docs() -> List["Document"]:
 
 
 def docmatcher_matcher(
-        res: Tuple[bool, int],
+        res: tuple[bool, int],
         document: "Document",
-        search: Pattern[str],
-        match_format: Optional[str] = None,
-        doc_key: Optional[str] = None,
+        search: re.Pattern[str],
+        match_format: str | None = None,
+        doc_key: str | None = None,
         ) -> Any:
     return res[0]
 

@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import click
 import doi
@@ -163,8 +163,7 @@ key_conversion = [
 ]  # List[papis.document.KeyConversionPair]
 
 
-def _crossref_date_parts(entry: Dict[str, Any],
-                         i: int = 0) -> Optional[int]:
+def _crossref_date_parts(entry: dict[str, Any], i: int = 0) -> int | None:
     date_parts = entry.get("date-parts")
     if date_parts is None:
         return date_parts
@@ -179,7 +178,7 @@ def _crossref_date_parts(entry: Dict[str, Any],
     return int(parts[i])
 
 
-def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
+def _crossref_link(entry: list[dict[str, str]]) -> str | None:
     if len(entry) == 1:
         return entry[0]["URL"]
 
@@ -192,7 +191,7 @@ def _crossref_link(entry: List[Dict[str, str]]) -> Optional[str]:
     return links[0] if links else None
 
 
-def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
 
     # ensure that author_list and author are consistent
@@ -221,7 +220,7 @@ def crossref_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(**kwargs: Any) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]]:
     import habanero
 
     from papis import PAPIS_USER_AGENT
@@ -240,11 +239,11 @@ def get_data(
         query: str = "",
         author: str = "",
         title: str = "",
-        dois: Optional[List[str]] = None,
+        dois: list[str] | None = None,
         max_results: int = 0,
-        filters: Optional[Dict[str, Any]] = None,
+        filters: dict[str, Any] | None = None,
         sort: str = "score",
-        order: str = "desc") -> List[Dict[str, Any]]:
+        order: str = "desc") -> list[dict[str, Any]]:
     assert sort in _sort_values, "Sort value not valid"
     assert order in _order_values, "Sort value not valid"
 
@@ -297,7 +296,7 @@ def get_data(
     return [crossref_data_to_papis_data(d) for d in docs]
 
 
-def doi_to_data(doi_string: str) -> Dict[str, Any]:
+def doi_to_data(doi_string: str) -> dict[str, Any]:
     """Search through Crossref and get the document metadata.
 
     :param doi_string: DOI or an url that contains a DOI.
@@ -337,7 +336,7 @@ def explorer(
         author: str,
         title: str,
         _ma: int,
-        _filters: List[Tuple[str, str]],
+        _filters: list[tuple[str, str]],
         sort: str,
         order: str) -> None:
     """
@@ -376,10 +375,10 @@ class DoiFromPdfImporter(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         """The uri should be a filepath"""
         super().__init__(name="pdf2doi", uri=uri)
-        self._doi: Optional[str] = None
+        self._doi: str | None = None
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         """The uri should be a filepath"""
         filepath = uri
         if (
@@ -393,7 +392,7 @@ class DoiFromPdfImporter(papis.importer.Importer):
         return importer if importer.doi else None
 
     @property
-    def doi(self) -> Optional[str]:
+    def doi(self) -> str | None:
         if self._doi is None:
             self._doi = doi.pdf_to_doi(self.uri, maxlines=2000)
             self._doi = "" if self._doi is None else self._doi
@@ -423,7 +422,7 @@ class Importer(papis.importer.Importer):
         super().__init__(name="doi", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         try:
             doi.validate_doi(uri)
         except ValueError:
@@ -432,8 +431,7 @@ class Importer(papis.importer.Importer):
             return Importer(uri=uri)
 
     @classmethod
-    def match_data(
-            cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
+    def match_data(cls, data: dict[str, Any]) -> papis.importer.Importer | None:
         if "doi" in data:
             return Importer(uri=data["doi"])
 
@@ -471,13 +469,12 @@ class FromCrossrefImporter(papis.importer.Importer):
         super().__init__(uri=uri, name="crossref")
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         # There is no way to check if it matches
         return None
 
     @classmethod
-    def match_data(
-            cls, data: Dict[str, Any]) -> Optional[papis.importer.Importer]:
+    def match_data(cls, data: dict[str, Any]) -> papis.importer.Importer | None:
         if "title" in data:
             return FromCrossrefImporter(uri=data["title"])
 
@@ -507,15 +504,15 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, uri: str) -> None:
         super().__init__(uri=uri, name="doi")
-        self._doi: Optional[str] = None
+        self._doi: str | None = None
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, uri: str) -> papis.downloaders.Downloader | None:
         down = Downloader(uri)
         return down if down.doi else None
 
     @property
-    def doi(self) -> Optional[str]:
+    def doi(self) -> str | None:
         if self._doi is None:
             self._doi = doi.find_doi_in_text(self.uri)
             self._doi = "" if self._doi is None else self._doi

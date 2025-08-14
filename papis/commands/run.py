@@ -51,8 +51,6 @@ Command-line interface
     :prog: papis run
 """
 
-from typing import List, Optional, Tuple
-
 import click
 
 import papis.cli
@@ -66,7 +64,7 @@ import papis.utils
 logger = papis.logging.get_logger(__name__)
 
 
-def run(folder: str, command: Optional[List[str]] = None) -> None:
+def run(folder: str, command: list[str] | None = None) -> None:
     if command is None:
         return
 
@@ -91,12 +89,12 @@ def run(folder: str, command: Optional[List[str]] = None) -> None:
     metavar="<PREFIX>",
     help="Prefix shell commands by a prefix command.")
 @click.argument("run_command", metavar="<COMMANDS>", nargs=-1)
-def cli(run_command: List[str],
+def cli(run_command: list[str],
         pick: str,
         sort_field: str,
         sort_reverse: bool,
-        prefix: Optional[str],
-        doc_folder: Tuple[str, ...],
+        prefix: str | None,
+        doc_folder: tuple[str, ...],
         _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder."""
 

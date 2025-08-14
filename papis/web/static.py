@@ -1,10 +1,9 @@
 import os
-from typing import List
 
 import papis.config
 
 
-def static_paths() -> List[str]:
+def static_paths() -> list[str]:
     """
     This is the static directories where the Papis web-application
     can access files.

@@ -34,7 +34,6 @@ Command-line interface
 """
 
 import sys
-from typing import List
 
 import click
 
@@ -48,7 +47,7 @@ def run(_file: str) -> None:
 @click.help_option("--help", "-h")
 @click.argument("python_file", type=click.Path(exists=True))
 @click.argument("args", nargs=-1)
-def cli(python_file: str, args: List[str]) -> None:
+def cli(python_file: str, args: list[str]) -> None:
     """Execute a python file in the environment of papis' executable"""
     sys.argv = [python_file, *args]
     run(python_file)

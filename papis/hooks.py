@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import papis.logging
 import papis.plugin
@@ -13,7 +14,7 @@ HOOKS_EXTENSION_FORMAT = "papis.hook.{name}"
 
 #: A dictionary of hooks added with :func:`add`. These can be added in ``config.py``
 #: or from other places that do not use the entrypoint framework.
-CUSTOM_LOCAL_HOOKS: Dict[str, List[Callable[..., None]]] = {}
+CUSTOM_LOCAL_HOOKS: dict[str, list[Callable[..., None]]] = {}
 
 
 def get(name: str) -> "ExtensionManager":

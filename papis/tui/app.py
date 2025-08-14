@@ -1,17 +1,7 @@
 import threading
+from collections.abc import Callable, Sequence
 from functools import partial
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    TypedDict,
-    Union,
-)
+from typing import Any, Generic, TypedDict
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -43,10 +33,10 @@ class KeyInfo(TypedDict):
     help: str
 
 
-_KEYS_INFO: Optional[Dict[str, KeyInfo]] = None
+_KEYS_INFO: dict[str, KeyInfo] | None = None
 
 
-def get_keys_info() -> Dict[str, KeyInfo]:
+def get_keys_info() -> dict[str, KeyInfo]:
     global _KEYS_INFO
     if _KEYS_INFO is None:
         _KEYS_INFO = {
@@ -210,24 +200,24 @@ def create_keybindings(app: "Picker[Any]") -> KeyBindings:
     return kb
 
 
-def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
+def get_commands(app: "Picker[Any]") -> tuple[list[Command], KeyBindings]:
     kb = KeyBindings()
     keys_info = get_keys_info()
 
     @kb.add("c-q")
     @kb.add("c-c")
-    def exit(event: Union[Command, KeyPressEvent]) -> None:
+    def exit(event: Command | KeyPressEvent) -> None:
         app.deselect()
         app.exit()
 
     @kb.add("enter",                                    # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def select(event: Union[Command, KeyPressEvent]) -> None:
+    def select(event: Command | KeyPressEvent) -> None:
         app.exit()
 
     @kb.add(keys_info["open_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def open(event: Union[Command, KeyPressEvent]) -> None:
+    def open(event: Command | KeyPressEvent) -> None:
         from papis.commands.open import run
 
         docs = app.get_selection()
@@ -244,7 +234,7 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
 
     @kb.add(keys_info["browse_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def browse(event: Union[Command, KeyPressEvent]) -> None:
+    def browse(event: Command | KeyPressEvent) -> None:
         from papis.commands.browse import run
         docs = app.get_selection()
         for doc in docs:
@@ -252,7 +242,7 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
 
     @kb.add(keys_info["edit_document_key"]["key"],      # type: ignore[misc]
             filter=has_focus(app.options_list.search_buffer))
-    def edit(event: Union[Command, KeyPressEvent]) -> None:
+    def edit(event: Command | KeyPressEvent) -> None:
         from papis.commands.edit import run
         docs = app.get_selection()
         for doc in docs:
@@ -269,25 +259,25 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
 
     @kb.add(keys_info["show_help_key"]["key"],          # type: ignore[misc]
             filter=~has_focus(app.help_window))
-    def help(event: Union[Command, KeyPressEvent]) -> None:
+    def help(event: Command | KeyPressEvent) -> None:
         app.layout.focus(app.help_window.window)
         app.message_toolbar.text = "Press q to quit"
 
     @kb.add(keys_info["show_info_key"]["key"],          # type: ignore[misc]
             filter=~has_focus(app.info_window))
-    def info(event: Union[Command, KeyPressEvent]) -> None:
+    def info(event: Command | KeyPressEvent) -> None:
         app.update_info_window()
         app.layout.focus(app.info_window.window)
 
     @kb.add("c-g", "g")
     @kb.add(keys_info["go_top_key"]["key"])
-    def go_top(event: Union[Command, KeyPressEvent]) -> None:
+    def go_top(event: Command | KeyPressEvent) -> None:
         app.options_list.go_top()
         app.refresh()
 
     @kb.add("c-g", "G")
     @kb.add(keys_info["go_bottom_key"]["key"])
-    def go_end(event: Union[Command, KeyPressEvent]) -> None:
+    def go_end(event: Command | KeyPressEvent) -> None:
         app.options_list.go_bottom()
         app.refresh()
 

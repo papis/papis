@@ -1,7 +1,8 @@
 import re
 import subprocess as sp
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, List, Optional, Pattern, Sequence, Tuple, TypeVar
+from collections.abc import Callable, Sequence
+from typing import Generic, TypeVar
 
 import papis.config
 import papis.format
@@ -14,7 +15,7 @@ T = TypeVar("T")
 MIN_FZF_VERSION = (0, 38, 0)
 
 
-def fzf_version(exe: str = "fzf") -> Tuple[int, int, int]:
+def fzf_version(exe: str = "fzf") -> tuple[int, int, int]:
     result = sp.run([exe, "--version"], capture_output=True, check=True)
     version, _ = result.stdout.decode("utf-8").split()
 
@@ -31,19 +32,19 @@ def fzf_version(exe: str = "fzf") -> Tuple[int, int, int]:
 
 
 class Command(ABC, Generic[T]):
-    regex: Optional[Pattern[str]] = None
+    regex: re.Pattern[str] | None = None
     command: str = ""
     key: str = ""
 
     def binding(self) -> str:
         return f"{self.key}:{self.command}"
 
-    def indices(self, line: str) -> Optional[List[int]]:
+    def indices(self, line: str) -> list[int] | None:
         m = self.regex.match(line) if self.regex else None
         return [int(i) for i in m.group(1).split()] if m else None
 
     @abstractmethod
-    def run(self, docs: List[T]) -> List[T]:
+    def run(self, docs: list[T]) -> list[T]:
         pass
 
 
@@ -52,7 +53,7 @@ class Browse(Command[T]):
     command = "become(echo browse {+n})"
     key = "ctrl-b"
 
-    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
+    def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.browse import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -65,7 +66,7 @@ class Choose(Command[T]):
     command = "become(echo choose {+n})"
     key = "enter"
 
-    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
+    def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         return docs
 
 
@@ -74,7 +75,7 @@ class Edit(Command[T]):
     command = "become(echo edit {+n})"
     key = "ctrl-e"
 
-    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
+    def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.edit import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -87,7 +88,7 @@ class EditNote(Command[T]):
     command = "become(echo edit_notes {+n})"
     key = "ctrl-q"
 
-    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
+    def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.edit import edit_notes
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -100,7 +101,7 @@ class Open(Command[T]):
     command = "become(echo open {+n})"
     key = "ctrl-o"
 
-    def run(self, docs: List[T]) -> List[T]:  # noqa: PLR6301
+    def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.open import run
         for doc in docs:
             if isinstance(doc, papis.document.Document):
@@ -113,7 +114,7 @@ class Picker(papis.pick.Picker[T]):
                  items: Sequence[T],
                  header_filter: Callable[[T], str] = str,
                  match_filter: Callable[[T], str] = str,
-                 default_index: int = 0) -> List[T]:
+                 default_index: int = 0) -> list[T]:
         if len(items) == 0:
             return []
 
@@ -127,7 +128,7 @@ class Picker(papis.pick.Picker[T]):
                 f"Found 'fzf' version {version} but "
                 f"version >={MIN_FZF_VERSION} is required")
 
-        commands: List[Command[T]] = [Browse(), Choose(), Open(), Edit(), EditNote()]
+        commands: list[Command[T]] = [Browse(), Choose(), Open(), Edit(), EditNote()]
 
         bindings = (
             [c.binding() for c in commands]
@@ -149,7 +150,7 @@ class Picker(papis.pick.Picker[T]):
                 return header_filter(d)
 
         headers = [_header_filter(o) for o in items]
-        docs: List[T] = []
+        docs: list[T] = []
 
         with sp.Popen(command, stdin=sp.PIPE, stdout=sp.PIPE) as p:
             if p.stdin is not None:

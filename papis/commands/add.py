@@ -103,7 +103,7 @@ Command-line interface
 """
 
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from warnings import warn
 
 import click
@@ -137,7 +137,7 @@ class FromFolderImporter(papis.importer.Importer):
         super().__init__(name="folder", **kwargs)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
 
     def fetch(self) -> None:
@@ -161,7 +161,7 @@ class FromLibImporter(papis.importer.Importer):
         super().__init__(name="lib", **kwargs)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         try:
             papis.config.get_lib_from_name(uri)
         except Exception:
@@ -183,7 +183,7 @@ def get_file_name(
         doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
-        file_name_format: Optional[papis.strings.AnyString] = None,
+        file_name_format: papis.strings.AnyString | None = None,
         base_name_limit: int = 150) -> str:
     warn("'get_file_name' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_file_name' instead.",
@@ -194,7 +194,7 @@ def get_file_name(
                                   base_name_limit=base_name_limit)
 
 
-def get_hash_folder(data: Dict[str, Any], document_paths: List[str]) -> str:
+def get_hash_folder(data: dict[str, Any], document_paths: list[str]) -> str:
     warn("'get_hash_folder' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_hash_folder' instead.",
          DeprecationWarning, stacklevel=2)
@@ -212,12 +212,12 @@ def ensure_new_folder(path: str) -> str:
     return _make_unique_folder(path)
 
 
-def run(paths: List[str],
-        data: Optional[Dict[str, Any]] = None,
-        folder_name: Optional[papis.strings.AnyString] = None,
-        file_name: Optional[papis.strings.AnyString] = None,
-        subfolder: Optional[str] = None,
-        base_path: Optional[str] = None,
+def run(paths: list[str],
+        data: dict[str, Any] | None = None,
+        folder_name: papis.strings.AnyString | None = None,
+        file_name: papis.strings.AnyString | None = None,
+        subfolder: str | None = None,
+        base_path: str | None = None,
         batch: bool = False,
         confirm: bool = False,
         open_file: bool = False,
@@ -225,7 +225,7 @@ def run(paths: List[str],
         git: bool = False,
         link: bool = False,
         move: bool = False,
-        citations: Optional[papis.citations.Citations] = None,
+        citations: papis.citations.Citations | None = None,
         auto_doctor: bool = False) -> None:
     """
     :param paths: Paths to the documents to be added.
@@ -482,13 +482,13 @@ def run(paths: List[str],
     "--fetch-citations/--no-fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier).",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
-def cli(files: List[str],
-        set_list: List[Tuple[str, str]],
+def cli(files: list[str],
+        set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
         folder_name: papis.strings.AnyString,
-        file_name: Optional[papis.strings.AnyString],
-        from_importer: List[Tuple[str, str]],
+        file_name: papis.strings.AnyString | None,
+        from_importer: list[tuple[str, str]],
         batch: bool,
         confirm: bool,
         open_file: bool,

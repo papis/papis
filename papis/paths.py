@@ -1,7 +1,8 @@
 import os
 import pathlib
 import sys
-from typing import Iterable, Iterator, List, Literal, Optional, Union
+from collections.abc import Iterable, Iterator
+from typing import Literal
 from warnings import warn
 
 import papis.config
@@ -12,7 +13,7 @@ from papis.strings import AnyString, FormatPattern
 logger = papis.logging.get_logger(__name__)
 
 #: A union type for allowable paths.
-PathLike = Union[pathlib.Path, str]
+PathLike = pathlib.Path | str
 
 # NOTE: private error codes for Windows
 WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
@@ -21,7 +22,7 @@ WIN_ERROR_PRIVILEGE_NOT_HELD = 1314
 _SLUGIFY_HYPHEN_PLACEHOLDER = "slugifyhyphenplaceholder"
 
 
-def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]:
+def unique_suffixes(chars: str | None = None, skip: int = 0) -> Iterator[str]:
     """Creates an infinite list of suffixes based on *chars*.
 
     This creates a generator object capable of iterating over lists to
@@ -56,9 +57,9 @@ def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]
 
 
 def normalize_path(path: str, *,
-                   lowercase: Optional[bool] = None,
-                   extra_chars: Optional[str] = None,
-                   separator: Optional[str] = None) -> str:
+                   lowercase: bool | None = None,
+                   extra_chars: str | None = None,
+                   separator: str | None = None) -> str:
     """Clean a path to only contain visible ASCII characters.
 
     This function will create ASCII strings that can be safely used as file names
@@ -120,14 +121,7 @@ def is_relative_to(path: PathLike, other: PathLike) -> bool:
 
     :returns: *True* if *path* is relative to the *other* path.
     """
-    if sys.version_info >= (3, 9):
-        return pathlib.Path(path).is_relative_to(other)
-
-    # NOTE: this should give the same result as above for older versions
-    try:
-        return not os.path.relpath(path, start=other).startswith("..")
-    except ValueError:
-        return False
+    return pathlib.Path(path).is_relative_to(other)
 
 
 def symlink(src: PathLike, dst: PathLike) -> None:
@@ -156,7 +150,7 @@ def get_document_file_name(
         doc: DocumentLike,
         orig_path: PathLike,
         suffix: str = "", *,
-        file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
+        file_name_format: AnyString | Literal[False] | None = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
@@ -218,9 +212,9 @@ def get_document_file_name(
 
 def get_document_hash_folder(
         doc: DocumentLike,
-        paths: Optional[Iterable[str]] = None, *,
+        paths: Iterable[str] | None = None, *,
         file_read_limit: int = 2000,
-        seed: Optional[str] = None) -> str:
+        seed: str | None = None) -> str:
     warn("'get_document_hash_folder' is deprecated and will be removed. "
          "Use 'papis.paths.get_document_folder' instead.",
          DeprecationWarning, stacklevel=2)
@@ -232,7 +226,7 @@ def get_document_hash_folder(
 def get_document_folder(
         doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: Optional[AnyString] = None) -> str:
+        folder_name_format: AnyString | None = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
@@ -270,7 +264,7 @@ def get_document_folder(
         # could contain a backslash and ruin the hierarchy -- instead we clean it
         # and remove any such characters from messing up the folder name
 
-        components: List[str] = []
+        components: list[str] = []
         while tmp_path != dirname and is_relative_to(tmp_path, dirname):
             tmp_component = os.path.basename(tmp_path)
 
@@ -339,7 +333,7 @@ def _make_unique_file(filename: PathLike) -> str:
 def get_document_unique_folder(
         doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: Optional[AnyString] = None) -> str:
+        folder_name_format: AnyString | None = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
 
@@ -357,7 +351,7 @@ def is_remote_file(uri: str) -> bool:
     return uri.startswith("http://") or uri.startswith("https://")
 
 
-def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str]]:
+def download_remote_files(in_document_paths: Iterable[str]) -> list[str | None]:
     """
     Download all remote filepaths that are provided in the document list.
 
@@ -369,7 +363,7 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
 
     from papis.downloaders import download_document
 
-    new_files: List[Optional[str]] = []
+    new_files: list[str | None] = []
     for in_file_path in in_document_paths:
         if is_remote_file(in_file_path):
             local_in_file_path = download_document(in_file_path)
@@ -383,9 +377,9 @@ def download_remote_files(in_document_paths: Iterable[str]) -> List[Optional[str
 def rename_document_files(
         doc: DocumentLike,
         in_document_paths: Iterable[str], *,
-        allow_remote: Optional[bool] = None,
-        file_name_format: Optional[Union[AnyString, Literal[False]]] = None,
-        ) -> List[str]:
+        allow_remote: bool | None = None,
+        file_name_format: AnyString | Literal[False] | None = None,
+        ) -> list[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
 

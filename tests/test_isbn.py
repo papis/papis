@@ -1,12 +1,13 @@
 import os
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 
 from papis.testing import TemporaryConfiguration
 
 
-def load_json(filename: str, data_getter: Optional[Callable[[], Any]] = None) -> Any:
+def load_json(filename: str, data_getter: Callable[[], Any] | None = None) -> Any:
     import json
     path = os.path.join(
         os.path.dirname(__file__), "resources", "isbn", filename)

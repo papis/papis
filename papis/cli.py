@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 import click
 from click.shell_completion import CompletionItem
@@ -17,8 +18,8 @@ class FormatPatternParamType(click.ParamType):
 
     def convert(self,  # noqa: PLR6301
                 value: Any,
-                param: Optional[click.Parameter],
-                ctx: Optional[click.Context]) -> Any:
+                param: click.Parameter | None,
+                ctx: click.Context | None) -> Any:
         """See :meth:`click.ParamType.convert`."""
         from papis.strings import FormatPattern
 
@@ -39,7 +40,7 @@ class LibraryParamType(click.ParamType):
     def shell_complete(self,  # noqa: PLR6301
                        ctx: click.Context,
                        param: click.Parameter,
-                       incomplete: str) -> List[CompletionItem]:
+                       incomplete: str) -> list[CompletionItem]:
 
         # Named libraries from Papis config
         completions = [
@@ -142,8 +143,8 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 def handle_doc_folder_or_query(
         query: str,
-        doc_folder: Optional[Union[str, Tuple[str, ...]]],
-        ) -> List[papis.document.Document]:
+        doc_folder: str | tuple[str, ...] | None,
+        ) -> list[papis.document.Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -164,9 +165,9 @@ def handle_doc_folder_or_query(
 
 def handle_doc_folder_query_sort(
         query: str,
-        doc_folder: Optional[Union[str, Tuple[str, ...]]],
-        sort_field: Optional[str],
-        sort_reverse: bool) -> List[papis.document.Document]:
+        doc_folder: str | tuple[str, ...] | None,
+        sort_field: str | None,
+        sort_reverse: bool) -> list[papis.document.Document]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_or_query`, but also handles the
@@ -187,10 +188,10 @@ def handle_doc_folder_query_sort(
 
 def handle_doc_folder_query_all_sort(
         query: str,
-        doc_folder: Optional[Union[str, Tuple[str, ...]]],
-        sort_field: Optional[str],
+        doc_folder: str | tuple[str, ...] | None,
+        sort_field: str | None,
         sort_reverse: bool,
-        _all: bool) -> List[papis.document.Document]:
+        _all: bool) -> list[papis.document.Document]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_query_sort`, but also handles the

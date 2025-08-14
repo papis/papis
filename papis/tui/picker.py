@@ -1,5 +1,6 @@
 import sys
-from typing import Callable, List, Sequence, TypeVar
+from collections.abc import Callable, Sequence
+from typing import TypeVar
 
 import papis.logging
 import papis.pick
@@ -16,7 +17,7 @@ class Picker(papis.pick.Picker[T]):
             header_filter: Callable[[T], str] = str,
             match_filter: Callable[[T], str] = str,
             default_index: int = 0
-            ) -> List[T]:
+            ) -> list[T]:
 
         if len(options) == 0:
             return []
@@ -24,7 +25,7 @@ class Picker(papis.pick.Picker[T]):
         if len(options) == 1:
             return [options[0]]
 
-        def run() -> List[T]:
+        def run() -> list[T]:
             picker = tui.Picker(
                 options,
                 default_index,

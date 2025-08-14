@@ -57,7 +57,7 @@ Command-line interface
 
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import click
 
@@ -110,13 +110,13 @@ logger = papis.logging.get_logger(__name__)
 def cli(
     git: bool,
     drop: bool,
-    to_add: List[str],
-    to_remove: List[str],
-    to_rename: List[Tuple[str, str]],
-    sort_field: Optional[str],
+    to_add: list[str],
+    to_remove: list[str],
+    to_rename: list[tuple[str, str]],
+    sort_field: str | None,
     sort_reverse: bool,
     query: str,
-    doc_folder: Tuple[str, ...],
+    doc_folder: tuple[str, ...],
     _all: bool,
 ) -> None:
     """
@@ -134,10 +134,10 @@ def cli(
 
     from papis.commands.update import run, run_append, run_drop, run_remove, run_rename
 
-    key_types: Dict[str, type] = {"tags": list}
+    key_types: dict[str, type] = {"tags": list}
 
     success = True
-    processed_documents: List[Any] = []
+    processed_documents: list[Any] = []
     for document in documents:
         tags = document.get("tags", [])
         if not isinstance(tags, list):

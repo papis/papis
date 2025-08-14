@@ -58,7 +58,7 @@ Command-line interface
 """
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import click
 
@@ -81,8 +81,8 @@ logger = papis.logging.get_logger(__name__)
 
 def run(keep: papis.document.Document,
         erase: papis.document.Document,
-        data: Dict[str, Any],
-        files: List[str],
+        data: dict[str, Any],
+        files: list[str],
         keep_both: bool,
         git: bool = False) -> None:
 
@@ -124,8 +124,8 @@ def run(keep: papis.document.Document,
               default=None)
 @papis.cli.git_option(help="Merge in git.")
 def cli(query: str,
-        sort_field: Optional[str],
-        out: Optional[str],
+        sort_field: str | None,
+        out: str | None,
         second: bool,
         git: bool,
         keep_both: bool,
@@ -168,7 +168,7 @@ def cli(query: str,
                                                    data_b,
                                                    papis.document.describe(b))
 
-    files: List[str] = []
+    files: list[str] = []
     for doc in documents:
         indices = papis.tui.utils.select_range(
             doc.get_files(),

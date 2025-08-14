@@ -91,7 +91,7 @@ Command-line interface
 """
 
 import shlex
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 import click
 
@@ -107,7 +107,7 @@ logger = papis.logging.get_logger(__name__)
 EXPLORER_EXTENSION_NAME = "papis.explorer"
 
 
-def get_available_explorers() -> List[click.Command]:
+def get_available_explorers() -> list[click.Command]:
     """
     Gets all exporters registered.
     """
@@ -122,7 +122,7 @@ def get_explorer_mgr() -> "ExtensionManager":
     return get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
-def get_explorer_by_name(name: str) -> Optional[click.Command]:
+def get_explorer_by_name(name: str) -> click.Command | None:
     try:
         mgr = get_explorer_mgr()
         plugin: click.Command = mgr[name].plugin
@@ -139,8 +139,8 @@ def get_explorer_by_name(name: str) -> Optional[click.Command]:
 @click.option("--library", "-l", default=None, help="Papis library to look in.")
 def lib(ctx: click.Context,
         query: str,
-        doc_folder: Tuple[str, ...],
-        library: Optional[str]) -> None:
+        doc_folder: tuple[str, ...],
+        library: str | None) -> None:
     """
     Query for documents in your library.
 
@@ -174,7 +174,7 @@ def lib(ctx: click.Context,
               type=int,
               default=None,
               help="Automatically pick the n-th document.")
-def pick(ctx: click.Context, number: Optional[int]) -> None:
+def pick(ctx: click.Context, number: int | None) -> None:
     """
     Pick a document from the retrieved documents.
 
@@ -209,7 +209,7 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 @papis.cli.all_option()
 def citations(ctx: click.Context,
               query: str,
-              doc_folder: Tuple[str, ...],
+              doc_folder: tuple[str, ...],
               cited_by: bool,
               _all: bool) -> None:
     """

@@ -43,7 +43,6 @@ Command Options
 
 import json
 import os
-from typing import Dict, Optional
 
 import papis.api
 import papis.document
@@ -95,7 +94,7 @@ ABBREV_IGNORE_ACRONYMS = frozenset([
 ]) | frozenset(papis.config.getlist("ignore-acronyms", section="abbrev"))
 
 
-def ltwa_abbreviate(full_journal_name: str, d: Optional[Dict[str, str]] = None) -> str:
+def ltwa_abbreviate(full_journal_name: str, d: dict[str, str] | None = None) -> str:
     """
     Abbreviates a journal name using International Standard Serial
     Number (ISSN) guidelines.
