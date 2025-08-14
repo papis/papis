@@ -94,12 +94,13 @@ def normalize_path(path: str, *,
     # see https://github.com/un33k/python-slugify/issues/107
     if "-" in extra_chars:
         path = path.replace("\u2010", _SLUGIFY_HYPHEN_PLACEHOLDER).\
-                    replace("-", _SLUGIFY_HYPHEN_PLACEHOLDER)
+               replace("-", _SLUGIFY_HYPHEN_PLACEHOLDER)
 
         def replace_hyphen(s: str) -> str:
             return s.replace(_SLUGIFY_HYPHEN_PLACEHOLDER, "-")
     else:
-        def replace_hyphen(s: str) -> str: return s
+        def replace_hyphen(s: str) -> str:
+            return s
 
     import slugify
 
