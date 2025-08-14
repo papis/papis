@@ -306,7 +306,7 @@ def get_commands(app: "Picker[Any]") -> Tuple[List[Command], KeyBindings]:
     ], kb)
 
 
-class Picker(Application, Generic[Option]):  # type: ignore
+class Picker(Application, Generic[Option]):  # type: ignore[type-arg]
     """The :class:`Picker <Picker>` object
 
     :param options: a list of options to choose from
