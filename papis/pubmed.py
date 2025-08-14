@@ -1,10 +1,10 @@
 from typing import Any, Dict, Optional
 
 import papis
-import papis.utils
-import papis.importer
 import papis.document
 import papis.downloaders.base
+import papis.importer
+import papis.utils
 
 # https://api.ncbi.nlm.nih.gov/lit/ctxp
 PUBMED_DATABASE = "pubmed"

@@ -1,11 +1,11 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Any, Callable, TypeVar, Generic, Sequence, Type, Optional, List
+from typing import Any, Callable, Generic, List, Optional, Sequence, Type, TypeVar
 
 import papis.config
 import papis.document
-import papis.plugin
 import papis.logging
+import papis.plugin
 
 logger = papis.logging.get_logger(__name__)
 

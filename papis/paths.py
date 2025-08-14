@@ -1,14 +1,13 @@
 import os
 import pathlib
 import sys
-from typing import Iterable, Iterator, Literal, List, Optional, Union
+from typing import Iterable, Iterator, List, Literal, Optional, Union
 from warnings import warn
 
 import papis.config
 import papis.logging
+from papis.document import DocumentLike, from_data
 from papis.strings import AnyString, FormatPattern
-from papis.document import DocumentLike
-from papis.document import from_data
 
 logger = papis.logging.get_logger(__name__)
 
@@ -44,7 +43,7 @@ def unique_suffixes(chars: Optional[str] = None, skip: int = 0) -> Iterator[str]
     """
 
     import string
-    from itertools import count, product, islice
+    from itertools import count, islice, product
 
     def ids() -> Iterator[str]:
         inputs = string.ascii_lowercase if chars is None else chars

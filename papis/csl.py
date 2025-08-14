@@ -1,6 +1,6 @@
 import os
 from contextlib import suppress
-from typing import Any, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Optional
 
 import papis.config
 import papis.logging
@@ -182,8 +182,13 @@ def export_document(doc: Document,
     source = BibliographySource(doc)
     source.add(to_csl(doc))
 
-    from citeproc import CitationStylesStyle
-    from citeproc import CitationStylesBibliography, Citation, CitationItem, formatter
+    from citeproc import (
+        Citation,
+        CitationItem,
+        CitationStylesBibliography,
+        CitationStylesStyle,
+        formatter,
+    )
 
     fmt = getattr(formatter, formatter_name, None)
     if fmt is None:

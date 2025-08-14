@@ -62,15 +62,15 @@ from typing import List, Optional, Tuple
 import click
 
 import papis
+import papis.api
+import papis.cli
+import papis.database
+import papis.document
+import papis.logging
+import papis.plugin
+import papis.strings
 import papis.tui.utils
 import papis.utils
-import papis.document
-import papis.cli
-import papis.api
-import papis.database
-import papis.strings
-import papis.plugin
-import papis.logging
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)

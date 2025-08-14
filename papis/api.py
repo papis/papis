@@ -7,10 +7,10 @@ create Papis scripts.
 
 from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar, Union
 
-import papis.utils
 import papis.config
 import papis.document
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

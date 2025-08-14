@@ -19,12 +19,12 @@ Sphinx configuration.
 
 import os
 import sys
-import docutils
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
+import docutils
+from docutils.parsers.rst import Directive
 from sphinx import application
 from sphinx_click.ext import ClickDirective
-from docutils.parsers.rst import Directive
 
 
 class CustomClickDirective(ClickDirective):     # type: ignore[misc]
@@ -94,9 +94,8 @@ class PapisConfig(Directive):
 
     def run(self) -> Any:
         # NOTE: these are imported to register additional config settings
-        import papis.commands.bibtex    # noqa: F401
-
-        from papis.config import get_general_settings_name, get_default_settings
+        import papis.commands.bibtex  # noqa: F401
+        from papis.config import get_default_settings, get_general_settings_name
 
         default_settings = get_default_settings()
         key = self.arguments[0]

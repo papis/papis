@@ -1,28 +1,27 @@
-import re
-import os
-import json
-import http.server
-import urllib.parse
-from typing import Any, List, Optional, Tuple, Callable, Dict
-
-import functools
 import collections
+import functools
+import http.server
+import json
+import os
+import re
 import tempfile
+import urllib.parse
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import click
 
 import papis.api
-import papis.cli
-import papis.config
-import papis.document
-import papis.commands.add
-import papis.commands.update
-import papis.commands.export
-import papis.commands.doctor
-import papis.crossref
-import papis.notes
 import papis.citations
+import papis.cli
+import papis.commands.add
+import papis.commands.doctor
+import papis.commands.export
+import papis.commands.update
+import papis.config
+import papis.crossref
+import papis.document
 import papis.logging
+import papis.notes
 
 logger = papis.logging.get_logger(__name__)
 
@@ -38,8 +37,8 @@ try:
     # little copy of FieldStorage when it's not available
     from cgi import FieldStorage  # type: ignore[import-not-found,unused-ignore]
 except ImportError:
-    from email.message import Message
     from dataclasses import dataclass, field
+    from email.message import Message
     from typing import IO, Iterator, Union
 
     @dataclass

@@ -1,12 +1,12 @@
 import os
-import pytest
 import shutil
 import sys
-
 from typing import List
 
+import pytest
+
 from papis.document import Document
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
@@ -239,8 +239,8 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
     with open(bibfile, "w", encoding="utf-8") as f:
         f.write(bibtex_string)
 
-    import papis.utils
     import papis.tui.utils
+    import papis.utils
 
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",

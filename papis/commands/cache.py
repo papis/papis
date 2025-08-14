@@ -53,10 +53,10 @@ from typing import Optional, Tuple
 
 import click
 
+import papis.cli
 import papis.commands
 import papis.document
 import papis.strings
-import papis.cli
 
 logger = papis.logging.get_logger(__name__)
 

@@ -2,10 +2,9 @@ import dominate.tags as t
 import dominate.util as tu
 
 import papis.document
-
-import papis.web.paths as wp
-import papis.web.html as wh
 import papis.web.ace
+import papis.web.html as wh
+import papis.web.paths as wp
 
 
 def widget(doc: papis.document.Document, libname: str) -> None:

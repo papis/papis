@@ -1,6 +1,6 @@
 import pytest
 
-from papis.testing import TemporaryLibrary, ResourceCache
+from papis.testing import ResourceCache, TemporaryLibrary
 
 
 @pytest.mark.resource_setup(cachedir="resources/zenodo")

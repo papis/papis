@@ -1,13 +1,12 @@
-from typing import Optional, Any, Callable, List, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import click
 from click.shell_completion import CompletionItem
 
 import papis.config
-import papis.pick
-import papis.document
 import papis.database
-
+import papis.document
+import papis.pick
 
 DecoratorCallable = Callable[..., Any]
 

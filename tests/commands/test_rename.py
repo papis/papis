@@ -5,7 +5,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 import papis.config
 import papis.database
-
 from papis.testing import TemporaryLibrary
 
 

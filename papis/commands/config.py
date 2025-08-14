@@ -76,8 +76,8 @@ import click
 import colorama
 
 import papis.cli
-import papis.config
 import papis.commands
+import papis.config
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)

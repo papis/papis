@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 from typing import Any, Dict
 
 from papis.strings import FormatPattern

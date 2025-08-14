@@ -1,12 +1,11 @@
-from typing import (
-    Dict, Any, List, Union, NamedTuple, Callable, Optional)
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
 from prompt_toolkit import Application, print_formatted_text
-from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
 from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
+from prompt_toolkit.layout.containers import HSplit, Window, WindowAlign
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
-from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 
 
 class Action(NamedTuple):

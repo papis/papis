@@ -1,8 +1,9 @@
-import os
 import json
+import os
 from typing import Any, Dict
 
 import pytest
+
 from papis.testing import TemporaryConfiguration
 
 RESOURCEDIR = os.path.join(

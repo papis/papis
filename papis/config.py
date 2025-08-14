@@ -1,6 +1,6 @@
-import os
 import configparser
-from typing import Dict, Any, List, Optional, Callable
+import os
+from typing import Any, Callable, Dict, List, Optional
 
 import click
 import platformdirs

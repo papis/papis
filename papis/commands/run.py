@@ -55,13 +55,13 @@ from typing import List, Optional, Tuple
 
 import click
 
-import papis.pick
 import papis.cli
-import papis.utils
 import papis.config
-import papis.document
 import papis.database
+import papis.document
 import papis.logging
+import papis.pick
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

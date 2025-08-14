@@ -29,7 +29,7 @@ Command-line interface
 """
 
 import os
-from typing import Optional, Tuple, List, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import click
 import click.core
@@ -37,10 +37,10 @@ import click.core
 import papis
 import papis.api
 import papis.cli
-import papis.config
-import papis.logging
 import papis.commands
+import papis.config
 import papis.database
+import papis.logging
 
 if TYPE_CHECKING:
     import cProfile
@@ -100,6 +100,7 @@ class ScriptLoaderGroup(click.Group):
 
         # If it gets here, it means that it is an external script
         import copy
+
         from papis.commands.external import external_cli
         cli = copy.copy(external_cli)
 

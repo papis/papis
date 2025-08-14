@@ -3,13 +3,13 @@ This module controls the notes for every papis document.
 """
 import os
 
-import papis.config
 import papis.api
-import papis.format
+import papis.config
 import papis.document
-import papis.utils
+import papis.format
 import papis.hooks
 import papis.logging
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

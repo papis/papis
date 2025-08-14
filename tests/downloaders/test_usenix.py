@@ -1,11 +1,11 @@
 import os
+
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 import papis.downloaders
 from papis.downloaders.usenix import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 USENIX_LINK_URLS = [
     ("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",

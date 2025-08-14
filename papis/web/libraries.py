@@ -4,10 +4,9 @@ Creates the libraries view.
 import dominate.tags as t
 
 import papis.api
-
 import papis.web.header
-import papis.web.navbar
 import papis.web.html as wh
+import papis.web.navbar
 
 
 def html(libname: str) -> t.html_tag:

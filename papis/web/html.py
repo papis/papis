@@ -2,7 +2,6 @@ from typing import Any, Callable
 
 import dominate.tags as t
 
-
 HtmlGiver = Callable[[], t.html_tag]
 
 

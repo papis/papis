@@ -1,20 +1,19 @@
-from typing import Any, List, Callable
+from typing import Any, Callable, List
 
 import dominate.tags as t
 import dominate.util as tu
 
 import papis.commands.doctor
-
-import papis.web.paths as wp
-import papis.web.html as wh
-import papis.web.docform
-import papis.web.header
-import papis.web.notes
-import papis.web.info
 import papis.web.citations
-import papis.web.pdfjs
 import papis.web.djvujs
+import papis.web.docform
 import papis.web.epubjs
+import papis.web.header
+import papis.web.html as wh
+import papis.web.info
+import papis.web.notes
+import papis.web.paths as wp
+import papis.web.pdfjs
 
 
 def _click_tab_selector_link_in_url() -> None:

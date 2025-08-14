@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.aps import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 APS_URLS = (
     "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.145901",

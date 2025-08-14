@@ -75,15 +75,15 @@ import click
 
 import papis
 import papis.api
-import papis.pick
-import papis.utils
-import papis.config
 import papis.cli
+import papis.config
 import papis.database
 import papis.document
 import papis.format
-import papis.strings
 import papis.logging
+import papis.pick
+import papis.strings
+import papis.utils
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)

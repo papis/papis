@@ -1,4 +1,5 @@
 import pytest
+
 from papis.testing import TemporaryConfiguration
 
 

@@ -66,14 +66,14 @@ from typing import Optional, Tuple
 import click
 
 import papis
-import papis.utils
-import papis.config
 import papis.cli
-import papis.pick
+import papis.config
 import papis.database
-import papis.strings
 import papis.document
 import papis.logging
+import papis.pick
+import papis.strings
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

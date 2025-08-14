@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from papis.testing import TemporaryLibrary
 
 
@@ -59,8 +60,8 @@ def test_database_missing(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_filter_documents() -> None:
-    from papis.document import from_data
     from papis.database.cache import filter_documents
+    from papis.document import from_data
 
     document = from_data({"author": "einstein"})
 

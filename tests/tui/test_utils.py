@@ -31,6 +31,7 @@ def test_confirm(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
     import prompt_toolkit
+
     import papis.tui.utils
 
     with monkeypatch.context() as m:

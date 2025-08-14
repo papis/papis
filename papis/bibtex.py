@@ -7,16 +7,15 @@ the `manual`_).
 """
 import os
 import string
-from typing import Optional, List, Dict, Any, Iterator
+from typing import Any, Dict, Iterator, List, Optional
 
 import click
 
 import papis.config
 import papis.document
-import papis.importer
 import papis.filetype
-import papis.document
 import papis.format
+import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)

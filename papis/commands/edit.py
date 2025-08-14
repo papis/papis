@@ -14,19 +14,19 @@ from typing import Optional, Tuple
 import click
 
 import papis
-import papis.hooks
 import papis.api
-import papis.pick
-import papis.document
-import papis.utils
+import papis.cli
 import papis.config
 import papis.database
-import papis.cli
-import papis.strings
-import papis.git
+import papis.document
 import papis.format
-import papis.notes
+import papis.git
+import papis.hooks
 import papis.logging
+import papis.notes
+import papis.pick
+import papis.strings
+import papis.utils
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)

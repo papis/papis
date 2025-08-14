@@ -1,29 +1,36 @@
 import threading
 from functools import partial
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypedDict,
+    Union,
+)
 
 from prompt_toolkit.application import Application
-from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.layout.processors import BeforeInput
+from prompt_toolkit.filters import Condition, has_focus
+from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent, merge_key_bindings
-from prompt_toolkit.filters import has_focus, Condition
-from prompt_toolkit.styles import Style
-from prompt_toolkit.layout.containers import (
-    HSplit, Window
-)
+from prompt_toolkit.layout.containers import HSplit, Window
 from prompt_toolkit.layout.controls import (
     BufferControl,
 )
 from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.layout.processors import BeforeInput
+from prompt_toolkit.styles import Style
 
 from papis import config
-from .widgets.command_line_prompt import Command, CommandLinePrompt
-from .widgets import InfoWindow, HelpWindow, MessageToolbar
-from .widgets.list import Option, OptionsList
 
-from typing import (
-    Optional, Dict, Any, List, Callable, Tuple, Generic,
-    Sequence, TypedDict, Union)
+from .widgets import HelpWindow, InfoWindow, MessageToolbar
+from .widgets.command_line_prompt import Command, CommandLinePrompt
+from .widgets.list import Option, OptionsList
 
 __all__ = [
     "Option",

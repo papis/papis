@@ -2,6 +2,7 @@ import os
 from typing import Any, Callable, Optional
 
 import pytest
+
 from papis.testing import TemporaryConfiguration
 
 

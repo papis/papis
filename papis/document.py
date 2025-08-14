@@ -1,17 +1,25 @@
 """Module defining the main document type."""
 
+import enum
 import os
 import re
-import enum
 from typing import (
-    Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple,
-    TypedDict, Union,
-    )
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypedDict,
+    Union,
+)
 
 import papis
 import papis.config
-import papis.strings
 import papis.logging
+import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -512,7 +520,8 @@ def dump(document: Document) -> str:
     'title: Hello World'
     """
     import yaml
-    from papis.yaml import Dumper   # type: ignore[attr-defined]
+
+    from papis.yaml import Dumper  # type: ignore[attr-defined]
 
     data = dict(document)
 

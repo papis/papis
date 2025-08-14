@@ -1,7 +1,7 @@
-from typing import List, Dict, Any, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, List
 
-import papis.plugin
 import papis.logging
+import papis.plugin
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager

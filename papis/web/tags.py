@@ -1,11 +1,11 @@
 import re
-from typing import List, Union, Dict
+from typing import Dict, List, Union
 
 import dominate.tags as t
 
 import papis.web.header
-import papis.web.navbar
 import papis.web.html as wh
+import papis.web.navbar
 
 Tags = Union[str, List[str]]
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")

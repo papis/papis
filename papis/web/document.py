@@ -5,9 +5,9 @@ from typing import List
 import dominate.tags as t
 
 import papis.document
-import papis.web.tags
 import papis.web.html as wh
 import papis.web.paths as wp
+import papis.web.tags
 
 
 def links(doc: papis.document.Document, small: bool = True) -> None:

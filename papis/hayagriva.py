@@ -216,6 +216,7 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
 def exporter(documents: List[papis.document.Document]) -> str:
     """Convert document to the Hayagriva format used by Typst"""
     import yaml
+
     from papis.bibtex import create_reference
 
     result = yaml.dump({

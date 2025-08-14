@@ -1,8 +1,8 @@
-from typing import Optional, List, Dict, Any, Callable, Type, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, TypeVar
 
 import papis
-import papis.plugin
 import papis.logging
+import papis.plugin
 
 if TYPE_CHECKING:
     import stevedore.extension

@@ -2,9 +2,8 @@
 """
 from typing import Sequence
 
-import papis.utils
 import papis.logging
-
+import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

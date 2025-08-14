@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.tandfonline import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 TANDFONLINE_URLS = (
     "https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745",

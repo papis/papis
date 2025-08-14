@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.iopscience import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 IOPSCIENCE_URLS = (
     "https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002",

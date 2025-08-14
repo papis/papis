@@ -4,12 +4,12 @@ import tempfile
 from types import TracebackType
 from typing import Any, ClassVar, Dict, Iterator, Optional, Sequence, Type
 
-import pytest
 import click
 import click.testing
-from _pytest.fixtures import SubRequest
+import pytest
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
+from _pytest.fixtures import SubRequest
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:
@@ -151,8 +151,8 @@ def populate_library(libdir: str) -> None:
 
     :arg libdir: an existing empty library directory.
     """
-    from papis.id import ID_KEY_NAME, compute_an_id
     from papis.document import Document
+    from papis.id import ID_KEY_NAME, compute_an_id
 
     for i, data in enumerate(PAPIS_TEST_DOCUMENTS):
         doc_data = data.copy()
@@ -509,7 +509,9 @@ class ResourceCache:
         _, ext = os.path.splitext(filename)
 
         import json
+
         import yaml
+
         import papis.yaml
 
         force = force or not os.path.exists(filename)

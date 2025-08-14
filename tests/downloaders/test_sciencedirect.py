@@ -1,10 +1,10 @@
 import os
+
 import pytest
 
 import papis.downloaders
 from papis.downloaders.sciencedirect import Downloader
-
-from papis.testing import TemporaryConfiguration, ResourceCache
+from papis.testing import ResourceCache, TemporaryConfiguration
 
 SCIENCE_DIRECT_URLS = (
     "https://www.sciencedirect.com/science/article/abs/pii/S0009261497040141",

@@ -3,12 +3,11 @@ import os
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.notes
 import papis.document
-
-import papis.web.paths as wp
-import papis.web.html as wh
+import papis.notes
 import papis.web.ace
+import papis.web.html as wh
+import papis.web.paths as wp
 
 
 def widget(libname: str, doc: papis.document.Document) -> None:

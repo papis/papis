@@ -6,6 +6,7 @@ from papis.testing import TemporaryConfiguration, TemporaryLibrary
 
 def test_unique_suffixes() -> None:
     import string
+
     from papis.paths import unique_suffixes
 
     expected = [
@@ -48,7 +49,6 @@ def test_normalize_path(tmp_config: TemporaryConfiguration) -> None:
 
 def test_normalize_path_config(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
-
     from papis.paths import normalize_path
 
     papis.config.set("doc-paths-lowercase", "False")
@@ -150,8 +150,8 @@ def test_get_document_file_name_format(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_get_document_folder(tmp_library: TemporaryLibrary) -> None:
-    from papis.document import from_data
     import papis.database
+    from papis.document import from_data
 
     db = papis.database.get()
     doc = from_data({

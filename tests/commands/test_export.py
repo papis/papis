@@ -2,8 +2,7 @@ import os
 import tempfile
 
 import papis.database
-
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def test_export_run(tmp_library: TemporaryLibrary) -> None:
@@ -115,8 +114,7 @@ def test_export_yaml_cli(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
-    from papis.commands.export import run
-    from papis.commands.export import cli
+    from papis.commands.export import cli, run
 
     db = papis.database.get()
 

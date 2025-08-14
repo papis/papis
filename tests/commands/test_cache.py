@@ -1,10 +1,9 @@
 import os
 import time
 
-from papis.commands.cache import cli
 import papis.database
-
-from papis.testing import TemporaryLibrary, PapisRunner
+from papis.commands.cache import cli
+from papis.testing import PapisRunner, TemporaryLibrary
 
 
 def test_clear(tmp_library: TemporaryLibrary) -> None:

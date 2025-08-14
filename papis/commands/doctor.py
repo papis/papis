@@ -122,20 +122,20 @@ Command-line interface
     :prog: papis doctor
 """
 
+import collections
 import os
 import re
-import collections
-from typing import Any, Optional, List, NamedTuple, Callable, Dict, Set, Tuple, Match
+from typing import Any, Callable, Dict, List, Match, NamedTuple, Optional, Set, Tuple
 
 import click
 
 import papis
 import papis.cli
 import papis.config
-import papis.strings
 import papis.database
 import papis.document
 import papis.logging
+import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -477,7 +477,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
 
     :returns: an error if the types are not compatible.
     """
-    from papis.bibtex import bibtex_types, bibtex_type_converter
+    from papis.bibtex import bibtex_type_converter, bibtex_types
     folder = doc.get_main_folder() or ""
 
     def make_fixer(bib_type: str) -> Optional[FixFn]:

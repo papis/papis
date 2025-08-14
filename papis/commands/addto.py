@@ -32,6 +32,7 @@ import os
 from typing import List, Optional, Tuple
 
 import click
+
 import papis.api
 import papis.cli
 import papis.commands.add
@@ -57,8 +58,13 @@ def run(document: papis.document.Document,
         raise DocumentFolderNotFound(papis.document.describe(document))
 
     import shutil
-    from papis.paths import (symlink, rename_document_files,
-                             download_remote_files, is_remote_file)
+
+    from papis.paths import (
+        download_remote_files,
+        is_remote_file,
+        rename_document_files,
+        symlink,
+    )
 
     # ensure all remote files are downloaded, before we start renaming.
     local_files = download_remote_files(filepaths)

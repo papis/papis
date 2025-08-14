@@ -1,8 +1,9 @@
-from typing import Optional, Dict
+from typing import Dict, Optional
+
+import papis.logging
+from papis.library import Library
 
 from .base import Database
-from papis.library import Library
-import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 

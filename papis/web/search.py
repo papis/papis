@@ -5,15 +5,13 @@ import dominate.util as tu
 
 import papis.document
 
-import papis.web.header
-import papis.web.navbar
-import papis.web.paths as wp
-import papis.web.html as wh
-
 # widgets
 import papis.web.document
+import papis.web.header
+import papis.web.html as wh
+import papis.web.navbar
+import papis.web.paths as wp
 import papis.web.timeline
-
 
 QUERY_PLACEHOLDER = "insert query..."
 
