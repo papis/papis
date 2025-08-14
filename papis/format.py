@@ -1,5 +1,5 @@
 import string
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar
 
 import papis.config
 import papis.document
@@ -9,7 +9,7 @@ import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
-FORMATTER: Dict[str, "Formatter"] = {}
+FORMATTER: dict[str, "Formatter"] = {}
 
 #: The entry point name for formatter plugins.
 FORMATTER_EXTENSION_NAME = "papis.format"
@@ -44,8 +44,8 @@ class Formatter:
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None,
-               default: Optional[str] = None) -> str:
+               additional: dict[str, Any] | None = None,
+               default: str | None = None) -> str:
         """
         :param fmt: a format pattern understood by the formatter.
         :param doc: an object convertible to a document.
@@ -91,7 +91,7 @@ class _PythonStringFormatter(string.Formatter):
 
         return super().format_field(value, format_spec)
 
-    def convert_field(self, value: Any, conversion: Optional[str]) -> Any:
+    def convert_field(self, value: Any, conversion: str | None) -> Any:
         if conversion == "l":
             return str(value).lower()
         if conversion == "u":
@@ -155,8 +155,8 @@ class PythonFormatter(Formatter):
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None,
-               default: Optional[str] = None) -> str:
+               additional: dict[str, Any] | None = None,
+               default: str | None = None) -> str:
         if additional is None:
             additional = {}
 
@@ -252,8 +252,8 @@ class Jinja2Formatter(Formatter):
                fmt: str,
                doc: papis.document.DocumentLike,
                doc_key: str = "",
-               additional: Optional[Dict[str, Any]] = None,
-               default: Optional[str] = None) -> str:
+               additional: dict[str, Any] | None = None,
+               default: str | None = None) -> str:
         if additional is None:
             additional = {}
 
@@ -275,7 +275,7 @@ class Jinja2Formatter(Formatter):
                 raise FormatFailedError(fmt) from exc
 
 
-def get_available_formatters() -> List[str]:
+def get_available_formatters() -> list[str]:
     """Get a list of all the available formatter plugins."""
     return papis.plugin.get_available_entrypoints(FORMATTER_EXTENSION_NAME)
 
@@ -297,7 +297,7 @@ def get_default_formatter() -> str:
     return name
 
 
-def get_formatter(name: Optional[str] = None) -> Formatter:
+def get_formatter(name: str | None = None) -> Formatter:
     """Initialize and return a formatter plugin.
 
     Note that the formatter is cached and all subsequent calls to this function
@@ -328,8 +328,8 @@ def get_formatter(name: Optional[str] = None) -> Formatter:
 def format(fmt: papis.strings.AnyString,
            doc: papis.document.DocumentLike,
            doc_key: str = "",
-           additional: Optional[Dict[str, Any]] = None,
-           default: Optional[str] = None) -> str:
+           additional: dict[str, Any] | None = None,
+           default: str | None = None) -> str:
     """Format a string using the selected formatter.
 
     This is the user-facing function that should be called when formatting a
@@ -346,7 +346,7 @@ def format(fmt: papis.strings.AnyString,
                             default=default)
 
 
-_DEPRECATIONS: Dict[str, Any] = {
+_DEPRECATIONS: dict[str, Any] = {
     "InvalidFormaterError": InvalidFormatterError,
     "Formater": Formatter,
     "PythonFormater": PythonFormatter,

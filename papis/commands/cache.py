@@ -49,7 +49,6 @@ Command-line interface
     :nested: full
 """
 import os
-from typing import Optional, Tuple
 
 import click
 
@@ -79,9 +78,9 @@ def cli() -> None:
 @papis.cli.all_option()
 @papis.cli.sort_option()
 def update(query: str,
-           doc_folder: Tuple[str, ...],
+           doc_folder: tuple[str, ...],
            _all: bool,
-           sort_field: Optional[str],
+           sort_field: str | None,
            sort_reverse: bool) -> None:
     """
     Reload info.yaml files from disk and update the cache.
@@ -128,7 +127,7 @@ def reset() -> None:
 @cli.command("add")
 @click.help_option("--help", "-h")
 @papis.cli.doc_folder_option()
-def add(doc_folder: Tuple[str, ...]) -> None:
+def add(doc_folder: tuple[str, ...]) -> None:
     """
     Add a document to the cache.
 
@@ -156,9 +155,9 @@ def add(doc_folder: Tuple[str, ...]) -> None:
 @papis.cli.all_option()
 @papis.cli.sort_option()
 def rm(query: str,
-       doc_folder: Tuple[str, ...],
+       doc_folder: tuple[str, ...],
        _all: bool,
-       sort_field: Optional[str],
+       sort_field: str | None,
        sort_reverse: bool) -> None:
     """
     Delete documents from the cache.
@@ -190,9 +189,9 @@ def pwd() -> None:
 @papis.cli.all_option()
 @papis.cli.sort_option()
 def update_newer(query: str,
-                 doc_folder: Tuple[str, ...],
+                 doc_folder: tuple[str, ...],
                  _all: bool,
-                 sort_field: Optional[str],
+                 sort_field: str | None,
                  sort_reverse: bool) -> None:
     """
     Update documents newer than the cache modification time.

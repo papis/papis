@@ -5,7 +5,8 @@ create Papis scripts.
 .. class:: T
 """
 
-from typing import Any, Callable, Dict, List, Optional, Sequence, TypeVar, Union
+from collections.abc import Callable, Sequence
+from typing import Any, TypeVar
 
 import papis.config
 import papis.document
@@ -47,7 +48,7 @@ def set_lib_from_name(library: str) -> None:
     papis.config.set_lib_from_name(library)
 
 
-def get_libraries() -> List[str]:
+def get_libraries() -> list[str]:
     """
     Get all the libraries declared in the configuration files.
 
@@ -78,8 +79,8 @@ def pick_doc(
 
 def pick(items: Sequence[T],
          default_index: int = 0,
-         header_filter: Optional[Callable[[T], str]] = None,
-         match_filter: Optional[Callable[[T], str]] = None) -> Sequence[T]:
+         header_filter: Callable[[T], str] | None = None,
+         match_filter: Callable[[T], str] | None = None) -> Sequence[T]:
     """
     Pick a subset of items from the given *items*.
 
@@ -138,7 +139,7 @@ def edit_file(file_path: str, wait: bool = True) -> None:
 
 
 def get_all_documents_in_lib(
-        library: Optional[str] = None) -> List[papis.document.Document]:
+        library: str | None = None) -> list[papis.document.Document]:
     """
     Get *all* documents in the given library.
 
@@ -158,7 +159,7 @@ def get_all_documents_in_lib(
 
 def get_documents_in_dir(
         directory: str,
-        search: str = "") -> List[papis.document.Document]:
+        search: str = "") -> list[papis.document.Document]:
     """
     Get documents contained in the given *directory*.
 
@@ -176,8 +177,8 @@ def get_documents_in_dir(
 
 
 def get_documents_in_lib(
-        library: Optional[str] = None,
-        search: Union[Dict[str, Any], str] = "") -> List[papis.document.Document]:
+        library: str | None = None,
+        search: dict[str, Any] | str = "") -> list[papis.document.Document]:
     """
     Get documents contained in the given *library*.
 
@@ -196,7 +197,7 @@ def get_documents_in_lib(
         raise TypeError(f"Unknown search parameter: '{search}'")
 
 
-def clear_lib_cache(lib: Optional[str] = None) -> None:
+def clear_lib_cache(lib: str | None = None) -> None:
     """
     Clear the cache associated with a library.
 
@@ -210,7 +211,7 @@ def clear_lib_cache(lib: Optional[str] = None) -> None:
     papis.database.get(lib).clear()
 
 
-def doi_to_data(doi: str) -> Dict[str, Any]:
+def doi_to_data(doi: str) -> dict[str, Any]:
     """
     Get metadata for the given *doi* by querying
     `Crossref <https://www.crossref.org/>`__.

@@ -24,7 +24,7 @@ all    All of the above
 
 import os
 import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import click
 
@@ -70,7 +70,7 @@ key_conversion = [
     ]
 
 
-def arxiv_to_papis(result: "arxiv.Result") -> Dict[str, Any]:
+def arxiv_to_papis(result: "arxiv.Result") -> dict[str, Any]:
     data = papis.document.keyconversion_to_data(key_conversion, vars(result))
 
     # NOTE: these tags are recognized by BibLaTeX
@@ -105,7 +105,7 @@ def get_data(
         id_list: str = "",
         page: int = 0,
         max_results: int = 30
-        ) -> List[Dict[str, Any]]:
+        ) -> list[dict[str, Any]]:
     from urllib.parse import quote
 
     # form query
@@ -154,7 +154,7 @@ def validate_arxivid(arxivid: str) -> None:
 def pdf_to_arxivid(
         filepath: str,
         maxlines: float = float("inf"),
-        ) -> Optional[str]:
+        ) -> str | None:
     """Try to get arxivid from a filepath, it looks for a regex in the binary
     data and returns the first arxivid found, in the hopes that this arxivid
     is the correct one.
@@ -177,7 +177,7 @@ def pdf_to_arxivid(
     return None
 
 
-def find_arxivid_in_text(text: str) -> Optional[str]:
+def find_arxivid_in_text(text: str) -> str | None:
     """
     Try to find a arxivid in a text
     """
@@ -267,11 +267,11 @@ class Downloader(papis.downloaders.Downloader):
 
     def __init__(self, url: str) -> None:
         super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self._result: Optional[arxiv.Result] = None
-        self._arxivid: Optional[str] = None
+        self._result: arxiv.Result | None = None
+        self._arxivid: str | None = None
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         arxivid = find_arxivid_in_text(url)
         if arxivid:
             url = f"{ARXIV_ABS_URL}/{arxivid}"
@@ -282,7 +282,7 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     @property
-    def arxivid(self) -> Optional[str]:
+    def arxivid(self) -> str | None:
         if self._arxivid is None:
             self._arxivid = find_arxivid_in_text(self.uri)
             self.logger.debug("Found the arxivid '%s'.", self._arxivid)
@@ -290,7 +290,7 @@ class Downloader(papis.downloaders.Downloader):
         return self._arxivid
 
     @property
-    def result(self) -> Optional["arxiv.Result"]:
+    def result(self) -> "arxiv.Result | None":
         if self._result is None:
             import arxiv
 
@@ -312,14 +312,14 @@ class Downloader(papis.downloaders.Downloader):
 
         return self._result
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         result = self.result
         if result is None:
             return {}
 
         return arxiv_to_papis(self.result)
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         result = self.result
         if result is None:
             return None
@@ -335,7 +335,7 @@ class Importer(papis.importer.Importer):
     def __init__(self, uri: str) -> None:
         try:
             validate_arxivid(uri)
-            aid: Optional[str] = uri
+            aid: str | None = uri
         except ValueError:
             aid = find_arxivid_in_text(uri)
 
@@ -346,7 +346,7 @@ class Importer(papis.importer.Importer):
         self.downloader._arxivid = aid
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         arxivid = find_arxivid_in_text(uri)
         if arxivid:
             return Importer(uri=f"{ARXIV_ABS_URL}/{arxivid}")
@@ -359,7 +359,7 @@ class Importer(papis.importer.Importer):
             return Importer(uri=f"{ARXIV_ABS_URL}/{uri}")
 
     @property
-    def arxivid(self) -> Optional[str]:
+    def arxivid(self) -> str | None:
         return self.downloader.arxivid
 
     def fetch_data(self) -> None:
@@ -377,10 +377,10 @@ class ArxividFromPdfImporter(papis.importer.Importer):
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="pdf2arxivid", uri=uri)
-        self.arxivid: Optional[str] = None
+        self.arxivid: str | None = None
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         if (os.path.isdir(uri) or not os.path.exists(uri)
                 or not papis.filetype.get_document_extension(uri) == "pdf"):
             return None

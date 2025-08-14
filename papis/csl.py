@@ -1,6 +1,6 @@
 import os
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
@@ -51,7 +51,7 @@ def _download_style(name: str) -> None:
     logger.info("Style '%s' downloaded to '%s'.", name, style_path)
 
 
-def _parse_date(doc: Document) -> Optional["Date"]:
+def _parse_date(doc: Document) -> "Date | None":
     """Extract a date from a document."""
 
     if "year" not in doc:
@@ -159,8 +159,8 @@ def normalize_style_path(name: str) -> str:
 
 
 def export_document(doc: Document,
-                    style_name: Optional[str] = None,
-                    formatter_name: Optional[str] = None) -> str:
+                    style_name: str | None = None,
+                    formatter_name: str | None = None) -> str:
     if style_name is None:
         style_name = papis.config.getstring("csl-style")
 
@@ -221,7 +221,7 @@ def export_document(doc: Document,
     return ""
 
 
-def exporter(documents: List[Document]) -> str:
+def exporter(documents: list[Document]) -> str:
     try:
         import citeproc  # noqa: F401
     except ImportError:

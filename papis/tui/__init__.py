@@ -1,6 +1,6 @@
-from typing import Any, Dict
+from typing import Any, TypeAlias
 
-PapisConfigType = Dict[str, Dict[str, Any]]
+PapisConfigType: TypeAlias = dict[str, dict[str, Any]]
 
 
 def get_default_settings() -> PapisConfigType:

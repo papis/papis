@@ -1,8 +1,7 @@
 import pathlib
-from typing import Optional
 
 
-def main(filename: pathlib.Path, *, outfile: Optional[pathlib.Path] = None) -> int:
+def main(filename: pathlib.Path, *, outfile: pathlib.Path | None = None) -> int:
     if not filename.exists():
         print(f"ERROR: Filename does not exist: '{filename}'")
         return 1

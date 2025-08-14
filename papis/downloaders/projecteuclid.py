@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 import papis.downloaders.fallback
 
@@ -17,13 +16,13 @@ class Downloader(papis.downloaders.fallback.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional["Downloader"]:
+    def match(cls, url: str) -> "Downloader | None":
         if re.match(r".*projecteuclid\.org.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         try:
             # NOTE: this was determined heuristically by looking at the IDs
             # generated for a couple of papers and may change in the future

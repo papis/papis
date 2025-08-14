@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import papis.document
 import papis.logging
@@ -149,18 +149,18 @@ PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP = [
 ]
 
 
-def to_hayagriva_authors(authors: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def to_hayagriva_authors(authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [{"given-name": a["given"], "name": a["family"]} for a in authors]
 
 
-def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
+def to_hayagriva(doc: papis.document.Document) -> dict[str, Any]:
     from contextlib import suppress
 
     bibtype = doc["type"]
     htype = BIBTEX_TO_HAYAGRIVA_TYPE_MAP.get(bibtype, bibtype)
 
     parent_known_keys = HAYAGRIVA_TYPE_PARENT_KEYS.get(htype, frozenset())
-    ptype: Optional[str] = None
+    ptype: str | None = None
 
     if htype == "article":
         if "proceedings" in bibtype:
@@ -177,8 +177,8 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
         ptype = HAYAGRIVA_PARENT_TYPES.get(htype)
 
     # NOTE: the type is case insensitive, but typst seems to capitalize them
-    data: Dict[str, Any] = {"type": htype.capitalize()}
-    parent: Dict[str, Any] = {"type": ptype.capitalize()} if ptype else {}
+    data: dict[str, Any] = {"type": htype.capitalize()}
+    parent: dict[str, Any] = {"type": ptype.capitalize()} if ptype else {}
 
     for foreign_key, conversions in PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP:
         if foreign_key not in doc:
@@ -213,7 +213,7 @@ def to_hayagriva(doc: papis.document.Document) -> Dict[str, Any]:
     return data
 
 
-def exporter(documents: List[papis.document.Document]) -> str:
+def exporter(documents: list[papis.document.Document]) -> str:
     """Convert document to the Hayagriva format used by Typst"""
     import yaml
 

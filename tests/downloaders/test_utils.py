@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import pytest
 
@@ -42,7 +41,7 @@ def test_get_downloader(tmp_config: TemporaryConfiguration) -> None:
 def test_download_document(tmp_config: TemporaryConfiguration,
                            url: str,
                            expected_file_name: str,
-                           ext: Optional[str]) -> None:
+                           ext: str | None) -> None:
     from papis.downloaders import download_document
 
     local_file_name = download_document(url, expected_document_extension=ext)

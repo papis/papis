@@ -1,7 +1,6 @@
 import os
 import shutil
 import sys
-from typing import List
 
 import pytest
 
@@ -92,7 +91,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
         "year": "2009",
         "ref": "#{2FJT2E3A}"
     }
-    paths: List[str] = []
+    paths: list[str] = []
 
     import papis.config
 

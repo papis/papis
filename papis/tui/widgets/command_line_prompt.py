@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.application.current import get_app
@@ -33,7 +34,7 @@ class Command:
             self,
             name: str,
             run: Callable[["Command"], Any],
-            aliases: Optional[List[str]] = None) -> None:
+            aliases: list[str] | None = None) -> None:
         if aliases is None:
             aliases = []
 
@@ -46,7 +47,7 @@ class Command:
         return get_app()
 
     @property
-    def names(self) -> List[str]:
+    def names(self) -> list[str]:
         return [self.name, *self.aliases]
 
 
@@ -55,14 +56,14 @@ class CommandLinePrompt(ConditionalContainer):
     A vim-like command line prompt widget.
     It's supposed to be instantiated only once.
     """
-    def __init__(self, commands: Optional[List[Command]] = None) -> None:
+    def __init__(self, commands: list[Command] | None = None) -> None:
         if commands is None:
             commands = []
 
         from itertools import chain
 
         self.commands = commands
-        names: List[str] = list(chain.from_iterable(c.names for c in commands))
+        names: list[str] = list(chain.from_iterable(c.names for c in commands))
         wc = WordCompleter(names)
         self.buf = Buffer(
             completer=wc, complete_while_typing=True

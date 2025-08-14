@@ -51,7 +51,7 @@ Command-line interface
 
 import os
 import re
-from typing import List, Optional, Sequence, Tuple
+from collections.abc import Sequence
 
 import click
 
@@ -74,7 +74,7 @@ def list_plugins(show_paths: bool = False,
                  show_downloaders: bool = False,
                  show_pickers: bool = False,
                  show_doctor: bool = False,
-                 verbose: bool = False) -> List[str]:
+                 verbose: bool = False) -> list[str]:
     import colorama as c
 
     from papis.plugin import get_extension_manager
@@ -83,7 +83,7 @@ def list_plugins(show_paths: bool = False,
         return (f"{c.Style.BRIGHT}{name}{c.Style.RESET_ALL}"
                 f" {c.Fore.YELLOW}{ids}{c.Style.RESET_ALL}")
 
-    def _stringify(namespace: str) -> List[str]:
+    def _stringify(namespace: str) -> list[str]:
         results = []
         for p in get_extension_manager(namespace):
             results.append(_format(p.name, f"{p.module_name}.{p.attr}"))
@@ -155,8 +155,8 @@ def list_documents(documents: Sequence[papis.document.Document],
                    show_info: bool = False,
                    show_notes: bool = False,
                    show_format: papis.strings.AnyString = "",
-                   template: Optional[str] = None
-                   ) -> List[str]:
+                   template: str | None = None
+                   ) -> list[str]:
     """List document properties.
 
     :arg template: a path to a file containing a format pattern that can be
@@ -270,11 +270,11 @@ def cli(query: str,
         show_downloaders: bool,
         show_pickers: bool,
         show_doctor: bool,
-        template: Optional[str],
+        template: str | None,
         quiet: bool,
         _all: bool,
-        doc_folder: Tuple[str, ...],
-        sort_field: Optional[str],
+        doc_folder: tuple[str, ...],
+        sort_field: str | None,
         sort_reverse: bool) -> None:
     """List document metadata."""
 

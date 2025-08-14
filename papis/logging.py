@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 import click
 import colorama as c
@@ -31,7 +31,7 @@ class ColoramaFormatter(logging.Formatter):
         #: used with ``logger.info(..., exc_info=ext)``.
         self.full_tb: bool = full_tb
 
-    def formatException(self, exc_info: Tuple[Any, ...]) -> str:    # noqa: N802
+    def formatException(self, exc_info: tuple[Any, ...]) -> str:    # noqa: N802
         """Format and return the specified exception information as a string.
 
         If :attr:`full_tb` is *True*, then the full traceback is shown. Otherwise,
@@ -95,10 +95,10 @@ def _disable_color(color: str = "auto") -> bool:
         )
 
 
-def setup(level: Optional[Union[int, str]] = None,
-          color: Optional[str] = None,
-          logfile: Optional[str] = None,
-          verbose: Optional[bool] = None) -> None:
+def setup(level: int | str | None = None,
+          color: str | None = None,
+          logfile: str | None = None,
+          verbose: bool | None = None) -> None:
     """Set up formatting and handlers for the root level Papis logger.
 
     :param level: default logging level (see :mod:`logging`). By default, this
@@ -170,10 +170,10 @@ def setup(level: Optional[Union[int, str]] = None,
     logger.addHandler(handler)
 
 
-def reset(level: Optional[Union[int, str]] = None,
-          color: Optional[str] = None,
-          logfile: Optional[str] = None,
-          verbose: Optional[bool] = None) -> None:
+def reset(level: int | str | None = None,
+          color: str | None = None,
+          logfile: str | None = None,
+          verbose: bool | None = None) -> None:
     """Reset the root level Papis logger.
 
     This function removes all the custom handlers and resets the logger
@@ -189,7 +189,7 @@ def reset(level: Optional[Union[int, str]] = None,
     setup(level, color=color, logfile=logfile, verbose=verbose)
 
 
-def get_logger(name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str | None = None) -> logging.Logger:
     """Get a logger instance for the given name under the ``papis`` namespace.
 
     :arg name: the provisional name of the logger instance.

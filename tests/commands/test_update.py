@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -19,7 +19,7 @@ def _get_resource_file(filename: str) -> str:
 
 
 def update_doc_from_data_interactively(
-    document: Document, data: Dict[str, Any], data_name: str
+    document: Document, data: dict[str, Any], data_name: str
 ) -> None:
     document.update(data)
 

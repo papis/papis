@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 import papis.downloaders.fallback
 
@@ -15,17 +14,17 @@ class Downloader(papis.downloaders.fallback.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.fallback.Downloader | None:
         return Downloader(url) if re.match(r".*aps.org.*", url) else None
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         url = "{}?type=bibtex&download=true".format(
             self.uri.replace("/abstract", "/export"))
         self.logger.debug("Using BibTeX URL '%s'.", url)
 
         return url
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         url = self.uri.replace("/abstract", "/pdf")
         self.logger.debug("Using document URL: '%s'.", url)
 

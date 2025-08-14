@@ -1,5 +1,5 @@
 import re
-from typing import Any, ClassVar, Dict, Optional
+from typing import Any, ClassVar
 
 import papis.downloaders.base
 
@@ -22,13 +22,13 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         if re.match(r".*annualreviews.org.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         if "doi" in self.ctx.data:
             url = self.DOCUMENT_URL.format(doi=self.ctx.data["doi"])
             self.logger.debug("Using document URL: '%s'.", url)
@@ -37,7 +37,7 @@ class Downloader(papis.downloaders.Downloader):
         else:
             return None
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         if "doi" in self.ctx.data:
             url = self.BIBTEX_URL.format(doi=self.ctx.data["doi"])
             self.logger.debug("Using BibTeX URL: '%s'.", url)
@@ -46,7 +46,7 @@ class Downloader(papis.downloaders.Downloader):
         else:
             return None
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         data = {}
         soup = self._get_soup()
         data.update(papis.downloaders.base.parse_meta_headers(soup))

@@ -7,7 +7,8 @@ the `manual`_).
 """
 import os
 import string
-from typing import Any, Dict, Iterator, List, Optional
+from collections.abc import Iterator
+from typing import Any
 
 import click
 
@@ -226,7 +227,7 @@ bibtex_type_required_keys_aliases = {
 #: A mapping of arbitrary types to BibLaTeX types in :data:`bibtex_types`. This
 #: mapping can be used when translating from other software, e.g. Zotero has
 #: custom fields in its `schema <https://github.com/zotero/zotero-schema>`__.
-bibtex_type_converter: Dict[str, str] = {
+bibtex_type_converter: dict[str, str] = {
     # Zotero
     "annotation": "misc",
     "attachment": "misc",
@@ -269,7 +270,7 @@ bibtex_type_converter: Dict[str, str] = {
 
 #: A mapping of arbitrary fields to BibLaTeX fields in :data:`bibtex_keys`. This
 #: mapping can be used when translating from other software.
-bibtex_key_converter: Dict[str, str] = {
+bibtex_key_converter: dict[str, str] = {
     "abstractNote": "abstract",
     "university": "school",
     "conferenceName": "eventtitle",
@@ -295,7 +296,7 @@ ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
 bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlraw"})
 
 
-def exporter(documents: List[papis.document.Document]) -> str:
+def exporter(documents: list[papis.document.Document]) -> str:
     """Convert documents into a list of BibLaTeX entries"""
     return "\n\n".join(to_bibtex_multiple(documents))
 
@@ -312,7 +313,7 @@ class Importer(papis.importer.Importer):
         super().__init__(name="bibtex", **kwargs)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         if (not os.path.exists(uri) or os.path.isdir(uri)
                 or papis.filetype.get_document_extension(uri) == "pdf"):
             return None
@@ -374,7 +375,7 @@ def explorer(ctx: click.core.Context, bibfile: str) -> None:
     logger.info("Found %d documents.", len(docs))
 
 
-def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
+def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
     """Convert the keys of a BibTeX entry parsed by :mod:`bibtexparser` to a
     papis-compatible format.
 
@@ -406,7 +407,7 @@ def bibtexparser_entry_to_papis(entry: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def bibtex_to_dict(bibtex: str) -> List[papis.document.DocumentLike]:
+def bibtex_to_dict(bibtex: str) -> list[papis.document.DocumentLike]:
     """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
 
     This will convert an entry like:
@@ -471,7 +472,7 @@ def ref_cleanup(ref: str) -> str:
     return str(ref).strip()
 
 
-def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
+def create_reference(doc: dict[str, Any], force: bool = False) -> str:
     """Try to create a reference for the document *doc*.
 
     If the document *doc* does not have a ``"ref"`` key, this function attempts
@@ -515,7 +516,7 @@ def create_reference(doc: Dict[str, Any], force: bool = False) -> str:
 
 
 def author_list_to_author(doc: papis.document.Document,
-                          author_list: List[Dict[str, Any]]) -> str:
+                          author_list: list[dict[str, Any]]) -> str:
     if not author_list:
         return ""
 
@@ -543,7 +544,7 @@ def author_list_to_author(doc: papis.document.Document,
     return " and ".join(result)
 
 
-def to_bibtex_multiple(documents: List[papis.document.Document]) -> Iterator[str]:
+def to_bibtex_multiple(documents: list[papis.document.Document]) -> Iterator[str]:
     for doc in documents:
         bib = to_bibtex(doc)
         if not bib:

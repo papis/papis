@@ -4,7 +4,6 @@ dist/papis/_internal into the XML manifest that is used to create the MSI."""
 import hashlib
 import os
 import uuid
-from typing import Optional
 
 
 def get_id(*path_components: str) -> str:
@@ -32,7 +31,7 @@ def get_id(*path_components: str) -> str:
 
 def render_template(template: str,
                     outfile: str, *,
-                    version: Optional[str] = None) -> None:
+                    version: str | None = None) -> None:
     from xml.etree import ElementTree
 
     if version is None:

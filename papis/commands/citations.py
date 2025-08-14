@@ -45,8 +45,6 @@ Command-line interface
     :prog: papis citations
 """
 
-from typing import Optional, Tuple
-
 import click
 
 import papis.cli
@@ -78,8 +76,8 @@ logger = papis.logging.get_logger(__name__)
 @papis.cli.all_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
-        doc_folder: Tuple[str, ...],
-        sort_field: Optional[str],
+        doc_folder: tuple[str, ...],
+        sort_field: str | None,
         sort_reverse: bool,
         _all: bool,
         force: bool,

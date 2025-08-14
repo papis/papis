@@ -1,15 +1,6 @@
 import re
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterator,
-    List,
-    Pattern,
-    Tuple,
-    TypedDict,
-    Union,
-)
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import papis.config
 import papis.document
@@ -23,10 +14,10 @@ if TYPE_CHECKING:
 class MetaEquivalence(TypedDict):
     tag: str
     key: str
-    attrs: Dict[str, Union[str, Pattern[str]]]
+    attrs: dict[str, str | re.Pattern[str]]
 
 
-meta_equivalences: List[MetaEquivalence] = [
+meta_equivalences: list[MetaEquivalence] = [
     # google
     {"tag": "meta", "key": "abstract", "attrs": {"name": "description"}},
     {"tag": "meta", "key": "doi", "attrs": {"name": "doi"}},
@@ -106,8 +97,8 @@ meta_equivalences: List[MetaEquivalence] = [
 ]
 
 
-def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
-    data: Dict[str, Any] = {}
+def parse_meta_headers(soup: "bs4.BeautifulSoup") -> dict[str, Any]:
+    data: dict[str, Any] = {}
     for equiv in meta_equivalences:
         elements = soup.find_all(equiv["tag"], attrs=equiv["attrs"])
         if elements:
@@ -139,7 +130,7 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> Dict[str, Any]:
     return data
 
 
-def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
+def parse_meta_authors(soup: "bs4.BeautifulSoup") -> list[dict[str, Any]]:
     # find author tags
     authors = soup.find_all(name="meta", attrs={"name": "citation_author"})
     if not authors:
@@ -155,12 +146,12 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> List[Dict[str, Any]]:
         attrs={"name": "citation_author_institution"})
 
     if affs and len(authors) == len(affs):
-        authors_and_affs: Iterator[Tuple[Any, Any]] = zip(authors, affs, strict=True)
+        authors_and_affs: Iterator[tuple[Any, Any]] = zip(authors, affs, strict=True)
     else:
         authors_and_affs = ((a, None) for a in authors)
 
     # convert to papis author format
-    author_list: List[Dict[str, Any]] = []
+    author_list: list[dict[str, Any]] = []
     for author, aff in authors_and_affs:
         fullname = papis.document.split_author_name(author.get("content"))
         affiliation = [{"name": aff.get("content")}] if aff else []

@@ -29,7 +29,6 @@ Command-line interface
 """
 
 import os
-from typing import List, Optional, Tuple
 
 import click
 
@@ -49,8 +48,8 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        filepaths: List[str],
-        file_name: Optional[str] = None,
+        filepaths: list[str],
+        file_name: str | None = None,
         link: bool = False,
         git: bool = False) -> None:
     doc_folder = document.get_main_folder()
@@ -72,7 +71,7 @@ def run(document: papis.document.Document,
     # we only symlink a file it isn't a downloaded file that is stored in
     # a temporary directory. We keep track of a boolean per file that
     # tells us whether to link
-    new_filepaths: List[Tuple[str, bool]] = []
+    new_filepaths: list[tuple[str, bool]] = []
     for orig_filepath, filepath in zip(filepaths, local_files, strict=True):
         # skip remote files that haven't been properly downloaded
         if not filepath:
@@ -147,11 +146,11 @@ def run(document: papis.document.Document,
 def cli(query: str,
         git: bool,
         link: bool,
-        files: List[str],
-        urls: List[str],
-        file_name: Optional[str],
-        sort_field: Optional[str],
-        doc_folder: Tuple[str, ...],
+        files: list[str],
+        urls: list[str],
+        file_name: str | None,
+        sort_field: str | None,
+        doc_folder: tuple[str, ...],
         sort_reverse: bool) -> None:
     """Add files to an existing document."""
     documents = papis.cli.handle_doc_folder_query_sort(

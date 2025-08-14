@@ -1,18 +1,8 @@
 import functools
 import os
 import re
-from typing import (
-    Any,
-    Callable,
-    Generic,
-    List,
-    Optional,
-    Pattern,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from collections.abc import Callable, Sequence
+from typing import Any, Generic, TypeVar
 
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.data_structures import Point
@@ -35,8 +25,8 @@ Option = TypeVar("Option")
 
 
 def match_against_regex(
-        regex: Pattern[str],
-        pair: Tuple[int, str]) -> Optional[int]:
+        regex: re.Pattern[str],
+        pair: tuple[int, str]) -> int | None:
     """Return index if line matches regex
 
         pair[0] is the index of the element
@@ -55,9 +45,9 @@ class OptionsList(ConditionalContainer, Generic[Option]):
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str,
-            custom_filter: Optional[Union[Filter, Callable[[str], bool]]] = None,
-            search_buffer: Optional[Buffer] = None,
-            cpu_count: Optional[int] = None) -> None:
+            custom_filter: Filter | Callable[[str], bool] | None = None,
+            search_buffer: Buffer | None = None,
+            cpu_count: int | None = None) -> None:
         if search_buffer is None:
             search_buffer = Buffer(multiline=False)
 
@@ -70,18 +60,18 @@ class OptionsList(ConditionalContainer, Generic[Option]):
 
         self.header_filter = header_filter
         self.match_filter = match_filter
-        self.current_index: Optional[int] = default_index
+        self.current_index: int | None = default_index
         self.entries_left_offset = 0
         self.cpu_count = cpu_count
 
-        self.options_headers_linecount: List[int] = []
-        self._indices_to_lines: List[int] = []
+        self.options_headers_linecount: list[int] = []
+        self._indices_to_lines: list[int] = []
 
-        self.options_headers: List[FormattedText] = []
-        self.options_matchers: List[str] = []
-        self.indices: List[int] = []
-        self._options: List[Option] = []
-        self.marks: List[int] = []
+        self.options_headers: list[FormattedText] = []
+        self.options_matchers: list[str] = []
+        self.indices: list[int] = []
+        self._options: list[Option] = []
+        self.marks: list[int] = []
         self.max_entry_height = 1
 
         # options are processed here also through the setter
@@ -134,7 +124,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
                 < self.options_headers_linecount[self.current_index]):
             return [("class:options_list.selected_margin", "|")]
         else:
-            marked_lines: List[int] = []
+            marked_lines: list[int] = []
             for index in self.marks:
                 start_line = self.index_to_line(index)
                 end_line = start_line + self.options_headers_linecount[index]
@@ -155,7 +145,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         if self.current_index is not None:
             self.marks.append(self.current_index)
 
-    def get_options(self) -> List[Option]:
+    def get_options(self) -> list[Option]:
         """Get the original options
         """
         return self._options
@@ -213,7 +203,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         return str(self.search_buffer.text)
 
     @property
-    def search_regex(self) -> Pattern[str]:
+    def search_regex(self) -> re.Pattern[str]:
         """Get and form the regular expression out of the query text"""
         cleaned_search = (
             self.query_text
@@ -262,7 +252,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
             else:
                 self.current_index = self.indices[0]
 
-    def get_selection(self) -> List[Option]:
+    def get_selection(self) -> list[Option]:
         """Get the selected item, if there is Any"""
         if len(self.marks):
             return [self.get_options()[m] for m in self.marks]
@@ -286,7 +276,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         except Exception:
             self.cursor = Point(0, 0)
 
-    def get_tokens(self) -> List[Tuple[str, str]]:
+    def get_tokens(self) -> list[tuple[str, str]]:
         """Creates the body of the list, which is just a list of tuples,
         where the tuples follow the FormattedText structure.
         """
@@ -295,7 +285,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
 
         self.update_cursor()
         begin_t = time.time()
-        internal_text: List[Tuple[str, str]] = functools.reduce(
+        internal_text: list[tuple[str, str]] = functools.reduce(
             operator.add,
             [self.options_headers[i] for i in self.indices],
             [])

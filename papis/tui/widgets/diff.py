@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
+from collections.abc import Callable
+from typing import Any, NamedTuple
 
 from prompt_toolkit import Application, print_formatted_text
 from prompt_toolkit.formatted_text import FormattedText
@@ -14,9 +15,9 @@ class Action(NamedTuple):
     action: Callable[[KeyPressEvent], None]
 
 
-def prompt(text: Union[str, FormattedText],
+def prompt(text: str | FormattedText,
            title: str = "",
-           actions: Optional[List[Action]] = None,
+           actions: list[Action] | None = None,
            **kwargs: Any
            ) -> None:
     """A simple and extensible prompt helper routine
@@ -80,7 +81,7 @@ def diffshow(texta: str,
              title: str = "",
              namea: str = "a",
              nameb: str = "b",
-             actions: Optional[List[Action]] = None
+             actions: list[Action] | None = None
              ) -> None:
     """Show the difference of texta and textb with a prompt.
 
@@ -128,11 +129,11 @@ def diffshow(texta: str,
            actions=actions)
 
 
-def diffdict(dicta: Dict[str, Any],
-             dictb: Dict[str, Any],
+def diffdict(dicta: dict[str, Any],
+             dictb: dict[str, Any],
              namea: str = "a",
              nameb: str = "b"
-             ) -> Dict[str, Any]:
+             ) -> dict[str, Any]:
     """
     Compute the difference of two dictionaries.
 
