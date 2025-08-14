@@ -33,6 +33,6 @@ def test_prompt_toolkit() -> None:
     try:
         from prompt_toolkit.data_structures import Point
     except ImportError:
-        from prompt_toolkit.layout.screen import (
-            Point,  # type: ignore [attr-defined] # noqa: F401
+        from prompt_toolkit.layout.screen import (  # type: ignore[attr-defined]
+            Point,  # noqa: F401
         )

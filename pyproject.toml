@@ -283,6 +283,7 @@ select = [
     "G",   # flake8-logging-format
     "I",   # flake8-isort
     "N",   # pep8-naming
+    "PGH", # pygrep-hooks
     "PL",  # pylint
     "Q",   # flake8-quotes
     "RUF", # ruff
