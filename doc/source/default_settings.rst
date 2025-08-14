@@ -675,6 +675,13 @@ Doctor options
     or trailing whitespace in the separator, make sure to quote it (for instance,
     ``", "``).
 
+.. papis-config:: doctor-string-cleaner-keys
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys used by the ``string-cleaner`` check. The check will show an
+    error if any of the keys are formatted in an undesirable way, e.g. contain
+    new line characters or double spaces.
+
 Open options
 ------------
 
