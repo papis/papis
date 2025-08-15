@@ -95,22 +95,9 @@ from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import click
 
-import papis.api
-import papis.citations
 import papis.cli
-import papis.commands
-import papis.commands.add
-import papis.commands.export
-import papis.config
-import papis.crossref
-import papis.document
-import papis.format
 import papis.logging
-import papis.pick
-import papis.plugin
-import papis.strings
-import papis.tui.utils
-import papis.utils
+from papis.commands import AliasedGroup
 
 if TYPE_CHECKING:
     from stevedore import ExtensionManager
@@ -124,11 +111,15 @@ def get_available_explorers() -> List[click.Command]:
     """
     Gets all exporters registered.
     """
-    return papis.plugin.get_available_plugins(EXPLORER_EXTENSION_NAME)
+    from papis.plugin import get_available_plugins
+
+    return get_available_plugins(EXPLORER_EXTENSION_NAME)
 
 
 def get_explorer_mgr() -> "ExtensionManager":
-    return papis.plugin.get_extension_manager(EXPLORER_EXTENSION_NAME)
+    from papis.plugin import get_extension_manager
+
+    return get_extension_manager(EXPLORER_EXTENSION_NAME)
 
 
 def get_explorer_by_name(name: str) -> Optional[click.Command]:
@@ -161,9 +152,14 @@ def lib(ctx: click.Context,
         papis explore lib -l books 'einstein' pick
     """
 
+    from papis.document import from_folder
+
     if doc_folder:
-        ctx.obj["documents"] += [papis.document.from_folder(d) for d in doc_folder]
-    db = papis.database.get(library_name=library)
+        ctx.obj["documents"] += [from_folder(d) for d in doc_folder]
+
+    from papis.database import get
+
+    db = get(library_name=library)
     docs = db.query(query)
     logger.info("Found %d documents.", len(docs))
 
@@ -189,15 +185,18 @@ def pick(ctx: click.Context, number: Optional[int]) -> None:
 
         papis explore bibtex 'lib.bib' pick
     """
+    from papis.api import pick_doc
+
     docs = ctx.obj["documents"]
     if number is not None:
         docs = [docs[number - 1]]
-    picked_docs = papis.pick.pick_doc(docs)
+
+    picked_docs = pick_doc(docs)
     if not picked_docs:
         ctx.obj["documents"] = []
         return
+
     ctx.obj["documents"] = picked_docs
-    assert isinstance(ctx.obj["documents"], list)
 
 
 @click.command("citations")
@@ -224,25 +223,31 @@ def citations(ctx: click.Context,
         papis explore citations 'einstein' export --format yaml --out 'einstein.yaml'
     """
 
+    from papis.api import get_documents_in_lib, pick_doc
+    from papis.document import describe, from_folder
+
     if doc_folder is not None:
-        documents = [papis.document.from_folder(d) for d in doc_folder]
+        documents = [from_folder(d) for d in doc_folder]
     else:
-        documents = papis.api.get_documents_in_lib(papis.config.get_lib_name(),
-                                                   search=query)
+        from papis.config import get_lib_name
+
+        documents = get_documents_in_lib(get_lib_name(), search=query)
+
     if not _all:
-        documents = list(papis.pick.pick_doc(documents))
+        documents = pick_doc(documents)  # type: ignore[assignment]
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+
+        logger.warning(no_documents_retrieved_message)
         return
 
-    for document in documents:
-        logger.debug("Exploring document '%s'.", papis.document.describe(document))
-        if cited_by:
-            citations = papis.citations.get_cited_by(document)
-        else:
-            citations = papis.citations.get_citations(document)
+    from papis.citations import get_citations, get_cited_by
 
+    for document in documents:
+        logger.debug("Exploring document '%s'.", describe(document))
+
+        citations = get_cited_by(document) if cited_by else get_citations(document)
         logger.debug("Found %d citations.", len(citations))
 
         ctx.obj["documents"].extend(citations)
@@ -260,9 +265,11 @@ def add(ctx: click.Context) -> None:
 
         papis explore bibtex 'lib.bib' pick add
     """
+    from papis.commands.add import run
+
     docs = ctx.obj["documents"]
     for d in docs:
-        papis.commands.add.run([], d)
+        run([], d)
 
 
 @click.command("cmd")
@@ -284,14 +291,17 @@ def cmd(ctx: click.Context, command: str) -> None:
             pick \\
             cmd 'papis scihub {doc[doi]}'
     """
+    from papis.format import format
+    from papis.utils import run
+
     docs = ctx.obj["documents"]
     for doc in docs:
-        fcommand = papis.format.format(command, doc, default="")
-        papis.utils.run(shlex.split(fcommand))
+        fcommand = format(command, doc, default="")
+        run(shlex.split(fcommand))
 
 
 @click.group("explore",
-             cls=papis.commands.AliasedGroup,
+             cls=AliasedGroup,
              invoke_without_command=False, chain=True)
 @click.help_option("--help", "-h")
 @click.pass_context
