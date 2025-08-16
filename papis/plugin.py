@@ -33,7 +33,7 @@ def get_entrypoint_by_name(namespace: str, name: str) -> EntryPoint | None:
     """Get the entrypoint *name* from the given *namespace*.
 
     If no such entrypoint exists, then *None* is returned. To load the plugin
-    defined by the entrypoint, use :meth:`importlib.metadata.Entrypoint.load`.
+    defined by the entrypoint, use ``Entrypoint.load``.
     """
     entrypoints = entry_points(group=namespace).select(name=name)
     if len(entrypoints) == 1:
