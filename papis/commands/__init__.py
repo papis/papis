@@ -1,5 +1,7 @@
+import copy
 import os
 import re
+from importlib.metadata import EntryPoint
 from typing import NamedTuple
 
 import click.core
@@ -72,7 +74,7 @@ class AliasedGroup(click.core.Group):
         return None
 
 
-class Script(NamedTuple):
+class CommandPlugin(NamedTuple):
     """A ``papis`` command plugin or script.
 
     These plugins are made available through the main ``papis`` command-line
@@ -83,11 +85,49 @@ class Script(NamedTuple):
     command_name: str
     #: The path to the script if it is a separate executable.
     path: str | None
-    #: A :class:`click.Command` if the script is registered as an entry point.
-    plugin: click.Command | None
+    #: The module the plugin is imported from if it is an entry point.
+    entrypoint: EntryPoint | None
 
 
-def get_external_scripts() -> dict[str, Script]:
+def load_command(cmd: CommandPlugin) -> click.Command | None:
+    if cmd.path is not None:
+        # we're dealing with an external script: wrap it and hope for the bext
+        from papis.commands.external import external_cli, get_command_help
+
+        cli = copy.copy(external_cli)
+        cli.name = cmd.command_name
+        cli.help = get_command_help(cmd.path)
+        cli.short_help = cli.help
+        cli.context_settings["obj"] = cmd
+
+        return cli
+    elif cmd.entrypoint is not None:
+        # we're dealing with an entrypoint plugin: load it
+        try:
+            plugin = cmd.entrypoint.load()
+        except Exception as exc:
+            papis.logging.debug("Failed to load plugin '%s' from '%s' (%s).",
+                                cmd.command_name, cmd.entrypoint.value, exc)
+            return None
+
+        if not isinstance(plugin, click.Command):
+            papis.logging.debug("Plugin is not a 'click.Command': '%s',",
+                                cmd.entrypoint.value)
+            return None
+
+        if not plugin.help:
+            plugin.help = "No help message available"
+
+        if not plugin.short_help:
+            plugin.short_help = plugin.help
+
+        return plugin
+    else:
+        papis.logging.debug("Invalid command plugin: '%s'", cmd.command_name)
+        return None
+
+
+def get_external_scripts() -> dict[str, CommandPlugin]:
     """Get a mapping of all external scripts that should be registered with Papis.
 
     An external script is an executable that can be found in the
@@ -99,7 +139,7 @@ def get_external_scripts() -> dict[str, Script]:
     import glob
     paths = [papis.config.get_scripts_folder(), *os.environ.get("PATH", "").split(":")]
 
-    scripts: dict[str, Script] = {}
+    scripts: dict[str, CommandPlugin] = {}
     for path in paths:
         for script in glob.iglob(os.path.join(path, "papis-*")):
             m = EXTERNAL_COMMAND_REGEX.match(script)
@@ -113,61 +153,57 @@ def get_external_scripts() -> dict[str, Script]:
                     "found at '%s'. Overwriting the previous script!",
                     script, name, scripts[name].path)
 
-            scripts[name] = Script(command_name=name, path=script, plugin=None)
+            scripts[name] = (
+                CommandPlugin(command_name=name, path=script, entrypoint=None))
 
     return scripts
 
 
-def get_scripts() -> dict[str, Script]:
+def get_command_plugins() -> dict[str, CommandPlugin]:
     """Get a mapping of commands that should be registered with Papis.
 
     This finds all the commands that are registered as entry points in the
     namespace ``"papis.command"``.
 
-    :returns: a mapping of scripts that have been found.
+    :returns: a mapping of plugins that have been found.
     """
-    from papis.plugin import get_plugins
+    from papis.plugin import get_entrypoints
 
     scripts = {}
-    for name, plugin in get_plugins(COMMAND_EXTENSION_NAME).items():
-        if not plugin.help:
-            plugin.help = "No help message available"
-
-        if not plugin.short_help:
-            plugin.short_help = plugin.help
-
-        scripts[name] = Script(command_name=name, path=None, plugin=plugin)
+    for ep in get_entrypoints(COMMAND_EXTENSION_NAME):
+        scripts[ep.name] = CommandPlugin(
+            command_name=ep.name,
+            path=None,
+            entrypoint=ep)  # type: ignore[arg-type]
 
     return scripts
 
 
-def get_all_scripts() -> dict[str, Script]:
+def get_commands() -> dict[str, CommandPlugin]:
     """Get a mapping of all commands that should be registered with Papis.
 
     This includes the results from :func:`get_external_scripts` and
-    :func:`get_scripts`. Entrypoint-based scripts take priority, so if an
+    :func:`get_command_plugins`. Entrypoint-based scripts take priority, so if an
     external script with the same name is found it is silently ignored.
 
     :returns: a mapping of scripts that have been found.
     """
 
-    scripts = get_scripts()
+    commands = get_command_plugins()
     external_scripts = get_external_scripts()
 
     for name, script in external_scripts.items():
-        entry_point_script = scripts.get(name)
-        if entry_point_script is not None:
-            plugin = entry_point_script.plugin
-            assert plugin is not None
-
+        cmd = commands.get(name)
+        if cmd is not None:
+            assert cmd.entrypoint is not None
             papis.logging.debug(
                 "WARN: External script '%s' also available as command entry point "
                 "from '%s'. Skipping external script!",
-                script.path, plugin.callback.__module__
-                )
+                script.path, cmd.entrypoint.value
+            )
 
             continue
 
-        scripts[name] = script
+        commands[name] = script
 
-    return scripts
+    return commands

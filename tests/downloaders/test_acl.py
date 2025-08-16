@@ -4,7 +4,6 @@ import pytest
 
 import papis.downloaders
 from papis.downloaders.acl import Downloader
-
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 ACL_URLS = (

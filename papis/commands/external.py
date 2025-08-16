@@ -8,10 +8,8 @@ from typing import Any
 
 import click
 
-import papis.commands
 import papis.config
 import papis.logging
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -64,10 +62,15 @@ def get_exported_variables(ctx: dict[str, Any] | None = None) -> dict[str, str]:
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
     """Actual papis command to call the external command"""
-    script: papis.commands.Script = ctx.obj
+    from papis.commands import CommandPlugin
+
+    script = ctx.obj
+    if not isinstance(script, CommandPlugin):
+        return None
+
     path = script.path
     if not path:
-        raise FileNotFoundError(f"Path for script '{script}' not found")
+        raise FileNotFoundError(f"Path for script '{script.command_name}' not given")
 
     cmd = [path, *flags]
     logger.debug("Calling external command '%s'.", cmd)
@@ -76,4 +79,6 @@ def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
     environ = os.environ.copy()
     environ.update(get_exported_variables(params))
 
-    papis.utils.run(cmd, env=environ)
+    from papis.utils import run
+
+    run(cmd, env=environ)

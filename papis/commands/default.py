@@ -30,47 +30,51 @@ Command-line interface
 
 import os
 from collections.abc import Callable
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 import click
-import click.core
 
-import papis
-import papis.api
 import papis.cli
-import papis.commands
-import papis.config
-import papis.database
 import papis.logging
 
 if TYPE_CHECKING:
     import cProfile
 
+    from papis.commands import CommandPlugin
+
 logger = papis.logging.get_logger(__name__)
 
 
-class ScriptLoaderGroup(click.Group):
+class CommandPluginLoaderGroup(click.Group):
 
-    scripts = papis.commands.get_all_scripts()
-    script_names = sorted(scripts)
+    @cached_property
+    def command_plugins(self) -> dict[str, "CommandPlugin"]:
+        from papis.commands import get_commands
 
-    def list_commands(self, ctx: click.core.Context) -> list[str]:
+        return get_commands()
+
+    @cached_property
+    def command_plugin_names(self) -> list[str]:
+        return sorted(self.command_plugins)
+
+    def list_commands(self, ctx: click.Context) -> list[str]:
         """List all matched commands in the command folder and in path
 
-        >>> group = ScriptLoaderGroup()
+        >>> group = CommandPluginLoaderGroup()
         >>> rv = group.list_commands(None)
         >>> len(rv) > 0
         True
         """
-        return self.script_names
+        return self.command_plugin_names
 
     def get_command(
             self,
-            ctx: click.core.Context,
-            name: str) -> click.core.Command | None:
+            ctx: click.Context,
+            name: str) -> click.Command | None:
         """Get the command to be run
 
-        >>> group = ScriptLoaderGroup()
+        >>> group = CommandPluginLoaderGroup()
         >>> cmd = group.get_command(None, 'add')
         >>> cmd.name, cmd.help
         ('add', 'Add...')
@@ -78,17 +82,17 @@ class ScriptLoaderGroup(click.Group):
         Command ... is unknown!
         """
         try:
-            script = self.scripts[name]
+            cmd = self.command_plugins[name]
         except KeyError:
             import difflib
             matches = list(map(
-                str, difflib.get_close_matches(name, self.scripts, n=2)))
+                str, difflib.get_close_matches(name, self.command_plugin_names, n=2)))
 
             click.echo(f"Command '{name}' is unknown!")
             if len(matches) == 1:
                 # return the match if there was only one match
                 click.echo(f"I suppose you meant: '{matches[0]}'")
-                script = self.scripts[matches[0]]
+                cmd = self.command_plugins[matches[0]]
             elif matches:
                 click.echo("Did you mean '{matches}'?"
                            .format(matches="' or '".join(matches)))
@@ -96,22 +100,8 @@ class ScriptLoaderGroup(click.Group):
             else:
                 return None
 
-        if script.plugin is not None:
-            return script.plugin
-
-        # If it gets here, it means that it is an external script
-        import copy
-
-        from papis.commands.external import external_cli
-        cli = copy.copy(external_cli)
-
-        from papis.commands.external import get_command_help
-        cli.context_settings["obj"] = script
-        if script.path is not None:
-            cli.help = get_command_help(script.path)
-        cli.name = script.command_name
-        cli.short_help = cli.help
-        return cli
+        from papis.commands import load_command
+        return load_command(cmd)
 
 
 def generate_profile_writing_function(profiler: "cProfile.Profile",
@@ -124,7 +114,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
 
 
 @click.group(
-    cls=ScriptLoaderGroup,
+    cls=CommandPluginLoaderGroup,
     invoke_without_command=False)
 @click.help_option("--help", "-h")
 @click.version_option(version=papis.__version__)
@@ -189,6 +179,7 @@ def run(ctx: click.Context,
         set_list: list[tuple[str, str]],
         color: str,
         np: int | None) -> None:
+    import papis.config
 
     if np:
         os.environ["PAPIS_NP"] = str(np)
