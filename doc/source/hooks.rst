@@ -6,8 +6,9 @@ Some parts of Papis define and run hooks so that users
 and plugin writers can also tap into this functionality.
 
 A hook is declared in the same way as a plugin, in fact
-they are implemented in the same way within the
-`stevedore <https://github.com/openstack/stevedore>`__ plugin.
+they are implemented in the same way using the standard
+`Entry Point <https://packaging.python.org/en/latest/specifications/entry-points/>`__
+mechanism.
 
 Writing hooks as a user
 -----------------------
