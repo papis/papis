@@ -32,7 +32,7 @@ Command-line interface
 """
 
 import os
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 import click
 
@@ -101,7 +101,7 @@ def _is_git_repository(path: str) -> bool:
     metavar="<LIBRARY DIRECTORY>",
     nargs=1,
 )
-def cli(dir_path: Optional[str]) -> None:
+def cli(dir_path: str | None) -> None:
     """Initialize a Papis library."""
 
     from papis.tui.utils import confirm, prompt

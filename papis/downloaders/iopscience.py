@@ -1,5 +1,5 @@
 import re
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 import papis.downloaders.base
 
@@ -25,19 +25,19 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         url = url.replace("/pdf", "")
         if re.match(r".*iopscience\.iop\.org.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_doi(self) -> Optional[str]:
+    def get_doi(self) -> str | None:
         # NOTE: this is not very robust, but we do not have access to any data
         offset = len("https://iopscience.iop.org/article/")
         return self.uri[offset:]
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         url = self.ctx.data.get("pdf_url")
         if url is not None:
             return str(url)
@@ -51,7 +51,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return url
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         doi = self.get_doi()
         if doi is None:
             return None

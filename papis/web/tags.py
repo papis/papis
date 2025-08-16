@@ -1,5 +1,4 @@
 import re
-from typing import Dict, List, Union
 
 import dominate.tags as t
 
@@ -7,13 +6,13 @@ import papis.web.header
 import papis.web.html as wh
 import papis.web.navbar
 
-Tags = Union[str, List[str]]
+Tags = str | list[str]
 TAGS_SPLIT_RX = re.compile(r"\s*[,\s]\s*")
 PAPIS_TAGS_CLASS = "papis-tags"
 PAPIS_TAG_CLASS = "papis-tag"
 
 
-def ensure_tags_list(tags: Tags) -> List[str]:
+def ensure_tags_list(tags: Tags) -> list[str]:
     """
     Ensure getting a list of tags to render them.
     """
@@ -35,7 +34,7 @@ def tags_list_div(tags: Tags, libname: str) -> None:
             _tag(tag=tag, libname=libname)
 
 
-def html(pretitle: str, libname: str, tags: Dict[str, int],
+def html(pretitle: str, libname: str, tags: dict[str, int],
          sort_by: str) -> t.html_tag:
     with papis.web.header.main_html_document(pretitle) as result:
         with result.body:

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import papis
 import papis.document
@@ -58,7 +58,7 @@ key_conversion = [
 ]
 
 
-def pubmed_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def pubmed_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     new_data = papis.document.keyconversion_to_data(key_conversion, data)
     new_data["author"] = papis.document.author_list_to_author(new_data)
 
@@ -76,7 +76,7 @@ def is_valid_pmid(pmid: str) -> bool:
     return response.ok
 
 
-def get_data(query: str = "") -> Dict[str, Any]:
+def get_data(query: str = "") -> dict[str, Any]:
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
     with papis.utils.get_session() as session:
@@ -97,7 +97,7 @@ class Importer(papis.importer.Importer):
         super().__init__(name="pubmed", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         if is_valid_pmid(uri):
             return Importer(uri)
 

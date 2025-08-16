@@ -20,7 +20,7 @@ def test_export_run(tmp_library: TemporaryLibrary) -> None:
 
     # FIXME: not all fields are there and some don't match due to bibtex
     # pre- or post-processing
-    assert all(d["title"] == doc["title"] for d, doc in zip(data, docs))
+    assert all(d["title"] == doc["title"] for d, doc in zip(data, docs, strict=True))
 
     # json
     exported_json = run(docs, to_format="json")

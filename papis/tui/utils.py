@@ -1,5 +1,6 @@
 import re
-from typing import Any, Callable, Iterable, List, Optional
+from collections.abc import Callable, Iterable
+from typing import Any
 
 import click
 
@@ -54,7 +55,7 @@ PAPIS_PYGMENTS_DEFAULT_STYLE = {
 
 def confirm(prompt_string: str,
             yes: bool = True,
-            bottom_toolbar: Optional[str] = None) -> bool:
+            bottom_toolbar: str | None = None) -> bool:
     """Confirm with user input
 
     :param prompt_string: Question or text that the user gets.
@@ -121,9 +122,9 @@ def yes_no_dialog(title: str, text: str) -> Any:
 def prompt(
         prompt_string: str,
         default: str = "",
-        bottom_toolbar: Optional[str] = None,
+        bottom_toolbar: str | None = None,
         multiline: bool = False,
-        validator_function: Optional[Callable[[str], bool]] = None,
+        validator_function: Callable[[str], bool] | None = None,
         dirty_message: str = "") -> str:
     """Prompt user for input
 
@@ -183,7 +184,7 @@ def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
         yield from pb(iterable)
 
 
-def get_range(range_str: str) -> List[int]:
+def get_range(range_str: str) -> list[int]:
     from itertools import chain
 
     range_regex = re.compile(r"(\d+)-?(\d+)?")
@@ -195,10 +196,10 @@ def get_range(range_str: str) -> List[int]:
         return []
 
 
-def select_range(options: List[Any],
+def select_range(options: list[Any],
                  message: str,
                  accept_none: bool = False,
-                 bottom_toolbar: Optional[str] = None) -> List[int]:
+                 bottom_toolbar: str | None = None) -> list[int]:
     for i, o in enumerate(options):
         click.echo(f"{i}. {o}")
 

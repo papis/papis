@@ -1,4 +1,5 @@
-from typing import Any, Callable, List
+from collections.abc import Callable
+from typing import Any
 
 import dominate.tags as t
 import dominate.util as tu
@@ -60,7 +61,7 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                 with t.ul(cls="nav nav-tabs"):
 
                     def _tab_element(content: Callable[..., t.html_tag],
-                                     args: List[Any],
+                                     args: list[Any],
                                      href: str,
                                      active: bool = False) -> t.html_tag:
                         with t.li(cls="active nav-item") as result:

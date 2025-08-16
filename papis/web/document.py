@@ -1,6 +1,5 @@
 import os
 import urllib.parse
-from typing import List
 
 import dominate.tags as t
 
@@ -48,7 +47,7 @@ def links(doc: papis.document.Document, small: bool = True) -> None:
                                             safe="")))
 
 
-def _doc_files_icons(files: List[str],
+def _doc_files_icons(files: list[str],
                      libname: str,
                      libfolder: str) -> t.html_tag:
     with t.div() as result:

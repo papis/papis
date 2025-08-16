@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import papis
 import papis.document
@@ -14,7 +14,7 @@ ZENODO_URL = "https://www.zenodo.org/api/records/{record_id}"
 logger = papis.logging.get_logger(__name__)
 
 
-def get_author_info(authors: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def get_author_info(authors: list[dict[str, str]]) -> list[dict[str, str]]:
     """Formats each of the authors as a dictionary with given name,
     family name, and affiliation if available.
 
@@ -127,7 +127,7 @@ key_conversion = [
 ]
 
 
-def zenodo_data_to_papis_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     """Converts the dictionary from Zenodo to the conventional papis format.
 
     :param data: the raw dictionary from Zenodo
@@ -166,7 +166,7 @@ def _get_zenodo_response(record_id: str) -> str:
     return response.content.decode()
 
 
-def get_data(record_id: str) -> Dict[str, Any]:
+def get_data(record_id: str) -> dict[str, Any]:
     """Fetches a record from the Zenodo API and processes it with a helper function
 
     :param record_id: a Zenodo record id
@@ -190,7 +190,7 @@ def get_data(record_id: str) -> Dict[str, Any]:
 class Context(papis.importer.Context):
     def __init__(self) -> None:
         super().__init__()
-        self.file_info: Dict[str, Any] = {}
+        self.file_info: dict[str, Any] = {}
 
 
 class Importer(papis.importer.Importer):
@@ -202,14 +202,14 @@ class Importer(papis.importer.Importer):
         super().__init__(name="zenodo", uri=uri, ctx=Context())
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         if is_valid_record_id(uri):
             return Importer(uri)
 
         return None
 
     @classmethod
-    def match_data(cls, data: Dict[str, Any]) -> Optional["Importer"]:
+    def match_data(cls, data: dict[str, Any]) -> "Importer | None":
         return None
 
     def fetch_data(self) -> None:

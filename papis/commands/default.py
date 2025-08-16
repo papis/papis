@@ -29,7 +29,8 @@ Command-line interface
 """
 
 import os
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 import click
 import click.core
@@ -53,7 +54,7 @@ class ScriptLoaderGroup(click.Group):
     scripts = papis.commands.get_all_scripts()
     script_names = sorted(scripts)
 
-    def list_commands(self, ctx: click.core.Context) -> List[str]:
+    def list_commands(self, ctx: click.core.Context) -> list[str]:
         """List all matched commands in the command folder and in path
 
         >>> group = ScriptLoaderGroup()
@@ -66,7 +67,7 @@ class ScriptLoaderGroup(click.Group):
     def get_command(
             self,
             ctx: click.core.Context,
-            name: str) -> Optional[click.core.Command]:
+            name: str) -> click.core.Command | None:
         """Get the command to be run
 
         >>> group = ScriptLoaderGroup()
@@ -181,13 +182,13 @@ def run(ctx: click.Context,
         verbose: bool,
         profile: str,
         config: str,
-        lib: Optional[str],
+        lib: str | None,
         log: str,
-        logfile: Optional[str],
+        logfile: str | None,
         pick_lib: bool,
-        set_list: List[Tuple[str, str]],
+        set_list: list[tuple[str, str]],
         color: str,
-        np: Optional[int]) -> None:
+        np: int | None) -> None:
 
     if np:
         os.environ["PAPIS_NP"] = str(np)

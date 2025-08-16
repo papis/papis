@@ -23,7 +23,6 @@ a document. However, for this script the following formats are supported:
 """
 
 import re
-from typing import Set
 
 import click
 
@@ -58,7 +57,7 @@ def main(query: str, confirm: bool) -> None:
     )
 
     # Create an empty tag list
-    tag_list: Set[str] = set()
+    tag_list: set[str] = set()
     for doc in documents:
         tags = doc.get("tags")
         if tags is None:

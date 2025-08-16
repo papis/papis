@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import pytest
 
@@ -75,16 +75,17 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         infile, _ = os.path.splitext(os.path.basename(infile))
         return outfile.startswith(normalize_path(infile))
 
-    assert all(eq(outfile, infile) for outfile, infile in zip(files, inputfiles)), (
-        list(zip(files, inputfiles)))
+    assert (
+        all(eq(a, b) for a, b in zip(files, inputfiles, strict=True))), (
+        list(zip(files, inputfiles, strict=True)))
 
 
 def _mock_download_document(
         url: str,
-        expected_document_extension: Optional[str] = None,
-        _cookies: Optional[Dict[str, Any]] = None,
-        filename: Optional[str] = None,
-        ) -> Optional[str]:
+        expected_document_extension: str | None = None,
+        _cookies: dict[str, Any] | None = None,
+        filename: str | None = None,
+        ) -> str | None:
     # certain markers in the url signal the failure case
     if "fail" in url or "nonexist" in url:
         return None

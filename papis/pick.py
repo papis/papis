@@ -1,6 +1,7 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, List, Optional, Sequence, Type, TypeVar
+from collections.abc import Callable, Sequence
+from typing import Any, Generic, TypeVar
 
 import papis.config
 import papis.document
@@ -29,7 +30,7 @@ class Picker(ABC, Generic[T]):
             header_filter: Callable[[T], str],
             match_filter: Callable[[T], str],
             default_index: int = 0
-            ) -> List[T]:
+            ) -> list[T]:
         """
         :arg items: a sequence of items from which to pick a subset.
         :arg header_filter: (optional) a callable that takes an item from *items*
@@ -44,13 +45,13 @@ class Picker(ABC, Generic[T]):
         """
 
 
-def get_picker(name: str) -> Type[Picker[Any]]:
+def get_picker(name: str) -> type[Picker[Any]]:
     """Get a picker by its plugin name.
 
     :arg name: the name of an entrypoint to load a :class:`Picker` plugin from.
     :returns: a :class:`Picker` subclass implemented in the plugin.
     """
-    picker: Type[Picker[Any]] = (
+    picker: type[Picker[Any]] = (
         papis.plugin.get_extension_manager(PICKER_EXTENSION_NAME)[name].plugin
     )
 
@@ -60,7 +61,7 @@ def get_picker(name: str) -> Type[Picker[Any]]:
 def pick(items: Sequence[T],
          header_filter: Callable[[T], str] = str,
          match_filter: Callable[[T], str] = str,
-         default_index: int = 0) -> List[T]:
+         default_index: int = 0) -> list[T]:
     """Load a :class:`Picker` plugin and select a subset of *items*.
 
     The arguments to this function match those of :meth:`Picker.__call__`. The
@@ -72,7 +73,7 @@ def pick(items: Sequence[T],
 
     name = papis.config.getstring("picktool")
     try:
-        picker: Type[Picker[T]] = get_picker(name)
+        picker: type[Picker[T]] = get_picker(name)
     except KeyError:
         entrypoints = papis.plugin.get_available_entrypoints(PICKER_EXTENSION_NAME)
         logger.error(
@@ -88,7 +89,7 @@ def pick(items: Sequence[T],
 
 def pick_doc(
         documents: Sequence[papis.document.Document]
-        ) -> List[papis.document.Document]:
+        ) -> list[papis.document.Document]:
     """Pick from a sequence of *documents* using :func:`pick`.
 
     This function uses the :confval:`header-format-file` setting
@@ -119,7 +120,7 @@ def pick_doc(
                 match_filter=match_filter)
 
 
-def pick_subfolder_from_lib(lib: str) -> List[str]:
+def pick_subfolder_from_lib(lib: str) -> list[str]:
     """Pick subfolders from all existing subfolders in *lib*.
 
     Note that this includes document folders in *lib* as well nested library
@@ -141,7 +142,7 @@ def pick_subfolder_from_lib(lib: str) -> List[str]:
     return pick(folders)
 
 
-def pick_library(libs: Optional[List[str]] = None) -> List[str]:
+def pick_library(libs: list[str] | None = None) -> list[str]:
     """Pick a library from the current configuration.
 
     :arg libs: a list of libraries to pick from.

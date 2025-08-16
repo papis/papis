@@ -9,7 +9,6 @@ Command-line interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
-from typing import Optional, Tuple
 
 import click
 
@@ -97,12 +96,12 @@ def edit_notes(document: papis.document.Document,
     help="Editor to be used.",
     default=None)
 def cli(query: str,
-        doc_folder: Tuple[str, ...],
+        doc_folder: tuple[str, ...],
         git: bool,
         notes: bool,
         _all: bool,
-        editor: Optional[str],
-        sort_field: Optional[str],
+        editor: str | None,
+        sort_field: str | None,
         sort_reverse: bool) -> None:
     """Edit document information from a given library."""
     documents = papis.cli.handle_doc_folder_query_all_sort(query,

@@ -53,8 +53,6 @@ Command-line interface
     :prog: papis rename
 """
 
-from typing import Optional, Tuple
-
 import click
 
 import papis.cli
@@ -125,8 +123,8 @@ def cli(query: str,
         _all: bool,
         batch: bool,
         git: bool,
-        sort_field: Optional[str],
-        doc_folder: Tuple[str, ...],
+        sort_field: str | None,
+        doc_folder: tuple[str, ...],
         sort_reverse: bool) -> None:
     """Rename document folders."""
     if not folder_name:

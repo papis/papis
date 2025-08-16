@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from stevedore import ExtensionManager
 
@@ -6,7 +6,7 @@ import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-MANAGERS: Dict[str, ExtensionManager] = {}
+MANAGERS: dict[str, ExtensionManager] = {}
 
 
 def stevedore_error_handler(manager: ExtensionManager,
@@ -36,7 +36,7 @@ def get_extension_manager(namespace: str) -> ExtensionManager:
     return manager
 
 
-def get_available_entrypoints(namespace: str) -> List[str]:
+def get_available_entrypoints(namespace: str) -> list[str]:
     """
     :returns: a list of all available entry points in the given *namespace*
         sorted alphabetically.
@@ -45,7 +45,7 @@ def get_available_entrypoints(namespace: str) -> List[str]:
     return sorted(str(e) for e in manager.entry_points_names())
 
 
-def get_available_plugins(namespace: str) -> List[Any]:
+def get_available_plugins(namespace: str) -> list[Any]:
     """
     :returns: a list of all available plugins in the given *namespace*.
     """

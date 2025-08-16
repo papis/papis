@@ -1,5 +1,5 @@
 import re
-from typing import Any, ClassVar, Dict, Optional, Tuple
+from typing import Any, ClassVar
 
 import papis.downloaders.fallback
 
@@ -13,11 +13,11 @@ class Downloader(papis.downloaders.fallback.Downloader):
     # TODO: a list of other domains seems to be available at
     # https://hal.science/browse/portal
 
-    SUPPORTED_HAL_SCIENCE_SUBDOMAINS: ClassVar[Tuple[str, ...]] = (
+    SUPPORTED_HAL_SCIENCE_SUBDOMAINS: ClassVar[tuple[str, ...]] = (
         "hal", r"shs\.hal", r"theses\.hal", r"media\.hal",  # spell: disable
         )
 
-    SUPPORTED_ARCHIVES_OUVERTES_SUBDOMAINS: ClassVar[Tuple[str, ...]] = (
+    SUPPORTED_ARCHIVES_OUVERTES_SUBDOMAINS: ClassVar[tuple[str, ...]] = (
         "hal", "halshs", "tel", "medihal",
         # other domains
         "hal-anr", "hal-bnf", "hal-cea", "hal-centralesupelec", "hal-cnam",
@@ -33,7 +33,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
 
     @classmethod
     def match(
-            cls, url: str) -> Optional[papis.downloaders.fallback.Downloader]:
+            cls, url: str) -> papis.downloaders.fallback.Downloader | None:
         subdomains = "|".join(cls.SUPPORTED_ARCHIVES_OUVERTES_SUBDOMAINS)
         if re.match(fr".*({subdomains})\.archives-ouvertes\.fr.*", url):
             return Downloader(url)
@@ -44,7 +44,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
 
         return None
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         data = super().get_data()
 
         keywords = data.get("keywords")
@@ -58,7 +58,7 @@ class Downloader(papis.downloaders.fallback.Downloader):
 
         return data
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         if "pdf_url" in self.ctx.data:
             url = self.uri.replace("document", "bibtex")
             self.logger.debug("Using BibTeX URL: '%s'.", url)

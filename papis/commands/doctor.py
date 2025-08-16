@@ -125,7 +125,8 @@ Command-line interface
 import collections
 import os
 import re
-from typing import Any, Callable, Dict, List, Match, NamedTuple, Optional, Set, Tuple
+from collections.abc import Callable
+from typing import Any, NamedTuple, TypeAlias
 
 import click
 
@@ -141,9 +142,9 @@ logger = papis.logging.get_logger(__name__)
 
 #: Callable for automatic doctor fixers. This callable is constructed by a
 #: check and is expected to wrap all the required data, so it takes no arguments.
-FixFn = Callable[[], None]
+FixFn: TypeAlias = Callable[[], None]
 #: Callable for doctor document checks.
-CheckFn = Callable[[papis.document.Document], List["Error"]]
+CheckFn: TypeAlias = Callable[[papis.document.Document], list["Error"]]
 
 
 class Error(NamedTuple):
@@ -161,9 +162,9 @@ class Error(NamedTuple):
     suggestion_cmd: str
     #: A callable that can autofix the error (see :data:`FixFn`). Note that this
     #: will change the attached :attr:`doc`.
-    fix_action: Optional[FixFn]
+    fix_action: FixFn | None
     #: The document that generated the error.
-    doc: Optional[papis.document.Document]
+    doc: papis.document.Document | None
 
 
 class Check(NamedTuple):
@@ -174,10 +175,10 @@ class Check(NamedTuple):
     operate: CheckFn
 
 
-REGISTERED_CHECKS: Dict[str, Check] = {}
+REGISTERED_CHECKS: dict[str, Check] = {}
 
 
-def error_to_dict(e: Error) -> Dict[str, Any]:
+def error_to_dict(e: Error) -> dict[str, Any]:
     return {
         "msg": e.payload,
         "path": e.path,
@@ -196,14 +197,14 @@ def register_check(name: str, check: CheckFn) -> None:
     REGISTERED_CHECKS[name] = Check(name=name, operate=check)
 
 
-def registered_checks_names() -> List[str]:
+def registered_checks_names() -> list[str]:
     return list(REGISTERED_CHECKS.keys())
 
 
 FILES_CHECK_NAME = "files"
 
 
-def files_check(doc: papis.document.Document) -> List[Error]:
+def files_check(doc: papis.document.Document) -> list[Error]:
     """
     Check whether the files of a document actually exist in the filesystem.
 
@@ -253,7 +254,7 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 KEYS_MISSING_CHECK_NAME = "keys-missing"
 
 
-def keys_missing_check(doc: papis.document.Document) -> List[Error]:
+def keys_missing_check(doc: papis.document.Document) -> list[Error]:
     """
     Checks whether the keys provided in the configuration
     option :confval:`doctor-keys-missing-keys` exist in the document
@@ -277,7 +278,7 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
 
     keys.extend(papis.config.getlist("keys-missing-keys-extend", section="doctor"))
 
-    def make_fixer(key: str) -> Optional[FixFn]:
+    def make_fixer(key: str) -> FixFn | None:
         def fixer_author_from_author_list() -> None:
             if "author_list" not in doc:
                 return
@@ -316,7 +317,7 @@ REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
 REFS_CHECK_NAME = "refs"
 
 
-def refs_check(doc: papis.document.Document) -> List[Error]:
+def refs_check(doc: papis.document.Document) -> list[Error]:
     """
     Checks that a ref exists and if not it tries to create one
     according to the :confval:`ref-format` configuration option.
@@ -368,11 +369,11 @@ def refs_check(doc: papis.document.Document) -> List[Error]:
     return []
 
 
-DUPLICATED_KEYS_SEEN: Dict[str, Set[str]] = collections.defaultdict(set)
+DUPLICATED_KEYS_SEEN: dict[str, set[str]] = collections.defaultdict(set)
 DUPLICATED_KEYS_NAME = "duplicated-keys"
 
 
-def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
+def duplicated_keys_check(doc: papis.document.Document) -> list[Error]:
     """
     Check for duplicated keys in the list given by the
     :confval:`doctor-duplicated-keys-keys` configuration option.
@@ -385,7 +386,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
     keys = papis.config.getlist("duplicated-keys-keys", section="doctor")
     keys.extend(papis.config.getlist("duplicated-keys-keys-extend", section="doctor"))
 
-    results: List[Error] = []
+    results: list[Error] = []
     for key in keys:
         value = doc.get(key)
         if value is None:
@@ -411,7 +412,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> List[Error]:
 DUPLICATED_VALUES_NAME = "duplicated-values"
 
 
-def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
+def duplicated_values_check(doc: papis.document.Document) -> list[Error]:
     """
     Check if the keys given by :confval:`doctor-duplicated-values-keys`
     contain any duplicate entries. These keys are expected to be lists of items.
@@ -423,7 +424,7 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
     keys.extend(papis.config.getlist("duplicated-values-keys-extend", section="doctor"))
     folder = doc.get_main_folder() or ""
 
-    def make_fixer(key: str, entries: List[Any]) -> FixFn:
+    def make_fixer(key: str, entries: list[Any]) -> FixFn:
         def fixer() -> None:
             logger.info("[FIX] Removing duplicates entries from key '%s'.", key)
             doc[key] = entries
@@ -438,7 +439,7 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
         else:
             return f
 
-    results: List[Error] = []
+    results: list[Error] = []
     for key in keys:
         value = doc.get(key)
         if value is None:
@@ -471,7 +472,7 @@ def duplicated_values_check(doc: papis.document.Document) -> List[Error]:
 BIBTEX_TYPE_CHECK_NAME = "bibtex-type"
 
 
-def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
+def bibtex_type_check(doc: papis.document.Document) -> list[Error]:
     """
     Check that the document type is compatible with BibTeX or BibLaTeX type descriptors.
 
@@ -480,7 +481,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
     from papis.bibtex import bibtex_type_converter, bibtex_types
     folder = doc.get_main_folder() or ""
 
-    def make_fixer(bib_type: str) -> Optional[FixFn]:
+    def make_fixer(bib_type: str) -> FixFn | None:
         def fixer() -> None:
             new_bib_type = bibtex_type_converter[bib_type]
             logger.info("[FIX] Replacing type '%s' with '%s'.", bib_type, new_bib_type)
@@ -516,7 +517,7 @@ def bibtex_type_check(doc: papis.document.Document) -> List[Error]:
 BIBLATEX_TYPE_ALIAS_CHECK_NAME = "biblatex-type-alias"
 
 
-def biblatex_type_alias_check(doc: papis.document.Document) -> List[Error]:
+def biblatex_type_alias_check(doc: papis.document.Document) -> list[Error]:
     """
     Check that the BibLaTeX type of the document is not a known alias.
 
@@ -559,7 +560,7 @@ BIBLATEX_KEY_ALIAS_IGNORED = {"journal"}
 BIBLATEX_KEY_ALIAS_CHECK_NAME = "biblatex-key-alias"
 
 
-def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
+def biblatex_key_alias_check(doc: papis.document.Document) -> list[Error]:
     """
     Check that no BibLaTeX keys in the document are known aliases.
 
@@ -595,7 +596,7 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> List[Error]:
 BIBLATEX_REQUIRED_KEYS_CHECK_NAME = "biblatex-required-keys"
 
 
-def biblatex_required_keys_check(doc: papis.document.Document) -> List[Error]:
+def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
     """
     Check that required BibLaTeX keys are part of the document based on its type.
 
@@ -651,7 +652,7 @@ BIBLATEX_KEY_CONVERT_NUMBER_REGEX = re.compile(
 )
 
 
-def biblatex_key_convert_check(doc: papis.document.Document) -> List[Error]:
+def biblatex_key_convert_check(doc: papis.document.Document) -> list[Error]:
     """
     Check if any BibLaTeX keys in the document are incorrectly assigned.
 
@@ -715,7 +716,7 @@ def biblatex_key_convert_check(doc: papis.document.Document) -> List[Error]:
 KEY_TYPE_CHECK_NAME = "key-type"
 
 
-def get_key_type_check_keys() -> Dict[str, type]:
+def get_key_type_check_keys() -> dict[str, type]:
     """
     Check the ``doctor-key-type-keys`` configuration entry for correctness.
 
@@ -741,7 +742,7 @@ def get_key_type_check_keys() -> Dict[str, type]:
                        "Use 'doctor-key-type-keys' instead.")
 
     keys.extend(papis.config.getlist("key-type-keys-extend", section="doctor"))
-    processed_keys: Dict[str, type] = {}
+    processed_keys: dict[str, type] = {}
     for value in keys:
         if ":" not in value:
             logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
@@ -761,7 +762,7 @@ def get_key_type_check_keys() -> Dict[str, type]:
     return processed_keys
 
 
-def key_type_check(doc: papis.document.Document) -> List[Error]:
+def key_type_check(doc: papis.document.Document) -> list[Error]:
     """
     Check document keys have expected types.
 
@@ -853,7 +854,7 @@ HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});", r
 HTML_CODES_CHECK_NAME = "html-codes"
 
 
-def html_codes_check(doc: papis.document.Document) -> List[Error]:
+def html_codes_check(doc: papis.document.Document) -> list[Error]:
     """
     Checks that the keys in :confval:`doctor-html-codes-keys`
     configuration options do not contain any HTML codes like ``&amp;`` etc.
@@ -866,7 +867,7 @@ def html_codes_check(doc: papis.document.Document) -> List[Error]:
     folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
-        def lower(p: Match[str]) -> str:
+        def lower(p: re.Match[str]) -> str:
             result, = p.groups()
             return f"&{result.lower()};"
 
@@ -903,7 +904,7 @@ HTML_TAGS_REGEX = re.compile(r"<.*?>")
 HTML_TAGS_WHITESPACE_REGEX = re.compile(r"\s+")
 
 
-def html_tags_check(doc: papis.document.Document) -> List[Error]:
+def html_tags_check(doc: papis.document.Document) -> list[Error]:
     """
     Checks that the keys in :confval:`doctor-html-tags-keys`
     configuration options do not contain any HTML tags like ``<href>`` etc.
@@ -1009,8 +1010,8 @@ DEPRECATED_CHECK_NAMES = {
 }
 
 
-def gather_errors(documents: List[papis.document.Document],
-                  checks: Optional[List[str]] = None) -> List[Error]:
+def gather_errors(documents: list[papis.document.Document],
+                  checks: list[str] | None = None) -> list[Error]:
     """Run all *checks* over the list of *documents*.
 
     Only checks registered with :func:`register_check` are supported and any
@@ -1031,7 +1032,7 @@ def gather_errors(documents: List[papis.document.Document],
     checks = [check for check in checks if check in REGISTERED_CHECKS]
     logger.debug("Running checks: '%s'.", "', '".join(checks))
 
-    errors: List[Error] = []
+    errors: list[Error] = []
     for doc in documents:
         for check in checks:
             errors.extend(REGISTERED_CHECKS[check].operate(doc))
@@ -1040,7 +1041,7 @@ def gather_errors(documents: List[papis.document.Document],
 
 
 def fix_errors(doc: papis.document.Document,
-               checks: Optional[List[str]] = None) -> None:
+               checks: list[str] | None = None) -> None:
     """Fix errors in *doc* for the given *checks*.
 
     This function only applies existing auto-fixers to the document. This is
@@ -1068,7 +1069,7 @@ def fix_errors(doc: papis.document.Document,
         logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
 
 
-def process_errors(errors: List[Error],
+def process_errors(errors: list[Error],
                    fix: bool = False,
                    explain: bool = False,
                    suggest: bool = False,
@@ -1136,7 +1137,7 @@ def process_errors(errors: List[Error],
 
 
 def run(doc: papis.document.Document,
-        checks: Optional[List[str]] = None,
+        checks: list[str] | None = None,
         fix: bool = True,
         explain: bool = False,
         suggest: bool = False,
@@ -1183,14 +1184,14 @@ def run(doc: papis.document.Document,
 @papis.cli.bool_flag("--all-checks", "all_checks",
                      help="Run all available checks (ignores --checks).")
 def cli(query: str,
-        doc_folder: Tuple[str, ...],
-        sort_field: Optional[str],
+        doc_folder: tuple[str, ...],
+        sort_field: str | None,
         sort_reverse: bool,
         _all: bool,
         fix: bool,
         edit: bool,
         explain: bool,
-        _checks: List[str],
+        _checks: list[str],
         _json: bool,
         suggest: bool,
         all_checks: bool) -> None:

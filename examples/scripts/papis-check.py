@@ -34,7 +34,8 @@ Command Options
 """
 
 import os
-from typing import Any, Dict, List, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import click
 
@@ -80,7 +81,7 @@ def check_files(document: papis.document.Document) -> bool:
 
 def run(keys: Sequence[str],
         documents: Sequence[papis.document.Document],
-        ) -> Sequence[Dict[str, Any]]:
+        ) -> Sequence[dict[str, Any]]:
     result = []
     for document in documents:
         for key in keys:
@@ -104,7 +105,7 @@ def run(keys: Sequence[str],
     multiple=True,
     default=lambda: papis.config.getlist("keys", section="check")
 )
-def cli(query: str, keys: List[str]) -> None:
+def cli(query: str, keys: list[str]) -> None:
     """Check document from a given library"""
     documents = papis.database.get().query(query)
     troubled_docs = run(keys, documents)

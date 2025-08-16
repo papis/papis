@@ -1,6 +1,5 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
 from warnings import warn
 
 from papis.document import Document
@@ -42,7 +41,7 @@ def get_cache_file_path(libpaths: str) -> str:
 class Database(ABC):
     """Abstract base class for Papis caching database backends."""
 
-    def __init__(self, library: Optional[Library] = None) -> None:
+    def __init__(self, library: Library | None = None) -> None:
         if library is None:
             from papis.config import get_lib
             library = get_lib()
@@ -98,7 +97,7 @@ class Database(ABC):
         """Remove a document from the database."""
 
     @abstractmethod
-    def query(self, query_string: str) -> List[Document]:
+    def query(self, query_string: str) -> list[Document]:
         """Find a document in the database by the given *query_string*.
 
         The query string can have a more complex syntax based on the database
@@ -106,14 +105,14 @@ class Database(ABC):
         """
 
     @abstractmethod
-    def query_dict(self, query: Dict[str, str]) -> List[Document]:
+    def query_dict(self, query: dict[str, str]) -> list[Document]:
         """Find a document in the database that matches the keys in *query*."""
 
     @abstractmethod
-    def get_all_documents(self) -> List[Document]:
+    def get_all_documents(self) -> list[Document]:
         """Get all documents in the database."""
 
-    def find_by_id(self, identifier: str) -> Optional[Document]:
+    def find_by_id(self, identifier: str) -> Document | None:
         """Find a document in the library by its Papis ID *identifier*."""
         from papis.id import ID_KEY_NAME
 
@@ -153,7 +152,7 @@ class Database(ABC):
 
         return self.lib.name
 
-    def get_dirs(self) -> List[str]:
+    def get_dirs(self) -> list[str]:
         warn(f"Calling '{type(self).__name__}.get_dirs' directly is deprecated "
              "and will be removed in the next version of Papis (after 0.15). Use "
              "the 'self.lib.paths' member directly.",

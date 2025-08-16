@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 from urllib.parse import urlparse
 
 import papis.downloaders.base
@@ -14,16 +13,16 @@ class Downloader(papis.downloaders.Downloader):
             "usenix",
             expected_document_extension="pdf",
         )
-        self._raw_data: Optional[str] = None
+        self._raw_data: str | None = None
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         if re.match(r".*usenix.org/.*", url):
             return cls(url)
         else:
             return None
 
-    def get_identifier(self) -> Optional[str]:
+    def get_identifier(self) -> str | None:
         """
         >>> d = Downloader("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov")
         >>> d.get_identifier()
@@ -47,7 +46,7 @@ class Downloader(papis.downloaders.Downloader):
             if not self._raw_data:
                 self.logger.warning("Failed to fetch data from '%s'.", self.uri)
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         import bs4
 
         # make sure self._raw_data is available
@@ -85,7 +84,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return pdf_url.strip()
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         o = urlparse(self.uri)
         import bs4
 

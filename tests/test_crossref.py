@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -12,7 +12,7 @@ RESOURCEDIR = os.path.join(
 )
 
 
-def _get_test_json(filename: str) -> Dict[str, Any]:
+def _get_test_json(filename: str) -> dict[str, Any]:
     with open(filename, encoding="utf-8") as fd:
         result = json.load(fd)
 

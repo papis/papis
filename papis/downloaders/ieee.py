@@ -1,5 +1,4 @@
 import re
-from typing import Dict, Optional, Tuple
 
 import papis.downloaders.base
 import papis.utils
@@ -12,7 +11,7 @@ class Downloader(papis.downloaders.Downloader):
         super().__init__(url, name="ieee", expected_document_extension="pdf")
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         m = re.match(r"^ieee:(.*)", url, re.IGNORECASE)
         if m:
             url = f"https://ieeexplore.ieee.org/document/{m.group(1)}"
@@ -27,7 +26,7 @@ class Downloader(papis.downloaders.Downloader):
         url = self.uri
         return re.sub(r"^.*ieeexplore\.ieee\.org/document/(.*)\/", r"\1", url)
 
-    def _get_bibtex_url(self) -> Tuple[str, Dict[str, str]]:
+    def _get_bibtex_url(self) -> tuple[str, dict[str, str]]:
         identifier = self.get_identifier()
         bibtex_url = \
             "https://ieeexplore.ieee.org/xpl/downloadCitations?reload=true"
@@ -50,7 +49,7 @@ class Downloader(papis.downloaders.Downloader):
 
         self.bibtex_data = response.content.decode().replace("<br>", "")
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         identifier = self.get_identifier()
         pdf_url = "{}{}{}".format(
             "https://ieeexplore.ieee.org/",

@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 import papis.downloaders.base
 
@@ -14,14 +13,14 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         # https://aip.scitation.org/doi/10.1063/1.4873138
         if re.match(r".*(aip|aapt)\.scitation\.org.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_doi(self) -> Optional[str]:
+    def get_doi(self) -> str | None:
         mdoi = re.match(r".*/doi/(.*/[^?&%^$]*).*", self.uri)
         if mdoi:
             doi = mdoi.group(1).replace("abs/", "").replace("full/", "")
@@ -29,14 +28,14 @@ class Downloader(papis.downloaders.Downloader):
         else:
             return None
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         # https://aip.scitation.org/doi/pdf/10.1063/1.4873138
         durl = f"https://aip.scitation.org/doi/pdf/{self.get_doi()}"
         self.logger.debug("Using document URL: '%s'.", durl)
 
         return durl
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         url = ("https://aip.scitation.org/action/downloadCitation"
                f"?format=bibtex&cookieSet=1&doi={self.get_doi()}")
         self.logger.debug("Using BibTeX URL: '%s'.", url)

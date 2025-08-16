@@ -4,7 +4,7 @@ This module define the entry point for external scripts to be called by papis.
 
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import click
 
@@ -28,7 +28,7 @@ def get_command_help(path: str) -> str:
     return "No help message available"
 
 
-def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
+def get_exported_variables(ctx: dict[str, Any] | None = None) -> dict[str, str]:
     """
     Export environment variables so that external script can access to
     the information
@@ -62,7 +62,7 @@ def get_exported_variables(ctx: Optional[Dict[str, Any]] = None) -> Dict[str, st
     )
 @click.argument("flags", nargs=-1)
 @click.pass_context
-def external_cli(ctx: click.core.Context, flags: List[str]) -> None:
+def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
     """Actual papis command to call the external command"""
     script: papis.commands.Script = ctx.obj
     path = script.path

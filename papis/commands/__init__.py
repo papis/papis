@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, NamedTuple, Optional
+from typing import NamedTuple
 
 import click.core
 
@@ -51,7 +51,7 @@ class AliasedGroup(click.core.Group):
 
     def get_command(self,
                     ctx: click.core.Context,
-                    cmd_name: str) -> Optional[click.core.Command]:
+                    cmd_name: str) -> click.core.Command | None:
         """
         :returns: given a context and a command name, this returns a
             :class:`click.Command` object if it exists or returns *None*.
@@ -81,12 +81,12 @@ class Script(NamedTuple):
     #: The name of the command.
     command_name: str
     #: The path to the script if it is a separate executable.
-    path: Optional[str]
+    path: str | None
     #: A :class:`click.Command` if the script is registered as an entry point.
-    plugin: Optional[click.Command]
+    plugin: click.Command | None
 
 
-def get_external_scripts() -> Dict[str, Script]:
+def get_external_scripts() -> dict[str, Script]:
     """Get a mapping of all external scripts that should be registered with Papis.
 
     An external script is an executable that can be found in the
@@ -98,7 +98,7 @@ def get_external_scripts() -> Dict[str, Script]:
     import glob
     paths = [papis.config.get_scripts_folder(), *os.environ.get("PATH", "").split(":")]
 
-    scripts: Dict[str, Script] = {}
+    scripts: dict[str, Script] = {}
     for path in paths:
         for script in glob.iglob(os.path.join(path, "papis-*")):
             m = EXTERNAL_COMMAND_REGEX.match(script)
@@ -117,7 +117,7 @@ def get_external_scripts() -> Dict[str, Script]:
     return scripts
 
 
-def get_scripts() -> Dict[str, Script]:
+def get_scripts() -> dict[str, Script]:
     """Get a mapping of commands that should be registered with Papis.
 
     This finds all the commands that are registered as entry points in the
@@ -143,7 +143,7 @@ def get_scripts() -> Dict[str, Script]:
     return scripts
 
 
-def get_all_scripts() -> Dict[str, Script]:
+def get_all_scripts() -> dict[str, Script]:
     """Get a mapping of all commands that should be registered with Papis.
 
     This includes the results from :func:`get_external_scripts` and

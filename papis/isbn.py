@@ -1,5 +1,5 @@
 # See https://github.com/xlcnd/isbnlib for details
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import click
 from isbnlib.registry import services as isbn_services
@@ -15,7 +15,7 @@ ISBN_SERVICE_NAMES = list(isbn_services)
 
 
 def get_data(query: str = "",
-             service: Optional[str] = None) -> List[Dict[str, Any]]:
+             service: str | None = None) -> list[dict[str, Any]]:
     logger.debug("Trying to retrieve ISBN from query: '%s'.", query)
 
     if service is None:
@@ -36,7 +36,7 @@ def get_data(query: str = "",
         return []
 
 
-def data_to_papis(data: Dict[str, Any]) -> Dict[str, Any]:
+def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
     """
     Convert data from isbnlib into Papis formatted data.
 
@@ -108,7 +108,7 @@ class Importer(papis.importer.Importer):
         super().__init__(name="isbn", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         import isbnlib
         if isbnlib.notisbn(uri):
             return None

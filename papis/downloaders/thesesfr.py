@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 import papis.downloaders.base
 
@@ -14,7 +13,7 @@ class Downloader(papis.downloaders.Downloader):
         super().__init__(url, name="thesesfr", expected_document_extension="pdf")
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         # ID format ("nnt" in french). Not specified in the docs, but it's
         # the pattern that all the published theses until now follow.
         # https://documentation.abes.fr/aidetheses/thesesfr/index.html
@@ -24,18 +23,18 @@ class Downloader(papis.downloaders.Downloader):
         else:
             return None
 
-    def get_identifier(self) -> Optional[str]:
+    def get_identifier(self) -> str | None:
         if match := re.search(r"(\d{4}[A-Z]{3,5}\d{3,5})", self.uri):
             return match.group(1)
         else:
             return None
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         baseurl = "https://theses.fr/api/v1/document"
         identifier = self.get_identifier()
         return f"{baseurl}/{identifier}"
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         url = f"https://www.theses.fr/{self.get_identifier()}.bib"
         self.logger.debug("Using BibTeX URL: '%s'.", url)
         return url

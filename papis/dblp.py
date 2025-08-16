@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import click
 
@@ -54,7 +54,7 @@ DBLP_KEY_CONVERSION = [
 ]
 
 
-def _dblp_journal(name: str) -> Optional[str]:
+def _dblp_journal(name: str) -> str | None:
     import json
     result = json.loads(search(query=f"{name}$", api="venue"))
 
@@ -66,7 +66,7 @@ def _dblp_journal(name: str) -> Optional[str]:
     return str(journal) if journal else None
 
 
-def _dblp_authors(entries: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _dblp_authors(entries: dict[str, Any]) -> list[dict[str, Any]]:
     return [papis.document.split_author_name(author["text"])
             for author in entries["author"]]
 
@@ -126,7 +126,7 @@ def search(
     return response.content.decode()
 
 
-def get_data(query: str = "", max_results: int = 30) -> List[Dict[str, Any]]:
+def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
     import json
     response = json.loads(
         search(query=query, output_format="json", max_results=max_results)
@@ -201,7 +201,7 @@ class Importer(papis.importer.Importer):
         super().__init__(name="dblp", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         if re.match(r".*dblp\.org.*\.html", uri):
             return Importer(uri)
         elif is_valid_dblp_key(uri):

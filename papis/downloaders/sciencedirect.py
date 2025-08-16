@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import papis.document
 import papis.downloaders
@@ -9,7 +9,7 @@ import papis.downloaders.base
 KNOWN_TEXT = {"inf", "__text__", "simple-para"}
 
 
-def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _parse_author_list(data: dict[str, Any]) -> list[dict[str, Any]]:
     # NOTE: this seems to be a data structure of the form
     #   entry {
     #       "#name": <key-name>,
@@ -24,7 +24,7 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     if "#name" not in data or "$$" not in data:
         return [{}]
 
-    def _parse_author(author: Dict[str, Any]) -> Dict[str, Any]:
+    def _parse_author(author: dict[str, Any]) -> dict[str, Any]:
         # NOTE: this seems fairly fragile, so hopefully it won't break too badly
         if "$$" not in author:
             return {}
@@ -43,7 +43,7 @@ def _parse_author_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [_parse_author(a) for a in data["$$"] if a["#name"] == "author"]
 
 
-def _parse_full_abstract(data: List[Dict[str, Any]]) -> str:
+def _parse_full_abstract(data: list[dict[str, Any]]) -> str:
     # NOTE: `data` contains `abstract-sec` sections with `__text__` entries that
     # we retrieve and concatenate to get the full abstract text
 
@@ -95,15 +95,15 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         if re.match(r".*\.sciencedirect\.com.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         soup = self._get_soup()
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
 
         # get authors
         scripts = soup.find_all(name="script", attrs={"data-iso-key": "_0"})

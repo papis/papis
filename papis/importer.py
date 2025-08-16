@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import papis
 import papis.logging
@@ -44,8 +45,8 @@ class Context:
     """
 
     def __init__(self) -> None:
-        self.data: Dict[str, Any] = {}
-        self.files: List[str] = []
+        self.data: dict[str, Any] = {}
+        self.files: list[str] = []
 
     def __bool__(self) -> bool:
         return bool(self.files) or bool(self.data)
@@ -72,7 +73,7 @@ class Importer:
     def __init__(self,
                  uri: str = "",
                  name: str = "",
-                 ctx: Optional[Context] = None) -> None:
+                 ctx: Context | None = None) -> None:
         """
         :param uri: uri
         :param name: Name of the importer
@@ -89,7 +90,7 @@ class Importer:
         self.logger = papis.logging.get_logger(f"papis.importer.{self.name}")
 
     @classmethod
-    def match(cls, uri: str) -> Optional["Importer"]:
+    def match(cls, uri: str) -> "Importer | None":
         """Check if the importer can process the given URI.
 
         For example, an importer that supports links from the arXiv can check
@@ -112,7 +113,7 @@ class Importer:
             )
 
     @classmethod
-    def match_data(cls, data: Dict[str, Any]) -> Optional["Importer"]:
+    def match_data(cls, data: dict[str, Any]) -> "Importer | None":
         """Check if the importer can process the given metadata.
 
         This method can be used to search for valid URIs inside the *data* that
@@ -176,17 +177,17 @@ def get_import_mgr() -> "stevedore.extension.ExtensionManager":
     return papis.plugin.get_extension_manager(IMPORTER_EXTENSION_NAME)
 
 
-def available_importers() -> List[str]:
+def available_importers() -> list[str]:
     """Get a list of available importer names."""
     return papis.plugin.get_available_entrypoints(IMPORTER_EXTENSION_NAME)
 
 
-def get_importers() -> List[Type[Importer]]:
+def get_importers() -> list[type[Importer]]:
     """Get a list of available importer classes."""
     return [e.plugin for e in get_import_mgr()]
 
 
-def get_importer_by_name(name: str) -> Type[Importer]:
+def get_importer_by_name(name: str) -> type[Importer]:
     """Get an importer class by *name*."""
-    imp: Type[Importer] = get_import_mgr()[name].plugin
+    imp: type[Importer] = get_import_mgr()[name].plugin
     return imp

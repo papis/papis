@@ -57,7 +57,6 @@ Command-line interface
 """
 
 import os
-from typing import List, Optional, Tuple
 
 import click
 
@@ -79,11 +78,11 @@ logger = papis.logging.get_logger(__name__)
 EXPORTER_EXTENSION_NAME = "papis.exporter"
 
 
-def available_formats() -> List[str]:
+def available_formats() -> list[str]:
     return papis.plugin.get_available_entrypoints(EXPORTER_EXTENSION_NAME)
 
 
-def run(documents: List[papis.document.Document], to_format: str) -> str:
+def run(documents: list[papis.document.Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 
@@ -131,8 +130,8 @@ def run(documents: List[papis.document.Document], to_format: str) -> str:
     "--batch",
     help="Do not prompt when overwriting a file.")
 def cli(query: str,
-        doc_folder: Tuple[str, ...],
-        sort_field: Optional[str],
+        doc_folder: tuple[str, ...],
+        sort_field: str | None,
         sort_reverse: bool,
         folder: str,
         out: str,

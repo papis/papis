@@ -69,7 +69,6 @@ Command-line interface
 """
 
 import os
-from typing import Optional, Tuple
 
 import click
 
@@ -90,7 +89,7 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        opener: Optional[str] = None,
+        opener: str | None = None,
         folder: bool = False,
         mark: bool = False) -> None:
     if opener is not None:
@@ -170,8 +169,8 @@ def run(document: papis.document.Document,
     "-m", "--mark/--no-mark",
     help="Open mark.",
     default=lambda: papis.config.getboolean("open-mark"))
-def cli(query: str, doc_folder: Tuple[str, ...], tool: str, folder: bool,
-        sort_field: Optional[str], sort_reverse: bool, _all: bool,
+def cli(query: str, doc_folder: tuple[str, ...], tool: str, folder: bool,
+        sort_field: str | None, sort_reverse: bool, _all: bool,
         mark: bool) -> None:
     """Open document from a given library."""
     if tool:

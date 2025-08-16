@@ -13,7 +13,6 @@ Command-line interface
 """
 
 import os
-from typing import Optional, Tuple
 
 import click
 
@@ -31,8 +30,8 @@ logger = papis.logging.get_logger(__name__)
 
 
 def run(document: papis.document.Document,
-        filepath: Optional[str] = None,
-        notespath: Optional[str] = None,
+        filepath: str | None = None,
+        notespath: str | None = None,
         git: bool = False) -> None:
     """Main method to the rm command
     """
@@ -97,8 +96,8 @@ def cli(query: str,
         _notes: bool,
         force: bool,
         _all: bool,
-        doc_folder: Tuple[str, ...],
-        sort_field: Optional[str],
+        doc_folder: tuple[str, ...],
+        sort_field: str | None,
         sort_reverse: bool) -> None:
     """
     Remove a document, a file, or a notes-file.

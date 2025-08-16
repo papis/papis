@@ -34,7 +34,8 @@ the schema you will not be able to search for the publisher through a query.
 """
 
 import os
-from typing import TYPE_CHECKING, Dict, KeysView, List, Optional
+from collections.abc import KeysView
+from typing import TYPE_CHECKING
 
 import papis.config
 import papis.logging
@@ -56,7 +57,7 @@ WHOOSH_FOLDER_FIELD = "papis-folder"
 
 
 class Database(DatabaseBase):
-    def __init__(self, library: Optional[Library] = None) -> None:
+    def __init__(self, library: Library | None = None) -> None:
         super().__init__(library)
 
         from papis.utils import get_cache_home
@@ -129,7 +130,7 @@ class Database(DatabaseBase):
         writer.delete_by_term(ID_KEY_NAME, document[ID_KEY_NAME])
         writer.commit()
 
-    def query(self, query_string: str) -> List[Document]:
+    def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)
 
         import time
@@ -151,11 +152,11 @@ class Database(DatabaseBase):
 
         return documents
 
-    def query_dict(self, query: Dict[str, str]) -> List[Document]:
+    def query_dict(self, query: dict[str, str]) -> list[Document]:
         query_string = " AND ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> List[Document]:
+    def get_all_documents(self) -> list[Document]:
         return self.query(self.get_all_query_string())
 
     def _create_index(self) -> None:
@@ -236,7 +237,7 @@ class Database(DatabaseBase):
         fields = self._get_schema_init_fields()
         return Schema(**fields)
 
-    def _get_schema_init_fields(self) -> Dict[str, "FieldType"]:  # noqa: PLR6301
+    def _get_schema_init_fields(self) -> dict[str, "FieldType"]:  # noqa: PLR6301
         """
         :returns: the keyword arguments to be passed to the Whoosh schema object
             (see :meth:`_create_schema`).

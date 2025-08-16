@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 from papis.strings import FormatPattern
 
@@ -28,7 +28,7 @@ def get_default_opener() -> str:
 
 NOT_SET = object()
 
-settings: Dict[str, Any] = {
+settings: dict[str, Any] = {
     # unused or deprecated
     "add-interactive": False,
     "mvtool": "mv",

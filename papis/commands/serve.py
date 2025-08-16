@@ -6,7 +6,8 @@ import os
 import re
 import tempfile
 import urllib.parse
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from collections.abc import Callable, Iterator
+from typing import IO, Any
 
 import click
 
@@ -26,7 +27,7 @@ import papis.notes
 logger = papis.logging.get_logger(__name__)
 
 USE_GIT = False
-TAGS_LIST: Dict[str, Optional[Dict[str, int]]] = {}
+TAGS_LIST: dict[str, dict[str, int] | None] = {}
 
 
 AnyFn = Callable[..., Any]
@@ -39,7 +40,6 @@ try:
 except ImportError:
     from dataclasses import dataclass, field
     from email.message import Message
-    from typing import IO, Iterator, Union
 
     @dataclass
     class MiniFieldStorage:
@@ -54,16 +54,16 @@ except ImportError:
         # NOTE: fields taken from cgi.FieldStorage.__init__
         # https://github.com/python/cpython/blob/3.12/Lib/cgi.py#L330
 
-        fp: Optional[IO[bytes]] = None
-        headers: Union[Dict[str, str], Message] = field(default_factory=dict)
+        fp: IO[bytes] | None = None
+        headers: dict[str, str] | Message = field(default_factory=dict)
         outerboundary: bytes = b""
-        environ: Dict[str, str] = field(default_factory=dict)
+        environ: dict[str, str] = field(default_factory=dict)
         keep_blank_values: bool = False
         strict_parsing: bool = False
-        limit: Optional[int] = None
+        limit: int | None = None
         encoding: str = "utf-8"
         errors: str = "replace"
-        max_num_fields: Optional[int] = None
+        max_num_fields: int | None = None
         separator: str = "&"
 
         def __post_init__(self) -> None:
@@ -74,7 +74,7 @@ except ImportError:
             return int(self.headers.get("content-length", -1))
 
         @property
-        def qs_on_post(self) -> Optional[str]:
+        def qs_on_post(self) -> str | None:
             return None
 
         def read_urlencoded(self) -> None:
@@ -109,7 +109,7 @@ except ImportError:
         def __iter__(self) -> Iterator[str]:
             return iter(self.keys())
 
-        def keys(self) -> List[str]:
+        def keys(self) -> list[str]:
             return list({fs.name for fs in self.list})
 
 
@@ -181,9 +181,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.page_main(libname, docs, "All documents")
 
     def page_main(self,
-                  libname: Optional[str] = None,
-                  docs: Optional[List[papis.document.Document]] = None,
-                  query: Optional[str] = None) -> None:
+                  libname: str | None = None,
+                  docs: list[papis.document.Document] | None = None,
+                  query: str | None = None) -> None:
         import papis.web.search
 
         if docs is None:
@@ -218,8 +218,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         db.initialize()
 
     @ok_html
-    def page_tags(self, libname: Optional[str] = None,
-                  sort_by: Optional[str] = None) -> None:
+    def page_tags(self, libname: str | None = None,
+                  sort_by: str | None = None) -> None:
         import papis.web.tags
 
         libname = libname or papis.api.get_lib_name()
@@ -242,7 +242,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.flush()
 
     @ok_html
-    def page_tags_refresh(self, libname: Optional[str] = None) -> None:
+    def page_tags_refresh(self, libname: str | None = None) -> None:
         libname = libname or papis.api.get_lib_name()
         self._handle_lib(libname)
         TAGS_LIST[libname] = None
@@ -309,7 +309,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         docs = papis.api.get_documents_in_lib(libname, cleaned_query)
         self.serve_documents(docs)
 
-    def serve_documents(self, docs: List[papis.document.Document]) -> None:
+    def serve_documents(self, docs: list[papis.document.Document]) -> None:
         """
         Serve a list of documents and set the files attribute to
         the full paths so that the user can reach them.
@@ -365,7 +365,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             raise FileNotFoundError(f"File '{path}' does not exist")
 
     def process_routes(self,
-                       routes: List[Tuple[str, Any]]) -> None:
+                       routes: list[tuple[str, Any]]) -> None:
         """
         Performs the actions of the given routes and dispatches a 404
         page if there is an error.

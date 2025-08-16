@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import papis.downloaders.base
 
@@ -7,7 +7,7 @@ class Downloader(papis.downloaders.Downloader):
     """Retrieve documents from websites using Dublin Core or Google Scholar metadata"""
 
     def __init__(self, uri: str, name: str = "fallback",
-                 expected_document_extension: Optional[Union[str, List[str]]] = None,
+                 expected_document_extension: str | list[str] | None = None,
                  priority: int = -1,
                  ) -> None:
         super().__init__(
@@ -17,10 +17,10 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         return Downloader(url)
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         soup = self._get_soup()
         data = papis.downloaders.base.parse_meta_headers(soup)
 
@@ -29,7 +29,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return data
 
-    def get_doi(self) -> Optional[str]:
+    def get_doi(self) -> str | None:
         if self.ctx.data:
             doi = self.ctx.data.get("doi")
             if doi:
@@ -39,7 +39,7 @@ class Downloader(papis.downloaders.Downloader):
         soup = self._get_soup()
         return find_doi_in_text(str(soup))
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         url = self.ctx.data.get("pdf_url")
         if url is not None:
             self.logger.debug("Using document URL: '%s'.", url)

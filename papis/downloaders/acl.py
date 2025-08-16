@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, Optional
+from typing import Any
 
 import papis.document
 import papis.downloaders.base
@@ -17,10 +17,10 @@ class Downloader(papis.downloaders.Downloader):
         )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         return Downloader(url) if re.match(r".*aclanthology\.org.*", url) else None
 
-    def fetch_acl_data(self) -> Dict[str, str]:
+    def fetch_acl_data(self) -> dict[str, str]:
         soup = self._get_soup()
 
         elem: Any = soup.find("div", "row acl-paper-details")
@@ -37,7 +37,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return data
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         soup = self._get_soup()
         data = papis.downloaders.base.parse_meta_headers(soup)
 
@@ -52,7 +52,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return data
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         if self.ctx.data.get("acl_anthology_id") is not None:
             acl_anthology_id = self.ctx.data.get("acl_anthology_id")
             url = f"https://aclanthology.org/{acl_anthology_id}.bib"
@@ -61,7 +61,7 @@ class Downloader(papis.downloaders.Downloader):
 
         return None
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         if "pdf_url" in self.ctx.data:
             url = str(self.ctx.data["pdf_url"])
             self.logger.debug("Using document URL: '%s'.", url)

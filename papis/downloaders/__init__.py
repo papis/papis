@@ -1,7 +1,8 @@
 import os
 import re
 import tempfile
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Type, Union
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.document
@@ -29,7 +30,7 @@ class Importer(papis.importer.Importer):
         super().__init__(uri=uri, name="url")
 
     @classmethod
-    def match(cls, uri: str) -> Optional[papis.importer.Importer]:
+    def match(cls, uri: str) -> papis.importer.Importer | None:
         return (
             Importer(uri=uri)
             if re.match(r" *http(s)?.*", uri) is not None
@@ -74,10 +75,9 @@ class Downloader(papis.importer.Importer):
     def __init__(self,
                  uri: str = "",
                  name: str = "",
-                 ctx: Optional[papis.importer.Context] = None,
-                 expected_document_extension: Optional[
-                     Union[str, Sequence[str]]] = None,
-                 cookies: Optional[Dict[str, str]] = None,
+                 ctx: papis.importer.Context | None = None,
+                 expected_document_extension: str | Sequence[str] | None = None,
+                 cookies: dict[str, str] | None = None,
                  priority: int = 1,
                  ) -> None:
         if isinstance(expected_document_extension, str):
@@ -98,17 +98,17 @@ class Downloader(papis.importer.Importer):
         self.session = papis.utils.get_session()
 
         # NOTE: used to cache data
-        self._soup: Optional[bs4.BeautifulSoup] = None
-        self.bibtex_data: Optional[str] = None
-        self.document_filename: Optional[str] = None
-        self.document_data: Optional[bytes] = None
-        self.document_extension: Optional[str] = None
+        self._soup: bs4.BeautifulSoup | None = None
+        self.bibtex_data: str | None = None
+        self.document_filename: str | None = None
+        self.document_data: bytes | None = None
+        self.document_extension: str | None = None
 
     def __del__(self) -> None:
         self.session.close()
 
     @classmethod
-    def match(cls, url: str) -> Optional["Downloader"]:
+    def match(cls, url: str) -> "Downloader | None":
         """Check if the downloader can process the given URL.
 
         For example, an importer that supports links from the arXiv can check
@@ -254,7 +254,7 @@ class Downloader(papis.importer.Importer):
     def __str__(self) -> str:
         return f"Downloader({self.name}, uri={self.uri})"
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         """
         :returns: an URL to a valid BibTeX file that can be used to extract
             metadata about the document.
@@ -262,7 +262,7 @@ class Downloader(papis.importer.Importer):
         raise NotImplementedError(
             f"Getting a BibTeX URL not implemented for the '{self.name}' downloader")
 
-    def get_bibtex_data(self) -> Optional[str]:
+    def get_bibtex_data(self) -> str | None:
         """Get BibTeX data available at :meth:`get_bibtex_url`, if any.
 
         :returns: a string containing the BibTeX data, which can be parsed.
@@ -285,7 +285,7 @@ class Downloader(papis.importer.Importer):
         response = self.session.get(url, cookies=self.cookies)
         self.bibtex_data = response.content.decode()
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         """Retrieve general metadata from the given URL.
 
         This function is meant to be as general as possible and should not
@@ -297,7 +297,7 @@ class Downloader(papis.importer.Importer):
             f"Getting data is not implemented for the '{self.name}' downloader"
             )
 
-    def get_doi(self) -> Optional[str]:
+    def get_doi(self) -> str | None:
         """
         :returns: a DOI for the document, if any.
         """
@@ -305,7 +305,7 @@ class Downloader(papis.importer.Importer):
             f"Getting the DOI not implemented for the '{self.name}' downloader"
             )
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         """
         :returns: a URL to a file that should be downloaded.
         """
@@ -313,7 +313,7 @@ class Downloader(papis.importer.Importer):
             f"Getting a document URL not implemented for the '{self.name}' downloader"
             )
 
-    def get_document_data(self) -> Optional[bytes]:
+    def get_document_data(self) -> bytes | None:
         """Get data for the downloaded file that is given by :meth:`get_document_url`.
 
         :returns: the bytes (stored in memory) for the downloaded file.
@@ -387,12 +387,12 @@ class Downloader(papis.importer.Importer):
             return False
 
 
-def get_available_downloaders() -> List[Type[Downloader]]:
+def get_available_downloaders() -> list[type[Downloader]]:
     """Get all declared downloader classes."""
     return papis.plugin.get_available_plugins(DOWNLOADERS_EXTENSION_NAME)
 
 
-def get_matching_downloaders(url: str) -> List[Downloader]:
+def get_matching_downloaders(url: str) -> list[Downloader]:
     """Get downloaders matching the given *url*.
 
     :param url: a URL to match.
@@ -413,7 +413,7 @@ def get_matching_downloaders(url: str) -> List[Downloader]:
     return sorted(matches, key=lambda d: d.priority, reverse=True)
 
 
-def get_downloader_by_name(name: str) -> Type[Downloader]:
+def get_downloader_by_name(name: str) -> type[Downloader]:
     """Get a specific downloader by its name.
 
     :param name: the name of the downloader. Note that this is the name of
@@ -421,7 +421,7 @@ def get_downloader_by_name(name: str) -> Type[Downloader]:
         be the same as its name, but this is not enforced.
     :returns: a downloader class.
     """
-    downloader_class: Type[Downloader] = (
+    downloader_class: type[Downloader] = (
         papis.plugin.get_extension_manager(DOWNLOADERS_EXTENSION_NAME)[name].plugin
     )
     return downloader_class
@@ -429,7 +429,7 @@ def get_downloader_by_name(name: str) -> Type[Downloader]:
 
 def get_info_from_url(
         url: str,
-        expected_doc_format: Optional[str] = None
+        expected_doc_format: str | None = None
         ) -> papis.importer.Context:
     """Get information directly from the given *url*.
 
@@ -457,7 +457,7 @@ def get_info_from_url(
     return down.ctx
 
 
-def _get_filename_from_response(response: "requests.Response") -> Optional[str]:
+def _get_filename_from_response(response: "requests.Response") -> str | None:
     filename = None
 
     # NOTE: we can guess the filename from the response headers
@@ -496,10 +496,10 @@ def _get_filename_from_response(response: "requests.Response") -> Optional[str]:
 
 def download_document(
         url: str,
-        expected_document_extension: Optional[str] = None,
-        cookies: Optional[Dict[str, Any]] = None,
-        filename: Optional[str] = None,
-        ) -> Optional[str]:
+        expected_document_extension: str | None = None,
+        cookies: dict[str, Any] | None = None,
+        filename: str | None = None,
+        ) -> str | None:
     """Download a document from *url* and store it in a local file.
 
     An appropriate filename is deduced from the HTTP response in most cases.

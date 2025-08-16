@@ -9,7 +9,6 @@ Command-line interface
 """
 
 import os
-from typing import Optional, Tuple
 
 import click
 
@@ -61,8 +60,8 @@ def run(document: papis.document.Document,
 @papis.cli.doc_folder_option()
 def cli(query: str,
         git: bool,
-        sort_field: Optional[str],
-        doc_folder: Tuple[str, ...],
+        sort_field: str | None,
+        doc_folder: tuple[str, ...],
         sort_reverse: bool) -> None:
     """Move a document into some other path."""
     # Leave this imports here for performance

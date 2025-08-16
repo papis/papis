@@ -1,8 +1,9 @@
 import os
 import random
 import tempfile
+from collections.abc import Iterator, Sequence
 from types import TracebackType
-from typing import Any, ClassVar, Dict, Iterator, Optional, Sequence, Type
+from typing import Any, ClassVar
 
 import click
 import click.testing
@@ -16,10 +17,10 @@ if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
 
 
-def create_random_file(filetype: Optional[str] = None,
-                       prefix: Optional[str] = None,
-                       suffix: Optional[str] = None,
-                       dir: Optional[str] = None) -> str:
+def create_random_file(filetype: str | None = None,
+                       prefix: str | None = None,
+                       suffix: str | None = None,
+                       dir: str | None = None) -> str:
     """Create a random file with the correct magic signature.
 
     This function creates random empty files that can be used for testing. It
@@ -200,10 +201,10 @@ class TemporaryConfiguration:
 
     def __init__(self,
                  prefix: str = "papis-test-",
-                 settings: Optional[Dict[str, Any]] = None,
+                 settings: dict[str, Any] | None = None,
                  overwrite: bool = False) -> None:
         #: A set of settings to be added to the configuration on creation
-        self.settings: Optional[Dict[str, Any]] = settings
+        self.settings: dict[str, Any] | None = settings
         #: If *True*, any configuration settings are overwritten by *settings*.
         self.overwrite: bool = overwrite
 
@@ -220,8 +221,8 @@ class TemporaryConfiguration:
         #: Prefix for the temporary directory created for the test.
         self.prefix = prefix
 
-        self._tmpdir: Optional[tempfile.TemporaryDirectory[str]] = None
-        self._monkeypatch: Optional[pytest.MonkeyPatch] = None
+        self._tmpdir: tempfile.TemporaryDirectory[str] | None = None
+        self._monkeypatch: pytest.MonkeyPatch | None = None
 
     @property
     def tmpdir(self) -> str:
@@ -230,9 +231,9 @@ class TemporaryConfiguration:
         return self._tmpdir.name
 
     def create_random_file(self,
-                           filetype: Optional[str] = None,
-                           prefix: Optional[str] = None,
-                           suffix: Optional[str] = None) -> str:
+                           filetype: str | None = None,
+                           prefix: str | None = None,
+                           suffix: str | None = None) -> str:
         """Create a random file in the :attr:`tmpdir` using `create_random_file`."""
         return create_random_file(
             filetype, suffix=suffix, prefix=prefix,
@@ -320,9 +321,9 @@ class TemporaryConfiguration:
         return self
 
     def __exit__(self,
-                 exc_type: Optional[Type[BaseException]],
-                 exc_val: Optional[BaseException],
-                 exc_tb: Optional[TracebackType]) -> None:
+                 exc_type: type[BaseException] | None,
+                 exc_val: BaseException | None,
+                 exc_tb: TracebackType | None) -> None:
         # cleanup
         if self._monkeypatch:
             self._monkeypatch.undo()
@@ -346,7 +347,7 @@ class TemporaryLibrary(TemporaryConfiguration):
     """
 
     def __init__(self,
-                 settings: Optional[Dict[str, Any]] = None,
+                 settings: dict[str, Any] | None = None,
                  use_git: bool = False,
                  populate: bool = True) -> None:
         super().__init__(settings=settings)
@@ -457,9 +458,9 @@ class ResourceCache:
     def get_remote_resource(
             self, filename: str, url: str,
             force: bool = False,
-            params: Optional[Dict[str, str]] = None,
-            headers: Optional[Dict[str, str]] = None,
-            cookies: Optional[Dict[str, str]] = None,
+            params: dict[str, str] | None = None,
+            headers: dict[str, str] | None = None,
+            cookies: dict[str, str] | None = None,
             ) -> bytes:
         """Retrieve a remote resource from the resource cache.
 

@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 import papis.downloaders.base
 
@@ -15,13 +14,13 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> Optional[papis.downloaders.Downloader]:
+    def match(cls, url: str) -> papis.downloaders.Downloader | None:
         if re.match(r".*worldscientific.com.*", url):
             return Downloader(url)
         else:
             return None
 
-    def get_doi(self) -> Optional[str]:
+    def get_doi(self) -> str | None:
         url = self.uri
         self.logger.debug("Parsing DOI from '%s'.", url)
         mdoi = re.match(r".*/doi/(.*/[^?&%^$]*).*", url)
@@ -36,12 +35,12 @@ class Downloader(papis.downloaders.Downloader):
 
         return None
 
-    def get_document_url(self) -> Optional[str]:
+    def get_document_url(self) -> str | None:
         durl = f"https://www.worldscientific.com/doi/pdf/{self.get_doi()}"
         self.logger.debug("Using document URL: '%s'.", durl)
         return durl
 
-    def get_bibtex_url(self) -> Optional[str]:
+    def get_bibtex_url(self) -> str | None:
         url = (
             "https://www.worldscientific.com/action/downloadCitation"
             f"?format=bibtex&cookieSet=1&doi={self.get_doi()}")

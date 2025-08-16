@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List, Match, Optional, Pattern, Tuple
+import re
 
 import papis.config
 import papis.logging
@@ -12,7 +12,7 @@ from papis.strings import AnyString
 logger = papis.logging.get_logger(__name__)
 
 
-def filter_documents(documents: List[Document], search: str = "") -> List[Document]:
+def filter_documents(documents: list[Document], search: str = "") -> list[Document]:
     """Filter documents based on the *search* string.
 
     :param search: a search string that will be parsed by
@@ -60,9 +60,9 @@ def filter_documents(documents: List[Document], search: str = "") -> List[Docume
 
 def match_document(
         document: Document,
-        search: Pattern[str],
-        match_format: Optional[AnyString] = None,
-        doc_key: Optional[str] = None) -> Optional[Match[str]]:
+        search: re.Pattern[str],
+        match_format: AnyString | None = None,
+        doc_key: str | None = None) -> re.Match[str] | None:
     """Match a document's keys to a given search pattern.
 
     See :class:`~papis.docmatcher.MatcherCallable`.
@@ -90,11 +90,11 @@ def match_document(
 class Database(DatabaseBase):
     """A caching database backend for Papis based on :mod:`pickle`."""
 
-    def __init__(self, library: Optional[Library] = None) -> None:
+    def __init__(self, library: Library | None = None) -> None:
         super().__init__(library)
 
         self.use_cache = papis.config.getboolean("use-cache")
-        self.documents: Optional[List[Document]] = None
+        self.documents: list[Document] | None = None
         self.initialize()
 
     def get_backend_name(self) -> str:  # noqa: PLR6301
@@ -170,7 +170,7 @@ class Database(DatabaseBase):
         docs.pop(index)
         self._save_documents()
 
-    def query(self, query_string: str) -> List[Document]:
+    def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)
 
         docs = self._get_documents()
@@ -179,14 +179,14 @@ class Database(DatabaseBase):
 
         return filter_documents(docs, query_string)
 
-    def query_dict(self, query: Dict[str, str]) -> List[Document]:
+    def query_dict(self, query: dict[str, str]) -> list[Document]:
         query_string = " ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> List[Document]:
+    def get_all_documents(self) -> list[Document]:
         return self._get_documents()
 
-    def _get_documents(self) -> List[Document]:
+    def _get_documents(self) -> list[Document]:
         if self.documents is not None:
             return self.documents
 
@@ -230,7 +230,7 @@ class Database(DatabaseBase):
     def _get_cache_file_path(self) -> str:
         return get_cache_file_path(self.lib.path_format())
 
-    def _locate_document(self, document: Document) -> List[Tuple[int, Document]]:
+    def _locate_document(self, document: Document) -> list[tuple[int, Document]]:
         from papis.id import ID_KEY_NAME
 
         # FIXME: Why are we iterating twice over the documents here?

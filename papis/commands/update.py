@@ -128,7 +128,8 @@ Command-line interface
 """
 
 import ast
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from collections.abc import Sequence
+from typing import Any
 
 import click
 
@@ -165,8 +166,8 @@ def try_parsing_str(key: str, value: str) -> str:
 
 def run_set(
     document: papis.document.DocumentLike,
-    to_set: Sequence[Tuple[str, AnyString]],
-    key_types: Dict[str, type],
+    to_set: Sequence[tuple[str, AnyString]],
+    key_types: dict[str, type],
 ) -> None:
     """
     Processes a list of ``to_set`` tuples and applies the resulting changes to the
@@ -209,8 +210,8 @@ def run_set(
 
 def run_append(
     document: papis.document.DocumentLike,
-    to_append: Sequence[Tuple[str, AnyString]],
-    key_types: Dict[str, type],
+    to_append: Sequence[tuple[str, AnyString]],
+    key_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -270,7 +271,7 @@ def run_append(
 
 def run_remove(
     document: papis.document.DocumentLike,
-    to_remove: Sequence[Tuple[str, AnyString]],
+    to_remove: Sequence[tuple[str, AnyString]],
     batch: bool
 ) -> bool:
     """
@@ -332,7 +333,7 @@ def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) ->
 
 def run_rename(
     document: papis.document.DocumentLike,
-    to_rename: Sequence[Tuple[str, AnyString, AnyString]],
+    to_rename: Sequence[tuple[str, AnyString, AnyString]],
     batch: bool,
 ) -> bool:
     """
@@ -353,7 +354,7 @@ def run_rename(
 
 def run(
     document: papis.document.Document,
-    data: Optional[Dict[str, Any]] = None,
+    data: dict[str, Any] | None = None,
     git: bool = False,
     auto_doctor: bool = False,
 ) -> None:
@@ -472,19 +473,19 @@ def run(
 def cli(
     query: str,
     git: bool,
-    doc_folder: Tuple[str, ...],
-    from_importer: List[Tuple[str, str]],
+    doc_folder: tuple[str, ...],
+    from_importer: list[tuple[str, str]],
     batch: bool,
     auto: bool,
     auto_doctor: bool,
     _all: bool,
-    sort_field: Optional[str],
+    sort_field: str | None,
     sort_reverse: bool,
-    to_set: List[Tuple[str, str]],
-    to_drop: List[str],
-    to_append: List[Tuple[str, str]],
-    to_remove: List[Tuple[str, str]],
-    to_rename: List[Tuple[str, str, str]],
+    to_set: list[tuple[str, str]],
+    to_drop: list[str],
+    to_append: list[tuple[str, str]],
+    to_remove: list[tuple[str, str]],
+    to_rename: list[tuple[str, str, str]],
 ) -> None:
     """Update document metadata."""
     success = True

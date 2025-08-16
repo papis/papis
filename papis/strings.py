@@ -1,4 +1,4 @@
-from typing import Any, NamedTuple, Optional, Tuple, Union
+from typing import Any, NamedTuple, TypeAlias
 
 
 class FormatPattern(NamedTuple):
@@ -22,7 +22,7 @@ class FormatPattern(NamedTuple):
     #: The formatter that should be used on the string :attr:`pattern`. If none
     #: is provided, the default formatter is used, as defined by
     #: :confval:`formatter`.
-    formatter: Optional[str]
+    formatter: str | None
     #: Pattern that should be evaluated by the *formatter*.
     pattern: str
 
@@ -53,13 +53,13 @@ class FormatPattern(NamedTuple):
         return hash(self.pattern)
 
 
-AnyString = Union[str, FormatPattern]
+AnyString: TypeAlias = str | FormatPattern
 
 
 def process_format_pattern_pair(
     key: str,
     pattern: AnyString
-) -> Tuple[str, FormatPattern]:
+) -> tuple[str, FormatPattern]:
     """
     :param key: a document key in the format ``key[.formatter]``.
     :param pattern: an unformatted pattern.
