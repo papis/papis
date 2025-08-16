@@ -146,6 +146,7 @@ settings: Dict[str, Any] = {
                              "publisher:str",
                              "title:str",
                              "shorttitle:str"],
+    "doctor-string-cleaner-keys": ["title", "author", "abstract"],
     "doctor-key-type-keys-extend": [],
     "doctor-key-type-separator": None,
 
