@@ -253,6 +253,18 @@ def files_check(doc: papis.document.Document) -> List[Error]:
 KEYS_MISSING_CHECK_NAME = "keys-missing"
 
 
+def _is_nonempty(arg: Any) -> bool:
+    """compute truthiness of :param arg: as a boolean product."""
+    if isinstance(arg, bool):
+        return True
+    elif isinstance(arg, list):
+        return all(map(_is_nonempty, arg))
+    elif isinstance(arg, dict):
+        return all(map(_is_nonempty, [v for _, v in arg.items()]))
+    else:
+        return bool(arg)
+
+
 def keys_missing_check(doc: papis.document.Document) -> List[Error]:
     """
     Checks whether the keys provided in the configuration
@@ -301,14 +313,28 @@ def keys_missing_check(doc: papis.document.Document) -> List[Error]:
         else:
             return None
 
-    return [Error(name=KEYS_MISSING_CHECK_NAME,
-                  path=folder,
-                  msg=f"Key '{k}' does not exist",
-                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=make_fixer(k),
-                  payload=k,
-                  doc=doc)
-            for k in keys if k not in doc]
+    errors = []
+    for key in keys:
+        if key not in doc:
+            errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
+                                path=folder,
+                                msg=f"Key '{key}' does not exist",
+                                suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                fix_action=make_fixer(key),
+                                payload=key,
+                                doc=doc))
+
+        elif not _is_nonempty(doc[key]):
+            errors.append(Error(name=KEYS_MISSING_CHECK_NAME,
+                                path=folder,
+                                msg=f"Value contains one or more empty entries:\n{
+                                papis.document.dump({f"{key}":doc[key]})
+                                }",
+                                suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                fix_action=None,
+                                payload=key,
+                                doc=doc))
+    return errors
 
 
 REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
