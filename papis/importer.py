@@ -1,12 +1,10 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 
 import papis
 import papis.logging
 import papis.plugin
 
-if TYPE_CHECKING:
-    import stevedore.extension
-
+#: Name of the entrypoint group for :class:`Importer` plugins.
 IMPORTER_EXTENSION_NAME = "papis.importer"
 
 #: Invariant :class:`TypeVar` bound to the :class:`Importer` class.
@@ -169,24 +167,22 @@ class Importer:
         return f"{type(self).__name__}({self.name}, uri={self.uri})"
 
 
-def get_import_mgr() -> "stevedore.extension.ExtensionManager":
-    """Retrieve the :class:`stevedore.extension.ExtensionManager` for
-    importer plugins.
-    """
-    return papis.plugin.get_extension_manager(IMPORTER_EXTENSION_NAME)
-
-
 def available_importers() -> List[str]:
     """Get a list of available importer names."""
-    return papis.plugin.get_available_entrypoints(IMPORTER_EXTENSION_NAME)
+    from papis.plugin import get_plugin_names
+
+    return get_plugin_names(IMPORTER_EXTENSION_NAME)
 
 
 def get_importers() -> List[Type[Importer]]:
     """Get a list of available importer classes."""
-    return [e.plugin for e in get_import_mgr()]
+    from papis.plugin import get_plugins
+
+    return list(get_plugins(IMPORTER_EXTENSION_NAME).values())
 
 
-def get_importer_by_name(name: str) -> Type[Importer]:
+def get_importer_by_name(name: str) -> Optional[Type[Importer]]:
     """Get an importer class by *name*."""
-    imp: Type[Importer] = get_import_mgr()[name].plugin
-    return imp
+    from papis.plugin import get_plugin_by_name
+
+    return get_plugin_by_name(IMPORTER_EXTENSION_NAME, name)

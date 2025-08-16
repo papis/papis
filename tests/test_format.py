@@ -34,13 +34,13 @@ def test_python_formatter(tmp_config: TemporaryConfiguration) -> None:
 
     # test out a jinja2 format
     from papis.strings import FormatPattern
-    assert len(papis.format.FORMATTER) == 1
+    assert len(papis.format.FORMATTER_CACHE) == 1
     assert (
         papis.format.format(
             FormatPattern("jinja2", "{{ doc.author }}: {{ doc.title }}"),
             document)
         == "Fulano: A New Hope")
-    assert len(papis.format.FORMATTER) == 2
+    assert len(papis.format.FORMATTER_CACHE) == 2
 
 
 @pytest.mark.config_setup(settings={"formatter": "jinja2"})
@@ -68,14 +68,14 @@ def test_jinja_formatter(tmp_config: TemporaryConfiguration) -> None:
         == ": The Phantom Menace ()")
 
     # test out a python format
-    assert len(papis.format.FORMATTER) == 1
+    assert len(papis.format.FORMATTER_CACHE) == 1
     from papis.strings import FormatPattern
     assert (
         papis.format.format(
             FormatPattern("python", "{doc[author]}: {doc[title]}"),
             document)
         == "Fulano: A New Hope")
-    assert len(papis.format.FORMATTER) == 2
+    assert len(papis.format.FORMATTER_CACHE) == 2
 
 
 def test_overwritten_keys(tmp_config: TemporaryConfiguration) -> None:

@@ -91,7 +91,7 @@ Command-line interface
 """
 
 import shlex
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import click
 
@@ -99,36 +99,23 @@ import papis.cli
 import papis.logging
 from papis.commands import AliasedGroup
 
-if TYPE_CHECKING:
-    from stevedore import ExtensionManager
-
 logger = papis.logging.get_logger(__name__)
 
+#: Name of the entrypoint group for explorer plugins.
 EXPLORER_EXTENSION_NAME = "papis.explorer"
 
 
 def get_available_explorers() -> List[click.Command]:
-    """
-    Gets all exporters registered.
-    """
-    from papis.plugin import get_available_plugins
+    """Gets all registered exporters."""
+    from papis.plugin import get_plugins
 
-    return get_available_plugins(EXPLORER_EXTENSION_NAME)
-
-
-def get_explorer_mgr() -> "ExtensionManager":
-    from papis.plugin import get_extension_manager
-
-    return get_extension_manager(EXPLORER_EXTENSION_NAME)
+    return list(get_plugins(EXPLORER_EXTENSION_NAME).values())
 
 
 def get_explorer_by_name(name: str) -> Optional[click.Command]:
-    try:
-        mgr = get_explorer_mgr()
-        plugin: click.Command = mgr[name].plugin
-        return plugin
-    except KeyError:
-        return None
+    from papis.plugin import get_plugin_by_name
+
+    return get_plugin_by_name(EXPLORER_EXTENSION_NAME, name)
 
 
 @click.command("lib")

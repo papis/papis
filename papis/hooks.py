@@ -1,25 +1,16 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List
 
 import papis.logging
 import papis.plugin
 
-if TYPE_CHECKING:
-    from stevedore import ExtensionManager
-
 logger = papis.logging.get_logger(__name__)
 
-#: All hooks should be in this namespace, e.g. ``papis.hook.on_edit_done``.
+#: Name format of the entrypoint group for hooks e.g. ``papis.hook.on_edit_done``.
 HOOKS_EXTENSION_FORMAT = "papis.hook.{name}"
 
 #: A dictionary of hooks added with :func:`add`. These can be added in ``config.py``
 #: or from other places that do not use the entrypoint framework.
 CUSTOM_LOCAL_HOOKS: Dict[str, List[Callable[..., None]]] = {}
-
-
-def get(name: str) -> "ExtensionManager":
-    return papis.plugin.get_extension_manager(
-        HOOKS_EXTENSION_FORMAT.format(name=name)
-    )
 
 
 def run(name: str, *args: Any, **kwargs: Any) -> None:
@@ -33,11 +24,12 @@ def run(name: str, *args: Any, **kwargs: Any) -> None:
     1. The hooks defined by an entry point.
     2. The hooks defined in :data:`CUSTOM_LOCAL_HOOKS`.
     """
+    from papis.plugin import get_plugins
 
     hook_name = HOOKS_EXTENSION_FORMAT.format(name=name)
     logger.debug("Running callbacks for hook '%s'.", hook_name)
 
-    callbacks = papis.plugin.get_available_plugins(hook_name)
+    callbacks = list(get_plugins(hook_name).values())
     if hook_name in CUSTOM_LOCAL_HOOKS:
         callbacks += CUSTOM_LOCAL_HOOKS[hook_name]
 

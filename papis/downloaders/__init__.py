@@ -389,7 +389,9 @@ class Downloader(papis.importer.Importer):
 
 def get_available_downloaders() -> List[Type[Downloader]]:
     """Get all declared downloader classes."""
-    return papis.plugin.get_available_plugins(DOWNLOADERS_EXTENSION_NAME)
+    from papis.plugin import get_plugins
+
+    return list(get_plugins(DOWNLOADERS_EXTENSION_NAME).values())
 
 
 def get_matching_downloaders(url: str) -> List[Downloader]:
@@ -413,18 +415,17 @@ def get_matching_downloaders(url: str) -> List[Downloader]:
     return sorted(matches, key=lambda d: d.priority, reverse=True)
 
 
-def get_downloader_by_name(name: str) -> Type[Downloader]:
+def get_downloader_by_name(name: str) -> Optional[Type[Downloader]]:
     """Get a specific downloader by its name.
 
     :param name: the name of the downloader. Note that this is the name of
         the entry point used to define the downloader. In general, this should
         be the same as its name, but this is not enforced.
-    :returns: a downloader class.
+    :returns: a downloader class or *None* if one cannot be found.
     """
-    downloader_class: Type[Downloader] = (
-        papis.plugin.get_extension_manager(DOWNLOADERS_EXTENSION_NAME)[name].plugin
-    )
-    return downloader_class
+    from papis.plugin import get_plugin_by_name
+
+    return get_plugin_by_name(DOWNLOADERS_EXTENSION_NAME, name)
 
 
 def get_info_from_url(
