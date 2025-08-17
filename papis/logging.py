@@ -3,7 +3,6 @@ import os
 import sys
 from typing import Any
 
-import click
 import colorama as c
 
 PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
@@ -14,11 +13,6 @@ LEVEL_TO_COLOR = {
     "INFO": c.Fore.CYAN,
     "DEBUG": c.Fore.WHITE,
 }
-
-
-def debug(msg: str, *args: Any) -> None:
-    if PAPIS_DEBUG:
-        click.echo(msg % args)
 
 
 class ColoramaFormatter(logging.Formatter):
