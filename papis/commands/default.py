@@ -30,78 +30,18 @@ Command-line interface
 
 import os
 from collections.abc import Callable
-from functools import cached_property
 from typing import TYPE_CHECKING
 
 import click
 
 import papis.cli
 import papis.logging
+from papis.commands import CommandPluginLoaderGroup
 
 if TYPE_CHECKING:
     import cProfile
 
-    from papis.commands import CommandPlugin
-
 logger = papis.logging.get_logger(__name__)
-
-
-class CommandPluginLoaderGroup(click.Group):
-
-    @cached_property
-    def command_plugins(self) -> dict[str, "CommandPlugin"]:
-        from papis.commands import get_commands
-
-        return get_commands()
-
-    @cached_property
-    def command_plugin_names(self) -> list[str]:
-        return sorted(self.command_plugins)
-
-    def list_commands(self, ctx: click.Context) -> list[str]:
-        """List all matched commands in the command folder and in path
-
-        >>> group = CommandPluginLoaderGroup()
-        >>> rv = group.list_commands(None)
-        >>> len(rv) > 0
-        True
-        """
-        return self.command_plugin_names
-
-    def get_command(
-            self,
-            ctx: click.Context,
-            name: str) -> click.Command | None:
-        """Get the command to be run
-
-        >>> group = CommandPluginLoaderGroup()
-        >>> cmd = group.get_command(None, 'add')
-        >>> cmd.name, cmd.help
-        ('add', 'Add...')
-        >>> group.get_command(None, 'this command does not exist')
-        Command ... is unknown!
-        """
-        try:
-            cmd = self.command_plugins[name]
-        except KeyError:
-            import difflib
-            matches = list(map(
-                str, difflib.get_close_matches(name, self.command_plugin_names, n=2)))
-
-            click.echo(f"Command '{name}' is unknown!")
-            if len(matches) == 1:
-                # return the match if there was only one match
-                click.echo(f"I suppose you meant: '{matches[0]}'")
-                cmd = self.command_plugins[matches[0]]
-            elif matches:
-                click.echo("Did you mean '{matches}'?"
-                           .format(matches="' or '".join(matches)))
-                return None
-            else:
-                return None
-
-        from papis.commands import load_command
-        return load_command(cmd)
 
 
 def generate_profile_writing_function(profiler: "cProfile.Profile",
