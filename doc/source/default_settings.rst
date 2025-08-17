@@ -155,8 +155,8 @@ General settings
     Picks the formatter for format patterns in the configuration file and
     in various strings presented to the user. Supported formatters are
 
-    * ``"python"``: based on :class:`papis.format.PythonFormatter`.
-    * ``"jinja2"``: based on :class:`papis.format.Jinja2Formatter`.
+    * ``"python"``: based on :class:`papis.format.python.PythonFormatter`.
+    * ``"jinja2"``: based on :class:`papis.format.jinja.Jinja2Formatter`.
 
     Note that the default values of many of the Papis configuration settings are
     based on the Python formatter. These will need to all be specified explicitly

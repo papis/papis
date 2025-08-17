@@ -98,6 +98,12 @@ Developer API reference
 .. automodule:: papis.format
     :members:
 
+.. automodule:: papis.format.python
+    :members:
+
+.. automodule:: papis.format.jinja
+    :members:
+
 ``papis.git``
 -------------
 

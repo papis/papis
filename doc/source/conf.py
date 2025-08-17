@@ -51,10 +51,11 @@ intersphinx_mapping = {
 linkcode_resolve = make_link_resolve("https://github.com/papis/papis", "main")
 
 autodoc_member_order = "bysource"
-
 nitpick_ignore_regex = [
+    ["py:class", r".*AnyString"],
+    ["py:class", r".*DocumentLike"],
     ["py:class", r".*SubRequest"],
-    ]
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

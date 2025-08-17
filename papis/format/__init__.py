@@ -16,7 +16,7 @@ FORMATTER_NAMESPACE_NAME = "papis.format"
 
 
 class InvalidFormatterError(ValueError):
-    """An exception that is thrown when an invalid formatter is selected."""
+    """Deprecated: Use :exc:`papis.plugin.InvalidPluginTypeError` instead."""
 
 
 class FormatFailedError(Exception):
@@ -54,8 +54,8 @@ class Formatter:
         :param doc_key: the name of the document in the format pattern. By
             default, this falls back to :confval:`format-doc-name`.
         :param default: an optional pattern to use as a default value if the
-            formatting fails. If no default is given, a :exc:`FormatFailedError`
-            will be raised.
+            formatting fails. If no default is given, a
+            :exc:`~papis.format.FormatFailedError` will be raised.
         :param additional: a :class:`dict` of additional entries to pass to the
             formatter.
 
