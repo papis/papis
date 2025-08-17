@@ -215,8 +215,8 @@ yaml = "papis.yaml:exporter"
 csl = "papis.csl:exporter"
 
 [project.entry-points."papis.format"]
-jinja2 = "papis.format:Jinja2Formatter"
-python = "papis.format:PythonFormatter"
+jinja2 = "papis.format.jinja:Jinja2Formatter"
+python = "papis.format.python:PythonFormatter"
 
 [project.entry-points."papis.importer"]
 arxiv = "papis.arxiv:Importer"

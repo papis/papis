@@ -10,8 +10,9 @@ class PluginNotFoundError(Exception):
     """An error raised when a plugin is not found."""
 
     def __init__(self, namespace: str, name: str) -> None:
+        names = "', '".join(get_plugin_names(namespace))
         super().__init__(f"plugin '{name}' from namespace '{namespace}' was not "
-                         "found")
+                         f"found (known plugins are '{names}')")
 
 
 class InvalidPluginTypeError(TypeError):
@@ -19,7 +20,7 @@ class InvalidPluginTypeError(TypeError):
 
     def __init__(self, namespace: str, name: str) -> None:
         super().__init__(f"plugin '{name}' from namespace '{namespace}' has an "
-                         "unexpected type")
+                         f"unexpected type")
 
 
 def get_entrypoints(namespace: str) -> list[EntryPoint]:
