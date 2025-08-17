@@ -515,9 +515,9 @@ def getformatpattern(key: str, section: str | None = None) -> FormatPattern:
         >>> r.formatter
         'python'
     """
-    from papis.format import get_available_formatters, get_default_formatter
+    from papis.format import get_available_formatters
 
-    formatter = get_default_formatter()
+    formatter = getstring("formatter")
     result: str | None = None
 
     for f in get_available_formatters():
