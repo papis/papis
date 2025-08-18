@@ -1,4 +1,3 @@
-import copy
 import os
 import re
 from functools import cached_property
@@ -170,7 +169,7 @@ class CommandPluginLoaderGroup(click.Group):
             self,
             ctx: click.Context,
             name: str) -> click.Command | None:
-        """Get the command to be run
+        """Get the command to be run.
 
         >>> group = CommandPluginLoaderGroup()
         >>> cmd = group.get_command(None, 'add')
@@ -189,11 +188,10 @@ class CommandPluginLoaderGroup(click.Group):
             plugin = self.command_plugins[name]
         except KeyError:
             import difflib
-
-            # FIXME: this should probably also look for commands that click
-            # already knows about (from `@group.command(name)`)
-            matches = list(map(
-                str, difflib.get_close_matches(name, self.command_plugin_names, n=2)))
+            matches = [
+                str(m) for m in difflib.get_close_matches(
+                    name, self.command_plugin_names, n=2)
+            ]
 
             click.echo(f"Command '{name}' is unknown!")
             if len(matches) == 1:
@@ -238,6 +236,8 @@ def load_command(cmd: CommandPlugin) -> click.Command | None:
 
     if cmd.path is not None:
         # we're dealing with an external script: wrap it and hope for the bext
+        import copy
+
         from papis.commands.external import external_cli, get_command_help
 
         cli = copy.copy(external_cli)

@@ -30,6 +30,9 @@ def cli(ctx: click.Context,
 
         papis explore citations 'einstein' export --format yaml --out 'einstein.yaml'
     """
+    if not (query or doc_folder):
+        logger.warning("No query or document folder provided.")
+        return None
 
     from papis.api import get_documents_in_lib, pick_doc
     from papis.document import describe, from_folder

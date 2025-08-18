@@ -27,6 +27,10 @@ def cli(ctx: click.core.Context, query: str, service: str) -> None:
             pick \\
             cmd 'firefox {doc[url]}'
     """
+    if not query:
+        logger.warning("No query provided.")
+        return None
+
     logger.info("Looking up ISBN documents...")
 
     data = get_data(query=query, service=service)

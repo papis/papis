@@ -15,6 +15,7 @@ logger = papis.logging.get_logger(__name__)
 @click.option(
     "--max", "-m", "max_results",
     help="Maximum number of results.",
+    type=click.IntRange(1),
     default=30)
 def cli(
         ctx: click.Context,
@@ -33,6 +34,10 @@ def cli(
             pick \\
             export --format bibtex --out lib.bib
     """
+    if not query:
+        logger.warning("No query provided.")
+        return None
+
     logger.info("Looking up DBLP documents...")
 
     from papis.dblp import get_data
