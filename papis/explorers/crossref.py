@@ -30,6 +30,7 @@ logger = papis.logging.get_logger(__name__)
     "-m", "--max", "max_results",
     help="Maximum number of results.",
     default=20,
+    type=click.IntRange(1),
     show_default=True)
 @click.option(
     "-f", "--filter", "filters",
@@ -70,6 +71,10 @@ def cli(ctx: click.Context,
             pick \\
             export --format bibtex --out lib.bib
     """
+    if not (query or author or title):
+        logger.warning("No query provided.")
+        return None
+
     logger.info("Looking up Crossref documents...")
 
     data = get_data(

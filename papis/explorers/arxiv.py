@@ -8,17 +8,23 @@ logger = papis.logging.get_logger(__name__)
 
 
 @as_explorer("arxiv")
-@click.option("--query", "-q", default="", type=str)
-@click.option("--author", "-a", default="", type=str)
-@click.option("--title", "-t", default="", type=str)
-@click.option("--abstract", default="", type=str)
-@click.option("--comment", default="", type=str)
-@click.option("--journal", default="", type=str)
-@click.option("--report-number", default="", type=str)
-@click.option("--category", default="", type=str)
-@click.option("--id-list", default="", type=str)
-@click.option("--page", default=0, type=int)
-@click.option("--max", "-m", "max_results", default=20, type=int)
+@click.option(
+    "-q", "--query",
+    default="")
+@click.option(
+    "-a", "--author",
+    default="")
+@click.option(
+    "-t", "--title",
+    default="")
+@click.option("--abstract", default="")
+@click.option("--comment", default="")
+@click.option("--journal", default="")
+@click.option("--report-number", default="")
+@click.option("--category", default="")
+@click.option("--id-list", default="")
+@click.option("--page", default=0, type=click.IntRange(0))
+@click.option("--max", "-m", "max_results", default=20, type=click.IntRange(1))
 def cli(ctx: click.Context,
         query: str,
         author: str,
