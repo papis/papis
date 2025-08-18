@@ -166,7 +166,7 @@ key_conversion = [
         {"key": None, "action": lambda t: CROSSREF_TO_BIBTEX_CONVERTER[t]}]),
     KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("event", [  # Conferences
-        {"key": "venue", "action": lambda x: x["location"]},
+        {"key": "venue", "action": lambda x: x.get("location")},
         {"key": "booktitle", "action": lambda x: x["name"]},
         {"key": "year",
          "action": (lambda x:
@@ -190,7 +190,7 @@ def _crossref_date_parts(entry: dict[str, Any], i: int = 0) -> int | None:
     if not (0 <= i < len(parts)):
         return None
 
-    return int(parts[i])
+    return int(parts[i]) if parts[i] is not None else None
 
 
 def _crossref_link(entry: list[dict[str, str]]) -> str | None:
