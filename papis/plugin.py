@@ -6,7 +6,11 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 
-class PluginNotFoundError(Exception):
+class PluginError(Exception):
+    """A generic error raised by the plugin loader."""
+
+
+class PluginNotFoundError(PluginError):
     """An error raised when a plugin is not found."""
 
     def __init__(self, namespace: str, name: str) -> None:
@@ -15,7 +19,7 @@ class PluginNotFoundError(Exception):
                          f"found (known plugins are '{names}')")
 
 
-class InvalidPluginTypeError(TypeError):
+class InvalidPluginTypeError(PluginError):
     """An error raised when the plugin is not the expected type."""
 
     def __init__(self, namespace: str, name: str) -> None:
