@@ -12,10 +12,27 @@ COMMAND_NAMESPACE_NAME = "papis.command"
 #: Regex for determining external commands.
 EXTERNAL_COMMAND_REGEX = re.compile(r".*papis-([^ .]+)$")
 
+_RST_LINK_REGEX = re.compile(r"`(.*) <(.*)>`__")
+_RST_CONFVAL_REGEX = re.compile(r":confval:`(.*)`")
+
 
 def debug(msg: str, *args: Any) -> None:
     if "PAPIS_DEBUG" in os.environ:
         click.echo(msg % args)
+
+
+def make_short_help(text: str, fallback: str = "No help message available.") -> str:
+    lines = [line for line in text.split("\n") if line]
+    if not lines:
+        return fallback
+
+    line = " ".join(lines[0].strip().split())
+    line = _RST_LINK_REGEX.sub(r"\1 <\2>", line)
+    line = _RST_CONFVAL_REGEX.sub(r"'\1'", line)
+    if line[-1] != ".":
+        line = f"{line}."
+
+    return line
 
 
 class FullHelpCommand(click.Command):
@@ -36,7 +53,7 @@ class FullHelpCommand(click.Command):
         if self.short_help:
             text = self.short_help
         elif self.help:
-            text = " ".join(self.help.strip().split("\n\n")[0].split())
+            text = make_short_help(self.help)
         else:
             text = ""
 
@@ -211,8 +228,7 @@ def load_command(cmd: CommandPlugin) -> click.Command | None:
 
         if plugin.help:
             if not plugin.short_help:
-                plugin.short_help = (
-                    " ".join(plugin.help.strip().split("\n\n")[0].split()))
+                plugin.short_help = make_short_help(plugin.help)
         else:
             if plugin.short_help:
                 plugin.help = plugin.short_help

@@ -77,6 +77,7 @@ def list_plugins(show_paths: bool = False,
                  verbose: bool = False) -> list[str]:
     import colorama as c
 
+    from papis.commands import make_short_help
     from papis.plugin import get_entrypoints
 
     def _format(name: str, ids: str) -> str:
@@ -95,10 +96,8 @@ def list_plugins(show_paths: bool = False,
                 continue
 
             if verbose and p.__doc__:
-                lines = [line for line in p.__doc__.split("\n") if line]
-                if lines:
-                    line = re.sub(r"`(.*) <(.*)>`__", r"\1 <\2>", lines[0].strip())
-                    results.append(f"    {line}")
+                descr = make_short_help(p.__doc__, "No description available.")
+                results.append(f"    {descr}")
 
         return results
 
@@ -125,10 +124,10 @@ def list_plugins(show_paths: bool = False,
                 _format(name, f"{check.operate.__module__}.{check.operate.__name__}")
             )
             if verbose:
-                lines = [line for line in str(check.operate.__doc__).split("\n\n")
-                         if line]
-                line = re.sub(r":confval:`(.*)`", r"'\1'", lines[0].strip())
-                results.append(f"    {line}")
+                descr = make_short_help(check.operate.__doc__,
+                                        "No description available.")
+                results.append(f"    {descr}")
+
         return results
 
     if show_exporters:
