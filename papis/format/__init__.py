@@ -132,3 +132,17 @@ def format(fmt: "AnyString",
     return formatter.format(fmt.pattern, doc, doc_key=doc_key,
                             additional=additional,
                             default=default)
+
+
+def __getattr__(name: str) -> Any:
+    # NOTE: these are exported for backwards compatibility and should be removed
+    # sometime in the future (papis v0.16 probably)
+
+    if name == "PythonFormatter":
+        from papis.format.python import PythonFormatter
+        return PythonFormatter
+    elif name == "Jinja2Formatter":
+        from papis.format.jinja import Jinja2Formatter
+        return Jinja2Formatter
+    else:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
