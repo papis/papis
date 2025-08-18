@@ -106,15 +106,6 @@ def yaml_to_list(yaml_path: str,
         return []
 
 
-def exporter(documents: list[papis.document.Document]) -> str:
-    """Convert document to the YAML format."""
-    string = yaml.dump_all(
-        [papis.document.to_dict(document) for document in documents],
-        allow_unicode=True)
-
-    return str(string)
-
-
 class Importer(papis.importer.Importer):
 
     """Importer that parses a YAML file."""

@@ -6,8 +6,8 @@ from papis.testing import TemporaryConfiguration
 def test_csl_export(tmp_config: TemporaryConfiguration) -> None:
     pytest.importorskip("citeproc")
 
-    from papis.csl import export_document
     from papis.document import from_data
+    from papis.exporters.csl import export_document
 
     doc = from_data({
         "type": "article",
@@ -26,8 +26,8 @@ def test_csl_style_download(tmp_config: TemporaryConfiguration) -> None:
     pytest.importorskip("citeproc")
 
     import papis.config
-    from papis.csl import exporter
     from papis.document import from_data
+    from papis.exporters.csl import exporter
 
     doc = from_data({
         "type": "article",

@@ -130,8 +130,8 @@ def list_plugins(show_paths: bool = False,
         return results
 
     if show_exporters:
-        from papis.commands.export import EXPORTER_EXTENSION_NAME
-        return _stringify(EXPORTER_EXTENSION_NAME)
+        from papis.exporters import EXPORTER_NAMESPACE_NAME
+        return _stringify(EXPORTER_NAMESPACE_NAME)
 
     if show_explorers:
         from papis.explorers import EXPLORER_NAMESPACE_NAME

@@ -13,7 +13,7 @@ def test_simple(tmp_library: TemporaryLibrary) -> None:
     filename = os.path.join(os.path.dirname(__file__),
                             "resources", "hayagriva_1_out.yml")
 
-    from papis.hayagriva import to_hayagriva
+    from papis.exporters.typst import to_hayagriva
     result = to_hayagriva(doc)
 
     from papis.yaml import yaml_to_data
@@ -27,7 +27,7 @@ def test_parent_editors(author: str,
                         editor_count: int,
                         tmp_library: TemporaryLibrary) -> None:
     import papis.database
-    from papis.hayagriva import to_hayagriva
+    from papis.exporters.typst import to_hayagriva
 
     db = papis.database.get()
 

@@ -102,8 +102,8 @@ import click
 
 import papis.cli
 import papis.logging
-from papis.commands.export import available_formats
 from papis.explorers import ExplorerLoaderGroup
+from papis.exporters import get_available_exporters
 
 logger = papis.logging.get_logger(__name__)
 
@@ -208,7 +208,7 @@ def cmd(ctx: click.Context, command: str) -> None:
 @click.option(
     "-f", "--format", "fmt",
     help="Export format.",
-    type=click.Choice(available_formats()),
+    type=click.Choice(get_available_exporters()),
     default="bibtex",)
 @click.option(
     "-o",
