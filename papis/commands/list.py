@@ -50,7 +50,6 @@ Command-line interface
 """
 
 import os
-import re
 from collections.abc import Sequence
 
 import click
@@ -123,7 +122,7 @@ def list_plugins(show_paths: bool = False,
             results.append(
                 _format(name, f"{check.operate.__module__}.{check.operate.__name__}")
             )
-            if verbose:
+            if verbose and check.operate.__doc__ is not None:
                 descr = make_short_help(check.operate.__doc__,
                                         "No description available.")
                 results.append(f"    {descr}")

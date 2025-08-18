@@ -22,7 +22,16 @@ def debug(msg: str, *args: Any) -> None:
 
 
 def make_short_help(text: str, fallback: str = "No help message available.") -> str:
-    lines = [line for line in text.split("\n") if line]
+    """Create a short help from the given text.
+
+    This will take the first paragraph of the text and remove any known
+    restructuredText markup so that it can be shown as a help string in the
+    command line.
+
+    If the text is actually empty, the fallback will be returned.
+    """
+
+    lines = [line for line in text.split("\n\n") if line]
     if not lines:
         return fallback
 
@@ -35,6 +44,24 @@ def make_short_help(text: str, fallback: str = "No help message available.") -> 
     return line
 
 
+def normalize_help(text: str | None) -> str:
+    """Clean up the given text so that it can be shown on the command-line.
+
+    Similarly to :func:`make_short_help`, this removes ny known restructuredText
+    markup from the text and does additional normalizations so that it can be
+    better displayed on the command-line.
+    """
+    if text is None:
+        return ""
+
+    text = text.strip()
+    text = _RST_LINK_REGEX.sub(r"\1 <\2>", text)
+    text = _RST_CONFVAL_REGEX.sub(r"'\1'", text)
+    text = " ".join(line.strip() for line in text.split("\\"))
+
+    return text
+
+
 class FullHelpCommand(click.Command):
     """This is a simple wrapper around :class:`click.Command` that does
     not truncate the short help messages.
@@ -42,6 +69,14 @@ class FullHelpCommand(click.Command):
     We still very much prefer that these stay short if at all possible, but the
     default limit of 45 characters does not work well for many non-trivial commands.
     """
+
+    def format_help_text(self,
+                         ctx: click.Context,
+                         formatter: click.HelpFormatter) -> None:
+        if self.help:
+            self.help = normalize_help(self.help)
+
+        super().format_help_text(ctx, formatter)
 
     def get_short_help_str(self, limit: int = 45) -> str:
         # NOTE: this is copied from click/core.py::Command.get_short_help_str
@@ -227,11 +262,13 @@ def load_command(cmd: CommandPlugin) -> click.Command | None:
             return None
 
         if plugin.help:
+            plugin.help = normalize_help(plugin.help)
+
             if not plugin.short_help:
                 plugin.short_help = make_short_help(plugin.help)
         else:
             if plugin.short_help:
-                plugin.help = plugin.short_help
+                plugin.help = make_short_help(plugin.short_help)
             else:
                 plugin.help = plugin.short_help = "No help message available"
 

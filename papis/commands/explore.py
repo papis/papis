@@ -9,7 +9,7 @@ Imagine you want to search for some papers online but don't want to open the
 browser to look for them. The ``explore`` command gives you a way to do this
 using several online services. The command itself supports plugins, so see
 ``papis explore --help`` for a complete list of supported online services. A
-summary can also be show with
+summary can also be shown with
 
 .. code:: sh
 
@@ -207,7 +207,7 @@ def cmd(ctx: click.Context, command: str) -> None:
 @click.help_option("--help", "-h")
 @click.option(
     "-f", "--format", "fmt",
-    help="Format for the document.",
+    help="Export format.",
     type=click.Choice(available_formats()),
     default="bibtex",)
 @click.option(
@@ -227,7 +227,7 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
 
         papis explore \\
             crossref -m 200 -a 'Schrodinger' \\
-            export --format yaml lib.yaml
+            export --format yaml --out lib.yaml
     """
     docs = ctx.obj["documents"]
 
