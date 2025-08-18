@@ -57,60 +57,50 @@ Command-line interface
 """
 
 import os
+from typing import TYPE_CHECKING
 
 import click
 
-import papis
-import papis.api
 import papis.cli
-import papis.database
-import papis.document
 import papis.logging
-import papis.plugin
-import papis.strings
-import papis.tui.utils
-import papis.utils
-from papis.exceptions import DocumentFolderNotFound
+from papis.exporters import get_available_exporters
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
-#: The entry point name for exporter plugins.
-EXPORTER_EXTENSION_NAME = "papis.exporter"
 
-
-def available_formats() -> list[str]:
-    from papis.plugin import get_plugin_names
-
-    return get_plugin_names(EXPORTER_EXTENSION_NAME)
-
-
-def run(documents: list[papis.document.Document], to_format: str) -> str:
+def run(documents: list["papis.document.Document"], to_format: str) -> str:
     """
     Exports several documents into something else.
 
     :param documents: A list of Papis documents
     :param to_format: what format to use
     """
-    from papis.plugin import get_plugin_by_name
+    from papis.exporter import get_exporter_by_name
+    from papis.plugin import PluginError
 
-    exporter = get_plugin_by_name(EXPORTER_EXTENSION_NAME, to_format)
-    if exporter is None:
-        logger.error("Could not find exporter for format '%s'.", to_format)
+    try:
+        exporter = get_exporter_by_name(to_format)
+    except PluginError as exc:
+        logger.error("Could not load exporter for format '%s'.",
+                     to_format, exc_info=exc)
         return ""
 
     try:
         result = exporter(documents)
-    except KeyError as exc:
-        logger.error("Failed to load '%s' exporter. Cannot export to this format.",
+    except Exception as exc:
+        logger.error("Failed to export documents to format '%s'.",
                      to_format, exc_info=exc)
         return ""
 
-    if isinstance(result, str):
-        return result
-    else:
+    if not isinstance(result, str):
         logger.warning("Exporter for format '%s' did not return a string. This "
                        "is likely a bug!", to_format)
-        return str(result)
+        result = str(result)
+
+    return result
 
 
 @click.command("export")
@@ -131,7 +121,7 @@ def run(documents: list[papis.document.Document], to_format: str) -> str:
     "-f",
     "--format", "fmt",
     help="Format for the document.",
-    type=click.Choice(available_formats()),
+    type=click.Choice(get_available_exporters()),
     default="bibtex",)
 @papis.cli.bool_flag(
     "-p",
@@ -159,7 +149,9 @@ def cli(query: str,
                                                            sort_reverse,
                                                            _all)
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+
+        logger.warning(no_documents_retrieved_message)
         return
 
     if fmt and folder:
@@ -180,13 +172,15 @@ def cli(query: str,
 
         mode = "a" if append else "w"
 
+        from papis.tui.utils import confirm
+
         if os.path.exists(out):
             if append:
                 msg = f"Appending to '{out}'."
             else:
                 if not batch:
                     prompt = f"File '{out}' already exists. Overwrite?"
-                    if not papis.tui.utils.confirm(prompt):
+                    if not confirm(prompt):
                         logger.info("Aborting.")
                         return
                 msg = f"Overwriting '{out}'."
@@ -200,21 +194,23 @@ def cli(query: str,
         return
 
     import shutil
+
+    from papis.document import describe
+    from papis.exceptions import DocumentFolderNotFound
+
     for document in documents:
         if folder:
             doc_main_folder = document.get_main_folder()
             if doc_main_folder is None:
-                raise DocumentFolderNotFound(papis.document.describe(document))
+                raise DocumentFolderNotFound(describe(document))
 
             doc_main_folder_name = document.get_main_folder_name()
             if doc_main_folder_name is None:
-                raise DocumentFolderNotFound(papis.document.describe(document))
+                raise DocumentFolderNotFound(describe(document))
 
             outdir = out or doc_main_folder_name
             if not len(documents) == 1:
                 outdir = os.path.join(out, doc_main_folder_name)
 
-            logger.info(
-                "Exporting document '%s' to '%s'.",
-                papis.document.describe(document), outdir)
+            logger.info("Exporting document '%s' to '%s'.", describe(document), outdir)
             shutil.copytree(doc_main_folder, outdir)
