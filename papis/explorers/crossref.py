@@ -68,7 +68,7 @@ def cli(ctx: click.Context,
         papis explore \\
             crossref -a 'Albert einstein' \\
             pick \\
-            export --format bibtex lib.bib
+            export --format bibtex --out lib.bib
     """
     logger.info("Looking up Crossref documents...")
 

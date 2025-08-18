@@ -31,7 +31,7 @@ def cli(
         papis explore \\
             dblp -a 'Albert einstein' \\
             pick \\
-            export --format bibtex lib.bib
+            export --format bibtex --out lib.bib
     """
     logger.info("Looking up DBLP documents...")
 
