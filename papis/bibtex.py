@@ -10,8 +10,6 @@ import string
 from collections.abc import Iterator
 from typing import Any
 
-import click
-
 import papis.config
 import papis.document
 import papis.filetype
@@ -350,29 +348,6 @@ class Importer(papis.importer.Importer):
                 len(bib_data))
 
         self.ctx.data = bib_data[0]
-
-
-@click.command("bibtex")
-@click.pass_context
-@click.argument("bibfile", type=click.Path(exists=True))
-@click.help_option("--help", "-h")
-def explorer(ctx: click.core.Context, bibfile: str) -> None:
-    """Import documents from a BibTeX file.
-
-    This explorer can be used as:
-
-    .. code:: sh
-
-        papis explore bibtex 'lib.bib' pick
-    """
-    logger.info("Reading BibTeX file '%s'...", bibfile)
-
-    docs = [
-        papis.document.from_data(d)
-        for d in bibtex_to_dict(bibfile)]
-    ctx.obj["documents"] += docs
-
-    logger.info("Found %d documents.", len(docs))
 
 
 def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:

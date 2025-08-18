@@ -1,8 +1,6 @@
 import re
 from typing import Any
 
-import click
-
 import papis.config
 import papis.document
 import papis.importer
@@ -154,43 +152,6 @@ def is_valid_dblp_key(key: str) -> bool:
     with papis.utils.get_session() as session:
         response = session.get(DBLP_URL_FORMAT.format(uri=key))
         return response.ok
-
-
-@click.command("dblp")
-@click.pass_context
-@click.help_option("--help", "-h")
-@click.option(
-    "--query", "-q",
-    help="General query.",
-    default="")
-@click.option(
-    "--max", "-m", "max_results",
-    help="Maximum number of results.",
-    default=30)
-def explorer(
-        ctx: click.core.Context,
-        query: str,
-        max_results: int) -> None:
-    """
-    Look for documents on `dblp.org <https://dblp.org/>`__.
-
-    For example, to look for a document with the author "Albert Einstein" and
-    export it to a BibTeX file, you can call:
-
-    .. code:: sh
-
-        papis explore \\
-            dblp -a 'Albert einstein' \\
-            pick \\
-            export --format bibtex lib.bib
-    """
-    logger.info("Looking up DBLP documents...")
-
-    data = get_data(query=query, max_results=max_results)
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj["documents"] += docs
-
-    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

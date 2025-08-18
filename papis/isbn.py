@@ -1,7 +1,6 @@
 # See https://github.com/xlcnd/isbnlib for details
 from typing import Any
 
-import click
 from isbnlib.registry import services as isbn_services
 
 import papis.config
@@ -68,36 +67,6 @@ def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
     result["type"] = "book"
 
     return result
-
-
-@click.command("isbn")
-@click.pass_context
-@click.help_option("--help", "-h")
-@click.option("--query", "-q", default=None)
-@click.option("--service", "-s",
-              default=ISBN_SERVICE_NAMES[0],
-              type=click.Choice(ISBN_SERVICE_NAMES))
-def explorer(ctx: click.core.Context, query: str, service: str) -> None:
-    """
-    Look for documents using `isbnlib <https://isbnlib.readthedocs.io/en/latest/>`__.
-
-    For example, to look for a document with the author "Albert Einstein" and
-    open it with Firefox, you can call:
-
-    .. code:: sh
-
-        papis explore \\
-            isbn -q 'Albert einstein' \\
-            pick \\
-            cmd 'firefox {doc[url]}'
-    """
-    logger.info("Looking up ISBN documents...")
-
-    data = get_data(query=query, service=service)
-    docs = [papis.document.from_data(data=d) for d in data]
-    ctx.obj["documents"] += docs
-
-    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

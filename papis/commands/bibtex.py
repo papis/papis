@@ -133,7 +133,7 @@ import papis.format
 import papis.logging
 import papis.strings
 from papis.commands import AliasedGroup
-from papis.commands.explore import get_explorer_by_name
+from papis.explorers.bibtex import cli as bibtex_explorer
 
 logger = papis.logging.get_logger(__name__)
 
@@ -143,8 +143,6 @@ papis.config.register_default_settings({"bibtex": {
     "auto-read": "",
     "default-save-bibfile": ""
 }})
-
-BIBTEX_EXPLORER = get_explorer_by_name("bibtex")
 
 
 @click.group("bibtex", cls=AliasedGroup, chain=True)
@@ -165,12 +163,10 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     bibfile = papis.config.getstring("default-read-bibfile", section="bibtex")
     if not no_auto_read and bibfile and os.path.exists(bibfile):
         logger.info("Auto-reading '%s'.", bibfile)
-        if BIBTEX_EXPLORER and BIBTEX_EXPLORER.callback:
-            BIBTEX_EXPLORER.callback(bibfile)
+        bibtex_explorer.callback(bibfile)
 
 
-if BIBTEX_EXPLORER:
-    cli.add_command(BIBTEX_EXPLORER, "read")
+cli.add_command(bibtex_explorer, "red")
 
 
 @cli.command("add")

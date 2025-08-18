@@ -7,7 +7,13 @@ Examples
 
 Imagine you want to search for some papers online but don't want to open the
 browser to look for them. The ``explore`` command gives you a way to do this
-using several online services.
+using several online services. The command itself supports plugins, so see
+``papis explore --help`` for a complete list of supported online services. A
+summary can also be show with
+
+.. code:: sh
+
+    papis list --explorers
 
 An excellent resource for this is `Crossref <https://www.crossref.org/>`__.
 You can use it by using the ``crossref`` subcommand:
@@ -96,74 +102,33 @@ import click
 
 import papis.cli
 import papis.logging
-from papis.commands import AliasedGroup
+from papis.commands.export import available_formats
+from papis.explorers import ExplorerLoaderGroup
 
 logger = papis.logging.get_logger(__name__)
 
-#: Name of the entrypoint group for explorer plugins.
-EXPLORER_EXTENSION_NAME = "papis.explorer"
 
-
-def get_available_explorers() -> list[click.Command]:
-    """Gets all registered exporters."""
-    from papis.plugin import get_plugins
-
-    return list(get_plugins(EXPLORER_EXTENSION_NAME).values())
-
-
-def get_explorer_by_name(name: str) -> click.Command:
-    from papis.plugin import InvalidPluginTypeError, get_plugin_by_name
-
-    cls = get_plugin_by_name(EXPLORER_EXTENSION_NAME, name)
-    if not isinstance(cls, click.Command):
-        raise InvalidPluginTypeError(EXPLORER_EXTENSION_NAME, name)
-
-    return cls
-
-
-@click.command("lib")
-@click.pass_context
+@click.group("explore",
+             cls=ExplorerLoaderGroup,
+             invoke_without_command=False, chain=True)
 @click.help_option("--help", "-h")
-@papis.cli.query_argument()
-@papis.cli.doc_folder_option()
-@click.option("--library", "-l", default=None, help="Papis library to look in.")
-def lib(ctx: click.Context,
-        query: str,
-        doc_folder: tuple[str, ...],
-        library: str | None) -> None:
-    """
-    Query for documents in your library.
-
-    For example, to query all the documents containing "einstein" in the "books"
-    library, you can call:
-
-    .. code:: sh
-
-        papis explore lib -l books 'einstein' pick
-    """
-
-    from papis.document import from_folder
-
-    if doc_folder:
-        ctx.obj["documents"] += [from_folder(d) for d in doc_folder]
-
-    from papis.database import get
-
-    db = get(library_name=library)
-    docs = db.query(query)
-    logger.info("Found %d documents.", len(docs))
-
-    ctx.obj["documents"] += docs
-    assert isinstance(ctx.obj["documents"], list)
-
-
-@click.command("pick")
 @click.pass_context
-@click.help_option("--help", "-h")
-@click.option("--number", "-n",
-              type=int,
-              default=None,
-              help="Automatically pick the n-th document.")
+def cli(ctx: click.Context) -> None:
+    """
+    Explore new documents using a variety of resources.
+    """
+    ctx.obj = {"documents": []}
+
+
+@cli.command("pick")
+@click.pass_context
+@click.help_option("-h", "--help")
+@click.option(
+    "-n",
+    "--number",
+    type=int,
+    default=None,
+    help="Automatically pick the n-th document.")
 def pick(ctx: click.Context, number: int | None) -> None:
     """
     Pick a document from the retrieved documents.
@@ -189,62 +154,9 @@ def pick(ctx: click.Context, number: int | None) -> None:
     ctx.obj["documents"] = picked_docs
 
 
-@click.command("citations")
+@cli.command("add")
 @click.pass_context
-@papis.cli.query_argument()
-@papis.cli.doc_folder_option()
-@click.help_option("--help", "-h")
-@papis.cli.bool_flag("-b", "--cited-by",
-                     help="Use the cited-by citations.")
-@papis.cli.all_option()
-def citations(ctx: click.Context,
-              query: str,
-              doc_folder: tuple[str, ...],
-              cited_by: bool,
-              _all: bool) -> None:
-    """
-    Query the citations for a paper.
-
-    For example, to go through the citations of a paper and export it in a
-    YAML file, you can call:
-
-    .. code:: sh
-
-        papis explore citations 'einstein' export --format yaml --out 'einstein.yaml'
-    """
-
-    from papis.api import get_documents_in_lib, pick_doc
-    from papis.document import describe, from_folder
-
-    if doc_folder is not None:
-        documents = [from_folder(d) for d in doc_folder]
-    else:
-        from papis.config import get_lib_name
-
-        documents = get_documents_in_lib(get_lib_name(), search=query)
-
-    if not _all:
-        documents = pick_doc(documents)  # type: ignore[assignment]
-
-    if not documents:
-        from papis.strings import no_documents_retrieved_message
-
-        logger.warning(no_documents_retrieved_message)
-        return
-
-    from papis.citations import get_citations, get_cited_by
-
-    for document in documents:
-        logger.debug("Exploring document '%s'.", describe(document))
-
-        citations = get_cited_by(document) if cited_by else get_citations(document)
-        logger.debug("Found %d citations.", len(citations))
-
-        ctx.obj["documents"].extend(citations)
-
-
-@click.command("add")
-@click.pass_context
+@click.help_option("-h", "--help")
 def add(ctx: click.Context) -> None:
     """
     Add selected documents to the current library.
@@ -262,9 +174,9 @@ def add(ctx: click.Context) -> None:
         run([], d)
 
 
-@click.command("cmd")
+@cli.command("cmd")
 @click.pass_context
-@click.help_option("--help", "-h")
+@click.help_option("-h", "--help")
 @click.argument("command", type=papis.cli.FormatPatternParamType())
 def cmd(ctx: click.Context, command: str) -> None:
     """
@@ -290,17 +202,42 @@ def cmd(ctx: click.Context, command: str) -> None:
         run(shlex.split(fcommand))
 
 
-@click.group("explore",
-             cls=AliasedGroup,
-             invoke_without_command=False, chain=True)
-@click.help_option("--help", "-h")
+@cli.command("export")
 @click.pass_context
-def cli(ctx: click.Context) -> None:
+@click.help_option("--help", "-h")
+@click.option(
+    "-f", "--format", "fmt",
+    help="Format for the document.",
+    type=click.Choice(available_formats()),
+    default="bibtex",)
+@click.option(
+    "-o",
+    "--out",
+    help="Outfile to write information to.",
+    type=click.Path(),
+    default=None,)
+def explorer(ctx: click.Context, fmt: str, out: str) -> None:
     """
-    Explore new documents using a variety of resources.
+    Export retrieved documents into various formats.
+
+    For example, to query Crossref and export all 200 documents to a YAML file,
+    you can call:
+
+    .. code:: sh
+
+        papis explore \\
+            crossref -m 200 -a 'Schrodinger' \\
+            export --format yaml lib.yaml
     """
-    ctx.obj = {"documents": []}
+    docs = ctx.obj["documents"]
 
+    from papis.commands.export import run
 
-for _explorer in get_available_explorers():
-    cli.add_command(_explorer)
+    outstring = run(docs, to_format=fmt)
+    if out is not None:
+        with open(out, "a+", encoding="utf-8") as fd:
+            logger.info(
+                "Writing %d documents in '%s' format to '%s'.", len(docs), fmt, out)
+            fd.write(outstring)
+    else:
+        click.echo(outstring)
