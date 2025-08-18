@@ -20,74 +20,90 @@ KeyConversionPair = papis.document.KeyConversionPair
 # NOTE: the API JSON format is maintained at
 #   https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
 
-_filter_names = frozenset([
-    "has_funder", "funder", "location", "prefix", "member", "from_index_date",
-    "until_index_date", "from_deposit_date", "until_deposit_date",
-    "from_update_date", "until_update_date", "from_created_date",
-    "until_created_date", "from_pub_date", "until_pub_date",
-    "from_online_pub_date", "until_online_pub_date", "from_print_pub_date",
-    "until_print_pub_date", "from_posted_date", "until_posted_date",
-    "from_accepted_date", "until_accepted_date", "has_license",
-    "license_url", "license_version", "license_delay",
-    "has_full_text", "full_text_version", "full_text_type",
-    "full_text_application", "has_references", "has_archive",
-    "archive", "has_orcid", "has_authenticated_orcid",
-    "orcid", "issn", "type", "directory", "doi", "updates", "is_update",
-    "has_update_policy", "container_title", "category_name", "type",
-    "type_name", "award_number", "award_funder", "has_assertion",
-    "assertion_group", "assertion", "has_affiliation", "alternative_id",
-    "article_number", "has_abstract", "has_clinical_trial_number",
-    "content_domain", "has_content_domain", "has_crossmark_restriction",
-    "has_relation", "relation_type", "relation_object", "relation_object_type",
-    "public_references", "publisher_name", "affiliation",
+#: Filters used to narrow Crossref works queries. The official list of filters
+#: can be found in the
+#: `REST API documentation <https://github.com/CrossRef/rest-api-doc#filter-names>`__.
+CROSSREF_FILTER_NAMES = frozenset([
+    "has-funder", "funder", "location", "prefix", "member", "from-index-date",
+    "until-index-date", "from-deposit-date", "until-deposit-date",
+    "from-update-date", "until-update-date", "from-created-date",
+    "until-created-date", "from-pub-date", "until-pub-date",
+    "from-online-pub-date", "until-online-pub-date", "from-print-pub-date",
+    "until-print-pub-date", "from-posted-date", "until-posted-date",
+    "from-accepted-date", "until-accepted-date", "has-license", "license-url",
+    "license-version", "license-delay", "has-full-text", "full-text-version",
+    "full-text-type", "full-text-application", "has-references",
+    "reference-visibility", "has-archive", "archive", "has-orcid",
+    "has-authenticated-orcid", "orcid", "issn", "isbn", "type", "directory",
+    "doi", "updates", "is-update", "has-update-policy", "container-title",
+    "category-name", "type", "type-name", "award-number", "award-funder",
+    "has-assertion", "assertion-group", "assertion", "has-affiliation",
+    "alternative-id", "article-number", "has-abstract",
+    "has-clinical-trial-number", "content-domain", "has-content-domain",
+    "has-domain-restriction", "has-relation", "relation-type",
+    "relation-object",
 ])
 
-_types_values = frozenset([
-    "book-section", "monograph", "report", "peer-review", "book-track",
-    "journal-article", "book-part", "other", "book", "journal-volume",
-    "book-set", "reference-entry", "proceedings-article", "journal",
-    "component", "book-chapter", "proceedings-series", "report-series",
-    "proceedings", "standard", "reference-book", "posted-content",
-    "journal-issue", "dissertation", "dataset", "book-series", "edited-book",
-    "standard-series",
+#: Document types accepted by the Crossref API. The official list can be found
+#: in the `REST API documentation <https://api.crossref.org/types>`__.
+CROSSREF_TYPES = frozenset([
+    "book-section", "monograph", "report-component", "report", "peer-review",
+    "book-track", "journal-article", "book-part", "other", "book",
+    "journal-volume", "book-set", "reference-entry", "proceedings-article",
+    "journal", "component", "book-chapter", "proceedings-series",
+    "report-series", "proceedings", "database", "standard", "reference-book",
+    "posted-content", "journal-issue", "dissertation", "grant", "dataset",
+    "book-series", "edited-book",
 ])
 
-_sort_values = frozenset([
+#: Fields by which Crossref queries can be sorted by. The official list can be
+#: found in the
+#: `REST API documentation <https://github.com/CrossRef/rest-api-doc#sorting>`__.
+CROSSREF_SORT_VALUES = frozenset([
     "relevance", "score", "updated", "deposited", "indexed", "published",
     "published-print", "published-online", "issued", "is-referenced-by-count",
     "references-count",
 ])
 
+#: Sorting order. The official list can be found in the
+#: `REST API documentation <https://github.com/CrossRef/rest-api-doc#sorting>`__.
+CROSSREF_ORDER_VALUES = frozenset(["asc", "desc"])
 
-_order_values = frozenset(["asc", "desc"])
-
-
-type_converter = {
-    "book": "book",
-    "book-chapter": "inbook",
-    "book-part": "inbook",
+#: A mapping of Crossref types (see :data:`CROSSREF_TYPES`) to BibTeX types. This
+#: mapping is not official in any way and is just used by Papis.
+CROSSREF_TO_BIBTEX_CONVERTER = {
+    # NOTE: keep order the same as `CROSSREF_TYPES`, which is the order in the
+    # Crossref documentation, for easy comparison.
     "book-section": "inbook",
-    "book-series": "incollection",
-    "book-set": "incollection",
-    "book-track": "inbook",
-    "dataset": "misc",
-    "dissertation": "phdthesis",
-    "edited-book": "book",
-    "journal-article": "article",
-    "journal-issue": "misc",
-    "journal-volume": "article",
-    "monograph": "monograph",
-    "other": "misc",
-    "peer-review": "article",
-    "posted-content": "misc",
-    "proceedings-article": "inproceedings",
-    "proceedings": "inproceedings",
-    "proceedings-series": "inproceedings",
-    "reference-book": "book",
+    "monograph": "book",
+    "report-component": "incollection",
     "report": "report",
-    "report-series": "inproceedings",
-    "standard-series": "incollection",
-    "standard": "techreport",
+    "peer-review": "article",
+    "book-track": "inbook",
+    "journal-article": "article",
+    "book-part": "inbook",
+    "other": "misc",
+    "book": "book",
+    "journal-volume": "collection",
+    "book-set": "mvcollection",
+    "reference-entry": "inreference",
+    "proceedings-article": "inproceedings",
+    "journal": "collection",
+    "component": "incollection",
+    "book-chapter": "inbook",
+    "proceedings-series": "mvproceedings",
+    "report-series": "mvcollection",
+    "proceedings": "proceedings",
+    "database": "misc",
+    "standard": "report",
+    "reference-book": "reference",
+    "posted-content": "online",
+    "journal-issue": "collection",
+    "dissertation": "thesis",
+    "grant": "misc",
+    "dataset": "dataset",
+    "book-series": "incollection",
+    "edited-book": "book",
 }
 
 # NOTE: fields checked against the official API format
@@ -148,7 +164,7 @@ key_conversion = [
     KeyConversionPair("title", [
         {"key": None, "action": lambda t: " ".join(t)}]),  # noqa: PLW0108
     KeyConversionPair("type", [
-        {"key": None, "action": lambda t: type_converter[t]}]),
+        {"key": None, "action": lambda t: CROSSREF_TO_BIBTEX_CONVERTER[t]}]),
     KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),
     KeyConversionPair("event", [  # Conferences
         {"key": "venue", "action": lambda x: x["location"]},
@@ -244,8 +260,8 @@ def get_data(
         filters: dict[str, Any] | None = None,
         sort: str = "score",
         order: str = "desc") -> list[dict[str, Any]]:
-    assert sort in _sort_values, "Sort value not valid"
-    assert order in _order_values, "Sort value not valid"
+    assert sort in CROSSREF_SORT_VALUES, "Sort value not valid"
+    assert order in CROSSREF_ORDER_VALUES, "Order value not valid"
 
     if dois is None:
         dois = []
@@ -254,11 +270,12 @@ def get_data(
         filters = {}
 
     if filters:
-        unknown_filters = set(filters) - _filter_names
+        unknown_filters = set(filters) - CROSSREF_FILTER_NAMES
         if unknown_filters:
             raise ValueError(
                 "Unknown filters '{}'. Filter keys must be one of '{}'"
-                .format("', '".join(unknown_filters), "', '".join(_filter_names))
+                .format("', '".join(unknown_filters),
+                        "', '".join(CROSSREF_FILTER_NAMES))
             )
     data = {
         "query": query,
