@@ -15,7 +15,7 @@ logger = papis.logging.get_logger(__name__)
               type=click.Choice(ISBN_SERVICE_NAMES))
 def cli(ctx: click.core.Context, query: str, service: str) -> None:
     """
-    Look for documents using `isbnlib <https://isbnlib.readthedocs.io/en/latest/>`__.
+    Look for documents using `isbnlib <https://isbnlib.readthedocs.io/>`__.
 
     For example, to look for a document with the author "Albert Einstein" and
     open it with Firefox, you can call:
