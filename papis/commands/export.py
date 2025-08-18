@@ -78,7 +78,7 @@ def run(documents: list["papis.document.Document"], to_format: str) -> str:
     :param documents: A list of Papis documents
     :param to_format: what format to use
     """
-    from papis.exporter import get_exporter_by_name
+    from papis.exporters import get_exporter_by_name
     from papis.plugin import PluginError
 
     try:
@@ -193,13 +193,13 @@ def cli(query: str,
 
         return
 
-    import shutil
+    if folder:
+        import shutil
 
-    from papis.document import describe
-    from papis.exceptions import DocumentFolderNotFound
+        from papis.document import describe
+        from papis.exceptions import DocumentFolderNotFound
 
-    for document in documents:
-        if folder:
+        for document in documents:
             doc_main_folder = document.get_main_folder()
             if doc_main_folder is None:
                 raise DocumentFolderNotFound(describe(document))

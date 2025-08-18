@@ -209,11 +209,11 @@ lib = "papis.explorers.library:cli"
 yaml = "papis.explorers.yaml:cli"
 
 [project.entry-points."papis.exporter"]
-bibtex = "papis.bibtex:exporter"
-json = "papis.json:exporter"
-typst = "papis.hayagriva:exporter"
-yaml = "papis.yaml:exporter"
-csl = "papis.csl:exporter"
+bibtex = "papis.exporters.bibtex:exporter"
+json = "papis.exporters.json:exporter"
+typst = "papis.exporters.typst:exporter"
+yaml = "papis.exporters.yaml:exporter"
+csl = "papis.exporters.csl:exporter"
 
 [project.entry-points."papis.format"]
 jinja2 = "papis.format.jinja:Jinja2Formatter"
