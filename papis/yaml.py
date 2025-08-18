@@ -2,7 +2,6 @@ import os
 from collections.abc import Sequence
 from typing import Any
 
-import click
 import yaml
 
 import papis.config
@@ -114,29 +113,6 @@ def exporter(documents: list[papis.document.Document]) -> str:
         allow_unicode=True)
 
     return str(string)
-
-
-@click.command("yaml")
-@click.pass_context
-@click.argument("yamlfile", type=click.Path(exists=True))
-@click.help_option("--help", "-h")
-def explorer(ctx: click.Context, yamlfile: str) -> None:
-    """Import documents from a YAML file.
-
-    For example, you can call:
-
-    .. code:: sh
-
-        papis explore yaml 'lib.yaml' pick
-    """
-    logger.info("Reading YAML file '%s'...", yamlfile)
-
-    with open(yamlfile, encoding="utf-8") as fd:
-        docs = [papis.document.from_data(d)
-                for d in yaml.load_all(fd, Loader=Loader)]
-    ctx.obj["documents"] += docs
-
-    logger.info("Found %d documents.", len(docs))
 
 
 class Importer(papis.importer.Importer):

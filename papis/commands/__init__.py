@@ -127,10 +127,19 @@ class CommandPluginLoaderGroup(click.Group):
         >>> group.get_command(None, 'this command does not exist')
         Command ... is unknown!
         """
+
+        # NOTE: allow using the standard `@group.command(name)` functionality
+        cmd = super().get_command(ctx, name)
+        if cmd is not None:
+            return cmd
+
         try:
-            cmd = self.command_plugins[name]
+            plugin = self.command_plugins[name]
         except KeyError:
             import difflib
+
+            # FIXME: this should probably also look for commands that click
+            # already knows about (from `@group.command(name)`)
             matches = list(map(
                 str, difflib.get_close_matches(name, self.command_plugin_names, n=2)))
 
@@ -138,7 +147,7 @@ class CommandPluginLoaderGroup(click.Group):
             if len(matches) == 1:
                 # return the match if there was only one match
                 click.echo(f"I suppose you meant: '{matches[0]}'")
-                cmd = self.command_plugins[matches[0]]
+                plugin = self.command_plugins[matches[0]]
             elif matches:
                 click.echo("Did you mean '{matches}'?"
                            .format(matches="' or '".join(matches)))
@@ -146,7 +155,7 @@ class CommandPluginLoaderGroup(click.Group):
             else:
                 return None
 
-        return load_command(cmd)
+        return load_command(plugin)
 
 
 class CommandPlugin(NamedTuple):
