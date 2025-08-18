@@ -78,6 +78,11 @@ dependencies = [
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
+
+    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
+    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
+    #   https://github.com/xlcnd/isbnlib/pull/145
+    "setuptools",
 ]
 
 [project.urls]
