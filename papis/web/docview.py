@@ -4,7 +4,6 @@ from typing import Any
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.commands.doctor
 import papis.web.citations
 import papis.web.djvujs
 import papis.web.docform
@@ -30,12 +29,16 @@ def _click_tab_selector_link_in_url() -> None:
 
 def html(libname: str, doc: papis.document.Document) -> t.html_tag:
     """
-    View of a single document to edit the information of the yaml file,
+    View of a single document to edit the information of the YAML file,
     and maybe in the future to update the information.
     """
-    checks = papis.commands.doctor.registered_checks_names()
-    errors = papis.commands.doctor.gather_errors([doc], checks)
+    from papis.commands.doctor import gather_errors, registered_checks_names
+
+    checks = registered_checks_names()
+    errors = gather_errors([doc], checks)
     libfolder = papis.config.get_lib_from_name(libname).paths[0]
+
+    from papis.exporters.bibtex import exporter as bibtex
 
     with papis.web.header.main_html_document(doc["title"]) as result:
         with result.body:
@@ -115,7 +118,7 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                aria_labelledby="bibtex-form",
                                cls="tab-pane fade"):
                         bibtex_id = "bibtex-source"
-                        t.div(papis.bibtex.to_bibtex(doc),
+                        t.div(bibtex([doc]),
                               id=bibtex_id,
                               width="100%",
                               height=100,

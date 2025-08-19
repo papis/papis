@@ -9,10 +9,10 @@ BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex"
 
 
 def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
-    import papis.bibtex
+    from papis.bibtex import bibtex_to_dict
 
     bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
-    bib, = papis.bibtex.bibtex_to_dict(bibpath)
+    bib, = bibtex_to_dict(bibpath)
     expected_keys = {
         "title",
         "author",
@@ -36,17 +36,13 @@ def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_bibkeys_exist(tmp_config: TemporaryConfiguration) -> None:
-    import papis.bibtex
-
-    assert hasattr(papis.bibtex, "bibtex_keys")
-    assert len(papis.bibtex.bibtex_keys) != 0
+    from papis.bibtex import bibtex_keys
+    assert len(bibtex_keys) != 0
 
 
 def test_bibtypes_exist(tmp_config: TemporaryConfiguration) -> None:
-    import papis.bibtex
-
-    assert hasattr(papis.bibtex, "bibtex_types")
-    assert len(papis.bibtex.bibtex_types) != 0
+    from papis.bibtex import bibtex_types
+    assert len(bibtex_types) != 0
 
 
 @pytest.mark.parametrize("bibfile", ["1.bib", "2.bib", "3.bib"])
@@ -58,29 +54,30 @@ def test_author_list_conversion(
     basename, _ = os.path.splitext(bibfile)
     jsonfile = f"bibtex/{basename}_out.json"
 
-    import papis.bibtex
+    from papis.bibtex import bibtex_to_dict
 
-    bib, = papis.bibtex.bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
+    bib, = bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
     expected = resource_cache.get_local_resource(jsonfile, bib)
 
     assert bib["author_list"] == expected["author_list"]
 
 
 def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
-    import papis.bibtex
+    from papis.bibtex import ref_cleanup
 
     for (r, rc) in [
             ("Einstein über etwas und so 1923", "Einstein_uber_etwas_und_so_1923"),
             ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),  # noqa: RUF001
             (r"Albert_Ein\_stein\.1923.b", "Albert_Ein__stein_.1923_b"),
             ]:
-        assert rc == papis.bibtex.ref_cleanup(r)
+        assert rc == ref_cleanup(r)
 
 
 def test_to_bibtex_wrong_type(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for incorrect types."""
-    import papis.document
-    doc = papis.document.from_data({
+    from papis.document import from_data
+
+    doc = from_data({
         "type": "fictional",
         "ref": "MyDocument",
         "author": "Albert Einstein",
@@ -89,18 +86,16 @@ def test_to_bibtex_wrong_type(tmp_config: TemporaryConfiguration) -> None:
         "year": 2350
         })
 
-    import papis.bibtex
-    result = papis.bibtex.to_bibtex(doc)
+    from papis.exporters.bibtex import exporter
+
+    result = exporter([doc])
     assert not result
 
 
 def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
     """Test no BibTeX entry is constructed for invalid references."""
-    import papis.bibtex
-    import papis.config
-    import papis.document
-
-    doc = papis.document.from_data({
+    from papis.document import from_data
+    doc = from_data({
         "type": "techreport",
         "author": "Albert Einstein",
         "title": "The Theory of Everything",
@@ -110,18 +105,20 @@ def test_to_bibtex_no_ref(tmp_config: TemporaryConfiguration) -> None:
 
     # NOTE: this seems to be one of the few ways to fail the ref construction,
     # i.e. set it to some invalid characters.
-    papis.config.set("ref-format", "--")
+    from papis.config import set as setstring
+    setstring("ref-format", "--")
 
-    result = papis.bibtex.to_bibtex(doc)
+    from papis.exporters.bibtex import exporter
+    result = exporter([doc])
     assert not result
 
 
 def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
-    """Test formatting for the `to_bibtex` function."""
-    from papis.bibtex import to_bibtex
+    """Test formatting for the BibTeX exporter."""
     from papis.document import from_data
+    from papis.exporters.bibtex import exporter
 
-    assert to_bibtex(from_data({
+    assert exporter([from_data({
         "type": "report",
         "author": "Albert Einstein",
         "author_list": [{"given": "Albert", "family": "Einstein"}],
@@ -129,7 +126,7 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "journal": "Nature",
         "year": 2350,
         "ref": "MyDocument"})
-        ) == (
+        ]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
@@ -137,13 +134,13 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "  year = {2350},\n"
         "}")
 
-    assert to_bibtex(from_data({
+    assert exporter([from_data({
         "type": "misc",
         "ref": "SDbwLashko2019",
         "author": "Alexander Lashkov",
         "author_list": [{"given": "Alexander", "family": "Lashkov"}],
         "url": "https://github.com/alashkov83/S_Dbw"})
-        ) == (
+        ]) == (
         "@misc{SDbwLashko2019,\n"
         "  author = {Lashkov, Alexander},\n"
         "  url = {https://github.com/alashkov83/S_Dbw},\n"
@@ -151,9 +148,9 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_overridable(tmp_config: TemporaryConfiguration) -> None:
-    import papis.config
-    from papis.bibtex import to_bibtex
+    from papis.config import set as setboolean
     from papis.document import from_data
+    from papis.exporters.bibtex import exporter
 
     doc = {
         "type": "report",
@@ -166,8 +163,8 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "ref": "MyDocument"
     }
 
-    papis.config.set("bibtex-unicode", True)
-    assert to_bibtex(from_data(doc)) == (
+    setboolean("bibtex-unicode", True)
+    assert exporter([from_data(doc)]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
@@ -175,8 +172,8 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "  year = {2350},\n"
         "}")
 
-    papis.config.set("bibtex-unicode", False)
-    assert to_bibtex(from_data(doc)) == (
+    setboolean("bibtex-unicode", False)
+    assert exporter([from_data(doc)]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
@@ -191,9 +188,9 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
 def test_ignore_keys(tmp_config: TemporaryConfiguration,
                      monkeypatch: pytest.MonkeyPatch) -> None:
     import papis.bibtex
-    import papis.config
-    from papis.bibtex import to_bibtex
+    from papis.config import getlist, set as setlist
     from papis.document import from_data
+    from papis.exporters.bibtex import exporter
 
     doc = {
         "type": "report",
@@ -202,7 +199,7 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
         "year": 2350,
         "ref": "MyDocument"
     }
-    assert to_bibtex(from_data(doc)) == (
+    assert exporter([from_data(doc)]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "  year = {2350},\n"
@@ -210,18 +207,19 @@ def test_ignore_keys(tmp_config: TemporaryConfiguration,
 
     # TODO: think about this since these keys are not updated
     #       dynamically and it's possible is not worth it to update dynamically
-    papis.config.set("bibtex-ignore-keys", "['year']")
+    setlist("bibtex-ignore-keys", ["year"])
     monkeypatch.setattr(papis.bibtex, "bibtex_ignore_keys",
-                        frozenset(papis.config.getlist("bibtex-ignore-keys")))
+                        frozenset(getlist("bibtex-ignore-keys")))
 
-    assert to_bibtex(from_data(doc)) == (
+    assert exporter([from_data(doc)]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "}")
 
 
 def test_import_institution(tmp_config: TemporaryConfiguration) -> None:
-    from papis.bibtex import bibtex_to_dict, to_bibtex
+    from papis.bibtex import bibtex_to_dict
+    from papis.exporters.bibtex import exporter
 
     orig = (
         "@report{ipcc1990,\n"
@@ -239,5 +237,5 @@ def test_import_institution(tmp_config: TemporaryConfiguration) -> None:
 
     from papis.document import from_data
 
-    from_result = to_bibtex(from_data(to_result))
+    from_result = exporter([from_data(to_result)])
     assert from_result == orig
