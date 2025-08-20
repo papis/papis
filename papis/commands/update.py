@@ -80,6 +80,12 @@ Examples
     doesn't yet exist, it will be created. All duplicate items will be removed
     from the list.
 
+    As you might have guessed, the ``--append`` flag needs to know the type of
+    the key it is appending to. It does this by looking at the
+    :confval:`doctor-key-type-keys` (and :confval:`doctor-key-type-keys-extend`)
+    configuration options. If the key you are appending to is not in that list,
+    the command will fail.
+
 - To remove an item from a list, use ``--remove``:
 
     .. code:: sh
@@ -232,7 +238,9 @@ def run_append(
         if key not in supported_keys:
             logger.error(
                 "We cannot append to key '%s', because we do not know the "
-                "intended type. Please use `papis update --set` instead.",
+                "intended type. Please use `papis update --set` instead or "
+                "add the key type to the `doctor-key-type-keys` configuration "
+                "setting (or `doctor-key-type-keys-extend`)",
                 key,
             )
             if not batch:
