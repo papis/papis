@@ -146,8 +146,8 @@ def list_plugins(show_paths: bool = False,
         return _stringify(DOWNLOADERS_EXTENSION_NAME)
 
     if show_pickers:
-        from papis.pick import PICKER_EXTENSION_NAME
-        return _stringify(PICKER_EXTENSION_NAME)
+        from papis.pick import PICKER_NAMESPACE_NAME
+        return _stringify(PICKER_NAMESPACE_NAME)
 
     return []
 

@@ -24,7 +24,7 @@ from .widgets.list import Option, OptionsList
 
 __all__ = [
     "Option",
-    "Picker"
+    "PickerApplication"
 ]
 
 
@@ -105,7 +105,7 @@ def get_keys_info() -> dict[str, KeyInfo]:
     return _KEYS_INFO
 
 
-def create_keybindings(app: "Picker[Any]") -> KeyBindings:
+def create_keybindings(app: "PickerApplication[Any]") -> KeyBindings:
     keys_info = get_keys_info()
     kb = KeyBindings()
 
@@ -200,7 +200,7 @@ def create_keybindings(app: "Picker[Any]") -> KeyBindings:
     return kb
 
 
-def get_commands(app: "Picker[Any]") -> tuple[list[Command], KeyBindings]:
+def get_commands(app: "PickerApplication[Any]") -> tuple[list[Command], KeyBindings]:
     kb = KeyBindings()
     keys_info = get_keys_info()
 
@@ -296,12 +296,11 @@ def get_commands(app: "Picker[Any]") -> tuple[list[Command], KeyBindings]:
     ], kb)
 
 
-class Picker(Application, Generic[Option]):  # type: ignore[type-arg]
-    """The :class:`Picker <Picker>` object
+class PickerApplication(Application, Generic[Option]):  # type: ignore[type-arg]
+    """A full screen picker widget.
 
-    :param options: a list of options to choose from
-    :param default_index: (optional) set this if the default
-        selected option is not the first one
+    This application implements a TUI picker that is used to select documents
+    or other objects.
     """
 
     def __init__(
@@ -310,6 +309,11 @@ class Picker(Application, Generic[Option]):  # type: ignore[type-arg]
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str) -> None:
+        """
+        :param options: a list of options to choose from
+        :param default_index: (optional) set this if the default
+            selected option is not the first one
+        """
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()

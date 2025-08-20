@@ -4,9 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from typing import Generic, TypeVar
 
-import papis.config
-import papis.format
-import papis.pick
+from papis.pick import Picker
 
 T = TypeVar("T")
 
@@ -55,8 +53,10 @@ class Browse(Command[T]):
 
     def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.browse import run
+        from papis.document import Document
+
         for doc in docs:
-            if isinstance(doc, papis.document.Document):
+            if isinstance(doc, Document):
                 run(doc)
         return []
 
@@ -77,8 +77,10 @@ class Edit(Command[T]):
 
     def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.edit import run
+        from papis.document import Document
+
         for doc in docs:
-            if isinstance(doc, papis.document.Document):
+            if isinstance(doc, Document):
                 run(doc)
         return []
 
@@ -90,8 +92,10 @@ class EditNote(Command[T]):
 
     def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.edit import edit_notes
+        from papis.document import Document
+
         for doc in docs:
-            if isinstance(doc, papis.document.Document):
+            if isinstance(doc, Document):
                 edit_notes(doc)
         return []
 
@@ -103,13 +107,17 @@ class Open(Command[T]):
 
     def run(self, docs: list[T]) -> list[T]:  # noqa: PLR6301
         from papis.commands.open import run
+        from papis.document import Document
+
         for doc in docs:
-            if isinstance(doc, papis.document.Document):
+            if isinstance(doc, Document):
                 run(doc)
         return []
 
 
-class Picker(papis.pick.Picker[T]):
+class FzfPicker(Picker[T]):
+    """A picker that uses ``fzf`` as a backend."""
+
     def __call__(self,
                  items: Sequence[T],
                  header_filter: Callable[[T], str] = str,
@@ -120,6 +128,9 @@ class Picker(papis.pick.Picker[T]):
 
         if len(items) == 1:
             return [items[0]]
+
+        import papis.config
+        from papis.format import format
 
         fzf = papis.config.getstring("fzf-binary")
         version = fzf_version(fzf)
@@ -143,9 +154,7 @@ class Picker(papis.pick.Picker[T]):
         def _header_filter(d: T) -> str:
             if isinstance(d, papis.document.Document):
                 import colorama
-                return papis.format.format(fmt,
-                                           d,
-                                           additional={"c": colorama})
+                return format(fmt, d, additional={"c": colorama})
             else:
                 return header_filter(d)
 

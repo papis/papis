@@ -3,14 +3,15 @@ from collections.abc import Callable, Sequence
 from typing import TypeVar
 
 import papis.logging
-import papis.pick
-import papis.tui.app as tui
+from papis.pick import Picker
 
 logger = papis.logging.get_logger(__name__)
 T = TypeVar("T")
 
 
-class Picker(papis.pick.Picker[T]):
+class PromptToolkitPicker(Picker[T]):
+    """A picker that uses ``prompt_toolkit`` as a backend."""
+
     def __call__(
             self,
             options: Sequence[T],
@@ -18,6 +19,7 @@ class Picker(papis.pick.Picker[T]):
             match_filter: Callable[[T], str] = str,
             default_index: int = 0
             ) -> list[T]:
+        from papis.tui.app import PickerApplication
 
         if len(options) == 0:
             return []
@@ -26,7 +28,7 @@ class Picker(papis.pick.Picker[T]):
             return [options[0]]
 
         def run() -> list[T]:
-            picker = tui.Picker(
+            picker = PickerApplication(
                 options,
                 default_index,
                 header_filter,
