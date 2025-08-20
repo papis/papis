@@ -7,9 +7,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.layout.containers import ConditionalContainer, Window
-from prompt_toolkit.layout.controls import (
-    BufferControl,
-)
+from prompt_toolkit.layout.controls import BufferControl
 from prompt_toolkit.layout.processors import BeforeInput
 
 
@@ -53,7 +51,8 @@ class Command:
 
 class CommandLinePrompt(ConditionalContainer):
     """
-    A vim-like command line prompt widget.
+    A vim-like command-line prompt widget.
+
     It's supposed to be instantiated only once.
     """
     def __init__(self, commands: list[Command] | None = None) -> None:

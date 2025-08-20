@@ -1,6 +1,6 @@
 import threading
 from collections.abc import Callable, Sequence
-from functools import partial
+from functools import cache, partial
 from typing import Any, Generic, TypedDict
 
 from prompt_toolkit.application import Application
@@ -16,14 +16,17 @@ from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.styles import Style
 
-from papis import config
-
-from .widgets import HelpWindow, InfoWindow, MessageToolbar
-from .widgets.command_line_prompt import Command, CommandLinePrompt
-from .widgets.list import Option, OptionsList
+from .widgets import (
+    Command,
+    CommandLinePrompt,
+    HelpWindow,
+    InfoWindow,
+    MessageToolbar,
+    Option,
+    OptionsList,
+)
 
 __all__ = [
-    "Option",
     "PickerApplication"
 ]
 
@@ -33,76 +36,68 @@ class KeyInfo(TypedDict):
     help: str
 
 
-_KEYS_INFO: dict[str, KeyInfo] | None = None
-
-
+@cache
 def get_keys_info() -> dict[str, KeyInfo]:
-    global _KEYS_INFO
-    if _KEYS_INFO is None:
-        _KEYS_INFO = {
-            "move_down_key": {
-                "key": config.getstring("move_down_key", section="tui"),
-                "help": "Move cursor down in the list",
-            },
-            "move_up_key": {
-                "key": config.getstring("move_up_key", section="tui"),
-                "help": "Move cursor up in the list",
-            },
-            "move_down_while_info_window_active_key": {
-                "key": config.getstring(
-                    "move_down_while_info_window_active_key", section="tui"
-                ),
-                "help": "Move cursor down while info window is active",
-            },
-            "move_up_while_info_window_active_key": {
-                "key": config.getstring(
-                    "move_up_while_info_window_active_key", section="tui"
-                ),
-                "help": "Move cursor up while info window is active",
-            },
-            "focus_command_line_key": {
-                "key":
-                    config.getstring("focus_command_line_key", section="tui"),
-                "help": "Focus command line prompt",
-            },
-            "browse_document_key": {
-                "key": config.getstring("browse_document_key", section="tui"),
-                "help": "Browse currently selected document",
-            },
-            "edit_document_key": {
-                "key": config.getstring("edit_document_key", section="tui"),
-                "help": "Edit currently selected document",
-            },
-            "edit_notes_key": {
-                "key": config.getstring("edit_notes_key", section="tui"),
-                "help": "Edit notes of currently selected document",
-            },
-            "open_document_key": {
-                "key": config.getstring("open_document_key", section="tui"),
-                "help": "Open currently selected document",
-            },
-            "show_help_key": {
-                "key": config.getstring("show_help_key", section="tui"),
-                "help": "Show help",
-            },
-            "show_info_key": {
-                "key": config.getstring("show_info_key", section="tui"),
-                "help": "Show the yaml information of the current document",
-            },
-            "go_top_key": {
-                "key": config.getstring("go_top_key", section="tui"),
-                "help": "Go to the top of the list",
-            },
-            "go_bottom_key": {
-                "key": config.getstring("go_bottom_key", section="tui"),
-                "help": "Go to the bottom of the list",
-            },
-            "mark_key": {
-                "key": config.getstring("mark_key", section="tui"),
-                "help": "Mark current item to be selected",
-            },
-        }
-    return _KEYS_INFO
+    from papis.config import getstring
+
+    return {
+        "move_down_key": {
+            "key": getstring("move_down_key", section="tui"),
+            "help": "Move cursor down in the list",
+        },
+        "move_up_key": {
+            "key": getstring("move_up_key", section="tui"),
+            "help": "Move cursor up in the list",
+        },
+        "move_down_while_info_window_active_key": {
+            "key": getstring("move_down_while_info_window_active_key", section="tui"),
+            "help": "Move cursor down while info window is active",
+        },
+        "move_up_while_info_window_active_key": {
+            "key": getstring("move_up_while_info_window_active_key", section="tui"),
+            "help": "Move cursor up while info window is active",
+        },
+        "focus_command_line_key": {
+            "key": getstring("focus_command_line_key", section="tui"),
+            "help": "Focus command line prompt",
+        },
+        "browse_document_key": {
+            "key": getstring("browse_document_key", section="tui"),
+            "help": "Browse currently selected document",
+        },
+        "edit_document_key": {
+            "key": getstring("edit_document_key", section="tui"),
+            "help": "Edit currently selected document",
+        },
+        "edit_notes_key": {
+            "key": getstring("edit_notes_key", section="tui"),
+            "help": "Edit notes of currently selected document",
+        },
+        "open_document_key": {
+            "key": getstring("open_document_key", section="tui"),
+            "help": "Open currently selected document",
+        },
+        "show_help_key": {
+            "key": getstring("show_help_key", section="tui"),
+            "help": "Show help",
+        },
+        "show_info_key": {
+            "key": getstring("show_info_key", section="tui"),
+            "help": "Show the yaml information of the current document",
+        },
+        "go_top_key": {
+            "key": getstring("go_top_key", section="tui"),
+            "help": "Go to the top of the list",
+        },
+        "go_bottom_key": {
+            "key": getstring("go_bottom_key", section="tui"),
+            "help": "Go to the bottom of the list",
+        },
+        "mark_key": {
+            "key": getstring("mark_key", section="tui"),
+            "help": "Mark current item to be selected",
+        },
+    }
 
 
 def create_keybindings(app: "PickerApplication[Any]") -> KeyBindings:
@@ -314,14 +309,14 @@ class PickerApplication(Application, Generic[Option]):  # type: ignore[type-arg]
         :param default_index: (optional) set this if the default
             selected option is not the first one
         """
+        from papis.config import getstring
 
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
         self.message_toolbar = MessageToolbar(style="class:message_toolbar")
         self.error_toolbar = MessageToolbar(style="class:error_toolbar")
         self.status_line = MessageToolbar(style="class:status_line")
-        self.status_line_format = config.getstring(
-            "status_line_format", section="tui")
+        self.status_line_format = getstring("status_line_format", section="tui")
 
         self.options_list = OptionsList(
             options,
@@ -369,26 +364,26 @@ class PickerApplication(Application, Generic[Option]):  # type: ignore[type-arg]
             input=None,
             output=None,
             editing_mode=EditingMode.EMACS
-            if config.get("editmode", section="tui") == "emacs"
+            if getstring("editmode", section="tui") == "emacs"
             else EditingMode.VI,
             layout=self.layout,
             style=Style.from_dict({
-                "options_list.selected_margin": config.getstring(
+                "options_list.selected_margin": getstring(
                     "options_list.selected_margin_style", section="tui"
                 ),
-                "options_list.unselected_margin": config.getstring(
+                "options_list.unselected_margin": getstring(
                     "options_list.unselected_margin_style", section="tui"
                 ),
-                "options_list.marked_margin": config.getstring(
+                "options_list.marked_margin": getstring(
                     "options_list.marked_margin_style", section="tui"
                 ),
-                "error_toolbar": config.getstring(
+                "error_toolbar": getstring(
                     "error_toolbar_style", section="tui"
                 ),
-                "message_toolbar": config.getstring(
+                "message_toolbar": getstring(
                     "message_toolbar_style", section="tui"
                 ),
-                "status_line": config.getstring(
+                "status_line": getstring(
                     "status_line_style", section="tui"
                 ),
             }),

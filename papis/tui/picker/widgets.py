@@ -14,14 +14,16 @@ from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.widgets import HorizontalLine
 from pygments.lexers import find_lexer_class_by_name
 
-from .command_line_prompt import CommandLinePrompt
-from .list import OptionsList
+from .command_line_prompt import Command, CommandLinePrompt
+from .options_list import Option, OptionsList
 
 __all__ = [
+    "Command",
     "CommandLinePrompt",
     "HelpWindow",
     "InfoWindow",
     "MessageToolbar",
+    "Option",
     "OptionsList",
 ]
 

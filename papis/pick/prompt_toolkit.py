@@ -19,7 +19,7 @@ class PromptToolkitPicker(Picker[T]):
             match_filter: Callable[[T], str] = str,
             default_index: int = 0
             ) -> list[T]:
-        from papis.tui.app import PickerApplication
+        from papis.tui.picker import PickerApplication
 
         if len(options) == 0:
             return []

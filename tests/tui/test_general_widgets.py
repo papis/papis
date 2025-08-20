@@ -1,10 +1,10 @@
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.formatted_text.html import HTML
 
-from papis.tui.widgets import HelpWindow, InfoWindow, MessageToolbar
-
 
 def test_message_toolbar() -> None:
+    from papis.tui.picker.widgets import MessageToolbar
+
     app = get_app()
     mt = MessageToolbar()
     assert not app.layout.has_focus(mt)
@@ -20,6 +20,8 @@ def test_message_toolbar() -> None:
 
 
 def test_info_window() -> None:
+    from papis.tui.picker.widgets import InfoWindow
+
     app = get_app()
     iw = InfoWindow()
     assert iw.text == ""
@@ -33,6 +35,8 @@ def test_info_window() -> None:
 
 
 def test_help_window() -> None:
+    from papis.tui.picker.widgets import HelpWindow
+
     hw = HelpWindow()
     assert isinstance(hw.text, HTML)
     assert hw.text.value == ""
