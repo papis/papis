@@ -347,7 +347,7 @@ def update_doc_from_data_interactively(
     import copy
     docdata = copy.copy(document)
 
-    from papis.tui.widgets.diff import diffdict
+    from papis.tui.diff import diffdict
 
     # do not compare some entries
     docdata.pop("files", None)

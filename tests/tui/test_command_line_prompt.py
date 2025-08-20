@@ -2,7 +2,7 @@ import pytest
 
 
 def test_simple_command() -> None:
-    from papis.tui.widgets.command_line_prompt import Command
+    from papis.tui.picker.widgets import Command
 
     cmd = Command("test", lambda c: 1 + 1)
     assert cmd.app is not None
@@ -16,7 +16,7 @@ def test_simple_command() -> None:
 
 
 def test_command_line_prompt() -> None:
-    from papis.tui.widgets.command_line_prompt import Command, CommandLinePrompt
+    from papis.tui.picker.widgets import Command, CommandLinePrompt
     cmds = [Command("test", lambda c: 1 + 1)]
     prompt = CommandLinePrompt(commands=cmds)
 
