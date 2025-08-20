@@ -235,8 +235,9 @@ yaml = "papis.yaml:Importer"
 zenodo = "papis.zenodo:Importer"
 
 [project.entry-points."papis.picker"]
-fzf = "papis.fzf:Picker"
-papis = "papis.tui.picker:Picker"
+fzf = "papis.pick.fzf:FzfPicker"
+papis = "papis.pick.prompt_toolkit:PromptToolkitPicker"
+prompt_toolkit = "papis.pick.prompt_toolkit:PromptToolkitPicker"
 
 [tool.hatch.build.targets.sdist]
 exclude = [".github", "docs/build"]
