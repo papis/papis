@@ -97,14 +97,15 @@ def pick(items: Sequence[T],
 
     :returns: a subset of *items* that were picked.
     """
-    from papis.plugin import InvalidPluginTypeError
+    from papis.plugin import PluginError
 
     if picktool is None:
         picktool = papis.config.getstring("picktool")
 
     try:
         picker: type[Picker[T]] = get_picker_by_name(picktool)
-    except InvalidPluginTypeError:
+    except PluginError as exc:
+        logger.error("Failed to load picker '%s'.", picktool, exc_info=exc)
         return []
 
     return picker()(items,
