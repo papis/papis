@@ -12,6 +12,9 @@ def _instantiate_database(backend_name: str, library: Library) -> Database:
     if backend_name == "papis":
         import papis.database.cache
         return papis.database.cache.Database(library)
+    elif backend_name == "sqlite":
+        import papis.database.sqlite
+        return papis.database.sqlite.Database(library)
     elif backend_name == "whoosh":
         import papis.database.whoosh
         return papis.database.whoosh.Database(library)

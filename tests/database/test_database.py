@@ -4,7 +4,7 @@ import papis.config
 import papis.database
 from papis.testing import TemporaryLibrary
 
-PAPIS_DB_BACKENDS = ["papis"]
+PAPIS_DB_BACKENDS = ["papis", "sqlite"]
 
 try:
     import whoosh  # noqa: F401
