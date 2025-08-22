@@ -39,6 +39,8 @@ implemented
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
+*  ``string-cleaner``: checks that strings do contain various undesired characters
+  (e.g. newlines in titles) and other general style issues (double whitespace).
 
 If any custom checks are implemented, you can get a complete list at runtime from:
 
@@ -833,8 +835,8 @@ def key_type_check(doc: papis.document.Document) -> list[Error]:
 
     results = []
     for key, cls in get_key_type_check_keys().items():
-
         doc_value = doc.get(key)
+
         if doc_value is not None and not isinstance(doc_value, cls):
             results.append(Error(name=KEY_TYPE_CHECK_NAME,
                                  path=folder,
@@ -991,6 +993,158 @@ def html_tags_check(doc: papis.document.Document) -> list[Error]:
     return results
 
 
+STRING_CLEANER_CHECK_NAME = "string-cleaner"
+STRING_CLEANER_WHITESPACE_REGEX = re.compile(r"\s{2,}")
+STRING_CLEANER_ABSTRACT_REGEX = re.compile(r"^\W*abstract\W*", re.IGNORECASE)
+STRING_CLEANER_AUTHOR_DOTS_REGEX = (
+    re.compile(r"(?:(\b\w\b)(?![\.'’])|(\b\w)\.(?=\w))"))  # noqa: RUF001
+
+
+def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
+    """
+    Check string keys in the document for various errors.
+
+    This check goes through all the keys of the document that are known to be
+    keys, according to :confval:`doctor-key-type-keys`, and fixes any obvious
+    errors. For example (not exhaustive):
+
+    * Double spacing or any repeated whitespace.
+    * Unexpected new line characters.
+    * Weirdly formatted names, e.g. "J R R Tolkien" should be "J. R. R. Tolkien".
+
+    :returns: a :class:`list` of errors, one for each string-based key that has
+        unexpected formatting.
+    """
+    folder = doc.get_main_folder() or ""
+
+    def has_extra_newlines(key: str, value: str) -> bool:
+        return "\n" in value
+
+    def remove_newlines_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            doc[key] = doc[key].replace("\n", " ")
+            logger.info("[FIX] Removing newline from '%s' key.", key)
+
+        return fixer
+
+    def has_abstract_issues(key: str, value: str) -> bool:
+        return (
+            key == "abstract"
+            and STRING_CLEANER_ABSTRACT_REGEX.match(value) is not None
+        )
+
+    def remove_abstract_fixer() -> None:
+        doc["abstract"] = (
+            STRING_CLEANER_ABSTRACT_REGEX.sub(r"", doc["abstract"]).strip())
+        if not doc["abstract"]:
+            del doc["abstract"]
+        logger.info("[FIX] Cleaning up 'abstract' key.")
+
+    def has_extra_whitespace(key: str, value: str) -> bool:
+        return STRING_CLEANER_WHITESPACE_REGEX.search(value) is not None
+
+    def remove_whitespace_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            doc[key] = STRING_CLEANER_WHITESPACE_REGEX.sub(r" ", doc[key])
+            logger.info("[FIX] Replacing repeated whitespace in key '%s'.", key)
+
+        return fixer
+
+    def has_author_issues(key: str, value: str) -> bool:
+        if key != "author":
+            return False
+
+        if "author_list" not in doc:
+            return False
+
+        # NOTE: we only want to add dots to the given name of an author (e.g.
+        # single letter family names are allowed) and only if the author also
+        # has a family name (e.g. an author like {given="C Committee", "family": None}
+        # should be allowed and left unchanged)
+        return any(STRING_CLEANER_AUTHOR_DOTS_REGEX.search(author["given"])
+                   for author in doc["author_list"]
+                   if author["given"] and author["family"])
+
+    def author_spacing_fixer() -> None:
+        author_list = doc.get("author_list")
+        if author_list is None:
+            author_list = papis.document.split_authors_name(doc["author"])
+
+        for author in author_list:
+            # FIXME: we should make a regex smart enough that we do not
+            # actually need the post cleanup here..
+            author.update({
+                "given": (
+                    STRING_CLEANER_AUTHOR_DOTS_REGEX.sub(r"\1\2. ", author["given"])
+                    .replace("  ", " ")
+                    .strip())
+            })
+
+        doc["author_list"] = author_list
+        doc["author"] = papis.document.author_list_to_author(doc)
+        logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
+
+    key_types = get_key_type_check_keys()
+    results = []
+
+    for key, value in doc.items():
+        if key_types.get(key) is not str:
+            continue
+
+        if not isinstance(value, str):
+            results.append(Error(name=KEY_TYPE_CHECK_NAME,
+                                 path=folder,
+                                 msg=(
+                                    f"Key '{key}' should be of type 'str' "
+                                    f"but got {type(value).__name__!r}: {value!r}"),
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=None,
+                                 payload=key,
+                                 doc=doc))
+            continue
+
+        if has_abstract_issues(key, value):
+            results.append(Error(name=STRING_CLEANER_CHECK_NAME,
+                                 path=folder,
+                                 msg="Key 'abstract' starts with 'Abstract'",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=remove_abstract_fixer,
+                                 payload=key,
+                                 doc=doc))
+
+        if has_author_issues(key, value):
+            results.append(Error(name=STRING_CLEANER_CHECK_NAME,
+                                 path=folder,
+                                 msg=(
+                                    "Key 'author' contains initials that are not "
+                                    "followed by a dot or are not separated by "
+                                    "whitespace"),
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=author_spacing_fixer,
+                                 payload=key,
+                                 doc=doc))
+
+        if has_extra_newlines(key, value):
+            results.append(Error(name=STRING_CLEANER_CHECK_NAME,
+                                 path=folder,
+                                 msg=f"Key '{key}' contains a newline",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=remove_newlines_fixer(key),
+                                 payload=key,
+                                 doc=doc))
+
+        if has_extra_whitespace(key, value):
+            results.append(Error(name=STRING_CLEANER_CHECK_NAME,
+                                 path=folder,
+                                 msg=f"Key '{key}' contains repeated whitespace",
+                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
+                                 fix_action=remove_whitespace_fixer(key),
+                                 payload=key,
+                                 doc=doc))
+
+    return results
+
+
 register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_MISSING_CHECK_NAME, keys_missing_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
@@ -1004,6 +1158,7 @@ register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(KEY_TYPE_CHECK_NAME, key_type_check)
+register_check(STRING_CLEANER_CHECK_NAME, string_cleaner_check)
 
 DEPRECATED_CHECK_NAMES = {
     "keys-exist": "keys-missing",
