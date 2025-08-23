@@ -4,7 +4,6 @@ from typing import Any
 
 import papis
 import papis.document
-import papis.downloaders.base
 import papis.importer
 import papis.utils
 from papis.downloaders import download_document

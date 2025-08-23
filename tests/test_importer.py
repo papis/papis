@@ -131,7 +131,7 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     importers = get_matching_importers_by_uri("this_is_not_an_uri")
     assert len(importers) == 0
 
-    from papis.arxiv import Importer as ArxivImporter
+    from papis.importer.arxiv import ArxivImporter
 
     importers = get_matching_importers_by_uri("https://arxiv.org/abs/1110.3658")
     assert len(importers) == 1

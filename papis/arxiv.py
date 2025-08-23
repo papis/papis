@@ -22,15 +22,11 @@ all    All of the above
 ====== ========================
 """
 
-import os
 import re
 from typing import TYPE_CHECKING, Any
 
 import papis.config
-import papis.downloaders.base
-import papis.filetype
 import papis.logging
-import papis.utils
 
 if TYPE_CHECKING:
     import arxiv
@@ -140,13 +136,24 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
-    with papis.utils.get_session() as session:
+    from papis.utils import get_session
+
+    with get_session() as session:
         response = session.get(f"{ARXIV_ABS_URL}/{arxivid}")
 
     if not response.ok:
         raise ValueError(
             f"HTTP ({response.status_code} {response.reason}): "
             f"'{arxivid}' not an arxivid")
+
+
+def is_arxivid(arxivid: str) -> bool:
+    try:
+        validate_arxivid(arxivid)
+    except ValueError:
+        return False
+    else:
+        return True
 
 
 def pdf_to_arxivid(
@@ -200,147 +207,3 @@ def find_arxivid_in_text(text: str) -> str | None:
             return aid
 
     return None
-
-
-class Downloader(papis.downloaders.Downloader):
-    """Retrieve documents from `arXiv <https://arxiv.org>`__"""
-
-    def __init__(self, url: str) -> None:
-        super().__init__(uri=url, name="arxiv", expected_document_extension="pdf")
-        self._result: arxiv.Result | None = None
-        self._arxivid: str | None = None
-
-    @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        arxivid = find_arxivid_in_text(url)
-        if arxivid:
-            url = f"{ARXIV_ABS_URL}/{arxivid}"
-            down = Downloader(url)
-            down._arxivid = arxivid
-            return down
-        else:
-            return None
-
-    @property
-    def arxivid(self) -> str | None:
-        if self._arxivid is None:
-            self._arxivid = find_arxivid_in_text(self.uri)
-            self.logger.debug("Found the arxivid '%s'.", self._arxivid)
-
-        return self._arxivid
-
-    @property
-    def result(self) -> "arxiv.Result | None":
-        if self._result is None:
-            import arxiv
-
-            client = arxiv.Client()
-            try:
-                results = list(client.results(arxiv.Search(id_list=[self.arxivid])))
-            except arxiv.ArxivError as exc:
-                self.logger.error(
-                    "Failed to download metadata from arXiv.", exc_info=exc)
-                results = []
-
-            if len(results) > 1:
-                self.logger.error(
-                    "Found multiple results for arxivid '%s'. Picking the first one!",
-                    self.arxivid)
-
-            if results:
-                self._result = results[0]
-
-        return self._result
-
-    def get_data(self) -> dict[str, Any]:
-        result = self.result
-        if result is None:
-            return {}
-
-        return arxiv_to_papis(self.result)
-
-    def get_document_url(self) -> str | None:
-        result = self.result
-        if result is None:
-            return None
-
-        self.logger.debug("pdf_url = '%s'", result.pdf_url)
-        return str(result.pdf_url)
-
-
-class Importer(papis.importer.Importer):
-
-    """Importer accepting an arXiv ID and downloading files and data"""
-
-    def __init__(self, uri: str) -> None:
-        try:
-            validate_arxivid(uri)
-            aid: str | None = uri
-        except ValueError:
-            aid = find_arxivid_in_text(uri)
-
-        uri = f"{ARXIV_ABS_URL}/{aid}"
-
-        super().__init__(name="arxiv", uri=uri)
-        self.downloader = Downloader(uri)
-        self.downloader._arxivid = aid
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        arxivid = find_arxivid_in_text(uri)
-        if arxivid:
-            return Importer(uri=f"{ARXIV_ABS_URL}/{arxivid}")
-
-        try:
-            validate_arxivid(uri)
-        except ValueError:
-            return None
-        else:
-            return Importer(uri=f"{ARXIV_ABS_URL}/{uri}")
-
-    @property
-    def arxivid(self) -> str | None:
-        return self.downloader.arxivid
-
-    def fetch_data(self) -> None:
-        self.downloader.fetch_data()
-        self.ctx.data = self.downloader.ctx.data.copy()
-
-    def fetch_files(self) -> None:
-        self.downloader.fetch_files()
-        self.ctx.files = self.downloader.ctx.files.copy()
-
-
-class ArxividFromPdfImporter(papis.importer.Importer):
-
-    """Importer parsing an arXiv ID from a PDF file"""
-
-    def __init__(self, uri: str) -> None:
-        super().__init__(name="pdf2arxivid", uri=uri)
-        self.arxivid: str | None = None
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        if (os.path.isdir(uri) or not os.path.exists(uri)
-                or not papis.filetype.get_document_extension(uri) == "pdf"):
-            return None
-        importer = ArxividFromPdfImporter(uri=uri)
-        importer.arxivid = pdf_to_arxivid(uri, maxlines=2000)
-        return importer if importer.arxivid else None
-
-    def fetch(self) -> None:
-        self.logger.info("Trying to parse arxivid from file '%s'.", self.uri)
-        if not self.arxivid:
-            self.arxivid = pdf_to_arxivid(self.uri, maxlines=2000)
-
-        if self.arxivid:
-            self.logger.info("Parsed arxivid '%s'.", self.arxivid)
-            self.logger.warning(
-                "There is no guarantee that this arxivid is the correct one!")
-
-            importer = Importer.match(self.arxivid)
-            if importer:
-                importer.fetch()
-                self.ctx = importer.ctx
-        else:
-            self.logger.info("No arxivid found in file: '%s'.", self.uri)
