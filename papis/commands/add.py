@@ -442,7 +442,7 @@ def run(paths: list[str],
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer.",
-    type=(click.Choice(papis.importer.available_importers()), str),
+    type=(click.Choice(papis.importer.get_available_importers()), str),
     nargs=2,
     multiple=True,
     default=(),)

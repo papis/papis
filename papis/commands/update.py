@@ -424,9 +424,9 @@ def run(
     "--from",
     "from_importer",
     help="Add document from a specific importer ({}).".format(
-        ", ".join(papis.importer.available_importers())
+        ", ".join(papis.importer.get_available_importers())
     ),
-    type=(click.Choice(papis.importer.available_importers()), str),
+    type=(click.Choice(papis.importer.get_available_importers()), str),
     nargs=2,
     multiple=True,
     default=(),
