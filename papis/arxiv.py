@@ -2,9 +2,8 @@
 Table: search_query field prefixes
 ==================================
 
-The following table lists the field prefixes for all the fields
-that can be searched. See the details of query construction in the
-`arXiv API docs
+The following table lists the field prefixes for all the fields that can be
+searched. See the details of query construction in the `arXiv API docs
 <https://info.arxiv.org/help/api/user-manual.html#51-details-of-query-construction>`__.
 
 ====== ========================
@@ -22,50 +21,64 @@ all    All of the above
 ====== ========================
 """
 
+import os
 import re
+from functools import cache
 from typing import TYPE_CHECKING, Any
 
-import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
     import arxiv
 
+    import papis.document
+
 logger = papis.logging.get_logger(__name__)
 
+#: Official arXiv API endpoint.
 ARXIV_API_URL = "https://arxiv.org/api/query"
+#: Base URL for arXiv article abstract pages.
 ARXIV_ABS_URL = "https://arxiv.org/abs"
+#: Base URL for arXiv article file pages.
 ARXIV_PDF_URL = "https://arxiv.org/pdf"
 
-# NOTE: keys match attributes of arxiv.Result
-#   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
 
-_k = papis.document.KeyConversionPair
-key_conversion = [
-    _k("authors", [{
-        "key": "author_list",
-        "action": lambda x: papis.document.split_authors_name([
-            author.name for author in x
-            ])
-    }]),
-    _k("doi", [{"key": "doi", "action": None}]),
-    _k("entry_id", [{"key": "url", "action": None}]),
-    _k("journal_ref", [{"key": "journal", "action": None}]),
-    _k("pdf_url", [{
-        "key": papis.config.getstring("doc-url-key-name"),
-        "action": None
-    }]),
-    _k("published", [
-        {"key": "year", "action": lambda x: x.year},
-        {"key": "month", "action": lambda x: x.month}
-    ]),
-    _k("summary", [{"key": "abstract", "action": lambda x: x.replace("\n", " ")}]),
-    _k("title", [{"key": "title", "action": None}]),
+@cache
+def _get_arxiv_key_conversions() -> list["papis.document.KeyConversionPair"]:
+    # NOTE: keys match attributes of arxiv.Result
+    #   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
+
+    from papis.config import getstring
+    from papis.document import KeyConversionPair, split_authors_name
+
+    return [
+        KeyConversionPair("authors", [{
+            "key": "author_list",
+            "action": lambda x: split_authors_name([author.name for author in x])
+        }]),
+        KeyConversionPair("doi", [{"key": "doi", "action": None}]),
+        KeyConversionPair("entry_id", [{"key": "url", "action": None}]),
+        KeyConversionPair("journal_ref", [{"key": "journal", "action": None}]),
+        KeyConversionPair("pdf_url", [{
+            "key": getstring("doc-url-key-name"),
+            "action": None
+        }]),
+        KeyConversionPair("published", [
+            {"key": "year", "action": lambda x: x.year},
+            {"key": "month", "action": lambda x: x.month}
+        ]),
+        KeyConversionPair("summary", [
+            {"key": "abstract", "action": lambda x: x.replace("\n", " ")},
+        ]),
+        KeyConversionPair("title", [{"key": "title", "action": None}]),
     ]
 
 
 def arxiv_to_papis(result: "arxiv.Result") -> dict[str, Any]:
-    data = papis.document.keyconversion_to_data(key_conversion, vars(result))
+    from papis.document import keyconversion_to_data
+
+    key_conversion = _get_arxiv_key_conversions()
+    data = keyconversion_to_data(key_conversion, vars(result))
 
     # NOTE: these tags are recognized by BibLaTeX
     data["eprint"] = result.get_short_id()
@@ -100,6 +113,9 @@ def get_data(
         page: int = 0,
         max_results: int = 30
         ) -> list[dict[str, Any]]:
+    """
+    Retrieve data from arXiv based on the given query parameters.
+    """
     from urllib.parse import quote
 
     # form query
@@ -136,6 +152,12 @@ def get_data(
 
 
 def validate_arxivid(arxivid: str) -> None:
+    """
+    Check if the given arXiv identifier exists.
+
+    This function tries to perform a web query for the identifier. If it is not
+    found, a :exc:`ValueError` is raised.
+    """
     from papis.utils import get_session
 
     with get_session() as session:
@@ -148,6 +170,12 @@ def validate_arxivid(arxivid: str) -> None:
 
 
 def is_arxivid(arxivid: str) -> bool:
+    """
+    Check if a given arXiv identifier exists.
+
+    This function uses :func:`validate_arxivid` to check the identifier, but is
+    meant to be used in a boolean expression.
+    """
     try:
         validate_arxivid(arxivid)
     except ValueError:
@@ -160,50 +188,67 @@ def pdf_to_arxivid(
         filepath: str,
         maxlines: float = float("inf"),
         ) -> str | None:
-    """Try to get arxivid from a filepath, it looks for a regex in the binary
-    data and returns the first arxivid found, in the hopes that this arxivid
-    is the correct one.
-
-    :param filepath: Path to the pdf file
-    :param maxlines: Maximum number of lines that should be checked
-        For some documents, it would spend a long time trying to look for
-        a arxivid, and arxivids in the middle of documents don't tend to be the
-        correct arxivid of the document.
-    :returns: arxivid or None
     """
+    Find an arXiv identifier in the given *filepath*.
+
+    This function uses a simple regular expression to look through the data in
+    the given file (usually a PDF file) for an arXiv identifier. It uses
+    :func:`find_arxivid_in_text` to perform the check on each line of text.
+
+    In practice, it is recommended to set *maxlines* to a reasonable value,
+    e.g. 1000 lines. Most documents downloaded from arXiv have the required
+    identifier on the first page, so performing a longer search is suboptimal.
+    Furthermore, if an arXiv identifier is found further away from the first
+    page, it is more likely to not correspond to the current document.
+
+    :param filepath: a path to an existing file.
+    :param maxlines: maximum number of lines that should be checked.
+    :returns: an arXiv identifier, if any could be found, or *None* otherwise.
+    """
+    if not os.path.exists(filepath):
+        return None
+
     with open(filepath, "rb") as fd:
         for j, line in enumerate(fd):
             arxivid = find_arxivid_in_text(
                 line.decode("ascii", errors="ignore"))
+
             if arxivid:
                 return arxivid
+
             if j > maxlines:
                 return None
+
     return None
+
+
+# NOTE: sometimes it is defined in javascript too, so this regex is very broad.
+_ARXIVID_FORBIDDEB_CHARACTERS = r'"\(\)\s%!$^\'<>@,;:#?&'
+_ARXIVID_REGEX = re.compile(
+    r"arxiv(.org|.com)?"
+    r"(/abs|/pdf)?"
+    r"\s*(=|:|/|\()\s*"
+    r"(\"|')?"
+    fr"(?P<arxivid>[^{_ARXIVID_FORBIDDEB_CHARACTERS}]+)"
+    r'("|\'|\))?',
+    re.I
+)
 
 
 def find_arxivid_in_text(text: str) -> str | None:
     """
-    Try to find a arxivid in a text
-    """
-    forbidden_arxivid_characters = r'"\(\)\s%!$^\'<>@,;:#?&'
-    # Sometimes it is in the javascript defined
-    regex = re.compile(
-        r"arxiv(.org|.com)?"
-        r"(/abs|/pdf)?"
-        r"\s*(=|:|/|\()\s*"
-        r"(\"|')?"
-        fr"(?P<arxivid>[^{forbidden_arxivid_characters}]+)"
-        r'("|\'|\))?', re.I
-    )
-    miter = regex.finditer(text)
+    Find an arXiv identifier in the given *text*.
 
-    from contextlib import suppress
-    with suppress(StopIteration):
-        m = next(miter)
-        if m:
-            aid = m.group("arxivid")
-            aid = aid[:-4] if aid.endswith(".pdf") else aid
-            return aid
+    This function searches for the arXiv identifier using a simple regular
+    expression. This regular expression is not exact, so there could be false
+    positives. To ensure that the returned value is a valid arXiv identifier,
+    use :func:`validate_arxivid` or :func:`is_arxivid`.
+
+    :returns: an arXiv identifier, if any could be found, or *None* otherwise.
+    """
+    for match in _ARXIVID_REGEX.finditer(text):
+        aid = match.group("arxivid")
+        aid = aid[:-4] if aid.endswith(".pdf") else aid
+        return aid
 
     return None
