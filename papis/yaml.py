@@ -116,11 +116,13 @@ class Importer(papis.importer.Importer):
     @classmethod
     def match(cls, uri: str) -> papis.importer.Importer | None:
         """Check if the *uri* points to an existing YAML file."""
-        importer = Importer(uri=uri)
+        importer = None
         if os.path.exists(uri) and not os.path.isdir(uri):
-            importer.fetch()
-            return importer if importer.ctx.data else None
-        return None
+            _, ext = os.path.splitext(uri)
+            if ext in {".yml", ".yaml"}:
+                importer = Importer(uri)
+
+        return importer
 
     def fetch_data(self: papis.importer.Importer) -> Any:
         """Fetch metadata from the YAML file."""
