@@ -3,8 +3,10 @@ from typing import Any
 
 import pytest
 
+from papis.testing import TemporaryConfiguration
 
-def test_context() -> None:
+
+def test_context(tmp_config: TemporaryConfiguration) -> None:
     from papis.importer import Context
 
     ctx = Context()
@@ -19,11 +21,8 @@ def test_context() -> None:
     ctx.data["key"] = 42
     assert ctx
 
-    ctx = Context()
-    assert not ctx
 
-
-def test_custom_context_importer() -> None:
+def test_custom_context_importer(tmp_config: TemporaryConfiguration) -> None:
     from papis.importer import Context, Importer
 
     class CustomContext(Context):
@@ -51,7 +50,7 @@ def test_custom_context_importer() -> None:
     assert importer.ctx.extra == "foobar"
 
 
-def test_cache() -> None:
+def test_cache(tmp_config: TemporaryConfiguration) -> None:
     from papis.importer import Importer, cache
 
     data = {"time": time.time()}
@@ -82,11 +81,11 @@ def test_cache() -> None:
     assert importer.ctx.data["time"] == data["time"]
 
 
-def test_get_importer() -> None:
-    from papis.importer import Importer, available_importers, get_importer_by_name
+def test_get_importer(tmp_config: TemporaryConfiguration) -> None:
+    from papis.importer import Importer, get_available_importers, get_importer_by_name
     from papis.plugin import PluginNotFoundError
 
-    names = available_importers()
+    names = get_available_importers()
     assert isinstance(names, list)
     assert names
 
@@ -96,3 +95,64 @@ def test_get_importer() -> None:
 
     with pytest.raises(PluginNotFoundError):
         _ = get_importer_by_name("this_is_not_a_known_importer_hopefully")
+
+
+def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> None:
+    from papis.crossref import Importer as CrossrefImporter
+    from papis.importer import get_matching_importers_by_name
+
+    name_and_uris = [
+        # 1. a valid importer name + valid uri
+        ("doi", "10.1103/physrevb.89.140501"),
+        # 2. a valid importer name + invalid uri
+        ("doi", "this_does_not_look_like_a_doi_hopefully"),
+        # 3. an invalid importer name
+        ("this_importer_does_not_exist", "unknown"),
+        # 4. a downloader name + valid uri
+        ("usenix",
+         "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov"),
+    ]
+
+    importers = get_matching_importers_by_name(name_and_uris)
+    assert len(importers) == 1
+    assert isinstance(importers[0], CrossrefImporter)
+
+    from papis.downloaders.usenix import Downloader as UsenixDownloader
+
+    importers = get_matching_importers_by_name(name_and_uris, include_downloaders=True)
+    assert len(importers) == 2
+    assert isinstance(importers[0], CrossrefImporter)
+    assert isinstance(importers[1], UsenixDownloader)
+
+
+def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
+    from papis.importer import get_matching_importers_by_uri
+
+    importers = get_matching_importers_by_uri("this_is_not_an_uri")
+    assert len(importers) == 0
+
+    from papis.arxiv import Importer as ArxivImporter
+
+    importers = get_matching_importers_by_uri("https://arxiv.org/abs/1110.3658")
+    assert len(importers) == 1
+    assert isinstance(importers[0], ArxivImporter)
+
+    from papis.downloaders.fallback import Downloader as FallbackDownloader
+    from papis.downloaders.usenix import Downloader as UsenixDownloader
+
+    importers = get_matching_importers_by_uri(
+        "https://www.usenix.org/conference/nsdi22/presentation/goyal",
+        include_downloaders=True)
+    assert len(importers) == 2
+    assert isinstance(importers[0], FallbackDownloader)
+    assert isinstance(importers[1], UsenixDownloader)
+
+
+def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
+    from papis.crossref import Importer as CrossrefImporter
+    from papis.importer import get_matching_importers_by_doc
+
+    doc = {"doi": "10.1103/physrevb.89.140501"}
+    importers = get_matching_importers_by_doc(doc)
+    assert len(importers) == 1
+    assert isinstance(importers[0], CrossrefImporter)

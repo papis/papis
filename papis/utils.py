@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
 try:
+    # NOTE: multiprocessing is not available on some platforms (e.g. Android)
     import multiprocessing.synchronize  # noqa: F401
     from multiprocessing import Pool
     HAS_MULTIPROCESSING = True
@@ -15,19 +16,15 @@ except ImportError:
 import platformdirs
 
 import papis.config
-import papis.database
-import papis.defaults
-import papis.document
-import papis.downloaders
-import papis.exceptions
-import papis.format
-import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
 if TYPE_CHECKING:
     import requests
+
+    import papis.document
+    import papis.importer
 
 #: Invariant :class:`typing.TypeVar`
 A = TypeVar("A")
@@ -176,12 +173,14 @@ def general_open(file_name: str,
     :param wait: if *True* wait for the process to finish, otherwise detach the
         process and return immediately.
     """
+    from papis.exceptions import DefaultSettingValueMissing
 
     try:
         opener = papis.config.get(key)
-    except papis.exceptions.DefaultSettingValueMissing:
+    except DefaultSettingValueMissing:
         if default_opener is None:
-            default_opener = papis.defaults.get_default_opener()
+            from papis.defaults import get_default_opener
+            default_opener = get_default_opener()
 
         opener = default_opener
 
@@ -234,8 +233,8 @@ def get_folders(folder: str) -> list[str]:
 
 
 def create_identifier(input_list: str | None = None, skip: int = 0) -> Iterator[str]:
-    warn("'create_identifier' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.unique_suffixes' instead.",
+    warn("'papis.utils.create_identifier' is deprecated and will be removed in "
+         "Papis v0.16. Use 'papis.paths.unique_suffixes' instead.",
          DeprecationWarning, stacklevel=2)
 
     from papis.paths import unique_suffixes
@@ -243,8 +242,8 @@ def create_identifier(input_list: str | None = None, skip: int = 0) -> Iterator[
 
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
-    warn("'clean_document_name' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.normalize_path' instead.",
+    warn("'papis.utils.clean_document_name' is deprecated and will be removed in "
+         "Papis v0.16. Use 'papis.paths.normalize_path' instead.",
          DeprecationWarning, stacklevel=2)
 
     if is_path:
@@ -254,11 +253,11 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     return normalize_path(doc_path)
 
 
-def locate_document_in_lib(document: papis.document.Document,
+def locate_document_in_lib(document: "papis.document.Document",
                            library: str | None = None,
                            *,
                            unique_document_keys: list[str] | None = None,
-                           ) -> papis.document.Document:
+                           ) -> "papis.document.Document":
     """Locate a document in a library.
 
     This function falls back to :confval:`unique-document-keys` to determine if the
@@ -274,7 +273,9 @@ def locate_document_in_lib(document: papis.document.Document,
     if unique_document_keys is None:
         unique_document_keys = papis.config.getlist("unique-document-keys")
 
-    db = papis.database.get(library_name=library)
+    from papis.database import get
+    db = get(library_name=library)
+
     for key in unique_document_keys:
         value = document.get(key)
         if value is None:
@@ -284,14 +285,14 @@ def locate_document_in_lib(document: papis.document.Document,
         if docs:
             return docs[0]
 
-    raise IndexError(
-        f"Document not found in library: '{papis.document.describe(document)}'")
+    from papis.document import describe
+    raise IndexError(f"Document not found in library: '{describe(document)}'")
 
 
 def locate_document(
-        document: papis.document.Document,
-        documents: Iterable[papis.document.Document]
-        ) -> papis.document.Document | None:
+        document: "papis.document.Document",
+        documents: Iterable["papis.document.Document"]
+        ) -> "papis.document.Document | None":
     """Locate a *document* in a list of *documents*.
 
     This function uses the :confval:`unique-document-keys`
@@ -318,7 +319,7 @@ def locate_document(
     return None
 
 
-def folders_to_documents(folders: Iterable[str]) -> list[papis.document.Document]:
+def folders_to_documents(folders: Iterable[str]) -> list["papis.document.Document"]:
     """Load a list of documents from their respective *folders*.
 
     :param folders: a list of folder paths to load from.
@@ -326,15 +327,18 @@ def folders_to_documents(folders: Iterable[str]) -> list[papis.document.Document
     """
 
     import time
+
+    from papis.document import from_folder
+
     begin_t = time.time()
-    result = parmap(papis.document.from_folder, folders)
+    result = parmap(from_folder, folders)
 
     logger.debug("Finished in %.1f ms.", 1000 * (time.time() - begin_t))
     return result
 
 
 def update_doc_from_data_interactively(
-        document: papis.document.Document | dict[str, Any],
+        document: "papis.document.DocumentLike",
         data: dict[str, Any],
         data_name: str) -> None:
     """Shows a TUI to update the *document* interactively with fields from *data*.
@@ -347,6 +351,7 @@ def update_doc_from_data_interactively(
     import copy
     docdata = copy.copy(document)
 
+    from papis.document import describe
     from papis.tui.diff import diffdict
 
     # do not compare some entries
@@ -355,7 +360,7 @@ def update_doc_from_data_interactively(
 
     diff = diffdict(docdata,
                     data,
-                    namea=papis.document.describe(document),
+                    namea=describe(document),
                     nameb=data_name)
     document.update(diff)
 
@@ -384,17 +389,7 @@ def get_matching_importer_or_downloader(
         uri: str,
         download_files: bool | None = None,
         only_data: bool | None = None
-        ) -> list[papis.importer.Importer]:
-    """Gets all the importers and downloaders that match *uri*.
-
-    This function tries to match the URI using :meth:`~papis.importer.Importer.match`
-    and extract the data using :meth:`~papis.importer.Importer.fetch`. Only
-    importers that fetch the data without issues are returned.
-
-    :param uri: an URI to match the importers against.
-    :param download_files: if *True*, importers and downloaders also try to
-        download files (PDFs, etc.) instead of just metadata.
-    """
+        ) -> list["papis.importer.Importer"]:
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
@@ -406,65 +401,23 @@ def get_matching_importer_or_downloader(
     if download_files is None:
         download_files = False
 
-    result = []
+    warn("'papis.utils.get_matching_importer_or_downloader' is deprecated "
+         "and will be removed in Papis v0.16. "
+         "Use 'papis.importer.get_matching_importers_by_uri' and "
+         "'papis.importer.fetch_importers' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    all_importer_classes = (
-        papis.importer.get_importers()
-        + papis.downloaders.get_available_downloaders())
+    from papis.importer import fetch_importers, get_matching_importers_by_uri
 
-    for cls in all_importer_classes:
-        name = f"{cls.__module__}.{cls.__name__}"
-        logger.debug("Trying with importer "
-                     "{c.Back.BLACK}{c.Fore.YELLOW}%s{c.Style.RESET_ALL}.",
-                     name)
-
-        try:
-            importer = cls.match(uri)
-        except Exception:
-            logger.debug("%s failed to match query: '%s'.", name, uri)
-            importer = None
-
-        if importer:
-            try:
-                if download_files:
-                    importer.fetch()
-                else:
-                    # NOTE: not all importers can (or do) separate the fetching
-                    # of data and files, so we try both cases for now
-                    try:
-                        importer.fetch_data()
-                    except NotImplementedError:
-                        importer.fetch()
-            except Exception as exc:
-                logger.debug("%s (%s) failed to fetch query: '%s'.",
-                             name, importer.name, uri, exc_info=exc)
-            else:
-                logger.info(
-                    "{c.Back.BLACK}{c.Fore.GREEN}%s (%s) fetched data for query '%s'!"
-                    "{c.Style.RESET_ALL}",
-                    name, importer.name, uri)
-
-                result.append(importer)
-
-    return result
+    matching_importers = get_matching_importers_by_uri(uri, include_downloaders=True)
+    return fetch_importers(matching_importers, download_files=download_files)
 
 
 def get_matching_importer_by_name(
         name_and_uris: Iterable[tuple[str, str]],
         download_files: bool | None = None,
         only_data: bool | None = None,
-        ) -> list[papis.importer.Importer]:
-    """Get importers that match the given URIs.
-
-    This function tries to match the URI using :meth:`~papis.importer.Importer.match`
-    and extract the data using :meth:`~papis.importer.Importer.fetch`. Only
-    importers that fetch the data without issues are returned.
-
-    :param name_and_uris: an list of ``(name, uri)`` of importer names and
-        URIs to match them against.
-    :param download_files: if *True*, importers and downloaders also try to
-        download files (PDFs, etc.) instead of just metadata.
-    """
+        ) -> list["papis.importer.Importer"]:
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
@@ -476,58 +429,24 @@ def get_matching_importer_by_name(
     if download_files is None:
         download_files = False
 
-    from requests.exceptions import RequestException
+    warn("'papis.utils.get_matching_importers_by_name' is deprecated "
+         "and will be removed in Papis v0.16. "
+         "Use 'papis.importer.get_matching_importers_by_name' and "
+         "'papis.importer.fetch_importers' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    from papis.plugin import get_plugins
+    from papis.importer import fetch_importers, get_matching_importers_by_name
 
-    plugins = get_plugins(papis.importer.IMPORTER_EXTENSION_NAME)
-
-    result = []
-    for name, uri in name_and_uris:
-        try:
-            importer = plugins[name](uri=uri)
-            if download_files:
-                importer.fetch()
-            else:
-                # NOTE: not all importers can (or do) separate the fetching
-                # of data and files, so we try both cases for now
-                try:
-                    importer.fetch_data()
-                except NotImplementedError:
-                    importer.fetch()
-
-            if importer.ctx:
-                result.append(importer)
-        except RequestException as exc:
-            # NOTE: this is probably some HTTP error, so we better let the
-            # user know if there's something wrong with their network
-            logger.error("Failed to match importer '%s': '%s'.",
-                         name, uri, exc_info=exc)
-        except Exception as exc:
-            logger.debug("Failed to match importer '%s': '%s'.",
-                         name, uri, exc_info=exc)
-
-    return result
+    matching_importers = get_matching_importers_by_name(name_and_uris)
+    return fetch_importers(matching_importers, download_files=download_files)
 
 
 def collect_importer_data(
-        importers: Iterable[papis.importer.Importer],
+        importers: Iterable["papis.importer.Importer"],
         batch: bool = True,
         use_files: bool | None = None,
         only_data: bool | None = None,
-        ) -> papis.importer.Context:
-    """Collect all data from the given *importers*.
-
-    It is assumed that the importers have called the needed ``fetch`` methods,
-    so all data has been downloaded and converted. This function is meant to
-    only do the aggregation.
-
-    :param batch: if *True*, overwrite data from previous importers, otherwise
-        ask the user to manually merge. Note that files are always kept, even
-        if they potentially contain duplicates.
-    :param use_files: if *True*, both metadata and files are collected
-        from the importers.
-    """
+        ) -> "papis.importer.Context":
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and use_files is not None:
@@ -539,38 +458,18 @@ def collect_importer_data(
     if use_files is None:
         use_files = False
 
-    ctx = papis.importer.Context()
-    if not importers:
-        return ctx
+    warn("'papis.utils.collect_importer_data' is deprecated "
+         "and will be removed in Papis v0.16. "
+         "Use 'papis.importer.collect_from_importers' instead.",
+         DeprecationWarning, stacklevel=2)
 
-    for importer in importers:
-        if importer.ctx.data:
-            logger.info("Merging data from importer '%s'.", importer.name)
-            if batch:
-                ctx.data.update(importer.ctx.data)
-            else:
-                if ctx.data:
-                    update_doc_from_data_interactively(
-                        ctx.data,
-                        importer.ctx.data,
-                        str(importer))
-                else:
-                    # NOTE: first importer does not require interactive use
-                    ctx.data.update(importer.ctx.data)
-
-        if use_files and importer.ctx.files:
-            logger.info("Got files from importer '%s':\n\t%s",
-                        importer.name,
-                        "\n\t".join(importer.ctx.files))
-
-            ctx.files.extend(importer.ctx.files)
-
-    return ctx
+    from papis.importer import collect_from_importers
+    return collect_from_importers(importers, batch=batch, use_files=use_files)
 
 
 def is_relative_to(path: str, other: str) -> bool:
-    warn("'is_relative_to' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.is_relative_to' instead.",
+    warn("'papis.utils.is_relative_to' is deprecated and will be removed in "
+         "Papis v0.16. Use 'papis.paths.is_relative_to' instead.",
          DeprecationWarning, stacklevel=2)
 
     from papis.paths import is_relative_to as _is_relative_to
@@ -578,8 +477,8 @@ def is_relative_to(path: str, other: str) -> bool:
 
 
 def symlink(source: str, destination: str) -> None:
-    warn("'symlink' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.symlink' instead.",
+    warn("'papis.utils.symlink' is deprecated and will be removed in "
+         "Papis v0.16. Use 'papis.paths.symlink' instead.",
          DeprecationWarning, stacklevel=2)
 
     from papis.paths import symlink as _symlink

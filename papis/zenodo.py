@@ -208,10 +208,6 @@ class Importer(papis.importer.Importer):
 
         return None
 
-    @classmethod
-    def match_data(cls, data: dict[str, Any]) -> "Importer | None":
-        return None
-
     def fetch_data(self) -> None:
         zenodo_data = get_data(self.uri)
         # Build a filename to URL dictionary
