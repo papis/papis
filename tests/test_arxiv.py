@@ -42,17 +42,18 @@ def test_find_arxiv_id(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
-    from papis.arxiv import ARXIV_ABS_URL, Downloader
+    from papis.arxiv import ARXIV_ABS_URL
+    from papis.downloaders.arxiv import ArxivDownloader
 
-    down = Downloader.match("arxiv.org/sdf")
-    assert isinstance(down, Downloader)
+    down = ArxivDownloader.match("arxiv.org/sdf")
+    assert isinstance(down, ArxivDownloader)
 
-    down = Downloader.match("arxiv.com/!@#!@$!%!@%!$chemed.6b00559")
+    down = ArxivDownloader.match("arxiv.com/!@#!@$!%!@%!$chemed.6b00559")
     assert down is None
 
     for uri, arxivid in ARXIV_TEST_URLS[-2:]:
-        down = Downloader.match(uri)
-        assert isinstance(down, Downloader)
+        down = ArxivDownloader.match(uri)
+        assert isinstance(down, ArxivDownloader)
         assert down
         assert down.arxivid == arxivid
         assert down.uri == f"{ARXIV_ABS_URL}/{arxivid}"
@@ -65,15 +66,15 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
     ])
 def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
                                    url: str) -> None:
-    from papis.arxiv import Downloader
     from papis.downloaders import get_matching_downloaders
+    from papis.downloaders.arxiv import ArxivDownloader
 
     downs = get_matching_downloaders(url)
     assert len(downs) >= 1
 
     down = downs[0]
     assert down.name == "arxiv"
-    assert isinstance(down, Downloader)
+    assert isinstance(down, ArxivDownloader)
     assert down.expected_document_extensions == ("pdf",)
 
     doc = down.get_document_data()
