@@ -1,11 +1,11 @@
 import re
-from typing import Any
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
-import papis.config
-import papis.document
-import papis.importer
 import papis.logging
-import papis.utils
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -37,20 +37,6 @@ DBLP_TYPE_TO_BIBTEX = {
     "Informal or Other Publications": "report",
 }
 
-_k = papis.document.KeyConversionPair
-DBLP_KEY_CONVERSION = [
-    _k("title", [{"key": "title", "action": None}]),
-    _k("volume", [{"key": "volume", "action": None}]),
-    _k("number", [{"key": "number", "action": None}]),
-    _k("pages", [{"key": "pages", "action": None}]),
-    _k("year", [{"key": "year", "action": int}]),
-    _k("doi", [{"key": "doi", "action": None}]),
-    _k("url", [{"key": "url", "action": None}]),
-    _k("type", [{"key": "type", "action": DBLP_TYPE_TO_BIBTEX.get}]),
-    _k("venue", [{"key": "journal", "action": lambda x: _dblp_journal(x)}]),  # noqa: PLW0108
-    _k("authors", [{"key": "author_list", "action": lambda x: _dblp_authors(x)}]),  # noqa: PLW0108
-]
-
 
 def _dblp_journal(name: str) -> str | None:
     import json
@@ -65,8 +51,30 @@ def _dblp_journal(name: str) -> str | None:
 
 
 def _dblp_authors(entries: dict[str, Any]) -> list[dict[str, Any]]:
-    return [papis.document.split_author_name(author["text"])
-            for author in entries["author"]]
+    from papis.document import split_author_name
+    return [split_author_name(author["text"]) for author in entries["author"]]
+
+
+@cache
+def _get_dblp_key_conversion() -> list["papis.document.KeyConversionPair"]:
+    from papis.document import KeyConversionPair
+
+    return [
+        KeyConversionPair("title", [{"key": "title", "action": None}]),
+        KeyConversionPair("volume", [{"key": "volume", "action": None}]),
+        KeyConversionPair("number", [{"key": "number", "action": None}]),
+        KeyConversionPair("pages", [{"key": "pages", "action": None}]),
+        KeyConversionPair("year", [{"key": "year", "action": int}]),
+        KeyConversionPair("doi", [{"key": "doi", "action": None}]),
+        KeyConversionPair("url", [{"key": "url", "action": None}]),
+        KeyConversionPair("type", [{"key": "type", "action": DBLP_TYPE_TO_BIBTEX.get}]),
+        KeyConversionPair("venue", [
+            {"key": "journal", "action": _dblp_journal},
+        ]),
+        KeyConversionPair("authors", [
+            {"key": "author_list", "action": _dblp_authors},
+        ]),
+    ]
 
 
 def search(
@@ -110,7 +118,9 @@ def search(
     if url is None:
         raise ValueError(f"Unknown API endpoint '{api}'")
 
-    with papis.utils.get_session() as session:
+    from papis.utils import get_session
+
+    with get_session() as session:
         response = session.get(
             url,
             params={
@@ -137,8 +147,10 @@ def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
                      result["status"]["text"])
         return []
 
-    return [papis.document.keyconversion_to_data(DBLP_KEY_CONVERSION, hit["info"])
-            for hit in hits]
+    from papis.document import keyconversion_to_data
+
+    key_conversion = _get_dblp_key_conversion()
+    return [keyconversion_to_data(key_conversion, hit["info"]) for hit in hits]
 
 
 def is_valid_dblp_key(key: str) -> bool:
@@ -149,50 +161,8 @@ def is_valid_dblp_key(key: str) -> bool:
     if not re.match(r"[^\/]+\/[^\/]+\/[^\/]+", key):
         return False
 
-    with papis.utils.get_session() as session:
+    from papis.utils import get_session
+
+    with get_session() as session:
         response = session.get(DBLP_URL_FORMAT.format(uri=key))
         return response.ok
-
-
-class Importer(papis.importer.Importer):
-
-    """Importer for DBLP data from a key or URL."""
-
-    def __init__(self, uri: str) -> None:
-        super().__init__(name="dblp", uri=uri)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        if re.match(r".*dblp\.org.*\.html", uri):
-            return Importer(uri)
-        elif is_valid_dblp_key(uri):
-            return Importer(uri=DBLP_URL_FORMAT.format(uri=uri))
-        else:
-            return None
-
-    def fetch_data(self) -> None:
-        import papis.bibtex
-
-        # uri: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.html
-        # bib: https://dblp.org/rec/conf/iccg/EncarnacaoAFFGM93.bib
-        if is_valid_dblp_key(self.uri):
-            url = DBLP_BIB_FORMAT.format(uri=self.uri)
-        else:
-            url = f"{self.uri[:-5]}.bib"
-
-        with papis.utils.get_session() as session:
-            response = session.get(url)
-
-        if not response.ok:
-            logger.error("Could not get BibTeX entry for '%s'.", self.uri)
-            return
-
-        entries = papis.bibtex.bibtex_to_dict(response.content.decode())
-        if not entries:
-            return
-
-        if len(entries) > 1:
-            logger.warning("Found %d BibTeX entries for '%s'. Picking first one!",
-                           len(entries), self.uri)
-
-        self.ctx.data.update(entries[0])
