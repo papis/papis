@@ -24,6 +24,7 @@ class FromLibraryImporter(Importer):
         from papis.api import get_all_documents_in_lib
         from papis.pick import pick_doc
 
+        # FIXME: this importer is interactive, which it really should not be
         docs = pick_doc(get_all_documents_in_lib(self.uri))
         if not docs:
             return

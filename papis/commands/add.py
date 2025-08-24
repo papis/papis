@@ -103,37 +103,29 @@ Command-line interface
 """
 
 import os
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from warnings import warn
 
 import click
 
-import papis.api
-import papis.citations
 import papis.cli
-import papis.commands.doctor
 import papis.config
-import papis.document
-import papis.downloaders
-import papis.filetype
-import papis.format
-import papis.git
-import papis.hooks
-import papis.importer
 import papis.logging
-import papis.pick
-import papis.strings
-import papis.tui.utils
-import papis.utils
+from papis.document import Document, describe, dump, from_data, move as move_doc
+from papis.importer import Context, get_available_importers
+from papis.strings import AnyString, get_timestamp
+
+if TYPE_CHECKING:
+    import papis.citations
 
 logger = papis.logging.get_logger(__name__)
 
 
 def get_file_name(
-        doc: papis.document.Document,
+        doc: Document,
         original_filepath: str,
         suffix: str = "",
-        file_name_format: papis.strings.AnyString | None = None,
+        file_name_format: AnyString | None = None,
         base_name_limit: int = 150) -> str:
     warn("'get_file_name' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_file_name' instead.",
@@ -164,8 +156,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: list[str],
         data: dict[str, Any] | None = None,
-        folder_name: papis.strings.AnyString | None = None,
-        file_name: papis.strings.AnyString | None = None,
+        folder_name: AnyString | None = None,
+        file_name: AnyString | None = None,
         subfolder: str | None = None,
         base_path: str | None = None,
         batch: bool = False,
@@ -175,7 +167,7 @@ def run(paths: list[str],
         git: bool = False,
         link: bool = False,
         move: bool = False,
-        citations: papis.citations.Citations | None = None,
+        citations: "papis.citations.Citations | None" = None,
         auto_doctor: bool = False) -> None:
     """
     :param paths: Paths to the documents to be added.
@@ -208,7 +200,7 @@ def run(paths: list[str],
 
     in_document_paths = paths
     temp_dir = tempfile.mkdtemp()
-    tmp_document = papis.document.Document(folder=temp_dir, data=data)
+    tmp_document = Document(folder=temp_dir, data=data)
     papis.database.get().maybe_compute_id(tmp_document)
 
     # reference building
@@ -223,9 +215,11 @@ def run(paths: list[str],
             tmp_document["ref"] = new_ref
 
     if auto_doctor:
+        from papis.commands.doctor import fix_errors
+
         logger.info("Running doctor auto-fixers on document: '%s'.",
-                    papis.document.describe(tmp_document))
-        papis.commands.doctor.fix_errors(tmp_document)
+                    describe(tmp_document))
+        fix_errors(tmp_document)
 
     # create a nice folder name for the new document
     if base_path is None:
@@ -243,6 +237,9 @@ def run(paths: list[str],
 
     import shutil
 
+    from papis.tui.utils import confirm as ask_confirm, text_area
+    from papis.utils import open_file as open_file_viewer
+
     document_file_list = []
     for in_file_path, out_file_name in (
             zip(in_document_paths, renamed_file_list, strict=True)):
@@ -252,9 +249,9 @@ def run(paths: list[str],
             continue
 
         if not batch and open_file:
-            papis.utils.open_file(in_file_path)
+            open_file_viewer(in_file_path)
 
-        if not batch and confirm and not papis.tui.utils.confirm(
+        if not batch and confirm and not ask_confirm(
                 f"Add file '{os.path.basename(in_file_path)}' "
                 f"(renamed to '{os.path.basename(out_file_path)}') to document?"):
             continue
@@ -287,28 +284,33 @@ def run(paths: list[str],
     # Check if the user wants to edit before submitting the doc
     # to the library
     if edit:
+        from papis.api import edit_file
         logger.info("Editing file before adding it.")
 
-        papis.api.edit_file(tmp_document.get_info_file(), wait=True)
+        edit_file(tmp_document.get_info_file(), wait=True)
         tmp_document.load()
 
-    papis.hooks.run("on_add_done", tmp_document)
+    from papis.hooks import run as run_hook
+    run_hook("on_add_done", tmp_document)
 
     # Duplication checking
     logger.info("Checking if this document is already in the library. "
                 "This uses the keys ['%s'] to determine uniqueness.",
                 "', '".join(papis.config.getlist("unique-document-keys")))
 
+    from papis.utils import locate_document_in_lib
+
     has_duplicate = False
     try:
-        found_document = papis.utils.locate_document_in_lib(tmp_document)
+        found_document = locate_document_in_lib(tmp_document)
     except IndexError:
         logger.info("No document matching the new metadata found in the '%s' library.",
                     papis.config.get_lib_name())
     else:
-        papis.tui.utils.text_area(papis.document.dump(found_document),
-                                  title="This document is already in your library",
-                                  lexer_name="yaml")
+        text_area(
+            dump(found_document),
+            title="This document is already in your library",
+            lexer_name="yaml")
 
         logger.warning("Duplication Warning")
         logger.warning(
@@ -330,28 +332,30 @@ def run(paths: list[str],
         has_duplicate = True
 
     if citations:
-        papis.citations.save_citations(tmp_document, citations)
+        from papis.citations import save_citations
+        save_citations(tmp_document, citations)
 
     if not batch and confirm:
         dup_text = " (duplicate) " if has_duplicate else " "
-        papis.tui.utils.text_area(
-            papis.document.dump(tmp_document),
+        text_area(
+            dump(tmp_document),
             title=f"This{dup_text}document will be added to your library",
             lexer_name="yaml")
 
     if confirm:
-        if not papis.tui.utils.confirm("Do you want to add the new document?"):
+        if not ask_confirm("Do you want to add the new document?"):
             return
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
-    papis.document.move(tmp_document, out_folder_path)
+    move_doc(tmp_document, out_folder_path)
 
     papis.database.get().add(tmp_document)
 
     if git:
-        papis.git.add_and_commit_resource(
+        from papis.git import add_and_commit_resource
+        add_and_commit_resource(
             out_folder_path, ".",
-            f"Add document '{papis.document.describe(tmp_document)}'")
+            f"Add document '{describe(tmp_document)}'")
 
     if move:
         for in_file_path in in_document_paths:
@@ -392,7 +396,7 @@ def run(paths: list[str],
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer.",
-    type=(click.Choice(papis.importer.get_available_importers()), str),
+    type=(click.Choice(get_available_importers()), str),
     nargs=2,
     multiple=True,
     default=(),)
@@ -438,8 +442,8 @@ def cli(files: list[str],
         set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: papis.strings.AnyString,
-        file_name: papis.strings.AnyString | None,
+        folder_name: AnyString,
+        file_name: AnyString | None,
         from_importer: list[tuple[str, str]],
         batch: bool,
         confirm: bool,
@@ -461,7 +465,13 @@ def cli(files: list[str],
         open_file = False
 
     # gather importers / downloaders
-    matching_importers = papis.utils.get_matching_importer_by_name(
+    from papis.utils import (
+        collect_importer_data,
+        get_matching_importer_by_name,
+        get_matching_importer_or_downloader,
+    )
+
+    matching_importers = get_matching_importer_by_name(
         from_importer, download_files=download_files)
 
     if not from_importer and files:
@@ -469,15 +479,17 @@ def cli(files: list[str],
 
         matching_importers = list(
             chain.from_iterable(
-                papis.utils.get_matching_importer_or_downloader(
+                get_matching_importer_or_downloader(
                     f, download_files=download_files)
                 for f in files))
 
         if matching_importers and not batch:
+            from papis.tui.utils import select_range
+
             logger.info("These importers where automatically matched. "
                         "Select the ones you want to use.")
 
-            matching_indices = papis.tui.utils.select_range(
+            matching_indices = select_range(
                 ["{} (files: {}) ".format(
                     imp.name,
                     ", ".join(imp.ctx.files) if imp.ctx.files else "no")
@@ -487,11 +499,11 @@ def cli(files: list[str],
             matching_importers = [matching_importers[i] for i in matching_indices]
 
     # merge importer data + commandline data into a single set
-    imported = papis.utils.collect_importer_data(
+    imported = collect_importer_data(
         matching_importers, batch=batch, use_files=download_files
     )
 
-    ctx = papis.importer.Context()
+    ctx = Context()
     ctx.data = imported.data
     ctx.files = [f for f in files if os.path.exists(f)] + imported.files
 
@@ -499,7 +511,8 @@ def cli(files: list[str],
         if batch or not ctx.data:
             ctx.data.update(set_list)
         else:
-            papis.utils.update_doc_from_data_interactively(
+            from papis.utils import update_doc_from_data_interactively
+            update_doc_from_data_interactively(
                 ctx.data,
                 dict(set_list),
                 "command-line")
@@ -512,18 +525,19 @@ def cli(files: list[str],
         return
 
     if papis.config.getboolean("time-stamp"):
-        import time
-        ctx.data["time-added"] = time.strftime(papis.strings.time_format)
+        ctx.data["time-added"] = get_timestamp()
 
+    from papis.pick import pick_subfolder_from_lib
     base_path = (
-        papis.pick.pick_subfolder_from_lib(papis.config.get_lib_name())[0]
+        pick_subfolder_from_lib(papis.config.get_lib_name())[0]
     ) if pick_subfolder else None
 
     if fetch_citations:
+        from papis.citations import fetch_citations as fetch_citations_for_doc
+
         try:
             logger.info("Fetching citations for document.")
-            citations = papis.citations.fetch_citations(
-                papis.document.from_data(ctx.data))
+            citations = fetch_citations_for_doc(from_data(ctx.data))
         except ValueError as exc:
             logger.warning("Could not fetch any citations.", exc_info=exc)
             citations = []

@@ -94,6 +94,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
     paths: list[str] = []
 
     import papis.config
+    import papis.database
 
     # add document with auto-doctor on
     papis.config.set("doctor-default-checks", ["keys-missing", "key-type", "refs"])
@@ -153,7 +154,6 @@ def test_add_link_cli(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
-    import papis.yaml
     from papis.commands.add import cli
     cli_runner = PapisRunner()
 
@@ -169,6 +169,8 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
          filename])
     assert result.exit_code == 0
 
+    import papis.database
+
     db = papis.database.get()
     doc, = db.query_dict({"author": "Aristotle"})
 
@@ -183,13 +185,15 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
 
 def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
                              monkeypatch: pytest.MonkeyPatch) -> None:
-    import papis.yaml
     from papis.commands.add import cli
     cli_runner = PapisRunner()
 
     doc = make_document("test-add-from-folder", tmp_library.tmpdir, nfiles=1)
     folder = doc.get_main_folder()
     assert folder is not None
+
+    import papis.tui.utils
+    import papis.utils
 
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",
@@ -262,15 +266,19 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
 
 def test_add_yaml_cli(tmp_library: TemporaryLibrary,
                       monkeypatch: pytest.MonkeyPatch) -> None:
-    import papis.yaml
     from papis.commands.add import cli
+    from papis.yaml import data_to_yaml
+
     cli_runner = PapisRunner()
 
     yamlfile = os.path.join(tmp_library.tmpdir, "test-add.yaml")
-    papis.yaml.data_to_yaml(yamlfile, {
+    data_to_yaml(yamlfile, {
         "author": "Tolkien",
         "title": "The lord of the rings",
         })
+
+    import papis.tui.utils
+    import papis.utils
 
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",
@@ -292,13 +300,15 @@ def test_add_yaml_cli(tmp_library: TemporaryLibrary,
 
 def test_add_lib_cli(tmp_library: TemporaryLibrary,
                      monkeypatch: pytest.MonkeyPatch) -> None:
-    import papis.yaml
     from papis.commands.add import cli
     cli_runner = PapisRunner()
 
     doc = make_document("test-add-from-folder", tmp_library.tmpdir)
     folder = doc.get_main_folder()
     assert folder is not None
+
+    import papis.tui.utils
+    import papis.utils
 
     with monkeypatch.context() as m:
         m.setattr(papis.utils, "update_doc_from_data_interactively",
@@ -328,6 +338,8 @@ def test_add_set_invalid_format_cli(tmp_library: TemporaryLibrary) -> None:
          "--set", "title", "Principia",
          "--batch"])
     assert result.exit_code == 0
+
+    import papis.database
 
     db = papis.database.get()
     doc, = db.query_dict({"author": "Bertrand Russell"})

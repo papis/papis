@@ -1,3 +1,5 @@
+import time
+from datetime import datetime
 from typing import Any, NamedTuple, TypeAlias
 
 
@@ -81,6 +83,14 @@ def process_format_pattern_pair(
         pattern = FormatPattern(formatter, pattern)
 
     return key, pattern
+
+
+def get_timestamp(value: str | None = None) -> str:
+    return time.strftime(time_format)
+
+
+def as_datetime(value: str) -> datetime:
+    return datetime.strptime(value, time_format)
 
 
 no_documents_retrieved_message = "No documents retrieved"
