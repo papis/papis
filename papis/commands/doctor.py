@@ -132,13 +132,10 @@ from typing import Any, NamedTuple, TypeAlias
 
 import click
 
-import papis
 import papis.cli
 import papis.config
-import papis.database
 import papis.document
 import papis.logging
-import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -349,10 +346,10 @@ def refs_check(doc: papis.document.Document) -> list[Error]:
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
     """
-    import papis.bibtex
+    from papis.bibtex import create_reference
 
     def create_ref_fixer() -> None:
-        ref = papis.bibtex.create_reference(doc, force=True)
+        ref = create_reference(doc, force=True)
         logger.info("[FIX] Setting ref to '%s'.", ref)
 
         doc["ref"] = ref
@@ -596,7 +593,12 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
 
     :returns: an error for each key of the document that is missing.
     """
-    import papis.bibtex
+    from papis.bibtex import (
+        bibtex_key_aliases,
+        bibtex_type_aliases,
+        bibtex_type_required_keys,
+        bibtex_type_required_keys_aliases,
+    )
 
     errors = bibtex_type_check(doc)
     if errors:
@@ -604,13 +606,13 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
 
     # translate bibtex type
     bib_type = doc["type"]
-    bib_type = papis.bibtex.bibtex_type_aliases.get(bib_type, bib_type)
+    bib_type = bibtex_type_aliases.get(bib_type, bib_type)
 
-    if bib_type not in papis.bibtex.bibtex_type_required_keys:
-        bib_type = papis.bibtex.bibtex_type_required_keys_aliases.get(bib_type)
+    if bib_type not in bibtex_type_required_keys:
+        bib_type = bibtex_type_required_keys_aliases.get(bib_type)
 
-    required_keys = papis.bibtex.bibtex_type_required_keys[bib_type]
-    aliases = {v: k for k, v in papis.bibtex.bibtex_key_aliases.items()}
+    required_keys = bibtex_type_required_keys[bib_type]
+    aliases = {v: k for k, v in bibtex_key_aliases.items()}
 
     return [make_error(doc, BIBLATEX_REQUIRED_KEYS_CHECK_NAME,
                        msg=("Document of type '{}' requires one of the keys ['{}'] "
@@ -1307,7 +1309,9 @@ def cli(query: str,
         query, doc_folder, sort_field, sort_reverse, _all)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+
+        logger.warning(no_documents_retrieved_message)
         return
 
     if all_checks:
