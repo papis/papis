@@ -8,7 +8,11 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
+def to_bibtex(document: "papis.document.Document", *,
+              bibtex_unicode: bool | None = None,
+              bibtex_journal_key: str | None = None,
+              bibtex_export_file: bool | None = None,
+              indent: int = 2) -> str:
     """Convert a document to a BibTeX containing only valid metadata.
 
     To convert a document, it must have a valid BibTeX type
@@ -26,19 +30,40 @@ def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
     :param indent: set indentation for the BibTeX fields.
     :returns: a string containing the document metadata in a BibTeX format.
     """
+
+    from papis.config import getboolean, getstring
+
+    if bibtex_unicode is None:
+        bibtex_unicode = getboolean("bibtex-unicode")
+
+    if bibtex_journal_key is None:
+        bibtex_journal_key = getstring("bibtex-journal-key")
+
+    if bibtex_export_file is None:
+        from papis.exceptions import DefaultSettingValueMissing
+
+        try:
+            # NOTE: this option is deprecated and should be removed in the future
+            bibtex_export_file = getboolean("bibtex-export-zotero-file")
+            logger.warning("The 'bibtex-export-zotero-file' option is deprecated. "
+                           "Use 'bibtex-export-file' instead.")
+        except DefaultSettingValueMissing:
+            bibtex_export_file = getboolean("bibtex-export-file")
+
     from papis.bibtex import bibtex_type_converter, bibtex_types
 
-    bibtex_type = ""
-
     # determine bibtex type
+    bibtex_type = ""
     if "type" in document:
-        if document["type"] in bibtex_types:
-            bibtex_type = document["type"]
-        elif document["type"] in bibtex_type_converter:
-            bibtex_type = bibtex_type_converter[document["type"]]
+        dtype = document["type"]
+
+        if dtype in bibtex_types:
+            bibtex_type = dtype
+        elif dtype in bibtex_type_converter:
+            bibtex_type = bibtex_type_converter[dtype]
         else:
             logger.error("Invalid BibTeX type '%s' in document: '%s'.",
-                         document["type"],
+                         dtype,
                          document.get_info_file())
             return ""
 
@@ -60,11 +85,6 @@ def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
     from bibtexparser.latexenc import string_to_latex
 
     # process keys
-    from papis.config import getboolean, getstring
-
-    supports_unicode = getboolean("bibtex-unicode")
-    journal_key = getstring("bibtex-journal-key")
-
     entry = {
         "ID": ref,
         "ENTRYTYPE": bibtex_type,
@@ -90,12 +110,12 @@ def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
         logger.debug("Processing BibTeX entry: '%s: %s'.", bib_key, bib_value)
 
         if bib_key == "journal":
-            if journal_key in document:
-                bib_value = str(document[journal_key])
+            if bibtex_journal_key in document:
+                bib_value = str(document[bibtex_journal_key])
             else:
                 logger.warning(
                     "'journal-key' key '%s' is not present for ref '%s'.",
-                    journal_key, document["ref"])
+                    bibtex_journal_key, document["ref"])
         elif bib_key == "author" and "author_list" in document:
             bib_value = author_list_to_author(document, document["author_list"])
 
@@ -103,25 +123,17 @@ def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
         if override_key in document:
             bib_value = str(document[override_key])
 
-        if not supports_unicode and bib_key not in bibtex_verbatim_fields:
+        if not bibtex_unicode and bib_key not in bibtex_verbatim_fields:
             bib_value = string_to_latex(bib_value)
 
         entry[bib_key] = bib_value
 
     # handle file exporting
-    from papis.exceptions import DefaultSettingValueMissing
-    try:
-        # NOTE: this option is deprecated and should be removed in the future
-        export_file = getboolean("bibtex-export-zotero-file")
-        logger.warning("The 'bibtex-export-zotero-file' option is deprecated. "
-                       "Use 'bibtex-export-file' instead.")
-    except DefaultSettingValueMissing:
-        export_file = getboolean("bibtex-export-file")
-
     files = document.get_files()
-    if export_file and files:
+    if bibtex_export_file and files:
         entry["file"] = ";".join(files)
 
+    # dump the BibTeX data using bibtexparser
     from bibtexparser import dumps
     from bibtexparser.bibdatabase import BibDatabase
     from bibtexparser.bwriter import BibTexWriter
