@@ -1,23 +1,19 @@
-import os
 import re
-from typing import Any
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
-import doi
-
-import papis.config
-import papis.document
-import papis.downloaders.base
-import papis.filetype
-import papis.importer
 import papis.logging
-import papis.pick
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
-KeyConversionPair = papis.document.KeyConversionPair
-
 # NOTE: the API JSON format is maintained at
 #   https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
+
+#: Base URL for DOIs.
+DOI_ORG_URL = "https://doi.org/"
 
 #: Filters used to narrow Crossref works queries. The official list of filters
 #: can be found in the
@@ -105,80 +101,11 @@ CROSSREF_TO_BIBTEX_CONVERTER = {
     "edited-book": "book",
 }
 
-# NOTE: fields checked against the official API format
-# https://github.com/CrossRef/rest-api-doc/blob/583a8dbad0a063da4aa5ec319df33130a26ef650/api_format.md
-key_conversion = [
-    KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
-    KeyConversionPair("URL", [{"key": "url", "action": None}]),
-    KeyConversionPair("author", [{
-        "key": "author_list",
-        "action": lambda authors: [
-            {k: a.get(k) for k in ["given", "family", "affiliation"]}
-            for a in authors
-        ],
-    }]),
-    KeyConversionPair("container-title", [
-        {"key": "journal", "action": lambda x: x[0]}]),
-    KeyConversionPair("issue", [papis.document.EmptyKeyConversion]),
-    # "issued": {"key": "",},
-    KeyConversionPair("language", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("abstract", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("ISBN", [{
-        "key": "isbn",
-        "action": lambda x: x[0] if isinstance(x, list) else x
-    }]),
-    KeyConversionPair("isbn-type", [{
-        "key": "isbn",
-        "action": lambda x: next(i for i in x if i["type"] == "electronic")["value"]
-    }]),
-    KeyConversionPair("page", [{
-        "key": "pages",
-        "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
-    }]),
-    KeyConversionPair("link", [{
-        "key": str(papis.config.getstring("doc-url-key-name")),
-        "action": lambda x: _crossref_link(x)  # noqa: PLW0108
-    }]),
-    KeyConversionPair("issued", [
-        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
-        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
-    ]),
-    KeyConversionPair("published-online", [
-        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
-        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
-    ]),
-    KeyConversionPair("published-print", [
-        {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
-        {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
-    ]),
-    KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("reference", [{
-        "key": "citations",
-        "action": lambda cs: [
-            {key.lower(): c[key]
-                for key in set(c) - {"key", "doi-asserted-by"}}
-            for c in cs
-        ]
-    }]),
-    KeyConversionPair("title", [
-        {"key": None, "action": lambda t: " ".join(t)}]),  # noqa: PLW0108
-    KeyConversionPair("type", [
-        {"key": None, "action": lambda t: CROSSREF_TO_BIBTEX_CONVERTER[t]}]),
-    KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("event", [  # Conferences
-        {"key": "venue", "action": lambda x: x.get("location")},
-        {"key": "booktitle", "action": lambda x: x["name"]},
-        {"key": "year",
-         "action": (lambda x:
-                    _crossref_date_parts(x["start"], 0) if "start" in x else None)},
-        {"key": "month",
-         "action": (lambda x:
-                    _crossref_date_parts(x["start"], 1) if "start" in x else None)},
-    ]),
-]  # List[papis.document.KeyConversionPair]
 
+def _crossref_date_parts(entry: dict[str, Any] | None, i: int = 0) -> int | None:
+    if entry is None:
+        return None
 
-def _crossref_date_parts(entry: dict[str, Any], i: int = 0) -> int | None:
     date_parts = entry.get("date-parts")
     if date_parts is None:
         return date_parts
@@ -206,11 +133,90 @@ def _crossref_link(entry: list[dict[str, str]]) -> str | None:
     return links[0] if links else None
 
 
+@cache
+def _get_crossref_key_conversion() -> list["papis.document.KeyConversionPair"]:
+    from papis.config import getstring
+    from papis.document import EmptyKeyConversion, KeyConversionPair
+
+    # NOTE: fields checked against the official API format
+    # https://github.com/CrossRef/rest-api-doc/blob/583a8dbad0a063da4aa5ec319df33130a26ef650/api_format.md
+    return [
+        KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
+        KeyConversionPair("URL", [{"key": "url", "action": None}]),
+        KeyConversionPair("author", [{
+            "key": "author_list",
+            "action": lambda authors: [
+                {k: a.get(k) for k in ["given", "family", "affiliation"]}
+                for a in authors
+            ],
+        }]),
+        KeyConversionPair("container-title", [
+            {"key": "journal", "action": lambda x: x[0]}]),
+        KeyConversionPair("issue", [EmptyKeyConversion]),
+        # "issued": {"key": "",},
+        KeyConversionPair("language", [EmptyKeyConversion]),
+        KeyConversionPair("abstract", [EmptyKeyConversion]),
+        KeyConversionPair("ISBN", [{
+            "key": "isbn",
+            "action": lambda x: x[0] if isinstance(x, list) else x
+        }]),
+        KeyConversionPair("isbn-type", [{
+            "key": "isbn",
+            "action": lambda x: next(i for i in x if i["type"] == "electronic")["value"]
+        }]),
+        KeyConversionPair("page", [{
+            "key": "pages",
+            "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
+        }]),
+        KeyConversionPair("link", [{
+            "key": str(getstring("doc-url-key-name")),
+            "action": lambda x: _crossref_link(x)  # noqa: PLW0108
+        }]),
+        KeyConversionPair("issued", [
+            {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+            {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
+        ]),
+        KeyConversionPair("published-online", [
+            {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+            {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
+        ]),
+        KeyConversionPair("published-print", [
+            {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
+            {"key": "month", "action": lambda x: _crossref_date_parts(x, 1)}
+        ]),
+        KeyConversionPair("publisher", [EmptyKeyConversion]),
+        KeyConversionPair("reference", [{
+            "key": "citations",
+            "action": lambda cs: [
+                {key.lower(): c[key]
+                    for key in set(c) - {"key", "doi-asserted-by"}}
+                for c in cs
+            ]
+        }]),
+        KeyConversionPair("title", [
+            {"key": None, "action": lambda t: " ".join(t)}]),  # noqa: PLW0108
+        KeyConversionPair("type", [
+            {"key": None, "action": lambda t: CROSSREF_TO_BIBTEX_CONVERTER[t]}]),
+        KeyConversionPair("volume", [EmptyKeyConversion]),
+        KeyConversionPair("event", [  # Conferences
+            {"key": "venue", "action": lambda x: x.get("location")},
+            {"key": "booktitle", "action": lambda x: x.get("name")},
+            {"key": "year",
+             "action": lambda x: _crossref_date_parts(x.get("start"), 0)},
+            {"key": "month",
+             "action": lambda x: _crossref_date_parts(x.get("start"), 1)},
+        ]),
+    ]
+
+
 def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
-    new_data = papis.document.keyconversion_to_data(key_conversion, data)
+    from papis.document import author_list_to_author, keyconversion_to_data
+
+    key_conversion = _get_crossref_key_conversion()
+    new_data = keyconversion_to_data(key_conversion, data)
 
     # ensure that author_list and author are consistent
-    new_data["author"] = papis.document.author_list_to_author(new_data)
+    new_data["author"] = author_list_to_author(new_data)
 
     # special cleanup for APS journals
     # xref: https://github.com/papis/papis/issues/1019
@@ -319,7 +325,9 @@ def doi_to_data(doi_string: str) -> dict[str, Any]:
     :returns: dictionary containing the data.
     :raises ValueError: if no data could be retrieved for the DOI.
     """
-    doi_string = doi.get_clean_doi(doi_string)
+    from doi import get_clean_doi
+
+    doi_string = get_clean_doi(doi_string)
     results = get_data(dois=[doi_string])
     if results:
         return results[0]
