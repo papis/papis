@@ -39,6 +39,8 @@ implemented
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
+*  ``string-cleaner``: checks that strings do contain various undesired characters
+  (e.g. newlines in titles) and other general style issues (double whitespace).
 
 If any custom checks are implemented, you can get a complete list at runtime from:
 
@@ -130,13 +132,10 @@ from typing import Any, NamedTuple, TypeAlias
 
 import click
 
-import papis
 import papis.cli
 import papis.config
-import papis.database
 import papis.document
 import papis.logging
-import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -154,7 +153,7 @@ class Error(NamedTuple):
     name: str
     #: Path to the document that generated the error.
     path: str
-    #: A value that caused the error.
+    #: A value that caused the error (usually a document key).
     payload: str
     #: A short message describing the error that can be displayed to the user.
     msg: str
@@ -176,6 +175,36 @@ class Check(NamedTuple):
 
 
 REGISTERED_CHECKS: dict[str, Check] = {}
+
+
+def make_error(
+        doc: papis.document.Document,
+        name: str, *,
+        msg: str,
+        payload: str,
+        fix_action: FixFn | None = None,
+    ) -> Error:
+    if name not in REGISTERED_CHECKS:
+        raise ValueError(f"unknown check '{name}'")
+
+    folder = doc.get_main_folder()
+    if folder is not None:
+        if fix_action is None:
+            suggestion_cmd = f"papis edit --doc-folder {folder!r}"
+        else:
+            suggestion_cmd = f"papis doctor --fix -t {name} --doc-folder {folder!r}"
+    else:
+        # FIXME: this should only be hit during testing?
+        suggestion_cmd = "papis edit"
+        folder = "NOTFOUND"
+
+    return Error(name=name,
+                 path=folder,
+                 msg=msg,
+                 suggestion_cmd=suggestion_cmd,
+                 fix_action=fix_action,
+                 payload=payload,
+                 doc=doc)
 
 
 def error_to_dict(e: Error) -> dict[str, Any]:
@@ -213,6 +242,8 @@ def files_check(doc: papis.document.Document) -> list[Error]:
 
     files = doc.get_files()
     folder = doc.get_main_folder() or ""
+    if not folder:
+        return []
 
     def make_fixer(filename: str) -> FixFn:
         def fixer() -> None:
@@ -231,23 +262,18 @@ def files_check(doc: papis.document.Document) -> list[Error]:
         return fixer
 
     if "file" in doc:
-        error = [Error(name=FILES_CHECK_NAME,
-                       path=folder,
+        error = [
+            make_error(doc, FILES_CHECK_NAME,
                        msg="Use the 'files' key instead of 'file' to list files",
-                       suggestion_cmd=f"papis edit --doc-folder {folder}",
-                       fix_action=None,
-                       payload="file",
-                       doc=doc)]
+                       payload="file")
+        ]
     else:
         error = []
 
-    return [Error(name=FILES_CHECK_NAME,
-                  path=folder,
-                  msg=f"File '{f}' declared but does not exist",
-                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=make_fixer(f),
-                  payload=f,
-                  doc=doc)
+    return [make_error(doc, FILES_CHECK_NAME,
+                       msg=f"File '{f}' declared but does not exist",
+                       fix_action=make_fixer(f),
+                       payload=f)
             for f in files if not os.path.exists(f)] + error
 
 
@@ -264,7 +290,6 @@ def keys_missing_check(doc: papis.document.Document) -> list[Error]:
     """
     from papis.defaults import NOT_SET
 
-    folder = doc.get_main_folder() or ""
     keys = papis.config.get("keys-exist-keys", section="doctor")
     if keys is NOT_SET:
         keys = papis.config.getlist("keys-missing-keys", section="doctor")
@@ -302,19 +327,15 @@ def keys_missing_check(doc: papis.document.Document) -> list[Error]:
         else:
             return None
 
-    return [Error(name=KEYS_MISSING_CHECK_NAME,
-                  path=folder,
-                  msg=f"Key '{k}' does not exist",
-                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=make_fixer(k),
-                  payload=k,
-                  doc=doc)
+    return [make_error(doc, KEYS_MISSING_CHECK_NAME,
+                       msg=f"Key '{k}' does not exist",
+                       fix_action=make_fixer(k),
+                       payload=k)
             for k in keys if k not in doc]
 
 
-REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
-
 REFS_CHECK_NAME = "refs"
+REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
 
 
 def refs_check(doc: papis.document.Document) -> list[Error]:
@@ -325,12 +346,10 @@ def refs_check(doc: papis.document.Document) -> list[Error]:
     :returns: an error if the reference does not exist or contains invalid
         characters (as required by BibTeX).
     """
-    import papis.bibtex
-
-    folder = doc.get_main_folder() or ""
+    from papis.bibtex import create_reference
 
     def create_ref_fixer() -> None:
-        ref = papis.bibtex.create_reference(doc, force=True)
+        ref = create_reference(doc, force=True)
         logger.info("[FIX] Setting ref to '%s'.", ref)
 
         doc["ref"] = ref
@@ -348,23 +367,17 @@ def refs_check(doc: papis.document.Document) -> list[Error]:
     ref = str(ref).strip() if ref is not None else ref
 
     if not ref:
-        return [Error(name=REFS_CHECK_NAME,
-                      path=folder,
-                      msg="Reference missing",
-                      suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=create_ref_fixer,
-                      payload="ref",
-                      doc=doc)]
+        return [make_error(doc, REFS_CHECK_NAME,
+                           msg="Reference missing",
+                           fix_action=create_ref_fixer,
+                           payload="ref")]
 
     m = REFS_BAD_SYMBOL_REGEX.findall(ref)
     if m:
-        return [Error(name=REFS_CHECK_NAME,
-                      path=folder,
-                      msg=f"Bad characters ({set(m)}) found in reference",
-                      suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=clean_ref_fixer,
-                      payload="ref",
-                      doc=doc)]
+        return [make_error(doc, REFS_CHECK_NAME,
+                           msg=f"Bad characters ({set(m)}) found in reference",
+                           fix_action=clean_ref_fixer,
+                           payload="ref")]
 
     return []
 
@@ -381,8 +394,6 @@ def duplicated_keys_check(doc: papis.document.Document) -> list[Error]:
     :returns: a :class:`list` of errors, one for each key with a value that already
         exist in the documents from the current query.
     """
-    folder = doc.get_main_folder() or ""
-
     keys = papis.config.getlist("duplicated-keys-keys", section="doctor")
     keys.extend(papis.config.getlist("duplicated-keys-keys-extend", section="doctor"))
 
@@ -398,13 +409,9 @@ def duplicated_keys_check(doc: papis.document.Document) -> list[Error]:
             seen.update({value})
             continue
 
-        results.append(Error(name=DUPLICATED_KEYS_NAME,
-                             path=folder,
-                             msg=f"Key '{key}' is duplicated ({value})",
-                             suggestion_cmd=f"papis edit {key}:'{value}'",
-                             fix_action=None,
-                             payload=key,
-                             doc=doc))
+        results.append(make_error(doc, DUPLICATED_KEYS_NAME,
+                                  msg=f"Key '{key}' is duplicated ({value})",
+                                  payload=key))
 
     return results
 
@@ -422,7 +429,6 @@ def duplicated_values_check(doc: papis.document.Document) -> list[Error]:
     """
     keys = papis.config.getlist("duplicated-values-keys", section="doctor")
     keys.extend(papis.config.getlist("duplicated-values-keys-extend", section="doctor"))
-    folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str, entries: list[Any]) -> FixFn:
         def fixer() -> None:
@@ -456,15 +462,12 @@ def duplicated_values_check(doc: papis.document.Document) -> list[Error]:
         if not dupes:
             continue
 
-        results.append(Error(name=DUPLICATED_VALUES_NAME,
-                             path=folder,
-                             msg=(
-                                 "Key '{}' contains duplicate entries: '{}'"
-                                 .format(key, "', '".join(str(d) for d in dupes))),
-                             suggestion_cmd=f"papis edit --doc-folder {folder}",
-                             fix_action=make_fixer(key, list(seen.values())),
-                             payload=key,
-                             doc=doc))
+        results.append(make_error(doc, DUPLICATED_VALUES_NAME,
+                                  msg=(
+                                      "Key '{}' contains duplicate entries: '{}'"
+                                      .format(key, "', '".join(str(d) for d in dupes))),
+                                  fix_action=make_fixer(key, list(seen.values())),
+                                  payload=key))
 
     return results
 
@@ -479,7 +482,6 @@ def bibtex_type_check(doc: papis.document.Document) -> list[Error]:
     :returns: an error if the types are not compatible.
     """
     from papis.bibtex import bibtex_type_converter, bibtex_types
-    folder = doc.get_main_folder() or ""
 
     def make_fixer(bib_type: str) -> FixFn | None:
         def fixer() -> None:
@@ -494,22 +496,15 @@ def bibtex_type_check(doc: papis.document.Document) -> list[Error]:
 
     bib_type = doc.get("type")
     if bib_type is None:
-        return [Error(name=BIBTEX_TYPE_CHECK_NAME,
-                      path=folder,
-                      msg="Document does not define a type",
-                      suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=None,
-                      payload="type",
-                      doc=doc)]
+        return [make_error(doc, BIBTEX_TYPE_CHECK_NAME,
+                           msg="Document does not define a type",
+                           payload="type")]
 
     if bib_type not in bibtex_types:
-        return [Error(name=BIBTEX_TYPE_CHECK_NAME,
-                      path=folder,
-                      msg=f"Document type '{bib_type}' is not a valid BibTeX type",
-                      suggestion_cmd=f"papis edit --doc-folder {folder}",
-                      fix_action=make_fixer(bib_type),
-                      payload=bib_type,
-                      doc=doc)]
+        return [make_error(doc, BIBTEX_TYPE_CHECK_NAME,
+                           msg=f"Document type '{bib_type}' is not a valid BibTeX type",
+                           fix_action=make_fixer(bib_type),
+                           payload=bib_type)]
 
     return []
 
@@ -526,7 +521,6 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> list[Error]:
     :returns: an error if the type of the document is an alias.
     """
     from papis.bibtex import bibtex_type_aliases
-    folder = doc.get_main_folder() or ""
 
     def make_fixer(value: str) -> FixFn:
         def fixer() -> None:
@@ -543,14 +537,11 @@ def biblatex_type_alias_check(doc: papis.document.Document) -> list[Error]:
     bib_type = doc["type"]
     bib_type_base = bibtex_type_aliases.get(bib_type)
     if bib_type is not None and bib_type_base is not None:
-        return [Error(name=BIBLATEX_TYPE_ALIAS_CHECK_NAME,
-                      path=folder,
-                      msg=(f"Document type '{bib_type}' is an alias for "
-                           f"'{bib_type_base}' in BibLaTeX"),
-                      suggestion_cmd=f"papis edit --doc-folder {folder!r}",
-                      fix_action=make_fixer(bib_type_base),
-                      payload=bib_type,
-                      doc=doc)]
+        return [make_error(doc, BIBLATEX_TYPE_ALIAS_CHECK_NAME,
+                           msg=(f"Document type '{bib_type}' is an alias for "
+                                f"'{bib_type_base}' in BibLaTeX"),
+                           fix_action=make_fixer(bib_type_base),
+                           payload=bib_type)]
 
     return []
 
@@ -570,7 +561,6 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> list[Error]:
     :returns: an error for each key of the document that is an alias.
     """
     from papis.bibtex import bibtex_key_aliases
-    folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
         def fixer() -> None:
@@ -581,14 +571,11 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> list[Error]:
 
         return fixer
 
-    return [Error(name=BIBLATEX_KEY_ALIAS_CHECK_NAME,
-                  path=folder,
-                  msg=(f"Document key '{key}' is an alias for "
-                       f"'{bibtex_key_aliases[key]}' in BibLaTeX"),
-                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
-                  fix_action=make_fixer(key),
-                  payload=key,
-                  doc=doc)
+    return [make_error(doc, BIBLATEX_KEY_ALIAS_CHECK_NAME,
+                       msg=(f"Document key '{key}' is an alias for "
+                            f"'{bibtex_key_aliases[key]}' in BibLaTeX"),
+                       fix_action=make_fixer(key),
+                       payload=key)
             for key in doc
             if key not in BIBLATEX_KEY_ALIAS_IGNORED and key in bibtex_key_aliases]
 
@@ -606,8 +593,12 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
 
     :returns: an error for each key of the document that is missing.
     """
-    import papis.bibtex
-    folder = doc.get_main_folder() or ""
+    from papis.bibtex import (
+        bibtex_key_aliases,
+        bibtex_type_aliases,
+        bibtex_type_required_keys,
+        bibtex_type_required_keys_aliases,
+    )
 
     errors = bibtex_type_check(doc)
     if errors:
@@ -615,23 +606,19 @@ def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
 
     # translate bibtex type
     bib_type = doc["type"]
-    bib_type = papis.bibtex.bibtex_type_aliases.get(bib_type, bib_type)
+    bib_type = bibtex_type_aliases.get(bib_type, bib_type)
 
-    if bib_type not in papis.bibtex.bibtex_type_required_keys:
-        bib_type = papis.bibtex.bibtex_type_required_keys_aliases.get(bib_type)
+    if bib_type not in bibtex_type_required_keys:
+        bib_type = bibtex_type_required_keys_aliases.get(bib_type)
 
-    required_keys = papis.bibtex.bibtex_type_required_keys[bib_type]
-    aliases = {v: k for k, v in papis.bibtex.bibtex_key_aliases.items()}
+    required_keys = bibtex_type_required_keys[bib_type]
+    aliases = {v: k for k, v in bibtex_key_aliases.items()}
 
-    return [Error(name=BIBLATEX_REQUIRED_KEYS_CHECK_NAME,
-                  path=folder,
-                  msg=("Document of type '{}' requires one of the keys ['{}'] "
-                       "to be compatible with BibLaTeX"
-                       .format(bib_type, "', '".join(keys))),
-                  suggestion_cmd=f"papis edit --doc-folder {folder!r}",
-                  fix_action=None,
-                  payload=",".join(keys),
-                  doc=doc)
+    return [make_error(doc, BIBLATEX_REQUIRED_KEYS_CHECK_NAME,
+                       msg=("Document of type '{}' requires one of the keys ['{}'] "
+                            "to be compatible with BibLaTeX"
+                            .format(bib_type, "', '".join(keys))),
+                       payload=", ".join(keys))
             for keys in required_keys
             if not any(key in doc or aliases.get(key) in doc for key in keys)]
 
@@ -666,8 +653,6 @@ def biblatex_key_convert_check(doc: papis.document.Document) -> list[Error]:
     :returns: a list of errors for each key that appears misassigned.
     """
 
-    folder = doc.get_main_folder() or ""
-
     def issue_to_number_fixer() -> None:
         if "issue" in doc and "number" not in doc:
             logger.info("[FIX] Renaming BibLaTeX field 'issue' to 'number'.")
@@ -700,15 +685,10 @@ def biblatex_key_convert_check(doc: papis.document.Document) -> list[Error]:
         if fix_action is None:
             continue
 
-        results.append(
-            Error(name=BIBLATEX_KEY_CONVERT_CHECK_NAME,
-                  path=folder,
-                  msg=msg,
-                  suggestion_cmd=f"papis edit --doc-folder {folder}",
-                  fix_action=fix_action,
-                  payload=key,
-                  doc=doc)
-            )
+        results.append(make_error(doc, BIBLATEX_KEY_CONVERT_CHECK_NAME,
+                                  msg=msg,
+                                  fix_action=fix_action,
+                                  payload=key))
 
     return results
 
@@ -771,8 +751,6 @@ def key_type_check(doc: papis.document.Document) -> list[Error]:
     """
     from papis.defaults import NOT_SET
 
-    folder = doc.get_main_folder() or ""
-
     # NOTE: the separator can be quoted so that it can force whitespace
     separator = papis.config.get("key-type-check-separator", section="doctor")
     if separator is NOT_SET:
@@ -833,19 +811,17 @@ def key_type_check(doc: papis.document.Document) -> list[Error]:
 
     results = []
     for key, cls in get_key_type_check_keys().items():
-
         doc_value = doc.get(key)
+
         if doc_value is not None and not isinstance(doc_value, cls):
-            results.append(Error(name=KEY_TYPE_CHECK_NAME,
-                                 path=folder,
-                                 msg=(
-                                     f"Key '{key}' should be of type '{cls.__name__}' "
-                                     f"but got '{type(doc_value).__name__}': "
-                                     f"{doc_value!r}"),
-                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
-                                 fix_action=make_fixer(key, cls),
-                                 payload=key,
-                                 doc=doc))
+            results.append(
+                make_error(doc, KEY_TYPE_CHECK_NAME,
+                           msg=(f"Key '{key}' should be of type '{cls.__name__}' "
+                                f"but got '{type(doc_value).__name__}': "
+                                f"{doc_value!r}"),
+                           fix_action=make_fixer(key, cls),
+                           payload=key))
+
     return results
 
 
@@ -864,7 +840,6 @@ def html_codes_check(doc: papis.document.Document) -> list[Error]:
     from html import unescape
 
     results = []
-    folder = doc.get_main_folder() or ""
 
     def make_fixer(key: str) -> FixFn:
         def lower(p: re.Match[str]) -> str:
@@ -888,13 +863,11 @@ def html_codes_check(doc: papis.document.Document) -> list[Error]:
         m = HTML_CODES_REGEX.findall(str(value))
         if m:
             codes = "', '".join([f"&{c.lower()};" for c in m])
-            results.append(Error(name=HTML_CODES_CHECK_NAME,
-                                 path=folder,
-                                 msg=f"Field '{key}' contains HTML codes: '{codes}'",
-                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
-                                 fix_action=make_fixer(key),
-                                 payload=key,
-                                 doc=doc))
+            results.append(
+                make_error(doc, HTML_CODES_CHECK_NAME,
+                           msg=f"Field '{key}' contains HTML codes: '{codes}'",
+                           fix_action=make_fixer(key),
+                           payload=key))
 
     return results
 
@@ -914,7 +887,6 @@ def html_tags_check(doc: papis.document.Document) -> list[Error]:
     from bs4 import BeautifulSoup
 
     results = []
-    folder = doc.get_main_folder() or ""
 
     def convert_markup(text: str) -> str:
         if "<jats:" in text or "<mml:" in text:
@@ -980,13 +952,149 @@ def html_tags_check(doc: papis.document.Document) -> list[Error]:
 
         m = HTML_TAGS_REGEX.findall(value)
         if m:
-            results.append(Error(name=HTML_TAGS_CHECK_NAME,
-                                 path=folder,
-                                 msg=f"Field '{key}' contains HTML tags: {m}",
-                                 suggestion_cmd=f"papis edit --doc-folder {folder}",
-                                 fix_action=make_fixer(key),
-                                 payload=key,
-                                 doc=doc))
+            results.append(
+                make_error(doc, HTML_TAGS_CHECK_NAME,
+                           msg=f"Field '{key}' contains HTML tags: {m}",
+                           fix_action=make_fixer(key),
+                           payload=key))
+
+    return results
+
+
+STRING_CLEANER_CHECK_NAME = "string-cleaner"
+STRING_CLEANER_WHITESPACE_REGEX = re.compile(r"\s{2,}")
+STRING_CLEANER_ABSTRACT_REGEX = re.compile(r"^\W*abstract\W*", re.IGNORECASE)
+STRING_CLEANER_AUTHOR_DOTS_REGEX = (
+    re.compile(r"(?:(\b\w\b)(?![\.'’])|(\b\w)\.(?=\w))"))  # noqa: RUF001
+
+
+def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
+    """
+    Check string keys in the document for various errors.
+
+    This check goes through all the keys of the document that are known to be
+    keys, according to :confval:`doctor-key-type-keys`, and fixes any obvious
+    errors. For example (not exhaustive):
+
+    * Double spacing or any repeated whitespace.
+    * Unexpected new line characters.
+    * Weirdly formatted names, e.g. "J R R Tolkien" should be "J. R. R. Tolkien".
+
+    :returns: a :class:`list` of errors, one for each string-based key that has
+        unexpected formatting.
+    """
+
+    def has_extra_newlines(key: str, value: str) -> bool:
+        return "\n" in value
+
+    def remove_newlines_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            doc[key] = doc[key].replace("\n", " ")
+            logger.info("[FIX] Removing newline from '%s' key.", key)
+
+        return fixer
+
+    def has_abstract_issues(key: str, value: str) -> bool:
+        return (
+            key == "abstract"
+            and STRING_CLEANER_ABSTRACT_REGEX.match(value) is not None
+        )
+
+    def remove_abstract_fixer() -> None:
+        doc["abstract"] = (
+            STRING_CLEANER_ABSTRACT_REGEX.sub(r"", doc["abstract"]).strip())
+        if not doc["abstract"]:
+            del doc["abstract"]
+        logger.info("[FIX] Cleaning up 'abstract' key.")
+
+    def has_extra_whitespace(key: str, value: str) -> bool:
+        return STRING_CLEANER_WHITESPACE_REGEX.search(value) is not None
+
+    def remove_whitespace_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            doc[key] = STRING_CLEANER_WHITESPACE_REGEX.sub(r" ", doc[key])
+            logger.info("[FIX] Replacing repeated whitespace in key '%s'.", key)
+
+        return fixer
+
+    def has_author_issues(key: str, value: str) -> bool:
+        if key != "author":
+            return False
+
+        if "author_list" not in doc:
+            return False
+
+        # NOTE: we only want to add dots to the given name of an author (e.g.
+        # single letter family names are allowed) and only if the author also
+        # has a family name (e.g. an author like {given="C Committee", "family": None}
+        # should be allowed and left unchanged)
+        return any(STRING_CLEANER_AUTHOR_DOTS_REGEX.search(author["given"])
+                   for author in doc["author_list"]
+                   if author["given"] and author["family"])
+
+    def author_spacing_fixer() -> None:
+        author_list = doc.get("author_list")
+        if author_list is None:
+            author_list = papis.document.split_authors_name(doc["author"])
+
+        for author in author_list:
+            # FIXME: we should make a regex smart enough that we do not
+            # actually need the post cleanup here..
+            author.update({
+                "given": (
+                    STRING_CLEANER_AUTHOR_DOTS_REGEX.sub(r"\1\2. ", author["given"])
+                    .replace("  ", " ")
+                    .strip())
+            })
+
+        doc["author_list"] = author_list
+        doc["author"] = papis.document.author_list_to_author(doc)
+        logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
+
+    key_types = get_key_type_check_keys()
+    results = []
+
+    for key, value in doc.items():
+        if key_types.get(key) is not str:
+            continue
+
+        if not isinstance(value, str):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg=(f"Key '{key}' should be of type 'str' "
+                                f"but got {type(value).__name__!r}: {value!r}"),
+                           payload=key))
+            continue
+
+        if has_abstract_issues(key, value):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg="Key 'abstract' starts with 'Abstract'",
+                           fix_action=remove_abstract_fixer,
+                           payload=key))
+
+        if has_author_issues(key, value):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg=("Key 'author' contains initials that are not "
+                                "followed by a dot or are not separated by "
+                                "whitespace"),
+                           fix_action=author_spacing_fixer,
+                           payload=key))
+
+        if has_extra_newlines(key, value):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg=f"Key '{key}' contains a newline",
+                           fix_action=remove_newlines_fixer(key),
+                           payload=key))
+
+        if has_extra_whitespace(key, value):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg=f"Key '{key}' contains repeated whitespace",
+                           fix_action=remove_whitespace_fixer(key),
+                           payload=key))
 
     return results
 
@@ -1004,6 +1112,7 @@ register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(KEY_TYPE_CHECK_NAME, key_type_check)
+register_check(STRING_CLEANER_CHECK_NAME, string_cleaner_check)
 
 DEPRECATED_CHECK_NAMES = {
     "keys-exist": "keys-missing",
@@ -1200,7 +1309,9 @@ def cli(query: str,
         query, doc_folder, sort_field, sort_reverse, _all)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+
+        logger.warning(no_documents_retrieved_message)
         return
 
     if all_checks:
