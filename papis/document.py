@@ -4,12 +4,13 @@ import enum
 import os
 import re
 from collections.abc import Callable, Sequence
-from typing import Any, NamedTuple, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, TypedDict
 
-import papis
 import papis.config
 import papis.logging
-import papis.strings
+
+if TYPE_CHECKING:
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -143,7 +144,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(
         data: dict[str, Any],
         separator: str | None = None,
-        multiple_authors_format: papis.strings.AnyString | None = None) -> str:
+        multiple_authors_format: "papis.strings.AnyString | None" = None) -> str:
     """Convert a list of authors into a single author string.
 
     This uses the :confval:`multiple-authors-separator` and the
@@ -614,8 +615,10 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> list[Docu
             str_value = str(value)
 
             if key == "time-added":
+                from papis.strings import as_datetime
+
                 with suppress(ValueError):
-                    date = datetime.strptime(str_value, papis.strings.time_format)
+                    date = as_datetime(value)
                     priority = _SortPriority.Date
             else:
                 try:
