@@ -98,8 +98,8 @@ def test_get_importer(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> None:
-    from papis.crossref import Importer as CrossrefImporter
     from papis.importer import get_matching_importers_by_name
+    from papis.importer.doi import DOIImporter
 
     name_and_uris = [
         # 1. a valid importer name + valid uri
@@ -115,13 +115,13 @@ def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> N
 
     importers = get_matching_importers_by_name(name_and_uris)
     assert len(importers) == 1
-    assert isinstance(importers[0], CrossrefImporter)
+    assert isinstance(importers[0], DOIImporter)
 
     from papis.downloaders.usenix import Downloader as UsenixDownloader
 
     importers = get_matching_importers_by_name(name_and_uris, include_downloaders=True)
     assert len(importers) == 2
-    assert isinstance(importers[0], CrossrefImporter)
+    assert isinstance(importers[0], DOIImporter)
     assert isinstance(importers[1], UsenixDownloader)
 
 
@@ -149,10 +149,10 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
-    from papis.crossref import Importer as CrossrefImporter
     from papis.importer import get_matching_importers_by_doc
+    from papis.importer.doi import DOIImporter
 
     doc = {"doi": "10.1103/physrevb.89.140501"}
     importers = get_matching_importers_by_doc(doc)
     assert len(importers) == 1
-    assert isinstance(importers[0], CrossrefImporter)
+    assert isinstance(importers[0], DOIImporter)
