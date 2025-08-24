@@ -129,56 +129,6 @@ import papis.utils
 logger = papis.logging.get_logger(__name__)
 
 
-class FromFolderImporter(papis.importer.Importer):
-
-    """Importer that gets files and data from a valid papis folder."""
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(name="folder", **kwargs)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
-
-    def fetch(self) -> None:
-        self.logger.info("Importing from folder '%s'.", self.uri)
-        from papis.id import ID_KEY_NAME
-
-        doc = papis.document.from_folder(self.uri)
-        del doc[ID_KEY_NAME]
-
-        self.ctx.data = papis.document.to_dict(doc)
-        self.ctx.files = doc.get_files()
-
-
-class FromLibImporter(papis.importer.Importer):
-
-    """Importer that queries a valid Papis library (also paths) and adds files
-    and data.
-    """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(name="lib", **kwargs)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        try:
-            papis.config.get_lib_from_name(uri)
-        except Exception:
-            return None
-        else:
-            return FromLibImporter(uri=uri)
-
-    def fetch(self) -> None:
-        docs = papis.pick.pick_doc(
-            papis.api.get_all_documents_in_lib(self.uri))
-        if not docs:
-            return
-        importer = FromFolderImporter(uri=docs[0].get_main_folder())
-        importer.fetch()
-        self.ctx = importer.ctx
-
-
 def get_file_name(
         doc: papis.document.Document,
         original_filepath: str,
