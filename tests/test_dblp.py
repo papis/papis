@@ -51,7 +51,8 @@ def test_valid_dblp_key(tmp_config: TemporaryConfiguration,
 def test_importer_match(tmp_config: TemporaryConfiguration,
                         monkeypatch: pytest.MonkeyPatch,
                         has_connection: bool = True) -> None:
-    from papis.dblp import DBLP_URL_FORMAT, Importer
+    from papis.dblp import DBLP_URL_FORMAT
+    from papis.importer.dblp import DBLPImporter
 
     with monkeypatch.context() as m:
         if not has_connection:
@@ -59,21 +60,21 @@ def test_importer_match(tmp_config: TemporaryConfiguration,
 
         for key in DBLP_KEYS_VALID:
             url = DBLP_URL_FORMAT.format(uri=key)
-            importer = Importer.match(url)
+            importer = DBLPImporter.match(url)
             assert importer is not None
 
-            importer = Importer.match(key)
+            importer = DBLPImporter.match(key)
             assert importer is not None
 
         for key in DBLP_KEYS_INVALID:
-            importer = Importer.match(key)
+            importer = DBLPImporter.match(key)
             assert importer is None
 
         for url in [
                 "https://dblp.net/rec/books/sp/02/ST2002.html",
                 "https://dblp.org/rec/books/sp/02/ST2002.bib",
                 ]:
-            importer = Importer.match(url)
+            importer = DBLPImporter.match(url)
             assert importer is None
 
 
@@ -81,7 +82,8 @@ def test_importer_match(tmp_config: TemporaryConfiguration,
 def test_importer_fetch(tmp_config: TemporaryConfiguration,
                         monkeypatch: pytest.MonkeyPatch,
                         resource_cache: ResourceCache) -> None:
-    from papis.dblp import DBLP_URL_FORMAT, Importer
+    from papis.dblp import DBLP_URL_FORMAT
+    from papis.importer.dblp import DBLPImporter
 
     url = DBLP_URL_FORMAT.format(uri=DBLP_KEYS_VALID[-1])
     infile = "dblp_1.bin"
@@ -99,7 +101,7 @@ def test_importer_fetch(tmp_config: TemporaryConfiguration,
     with monkeypatch.context() as m:
         m.setattr(requests.Session, "get", get_bib)
 
-        importer = Importer.match(url)
+        importer = DBLPImporter.match(url)
         assert importer is not None
 
         importer.fetch()
