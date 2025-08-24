@@ -1,16 +1,15 @@
 # See https://github.com/xlcnd/isbnlib for details
 from typing import Any
 
-from isbnlib.registry import services as isbn_services
-
 import papis.config
 import papis.document
-import papis.importer
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
-ISBN_SERVICE_NAMES = list(isbn_services)
+#: A list of services supported by :mod:`isbnlib`. Note that not all versions
+#: have support for all of these versions.
+ISBN_SERVICE_NAMES = ("goob", "openl", "wiki")
 
 
 def get_data(query: str = "",
@@ -25,9 +24,11 @@ def get_data(query: str = "",
                      service, "', '".join(ISBN_SERVICE_NAMES))
         return []
 
-    import isbnlib
-    isbn = isbnlib.isbn_from_words(query)
-    data = isbnlib.meta(isbn, service=service)
+    from isbnlib import isbn_from_words, meta
+
+    isbn = isbn_from_words(query)
+    data = meta(isbn, service=service)
+
     if isinstance(data, dict):
         return [data_to_papis(data)]
     else:
@@ -67,28 +68,3 @@ def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
     result["type"] = "book"
 
     return result
-
-
-class Importer(papis.importer.Importer):
-
-    """Importer for ISBN identifiers through isbnlib"""
-
-    def __init__(self, uri: str) -> None:
-        super().__init__(name="isbn", uri=uri)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        import isbnlib
-        if isbnlib.notisbn(uri):
-            return None
-        return Importer(uri=uri)
-
-    def fetch_data(self) -> None:
-        import isbnlib
-        try:
-            data = get_data(self.uri)
-        except isbnlib.ISBNLibException:
-            pass
-        else:
-            if data:
-                self.ctx.data = data_to_papis(data[0])

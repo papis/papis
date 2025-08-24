@@ -37,9 +37,9 @@ def get_unmodified_isbn_data(query: str) -> Any:
 
 @pytest.mark.xfail(reason="sometimes makes too many requests")
 def test_get_data(tmp_config: TemporaryConfiguration) -> None:
-    import papis.isbn
+    from papis.isbn import get_data
 
-    result = papis.isbn.get_data(query="Mattuck feynan diagrams")
+    result = get_data(query="Mattuck feynan diagrams")
     assert result
     assert isinstance(result, list)
     assert isinstance(result[0], dict)
@@ -48,26 +48,26 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_importer_match(tmp_config: TemporaryConfiguration) -> None:
-    import papis.isbn
+    from papis.importer.isbn import ISBNImporter
 
-    assert papis.isbn.Importer.match("9780486670478")
-    assert papis.isbn.Importer.match("this-is-not-an-isbn") is None
+    assert ISBNImporter.match("9780486670478")
+    assert ISBNImporter.match("this-is-not-an-isbn") is None
 
     # NOTE: ISBN for Wesseling - An Introduction to Multigrid Methods
-    importer = papis.isbn.Importer.match("9781930217089")
+    importer = ISBNImporter.match("9781930217089")
     assert importer
     assert importer.uri == "9781930217089"
 
 
 @pytest.mark.parametrize("basename", ["test_isbn_1"])
 def test_isbn_to_papis(tmp_config: TemporaryConfiguration, basename: str) -> None:
-    import papis.isbn
+    from papis.isbn import data_to_papis
 
     data = load_json(
         f"{basename}.json",
         data_getter=lambda: get_unmodified_isbn_data("9781930217089"))
 
-    to_papis_data = papis.isbn.data_to_papis(data)
+    to_papis_data = data_to_papis(data)
     result = load_json(
         f"{basename}_out.json",
         data_getter=lambda: to_papis_data)
