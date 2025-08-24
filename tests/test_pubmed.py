@@ -5,10 +5,10 @@ from papis.testing import TemporaryConfiguration
 
 @pytest.mark.xfail(reason="remote pmid validity check can timeout")
 def test_match(tmp_config: TemporaryConfiguration) -> None:
-    import papis.pubmed
+    from papis.importer.pubmed import PubMedImporter
 
-    assert papis.pubmed.Importer.match("28012456")
-    assert papis.pubmed.Importer.match("5503630")
-    assert papis.pubmed.Importer.match("   1397  ")
-    assert papis.pubmed.Importer.match("ABC1") is None
-    assert papis.pubmed.Importer.match("1ABC") is None
+    assert PubMedImporter.match("28012456")
+    assert PubMedImporter.match("5503630")
+    assert PubMedImporter.match("   1397  ")
+    assert PubMedImporter.match("ABC1") is None
+    assert PubMedImporter.match("1ABC") is None
