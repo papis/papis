@@ -1,19 +1,19 @@
-from typing import Any
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
-import papis
-import papis.document
-import papis.downloaders.base
-import papis.importer
-import papis.utils
+if TYPE_CHECKING:
+    import papis.document
 
-# https://api.ncbi.nlm.nih.gov/lit/ctxp
+#: Name of the official PubMed database (see the `official documentation <
+#: https://api.ncbi.nlm.nih.gov/lit/ctxp>`__).
 PUBMED_DATABASE = "pubmed"
-PUBMED_URL = \
-    "https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/{database}/?format=csl&id={pmid}"
+#: Query URL for PubMed metadata.
+PUBMED_URL = "https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/{database}/?format=csl&id={pmid}"
 
-
-# https://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types
-type_converter = {
+#: A mapping of additional document types supported by PubMed to their BibTeX
+#: equivalents. These types are taken from the `official citation styles
+#: <https://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types>`__.
+PUBMED_TO_BIBTEX_TYPE_CONVERT = {
     "article": "article",
     "article-journal": "article",
     "book": "book",
@@ -24,7 +24,7 @@ type_converter = {
 }
 
 
-def handle_pubmed_pages(pages: str) -> str:
+def _handle_pubmed_pages(pages: str) -> str:
     # returned data is in the form 561-7 meaning 562-567
     start, end = [x.strip() for x in pages.split("-")]
     prefix = start[:max(0, len(start) - len(end))]
@@ -33,34 +33,41 @@ def handle_pubmed_pages(pages: str) -> str:
     return f"{start}--{end}"
 
 
-KeyConversionPair = papis.document.KeyConversionPair
-key_conversion = [
-    KeyConversionPair("container-title", [{"key": "journal", "action": None}]),
-    KeyConversionPair("PMID", [
-        {"key": "pmid", "action": None},
-        ]),
-    KeyConversionPair("ISSN", [{"key": "issn", "action": None}]),
-    KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
-    KeyConversionPair("page", [
-        {"key": "pages", "action": handle_pubmed_pages}
-        ]),
-    KeyConversionPair("type", [
-        {"key": "type", "action": lambda x: type_converter.get(x, "misc")}
-        ]),
-    KeyConversionPair("author", [{"key": "author_list", "action": None}]),
-    KeyConversionPair("issued", [
-        {"key": "year", "action": lambda x: x["date-parts"][0][0]},
-        ]),
-    KeyConversionPair("volume", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("issue", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("title", [papis.document.EmptyKeyConversion]),
-    KeyConversionPair("publisher", [papis.document.EmptyKeyConversion]),
-]
+@cache
+def _get_pubmed_key_conversion() -> list["papis.document.KeyConversionPair"]:
+    from papis.document import EmptyKeyConversion, KeyConversionPair
+
+    return [
+        KeyConversionPair("container-title", [{"key": "journal", "action": None}]),
+        KeyConversionPair("PMID", [
+            {"key": "pmid", "action": None},
+            ]),
+        KeyConversionPair("ISSN", [{"key": "issn", "action": None}]),
+        KeyConversionPair("DOI", [{"key": "doi", "action": None}]),
+        KeyConversionPair("page", [
+            {"key": "pages", "action": _handle_pubmed_pages}
+            ]),
+        KeyConversionPair("type", [{
+            "key": "type",
+            "action": lambda x: PUBMED_TO_BIBTEX_TYPE_CONVERT.get(x, "misc")
+            }]),
+        KeyConversionPair("author", [{"key": "author_list", "action": None}]),
+        KeyConversionPair("issued", [
+            {"key": "year", "action": lambda x: x["date-parts"][0][0]},
+            ]),
+        KeyConversionPair("volume", [EmptyKeyConversion]),
+        KeyConversionPair("issue", [EmptyKeyConversion]),
+        KeyConversionPair("title", [EmptyKeyConversion]),
+        KeyConversionPair("publisher", [EmptyKeyConversion]),
+    ]
 
 
 def pubmed_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
-    new_data = papis.document.keyconversion_to_data(key_conversion, data)
-    new_data["author"] = papis.document.author_list_to_author(new_data)
+    from papis.document import author_list_to_author, keyconversion_to_data
+
+    key_conversion = _get_pubmed_key_conversion()
+    new_data = keyconversion_to_data(key_conversion, data)
+    new_data["author"] = author_list_to_author(new_data)
 
     return new_data
 
@@ -70,38 +77,26 @@ def is_valid_pmid(pmid: str) -> bool:
     if not pmid.isdigit():
         return False
 
-    with papis.utils.get_session() as session:
+    from papis.utils import get_session
+
+    with get_session() as session:
         response = session.get(PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE))
 
     return response.ok
 
 
 def get_data(query: str = "") -> dict[str, Any]:
+    from papis import PAPIS_USER_AGENT
+    from papis.utils import get_session
+
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
-    with papis.utils.get_session() as session:
+    with get_session() as session:
         response = session.get(
             PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
-            headers={"user-agent": papis.PAPIS_USER_AGENT},
+            headers={"user-agent": PAPIS_USER_AGENT},
             )
 
     import json
+
     return pubmed_data_to_papis_data(json.loads(response.content.decode()))
-
-
-class Importer(papis.importer.Importer):
-
-    """Importer downloading data from a PubMed ID"""
-
-    def __init__(self, uri: str = "") -> None:
-        super().__init__(name="pubmed", uri=uri)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        if is_valid_pmid(uri):
-            return Importer(uri)
-
-        return None
-
-    def fetch_data(self) -> None:
-        self.ctx.data = get_data(self.uri)
