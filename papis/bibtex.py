@@ -7,11 +7,11 @@ the `manual`_).
 """
 import os
 import string
+from functools import cache
 from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
-from papis.importer import Importer as ImporterBase
 
 if TYPE_CHECKING:
     import papis.document
@@ -293,76 +293,13 @@ ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
 bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlraw"})
 
 
-class Importer(ImporterBase):
-    """
-    Importer that parses BibTeX files or strings.
-
-    Here, `uri` can either be a BibTeX string, local BibTeX file or a remote URL
-    (with a HTTP or HTTPS protocol).
-    """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(name="bibtex", **kwargs)
-
-    @classmethod
-    def match(cls, uri: str) -> "ImporterBase | None":
-        from papis.filetype import get_document_extension
-
-        if (not os.path.exists(uri)
-                or os.path.isdir(uri)
-                or get_document_extension(uri) == "pdf"):
-            return None
-        importer = Importer(uri=uri)
-        importer.fetch()
-        return importer if importer.ctx else None
-
-    def fetch_data(self) -> Any:
-        self.logger.info("Reading input file or string: '%s'.", self.uri)
-
-        from papis.downloaders import download_document
-        if (
-                self.uri.startswith("http://")
-                or self.uri.startswith("https://")):
-            filename = download_document(self.uri, expected_document_extension="bib")
-        else:
-            filename = self.uri
-
-        try:
-            bib_data = bibtex_to_dict(filename) if filename is not None else []
-        except Exception as exc:
-            self.logger.error("Error reading BibTeX file or string: '%s'.",
-                              self.uri, exc_info=exc)
-            return
-
-        if not bib_data:
-            self.logger.warning(
-                "Failed parsing the following file or string: '%s'.", self.uri)
-            return
-
-        if len(bib_data) > 1:
-            self.logger.warning(
-                "The BibTeX file contains %d entries. Picking the first one!",
-                len(bib_data))
-
-        self.ctx.data = bib_data[0]
-
-
-def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
-    """Convert the keys of a BibTeX entry parsed by :mod:`bibtexparser` to a
-    papis-compatible format.
-
-    :param entry: a dictionary with keys parsed by :mod:`bibtexparser`.
-    :returns: a dictionary with keys converted to a papis-compatible format.
-    """
+@cache
+def _get_bibtexparser_key_conversion() -> list["papis.document.KeyConversionPair"]:
     from bibtexparser.latexenc import latex_to_unicode
 
-    from papis.document import (
-        KeyConversionPair,
-        keyconversion_to_data,
-        split_authors_name,
-    )
+    from papis.document import KeyConversionPair, split_authors_name
 
-    key_conversion = [
+    return [
         KeyConversionPair("ID", [{"key": "ref", "action": None}]),
         KeyConversionPair("ENTRYTYPE", [{"key": "type", "action": None}]),
         KeyConversionPair("link", [{"key": "url", "action": None}]),
@@ -376,6 +313,18 @@ def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
             }]),
     ]
 
+
+def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
+    """Convert the keys of a BibTeX entry parsed by :mod:`bibtexparser` to a
+    papis-compatible format.
+
+    :param entry: a dictionary with keys parsed by :mod:`bibtexparser`.
+    :returns: a dictionary with keys converted to a papis-compatible format.
+    """
+
+    from papis.document import keyconversion_to_data
+
+    key_conversion = _get_bibtexparser_key_conversion()
     return keyconversion_to_data(key_conversion, entry, keep_unknown_keys=True)
 
 
@@ -425,7 +374,8 @@ def bibtex_to_dict(bibtex: str) -> list["papis.document.DocumentLike"]:
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
 
-def ref_cleanup(ref: str) -> str:
+def ref_cleanup(ref: str,
+                ref_word_separator: str | None = None) -> str:
     """Function to cleanup reference strings so that they are accepted by BibLaTeX.
 
     This uses the :data:`ref_allowed_characters` to remove any disallowed characters
@@ -435,16 +385,23 @@ def ref_cleanup(ref: str) -> str:
     :returns: a reference without any disallowed characters.
     """
     import slugify
+
+    if ref_word_separator is None:
+        ref_word_separator = papis.config.getstring("ref-word-separator")
+
     ref = slugify.slugify(ref,
                           lowercase=False,
                           word_boundary=False,
-                          separator=papis.config.getstring("ref-word-separator"),
+                          separator=ref_word_separator,
                           regex_pattern=ref_allowed_characters)
 
     return str(ref).strip()
 
 
-def create_reference(doc: dict[str, Any], force: bool = False) -> str:
+def create_reference(doc: "papis.document.DocumentLike", *,
+                     ref_format: "papis.strings.AnyString | None" = None,
+                     ref_word_separator: str | None = None,
+                     force: bool = False) -> str:
     """Try to create a reference for the document *doc*.
 
     If the document *doc* does not have a ``"ref"`` key, this function attempts
@@ -457,21 +414,25 @@ def create_reference(doc: dict[str, Any], force: bool = False) -> str:
 
     :param force: if *True*, the reference is re-created even if the document
         already has a ``"ref"`` key.
+    :param ref_word_separator: separator passed to :func:`ref_cleanup`.
     :returns: a clean (see :func:`ref_cleanup`) reference for the document.
     """
-    # Check first if the paper has a reference
+    import papis.format
+
+    # check first if the paper has a reference
     ref = str(doc.get("ref", ""))
     if not force and ref:
         return ref
 
-    import papis.format
+    # otherwise, try to generate one somehow
+    if ref_format is None:
+        try:
+            ref_format = papis.config.getformatpattern("ref-format")
+        except ValueError:
+            pass
 
-    # Otherwise, try to generate one somehow
-    try:
-        ref_format = papis.config.getformatpattern("ref-format")
+    if ref_format:
         ref = papis.format.format(ref_format, doc, default="")
-    except ValueError:
-        ref = ""
 
     if not ref:
         ref = str(doc.get("doi", ""))
@@ -486,7 +447,7 @@ def create_reference(doc: dict[str, Any], force: bool = False) -> str:
         ref = string.capwords(ref).replace(" ", "").strip()
 
     logger.debug("Generated ref '%s'.", ref)
-    return ref_cleanup(ref)
+    return ref_cleanup(ref, ref_word_separator=ref_word_separator)
 
 
 def author_list_to_author(doc: "papis.document.Document",

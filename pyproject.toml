@@ -221,7 +221,7 @@ python = "papis.format.python:PythonFormatter"
 
 [project.entry-points."papis.importer"]
 arxiv = "papis.importer.arxiv:ArxivImporter"
-bibtex = "papis.bibtex:Importer"
+bibtex = "papis.importer.bibtex:BibTeXImporter"
 crossref = "papis.crossref:FromCrossrefImporter"
 dblp = "papis.dblp:Importer"
 doi = "papis.crossref:Importer"
