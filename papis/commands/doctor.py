@@ -962,10 +962,15 @@ def html_tags_check(doc: papis.document.Document) -> list[Error]:
 
 
 STRING_CLEANER_CHECK_NAME = "string-cleaner"
+
+# NOTE: matches all text with two or more consecutive whitespace characters
 STRING_CLEANER_WHITESPACE_REGEX = re.compile(r"\s{2,}")
+# NOTE: matches all text with "abstract" at the start
 STRING_CLEANER_ABSTRACT_REGEX = re.compile(r"^\W*abstract\W*", re.IGNORECASE)
-STRING_CLEANER_AUTHOR_DOTS_REGEX = (
-    re.compile(r"(?:(\b\w\b)(?![\.'’])|(\b\w)\.(?=\w))"))  # noqa: RUF001
+# NOTE: matches all text that is a single uppercase letter not followed by a dot
+STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b([A-Z])(?!\.)\b")
+# NOTE: matches all text that is a letter followed by dot and another letter
+STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b[A-Z]\.)(?=[A-Z])")
 
 
 def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
@@ -1017,39 +1022,35 @@ def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
 
         return fixer
 
-    def has_author_issues(key: str, value: str) -> bool:
+    def has_author_initials(key: str, value: str, pattern: re.Pattern[str]) -> bool:
         if key != "author":
             return False
 
         if "author_list" not in doc:
             return False
 
-        # NOTE: we only want to add dots to the given name of an author (e.g.
-        # single letter family names are allowed) and only if the author also
-        # has a family name (e.g. an author like {given="C Committee", "family": None}
-        # should be allowed and left unchanged)
-        return any(STRING_CLEANER_AUTHOR_DOTS_REGEX.search(author["given"])
+        # NOTE: we only want to fix given names of an author (e.g. single letter
+        # family names are allowed) and only if the author also has a family name
+        # (e.g. an author like `{"given": "C Committee", "family": None}` should
+        # be left alone)
+        return any(pattern.search(author["given"])
                    for author in doc["author_list"]
                    if author["given"] and author["family"])
 
-    def author_spacing_fixer() -> None:
-        author_list = doc.get("author_list")
-        if author_list is None:
-            author_list = papis.document.split_authors_name(doc["author"])
+    def make_author_initials_fixer(pattern: re.Pattern[str], sub: str) -> FixFn:
+        def fixer() -> None:
+            author_list = doc.get("author_list")
+            if author_list is None:
+                return
 
-        for author in author_list:
-            # FIXME: we should make a regex smart enough that we do not
-            # actually need the post cleanup here..
-            author.update({
-                "given": (
-                    STRING_CLEANER_AUTHOR_DOTS_REGEX.sub(r"\1\2. ", author["given"])
-                    .replace("  ", " ")
-                    .strip())
-            })
+            for author in author_list:
+                author.update({"given": pattern.sub(sub, author["given"])})
 
-        doc["author_list"] = author_list
-        doc["author"] = papis.document.author_list_to_author(doc)
-        logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
+            doc["author_list"] = author_list
+            doc["author"] = papis.document.author_list_to_author(doc)
+            logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
+
+        return fixer
 
     key_types = get_key_type_check_keys()
     results = []
@@ -1073,13 +1074,22 @@ def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
                            fix_action=remove_abstract_fixer,
                            payload=key))
 
-        if has_author_issues(key, value):
+        if has_author_initials(key, value, STRING_CLEANER_INITIALS_SPACE_REGEX):
             results.append(
                 make_error(doc, STRING_CLEANER_CHECK_NAME,
                            msg=("Key 'author' contains initials that are not "
-                                "followed by a dot or are not separated by "
-                                "whitespace"),
-                           fix_action=author_spacing_fixer,
+                                "separated by whitespace"),
+                           fix_action=make_author_initials_fixer(
+                               STRING_CLEANER_INITIALS_SPACE_REGEX, r"\1."),
+                           payload=key))
+
+        if has_author_initials(key, value, STRING_CLEANER_INITIALS_DOTS_REGEX):
+            results.append(
+                make_error(doc, STRING_CLEANER_CHECK_NAME,
+                           msg=("Key 'author' contains initials that are not "
+                                "followed by a dot"),
+                           fix_action=make_author_initials_fixer(
+                               STRING_CLEANER_INITIALS_DOTS_REGEX, r" "),
                            payload=key))
 
         if has_extra_newlines(key, value):
