@@ -417,13 +417,15 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import STRING_CLEANER_AUTHOR_DOTS_REGEX
+    from papis.commands.doctor import (
+        STRING_CLEANER_INITIALS_DOTS_REGEX,
+        STRING_CLEANER_INITIALS_SPACE_REGEX,
+    )
 
-    def dotify(value: str) -> str:
-        return (
-            STRING_CLEANER_AUTHOR_DOTS_REGEX.sub(r"\1\2. ", value)
-            .replace("  ", " ")
-            .strip())
+    def dotify(text: str) -> str:
+        text = STRING_CLEANER_INITIALS_SPACE_REGEX.sub(r"\1.", text)
+        text = STRING_CLEANER_INITIALS_DOTS_REGEX.sub(r" ", text)
+        return text
 
     assert dotify("F") == "F."
     assert dotify("F.") == "F."
