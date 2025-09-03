@@ -97,6 +97,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
 
     # add document with auto-doctor on
     papis.config.set("doctor-default-checks", ["keys-missing", "key-type", "refs"])
+
     run(paths, data=data, auto_doctor=True)
 
     # check that all the broken fields are fixed
@@ -105,7 +106,7 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
 
     assert doc["author_list"] == [{"given": "Werner", "family": "Kutzelnigg"}]
     assert isinstance(doc["year"], int) and doc["year"] == 2009
-    assert doc["ref"] == "2FJT2E3A"
+    assert doc["ref"] == "How_many_body_p_Kutzel_2009"
 
 
 def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:
