@@ -39,7 +39,7 @@ implemented
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
-*  ``string-cleaner``: checks that strings do contain various undesired characters
+* ``string-cleaner``: checks that strings do contain various undesired characters
   (e.g. newlines in titles) and other general style issues (double whitespace).
 
 If any custom checks are implemented, you can get a complete list at runtime from:
