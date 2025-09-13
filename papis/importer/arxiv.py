@@ -13,11 +13,11 @@ class ArxivImporter(Importer):
 
         # FIXME: this should not rely on the downloader to work => introduce some
         # helper functions or something that they can share
-        self.downloader = ArxivDownloader(uri, arxivid)
+        self._downloader = ArxivDownloader(uri, arxivid)
 
     @property
     def arxivid(self) -> str:
-        return self.downloader.arxivid
+        return self._downloader.arxivid
 
     @property
     def url(self) -> str:
@@ -30,7 +30,7 @@ class ArxivImporter(Importer):
 
         arxivid = find_arxivid_in_text(uri)
         if arxivid:
-            return ArxivImporter(uri, arxivid)
+            return ArxivImporter(f"{ARXIV_ABS_URL}/{arxivid}", arxivid)
 
         if is_arxivid(uri):
             return ArxivImporter(f"{ARXIV_ABS_URL}/{uri}", uri)
@@ -38,12 +38,12 @@ class ArxivImporter(Importer):
         return None
 
     def fetch_data(self) -> None:
-        self.downloader.fetch_data()
-        self.ctx.data = self.downloader.ctx.data.copy()
+        self._downloader.fetch_data()
+        self.ctx.data = self._downloader.ctx.data.copy()
 
     def fetch_files(self) -> None:
-        self.downloader.fetch_files()
-        self.ctx.files = self.downloader.ctx.files.copy()
+        self._downloader.fetch_files()
+        self.ctx.files = self._downloader.ctx.files.copy()
 
 
 class ArxivFromPDFImporter(ArxivImporter):

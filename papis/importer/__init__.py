@@ -378,6 +378,9 @@ def fetch_importers(importers: Iterable[Importer], *,
                          "'%s': '%s'.", importer.name, importer.uri, exc_info=exc)
         else:
             logger.debug("Fetched data from importer: %s", importer)
+            if not download_files:
+                importer.ctx.files.clear()
+
             result.append(importer)
 
     return result
@@ -409,6 +412,13 @@ def collect_from_importers(
 
     for importer in importers:
         ctx = importer.ctx
+
+        if "ref" in ctx.data:
+            logger.debug(
+                "Importer '%s' set the 'ref' key. This is not allowed and will be "
+                "automatically removed.", importer.name)
+
+            del ctx.data["ref"]
 
         if ctx.data:
             logger.info("Merging data from importer '%s'.", importer.name)
