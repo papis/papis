@@ -25,9 +25,9 @@ class BibTeXImporter(Importer):
         self.logger.info("Reading input file or string: '%s'.", self.uri)
 
         from papis.downloaders import download_document
-        if (
-                self.uri.startswith("http://")
-                or self.uri.startswith("https://")):
+        from papis.paths import is_remote_file
+
+        if is_remote_file(self.uri):
             filename = download_document(self.uri, expected_document_extension="bib")
         else:
             filename = self.uri
@@ -51,4 +51,5 @@ class BibTeXImporter(Importer):
                 "The BibTeX file contains %d entries. Picking the first one!",
                 len(bib_data))
 
+        # TODO: check if the data has any "file" entries and load those too?
         self.ctx.data = bib_data[0]

@@ -145,10 +145,10 @@ import papis.config
 import papis.document
 import papis.format
 import papis.git
-import papis.importer
 import papis.logging
 import papis.strings
 import papis.utils
+from papis.importer import get_available_importers
 from papis.strings import AnyString, process_format_pattern_pair
 
 logger = papis.logging.get_logger(__name__)
@@ -424,9 +424,9 @@ def run(
     "--from",
     "from_importer",
     help="Add document from a specific importer ({}).".format(
-        ", ".join(papis.importer.get_available_importers())
+        ", ".join(get_available_importers())
     ),
-    type=(click.Choice(papis.importer.get_available_importers()), str),
+    type=(click.Choice(get_available_importers()), str),
     nargs=2,
     multiple=True,
     default=(),
@@ -505,9 +505,17 @@ def cli(
         logger.warning(papis.strings.no_documents_retrieved_message)
         return
 
+    from papis.importer import (
+        Context,
+        collect_from_importers,
+        fetch_importers,
+        get_matching_importers_by_doc,
+        get_matching_importers_by_name,
+    )
+
     processed_documents = []
     for document in documents:
-        ctx = papis.importer.Context()
+        ctx = Context()
 
         ctx.data.update(document)
         if to_set:
@@ -528,40 +536,16 @@ def cli(
         if success:
             logger.info("Updating %s.", papis.document.describe(document))
 
-            # NOTE: use 'papis addto' to add files, so this only adds data
-            # by setting 'only_data' to True always
-            matching_importers = papis.utils.get_matching_importer_by_name(
-                from_importer, only_data=True
-            )
+            # get metadata from importers and merge them all together
+            if from_importer:
+                importers = get_matching_importers_by_name(from_importer)
+            elif auto:
+                importers = get_matching_importers_by_doc(document)
+            else:
+                importers = []
 
-            if not from_importer and auto:
-                for importer_cls in papis.importer.get_importers():
-                    try:
-                        importer = importer_cls.match_data(document)
-                        if importer:
-                            try:
-                                importer.fetch_data()
-                            except NotImplementedError:
-                                importer.fetch()
-                    except NotImplementedError:
-                        continue
-                    except Exception as exc:
-                        logger.exception("Failed to match document data.", exc_info=exc)
-                    else:
-                        if importer and importer.ctx:
-                            matching_importers.append(importer)
-
-            imported = papis.utils.collect_importer_data(
-                matching_importers, batch=batch, use_files=False
-            )
-            if "ref" in imported.data:
-                logger.debug(
-                    "An importer set the 'ref' key. This is not allowed and will be "
-                    "automatically removed. Check importers: '%s'",
-                    "', '".join(importer.name for importer in matching_importers),
-                )
-
-                del imported.data["ref"]
+            importers = fetch_importers(importers, download_files=False)
+            imported = collect_from_importers(importers, batch=batch, use_files=False)
 
             # TODO: add interactive merging to avoid overwriting user changes
             ctx.data.update(imported.data)

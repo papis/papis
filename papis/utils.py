@@ -429,7 +429,7 @@ def get_matching_importer_by_name(
     if download_files is None:
         download_files = False
 
-    warn("'papis.utils.get_matching_importers_by_name' is deprecated "
+    warn("'papis.utils.get_matching_importer_by_name' is deprecated "
          "and will be removed in Papis v0.16. "
          "Use 'papis.importer.get_matching_importers_by_name' and "
          "'papis.importer.fetch_importers' instead.",

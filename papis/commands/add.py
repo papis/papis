@@ -465,25 +465,24 @@ def cli(files: list[str],
         open_file = False
 
     # gather importers / downloaders
-    from papis.utils import (
-        collect_importer_data,
-        get_matching_importer_by_name,
-        get_matching_importer_or_downloader,
+    from papis.importer import (
+        collect_from_importers,
+        fetch_importers,
+        get_matching_importers_by_name,
+        get_matching_importers_by_uri,
     )
 
-    matching_importers = get_matching_importer_by_name(
-        from_importer, download_files=download_files)
-
-    if not from_importer and files:
+    if from_importer:
+        importers = get_matching_importers_by_name(from_importer)
+    elif files:
         from itertools import chain
 
-        matching_importers = list(
+        importers = list(
             chain.from_iterable(
-                get_matching_importer_or_downloader(
-                    f, download_files=download_files)
+                get_matching_importers_by_uri(f, include_downloaders=True)
                 for f in files))
 
-        if matching_importers and not batch:
+        if importers and not batch:
             from papis.tui.utils import select_range
 
             logger.info("These importers where automatically matched. "
@@ -492,16 +491,17 @@ def cli(files: list[str],
             matching_indices = select_range(
                 ["{} (files: {}) ".format(
                     imp.name,
-                    ", ".join(imp.ctx.files) if imp.ctx.files else "no")
-                 for imp in matching_importers],
+                    ", ".join(imp.ctx.files) if imp.ctx.files else "none")
+                 for imp in importers],
                 "Select matching importers (for instance 0, 1, 3-10, a, all...)")
 
-            matching_importers = [matching_importers[i] for i in matching_indices]
+            importers = [importers[i] for i in matching_indices]
+    else:
+        importers = []
 
     # merge importer data + commandline data into a single set
-    imported = collect_importer_data(
-        matching_importers, batch=batch, use_files=download_files
-    )
+    importers = fetch_importers(importers, download_files=download_files)
+    imported = collect_from_importers(importers, batch=batch, use_files=download_files)
 
     ctx = Context()
     ctx.data = imported.data
