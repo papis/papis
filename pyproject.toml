@@ -232,7 +232,7 @@ pdf2arxivid = "papis.importer.arxiv:ArxivFromPDFImporter"
 pdf2doi = "papis.importer.doi:DOIFromPDFImporter"
 pmid = "papis.importer.pubmed:PubMedImporter"
 yaml = "papis.yaml:Importer"
-zenodo = "papis.zenodo:Importer"
+zenodo = "papis.importer.zenodo:ZenodoImporter"
 
 [project.entry-points."papis.picker"]
 fzf = "papis.pick.fzf:FzfPicker"

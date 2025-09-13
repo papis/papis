@@ -1,16 +1,12 @@
-import datetime
-import json
+from functools import cache
 from typing import Any
 
-import papis
-import papis.document
-import papis.importer
-import papis.utils
-from papis.downloaders import download_document
-
-ZENODO_URL = "https://www.zenodo.org/api/records/{record_id}"
+import papis.logging
 
 logger = papis.logging.get_logger(__name__)
+
+#: URL used for Zenodo queries.
+ZENODO_URL = "https://www.zenodo.org/api/records/{record_id}"
 
 
 def get_author_info(authors: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -21,9 +17,11 @@ def get_author_info(authors: list[dict[str, str]]) -> list[dict[str, str]]:
 
     :return: A list of formatted authors
     """
+    from papis.document import split_author_name
+
     out = []
     for author in authors:
-        current_author = papis.document.split_author_name(author["name"])
+        current_author = split_author_name(author["name"])
         if affiliation := author.get("affiliation"):
             current_author["affiliation"] = affiliation
         out.append(current_author)
@@ -66,64 +64,69 @@ def get_text_from_html(html: str) -> str:
     return _get_text_from_html(html)
 
 
-KeyConversionPair = papis.document.KeyConversionPair
-key_conversion = [
-    # Fields from biblatex-software and biblatex docs
-    KeyConversionPair(
-        "description", [{"key": "abstract", "action": get_text_from_html}]
-    ),
-    KeyConversionPair("creators", [{"key": "author_list", "action": get_author_info}]),
-    KeyConversionPair(
-        "id",
-        [
-            {"key": "eprint", "action": None},
-        ],
-    ),
-    KeyConversionPair("doi", [{"key": "doi", "action": None}]),
-    KeyConversionPair(
-        "contributors",
-        [
-            {
-                "key": "editor",
-                "action": lambda x: filter(lambda e: e["role"]["id"] == "editor", x),
-            },
-            {
-                "key": "organization",
-                "action": lambda x: filter(
-                    lambda e: e["person_or_org"]["type"] == "organizational", x
-                ),
-            },
-        ],
-    ),
-    KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
-    KeyConversionPair("notes", [{"key": "note", "action": get_text_from_html}]),
-    KeyConversionPair("publisher", [{"key": "publisher", "action": None}]),
-    KeyConversionPair("title", [{"key": "title", "action": None}]),
-    KeyConversionPair(
-        "publication_date",
-        [
-            {
-                "key": "year",
-                "action": lambda x: datetime.datetime.fromisoformat(x).year,
-            },
-            {
-                "key": "month",
-                "action": lambda x: datetime.datetime.fromisoformat(x).month,
-            },
-            {"key": "day", "action": lambda x: datetime.datetime.fromisoformat(x).day},
-        ],
-    ),
-    KeyConversionPair("status", [{"key": "pubstate", "action": get_text_from_html}]),
-    KeyConversionPair(
-        "resource_type", [{"key": "type", "action": lambda x: x["type"]}]
-    ),
-    KeyConversionPair("version", [{"key": "version", "action": None}]),
-    # extra fields
-    KeyConversionPair("keywords", [{"key": "tags", "action": None}]),
-    KeyConversionPair("revision", [{"key": "revision", "action": None}]),
-    KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
-    KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
-]
+@cache
+def _get_zenodo_key_conversion() -> list["papis.document.KeyConversionPair"]:
+    from datetime import datetime
+
+    from papis.document import KeyConversionPair
+
+    return [
+        # Fields from biblatex-software and biblatex docs
+        KeyConversionPair(
+            "description",
+            [{"key": "abstract", "action": get_text_from_html}]
+        ),
+        KeyConversionPair(
+            "creators",
+            [{"key": "author_list", "action": get_author_info}]
+        ),
+        KeyConversionPair(
+            "id",
+            [{"key": "eprint", "action": None}],
+        ),
+        KeyConversionPair("doi", [{"key": "doi", "action": None}]),
+        KeyConversionPair(
+            "contributors", [
+                {"key": "editor",
+                 "action": lambda x: filter(
+                     lambda e: e["role"]["id"] == "editor", x)},
+                {"key": "organization",
+                 "action": lambda x: filter(
+                     lambda e: e["person_or_org"]["type"] == "organizational", x)},
+            ],
+        ),
+        KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
+        KeyConversionPair("notes", [{"key": "note", "action": get_text_from_html}]),
+        KeyConversionPair("publisher", [{"key": "publisher", "action": None}]),
+        KeyConversionPair("title", [{"key": "title", "action": None}]),
+        KeyConversionPair(
+            "publication_date",
+            [
+                {
+                    "key": "year",
+                    "action": lambda x: datetime.fromisoformat(x).year,
+                },
+                {
+                    "key": "month",
+                    "action": lambda x: datetime.fromisoformat(x).month,
+                },
+                {"key": "day", "action": lambda x: datetime.fromisoformat(x).day},
+            ],
+        ),
+        KeyConversionPair(
+            "status",
+            [{"key": "pubstate", "action": get_text_from_html}]),
+        KeyConversionPair(
+            "resource_type",
+            [{"key": "type", "action": lambda x: x["type"]}]
+        ),
+        KeyConversionPair("version", [{"key": "version", "action": None}]),
+        # extra fields
+        KeyConversionPair("keywords", [{"key": "tags", "action": None}]),
+        KeyConversionPair("revision", [{"key": "revision", "action": None}]),
+        KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
+        KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
+    ]
 
 
 def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
@@ -134,6 +137,7 @@ def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     """
     # Merge metadata into data
     data.update(data.pop("metadata", {}))
+    key_conversion = _get_zenodo_key_conversion()
 
     return papis.document.keyconversion_to_data(key_conversion, data)
 
@@ -173,6 +177,8 @@ def get_data(record_id: str) -> dict[str, Any]:
     """
     data = _get_zenodo_response(record_id)
 
+    import json
+
     try:
         json_data = json.loads(data)
     except json.JSONDecodeError as exc:
@@ -184,44 +190,3 @@ def get_data(record_id: str) -> dict[str, Any]:
         logger.error("Zenodo response has unsupported type: '%s'",
                      type(json_data).__name__)
         return {}
-
-
-class Context(papis.importer.Context):
-    def __init__(self) -> None:
-        super().__init__()
-        self.file_info: dict[str, Any] = {}
-
-
-class Importer(papis.importer.Importer):
-    """Importer downloading data from a Zenodo ID"""
-
-    ctx: Context
-
-    def __init__(self, uri: str = "") -> None:
-        super().__init__(name="zenodo", uri=uri, ctx=Context())
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        if is_valid_record_id(uri):
-            return Importer(uri)
-
-        return None
-
-    def fetch_data(self) -> None:
-        zenodo_data = get_data(self.uri)
-        # Build a filename to URL dictionary
-        self.ctx.file_info = {
-            file["key"]: file["links"]["self"] for file in zenodo_data["files"]
-        }
-        self.ctx.data = zenodo_data_to_papis_data(zenodo_data)
-
-    def fetch_files(self) -> None:
-        if not self.ctx.file_info:
-            return
-
-        for filename, url in self.ctx.file_info.items():
-            self.logger.info("Trying to download document from '%s'.", url)
-
-            out_filename = download_document(url, filename=filename)
-            if out_filename is not None:
-                self.ctx.files.append(out_filename)
