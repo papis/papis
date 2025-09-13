@@ -231,7 +231,7 @@ lib = "papis.importer.library:FromLibraryImporter"
 pdf2arxivid = "papis.importer.arxiv:ArxivFromPDFImporter"
 pdf2doi = "papis.importer.doi:DOIFromPDFImporter"
 pmid = "papis.importer.pubmed:PubMedImporter"
-yaml = "papis.yaml:Importer"
+yaml = "papis.importer.yaml:YAMLImporter"
 zenodo = "papis.importer.zenodo:ZenodoImporter"
 
 [project.entry-points."papis.picker"]

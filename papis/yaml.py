@@ -1,14 +1,9 @@
-import os
 from collections.abc import Sequence
 from typing import Any
 
 import yaml
 
-import papis.config
-import papis.document
-import papis.importer
 import papis.logging
-import papis.utils
 
 # NOTE: try to use the CLoader when possible, as it's a lot faster than the
 # python version, at least at the time of writing
@@ -104,28 +99,3 @@ def yaml_to_list(yaml_path: str,
             raise ValueError(exc) from exc
         logger.error("YAML syntax error. %s", exc_info=exc)
         return []
-
-
-class Importer(papis.importer.Importer):
-
-    """Importer that parses a YAML file."""
-
-    def __init__(self, uri: str) -> None:
-        super().__init__(name="yaml", uri=uri)
-
-    @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
-        """Check if the *uri* points to an existing YAML file."""
-        importer = None
-        if os.path.exists(uri) and not os.path.isdir(uri):
-            _, ext = os.path.splitext(uri)
-            if ext in {".yml", ".yaml"}:
-                importer = Importer(uri)
-
-        return importer
-
-    def fetch_data(self: papis.importer.Importer) -> Any:
-        """Fetch metadata from the YAML file."""
-        self.ctx.data = yaml_to_data(self.uri, raise_exception=True)
-        if self.ctx:
-            self.logger.debug("Successfully read file: '%s'.", self.uri)
