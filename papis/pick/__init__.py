@@ -188,8 +188,10 @@ def pick_library(libs: list[str] | None = None, *,
 
     :arg libs: a list of libraries to pick from.
     """
+    from papis.api import get_libraries
+
     if libs is None:
-        libs = papis.api.get_libraries()
+        libs = get_libraries()
 
     if header_format is None:
         header_format = papis.config.getformatpattern("library-header-format")
