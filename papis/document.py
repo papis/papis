@@ -7,6 +7,7 @@ from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, TypedDict
 
 import papis.config
+import papis.format
 import papis.logging
 
 if TYPE_CHECKING:
