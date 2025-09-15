@@ -6,7 +6,8 @@ from papis.testing import ResourceCache, TemporaryConfiguration
 
 FALLBACK_URLS = (
     "https://peerj.com/articles/4886/",
-    "https://opus4.kobv.de/opus4-trr154/frontdoor/index/index/docId/481",
+    # NOTE: the website seems to be down (2025-09-15)
+    # "https://opus4.kobv.de/opus4-trr154/frontdoor/index/index/docId/481",
     )
 
 
