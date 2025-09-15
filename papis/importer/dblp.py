@@ -20,6 +20,18 @@ class DBLPImporter(Importer):
         else:
             return None
 
+    def _get_body(self, url: str) -> str:
+        from papis.utils import get_session
+
+        with get_session() as session:
+            response = session.get(url)
+
+        if not response.ok:
+            self.logger.error("Could not get BibTeX entry for '%s'.", self.uri)
+            return
+
+        return response.content.decode()
+
     def fetch_data(self) -> None:
         from papis.dblp import DBLP_BIB_FORMAT, is_valid_dblp_key
 
@@ -30,18 +42,9 @@ class DBLPImporter(Importer):
         else:
             url = f"{self.uri[:-5]}.bib"
 
-        from papis.utils import get_session
-
-        with get_session() as session:
-            response = session.get(url)
-
-        if not response.ok:
-            self.logger.error("Could not get BibTeX entry for '%s'.", self.uri)
-            return
-
         from papis.bibtex import bibtex_to_dict
 
-        entries = bibtex_to_dict(response.content.decode())
+        entries = bibtex_to_dict(self._get_body(url))
         if not entries:
             return
 
