@@ -27,8 +27,8 @@ class DBLPImporter(Importer):
             response = session.get(url)
 
         if not response.ok:
-            self.logger.error("Could not get BibTeX entry for '%s'.", self.uri)
-            return
+            self.logger.error("Could not download data from '%s'.", self.uri)
+            return ""
 
         return response.content.decode()
 
