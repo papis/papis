@@ -4,8 +4,26 @@ from urllib.parse import urlparse
 import papis.downloaders.base
 
 
+def get_usenix_identifier(url: str) -> str | None:
+    """
+    >>> get_usenix_identifier("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov")
+    'usenixsecurity22-bulekov'
+    >>> get_usenix_identifier("https://www.usenix.org/conference/nsdi23/presentation/liu-tianfeng")
+    'nsdi23-liu-tianfeng'
+    """
+    o = urlparse(url)
+    path = o.path
+    path_components = list(path.split("/"))
+    if len(path_components) < 5:
+        return None
+
+    return f"{path_components[2]}-{path_components[4]}"
+
+
 class Downloader(papis.downloaders.Downloader):
     """Retrieve documents from `USENIX <https://www.usenix.org>`__"""
+
+    BIBTEX_URL_RE = re.compile(r"/biblio/export/bibtex/([0-9]+)$")
 
     def __init__(self, url: str):
         super().__init__(
@@ -13,7 +31,7 @@ class Downloader(papis.downloaders.Downloader):
             "usenix",
             expected_document_extension="pdf",
         )
-        self._raw_data: str | None = None
+        self.identifier = get_usenix_identifier(url)
 
     @classmethod
     def match(cls, url: str) -> papis.downloaders.Downloader | None:
@@ -22,45 +40,14 @@ class Downloader(papis.downloaders.Downloader):
         else:
             return None
 
-    def get_identifier(self) -> str | None:
-        """
-        >>> d = Downloader("https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov")
-        >>> d.get_identifier()
-        'usenixsecurity22-bulekov'
-        >>> d = Downloader("https://www.usenix.org/conference/nsdi23/presentation/liu-tianfeng")
-        >>> d.get_identifier()
-        'nsdi23-liu-tianfeng'
-        """
-        o = urlparse(self.uri)
-        path = o.path
-        path_components = list(path.split("/"))
-        if len(path_components) < 5:
-            return None
-        self.logger.debug("Parsed URL: %s.", path_components)
-        return path_components[2] + "-" + path_components[4]
-
-    def _ensure_raw_data(self) -> None:
-        if not self._raw_data:
-            resp = self.session.get(self.uri, cookies=self.cookies)
-            self._raw_data = resp.content.decode("utf-8")
-            if not self._raw_data:
-                self.logger.warning("Failed to fetch data from '%s'.", self.uri)
-
     def get_document_url(self) -> str | None:
-        import bs4
-
-        # make sure self._raw_data is available
-        self._ensure_raw_data()
-        if not self._raw_data:
-            return None
-
-        soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
         extension = (
             self.expected_document_extensions[0]
             if self.expected_document_extensions
             else ""
         )
 
+        soup = self._get_soup()
         a = list(
             filter(
                 lambda t: (
@@ -85,20 +72,10 @@ class Downloader(papis.downloaders.Downloader):
         return pdf_url.strip()
 
     def get_bibtex_url(self) -> str | None:
-        o = urlparse(self.uri)
-        import bs4
-
-        # make sure self._raw_data is available
-        self._ensure_raw_data()
-        if not self._raw_data:
-            return None
-
-        soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
-        re_matcher = re.compile(r"/biblio/export/bibtex/([0-9]+)$")
-
+        soup = self._get_soup()
         a = list(
             filter(
-                lambda t: re_matcher.match(t.get("href", "")),
+                lambda t: self.BIBTEX_URL_RE.match(t.get("href", "")),
                 soup.find_all("a"),
             )
         )
@@ -109,52 +86,48 @@ class Downloader(papis.downloaders.Downloader):
             )
             return None
 
+        o = urlparse(self.uri)
         bib_path = a[0].get("href", "")
         bib_url = o._replace(path=bib_path)
+
         return bib_url.geturl()
 
     def download_bibtex(self) -> None:
         """Download and store that BibTeX data from :meth:`get_bibtex_url`.
-        If that doesn't work, e.g., because cloudflare doesn't like papis for
-        some reason, try to find the inline bibtex content and use that instead.
+        If that doesn't work, e.g., because CloudFlare does not like Papis for
+        some reason, try to find the inline BibTeX content and use that instead.
 
         Use :meth:`get_bibtex_data` to access the metadata from the BibTeX URL.
         """
+        bibtex_data = None
         url = self.get_bibtex_url()
-        if not url:
-            return
-        self.logger.info("Downloading BibTeX from '%s'.", url)
+        if url:
+            self.logger.info("Downloading BibTeX from '%s'.", url)
 
-        response = self.session.get(url, cookies=self.cookies)
-        self.bibtex_data = response.content.decode().strip()
-        if self.bibtex_data.startswith("<!DOCTYPE html>"):
-            self.logger.debug("Downloaded BibTeX data:\n%s", self.bibtex_data)
-            self.bibtex_data = None
+            response = self.session.get(url, cookies=self.cookies)
+            bibtex_data = response.content.decode().strip()
+            if bibtex_data.startswith("<!DOCTYPE html>"):
+                self.logger.debug("Downloaded BibTeX data:\n%s", self.bibtex_data)
+                bibtex_data = None
 
-        if self.bibtex_data:
-            return
+        if bibtex_data is None:
+            soup = self._get_soup()
 
-        # fallback to trying to fetch the bibtex from the _raw_data itself
-        # make sure self._raw_data is available
-        self._ensure_raw_data()
-        if not self._raw_data:
-            return None
-        # setup html parser
-        import bs4
-
-        soup = bs4.BeautifulSoup(self._raw_data, "html.parser")
-
-        # find the bibtex div
-        finds = list(
-            filter(
-                lambda t: "bibtex-text-entry" in t.get("class", ""),
-                soup.find_all("div"),
+            # find the bibtex div
+            finds = list(
+                filter(
+                    lambda t: "bibtex-text-entry" in t.get("class", ""),
+                    soup.find_all("div"),
+                )
             )
-        )
 
-        if finds:
-            div = finds[0]
-            text = div.text.replace("<br/>", "\n")
-            self.bibtex_data = text
-        else:
-            self.logger.debug("Failed to identify BibTeX content in USENIX HTML page!")
+            if finds:
+                div = finds[0]
+                text = div.text.replace("<br/>", "\n")
+                bibtex_data = text
+            else:
+                self.logger.debug(
+                    "Failed to identify BibTeX content in USENIX HTML page!"
+                )
+
+        self.bibtex_data = bibtex_data

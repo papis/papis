@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 import requests
 
@@ -86,23 +88,15 @@ def test_importer_fetch(tmp_config: TemporaryConfiguration,
     from papis.importer.dblp import DBLPImporter
 
     url = DBLP_URL_FORMAT.format(uri=DBLP_KEYS_VALID[-1])
-    infile = "dblp_1.bin"
+    infile = "dblp_1.bib"
     outfile = "dblp_1_out.json"
 
-    def get_bib(self: requests.Session, bib_url: str) -> requests.Response:
-        assert bib_url.endswith(".bib")
-
-        r = requests.Response()
-        r.status_code = 200
-        r._content = resource_cache.get_remote_resource(infile, bib_url)
-
-        return r
-
     with monkeypatch.context() as m:
-        m.setattr(requests.Session, "get", get_bib)
-
         importer = DBLPImporter.match(url)
         assert importer is not None
+
+        m.setattr(importer, "_get_body", lambda url:
+                    resource_cache.get_remote_resource(infile, url))
 
         importer.fetch()
         extracted_data = importer.ctx.data
