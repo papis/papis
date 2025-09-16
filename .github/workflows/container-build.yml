@@ -1,0 +1,91 @@
+name: Build/Release Container Image
+
+on:
+  push:
+    branches: [ "main", "ci-*" ]
+    tags: [ "v*" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: build development container image (papis:devenv)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: Dockerfile
+          push: false
+          load: true
+          tags: papis:devenv
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: run CI tests within development container (papis:devenv)
+        # -> automatically executes CI tests with no args.
+        run: >
+          docker run --rm papis:devenv
+
+      # get ready to build a container release
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # get info about current/branch etc.
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=tag
+
+      - name: build the release docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: release.Dockerfile
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: run some basic integration tests to check the container image works
+        # Note the env var PAPIS_CI_RUN=42 is used by the integration test
+        # script to avoid accidentally destroying files of folks running this
+        # script.
+        run: >
+          docker run \
+            --rm \
+            -v $(realpath ./tools/):/tools/ \
+            -e PAPIS_CI_RUN=42 \
+            --entrypoint /bin/bash \
+            ${{ fromJSON(steps.meta.outputs.json).tags[0] }} \
+            /tools/run-integration-test.sh
+     
+      - name: push docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: release.Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
