@@ -140,20 +140,15 @@ from typing import Any
 import click
 
 import papis.cli
-import papis.commands.doctor
 import papis.config
 import papis.document
 import papis.format
-import papis.git
 import papis.logging
 import papis.strings
-import papis.utils
 from papis.importer import get_available_importers
 from papis.strings import AnyString, process_format_pattern_pair
 
 logger = papis.logging.get_logger(__name__)
-
-KEY_TYPES = papis.commands.doctor.get_key_type_check_keys()
 
 
 def try_parsing_str(key: str, value: str) -> str:
@@ -209,7 +204,8 @@ def run_set(
                 "rename any files on disk."
             )
         elif key == "ref" and isinstance(value, str):
-            document[key] = papis.bibtex.ref_cleanup(value)
+            from papis.bibtex import ref_cleanup
+            document[key] = ref_cleanup(value)
         else:
             document[key] = value
 
@@ -342,6 +338,7 @@ def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) ->
 def run_rename(
     document: papis.document.DocumentLike,
     to_rename: Sequence[tuple[str, AnyString, AnyString]],
+    key_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -356,7 +353,7 @@ def run_rename(
     to_append = [x[::2] for x in to_rename]
     success = run_remove(document, to_remove, batch)
     if success:
-        success = run_append(document, to_append, KEY_TYPES, batch)
+        success = run_append(document, to_append, key_types, batch)
     return success
 
 
@@ -389,18 +386,21 @@ def run(
     [document.pop(k) for k in to_drop]
 
     if auto_doctor:
+        from papis.commands.doctor import fix_errors
+
         logger.info(
             "Running doctor auto-fixers on document: '%s'.",
             papis.document.describe(document),
         )
-        papis.commands.doctor.fix_errors(document)
+        fix_errors(document)
 
     from papis.api import save_doc
 
     save_doc(document)
 
     if git:
-        papis.git.add_and_commit_resource(
+        from papis.git import add_and_commit_resource
+        add_and_commit_resource(
             folder,
             info,
             f"Update information for '{papis.document.describe(document)}'",
@@ -513,16 +513,18 @@ def cli(
         get_matching_importers_by_name,
     )
 
+    known_key_types = papis.commands.doctor.get_key_type_check_keys()
     processed_documents = []
+
     for document in documents:
         ctx = Context()
 
         ctx.data.update(document)
         if to_set:
-            run_set(ctx.data, to_set, KEY_TYPES)
+            run_set(ctx.data, to_set, known_key_types)
 
         if to_append and success:
-            success = run_append(ctx.data, to_append, KEY_TYPES, batch)
+            success = run_append(ctx.data, to_append, known_key_types, batch)
 
         if to_remove and success:
             success = run_remove(ctx.data, to_remove, batch)
@@ -531,7 +533,7 @@ def cli(
             run_drop(ctx.data, to_drop)
 
         if to_rename:
-            success = run_rename(ctx.data, to_rename, batch)
+            success = run_rename(ctx.data, to_rename, known_key_types, batch)
 
         if success:
             logger.info("Updating %s.", papis.document.describe(document))

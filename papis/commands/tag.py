@@ -170,7 +170,7 @@ def cli(
             to_rename_tuples = [
                 ("tags", old_tag, new_tag) for old_tag, new_tag in to_rename
             ]
-            success = run_rename(ctx.data, to_rename_tuples, False)
+            success = run_rename(ctx.data, to_rename_tuples, key_types, False)
 
         if success:
             processed_documents.append((document, ctx.data))
