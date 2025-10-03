@@ -18,9 +18,7 @@ import papis.database
 import papis.document
 import papis.git
 import papis.logging
-import papis.pick
 import papis.strings
-import papis.utils
 from papis.exceptions import DocumentFolderNotFound
 
 logger = papis.logging.get_logger(__name__)

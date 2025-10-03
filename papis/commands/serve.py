@@ -14,12 +14,7 @@ import click
 import papis.api
 import papis.citations
 import papis.cli
-import papis.commands.add
-import papis.commands.doctor
-import papis.commands.export
-import papis.commands.update
 import papis.config
-import papis.crossref
 import papis.document
 import papis.logging
 import papis.notes
@@ -343,8 +338,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.redirect(back_url)
 
     def get_document_format(self, libname: str, query: str, fmt: str) -> None:
+        from papis.commands.export import run as export
+
         docs = papis.api.get_documents_in_lib(libname, query)
-        fmts = papis.commands.export.run(docs, fmt)
+        fmts = export(docs, fmt)
 
         self._ok()
         self._header_json()
@@ -463,9 +460,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 pass
             else:
                 result[key] = form.getvalue(key)
-        papis.commands.update.run(document=doc,
-                                  data=result,
-                                  git=USE_GIT)
+
+        from papis.commands.update import run as update
+        update(document=doc, data=result, git=USE_GIT)
         self._redirect_back()
 
     def serve_static(self, static_path: str, params: str) -> None:

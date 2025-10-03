@@ -63,15 +63,11 @@ Command-line interface
 
 import click
 
-import papis
 import papis.cli
 import papis.config
-import papis.database
 import papis.document
 import papis.logging
-import papis.pick
 import papis.strings
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -121,8 +117,10 @@ def run(document: papis.document.Document,
                + urllib.parse.urlencode(params))
 
     if browse:
+        from papis.utils import general_open
+
         logger.info("Opening URL '%s'.", url)
-        papis.utils.general_open(url, "browser", wait=False)
+        general_open(url, "browser", wait=False)
     else:
         click.echo(url)
 

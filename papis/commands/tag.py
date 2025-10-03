@@ -62,7 +62,6 @@ from typing import Any
 import click
 
 import papis.cli
-import papis.commands
 import papis.importer
 import papis.strings
 

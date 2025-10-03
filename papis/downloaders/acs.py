@@ -1,7 +1,6 @@
 import re
 from typing import Any, ClassVar
 
-import papis.document
 import papis.downloaders
 
 

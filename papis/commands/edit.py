@@ -12,18 +12,15 @@ Command-line interface
 
 import click
 
-import papis
 import papis.api
 import papis.cli
 import papis.config
 import papis.database
 import papis.document
-import papis.format
 import papis.git
 import papis.hooks
 import papis.logging
 import papis.notes
-import papis.pick
 import papis.strings
 import papis.utils
 from papis.exceptions import DocumentFolderNotFound

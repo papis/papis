@@ -76,7 +76,6 @@ import click
 import colorama
 
 import papis.cli
-import papis.commands
 import papis.config
 import papis.logging
 
@@ -143,9 +142,11 @@ def _get_option_safe(
                 "No default value for setting '%s' found in section '%s'.",
                 key, section)
     else:
+        from papis.exceptions import DefaultSettingValueMissing
+
         try:
             value = papis.config.get(key, section=section)
-        except papis.exceptions.DefaultSettingValueMissing as exc:
+        except DefaultSettingValueMissing as exc:
             logger.error("No value for setting '%s' found in section '%s'.",
                          key, section, exc_info=exc)
 
