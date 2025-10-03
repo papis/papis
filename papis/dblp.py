@@ -94,7 +94,7 @@ def search(
         (smaller than 1000).
     :param max_completions: maximum number of completions for the query
         string (considers prefix matching).
-    :param api: entpoint for the DBLP API to be used (one of ``"publ"``,
+    :param api: endpoint for the DBLP API to be used (one of ``"publ"``,
         ``"author"`` or ``"venue"``).
 
     :result: the query response in the requested format.

@@ -357,12 +357,10 @@ extend-exclude = [
 ]
 
 [tool.typos.default.extend-words]
-# TODO: remove these ones the deprecation period is done
-Formater = "Formater"
-Jinja2Formater = "Jinja2Formater"
-PythonFormater = "PythonFormater"
-get_formater = "get_formater"
+# NOTE: in docs
+formater = "formater"
 # NOTE: these appear in some queries and urls
 ACI = "ACI"
 ein = "ein"
 selv = "selv"
+Rin = "Rin"
