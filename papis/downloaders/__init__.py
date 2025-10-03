@@ -4,11 +4,8 @@ import tempfile
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-import papis.config
-import papis.document
 import papis.importer
 import papis.logging
-import papis.plugin
 import papis.utils
 
 if TYPE_CHECKING:

@@ -1,7 +1,6 @@
 import re
 from typing import Any
 
-import papis.document
 import papis.downloaders.base
 
 

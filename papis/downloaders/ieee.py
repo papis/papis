@@ -1,7 +1,6 @@
 import re
 
 import papis.downloaders.base
-import papis.utils
 
 
 class Downloader(papis.downloaders.Downloader):

@@ -63,14 +63,11 @@ from typing import Any
 import click
 
 import papis
-import papis.api
 import papis.cli
 import papis.commands.rm
 import papis.commands.update
-import papis.config
 import papis.database
 import papis.document
-import papis.format
 import papis.logging
 import papis.pick
 import papis.strings

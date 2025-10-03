@@ -4,7 +4,6 @@ from typing import Any, ClassVar
 
 import papis.document
 import papis.downloaders
-import papis.utils
 
 _K = papis.document.KeyConversionPair
 article_key_conversion = [

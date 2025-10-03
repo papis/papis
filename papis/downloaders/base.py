@@ -2,11 +2,6 @@ import re
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, TypedDict
 
-import papis.config
-import papis.document
-import papis.importer
-import papis.utils
-
 if TYPE_CHECKING:
     import bs4
 
@@ -105,11 +100,13 @@ def parse_meta_headers(soup: "bs4.BeautifulSoup") -> dict[str, Any]:
             value = elements[0].attrs.get("content")
             data[equiv["key"]] = str(value).replace("\r", "")
 
+    from papis.document import author_list_to_author
+
     # ensure that author and author_list are in sync
     author_list = parse_meta_authors(soup)
     if author_list:
         data["author_list"] = author_list
-        data["author"] = papis.document.author_list_to_author(data)
+        data["author"] = author_list_to_author(data)
 
     # convert firstpage / lastpage to pages
     firstpage = data.get("firstpage")
@@ -150,10 +147,12 @@ def parse_meta_authors(soup: "bs4.BeautifulSoup") -> list[dict[str, Any]]:
     else:
         authors_and_affs = ((a, None) for a in authors)
 
+    from papis.document import split_author_name
+
     # convert to papis author format
     author_list: list[dict[str, Any]] = []
     for author, aff in authors_and_affs:
-        fullname = papis.document.split_author_name(author.get("content"))
+        fullname = split_author_name(author.get("content"))
         affiliation = [{"name": aff.get("content")}] if aff else []
 
         author_list.append({

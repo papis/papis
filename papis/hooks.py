@@ -2,7 +2,6 @@ from collections.abc import Callable
 from typing import Any
 
 import papis.logging
-import papis.plugin
 
 logger = papis.logging.get_logger(__name__)
 

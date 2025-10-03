@@ -7,9 +7,7 @@ import papis.api
 import papis.config
 import papis.document
 import papis.format
-import papis.hooks
 import papis.logging
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 

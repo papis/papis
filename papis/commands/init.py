@@ -37,8 +37,8 @@ from typing import NamedTuple
 import click
 
 import papis.config
+import papis.git
 import papis.logging
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
