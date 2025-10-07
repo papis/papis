@@ -5,13 +5,13 @@ This module serves as an lightweight interface for ``git`` related functions.
 from collections.abc import Sequence
 
 import papis.logging
-from papis.utils import run
 
 logger = papis.logging.get_logger(__name__)
 
 
 def init(path: str) -> None:
     """Initialize a git repository at *path*."""
+    from papis.utils import run
 
     logger.info("Initializing git repository: '%s'.", path)
     run(["git", "init"], cwd=path)
@@ -23,6 +23,8 @@ def add(path: str, resource: str) -> None:
     :param path: a folder with an existing git repository.
     :param resource: a resource (e.g. ``info.yaml`` file) to add to the index.
     """
+    from papis.utils import run
+
     logger.info("Adding '%s'.", path)
     run(["git", "add", resource], cwd=path)
 
@@ -33,6 +35,8 @@ def commit(path: str, message: str) -> None:
     :param path: a folder with an existing git repository.
     :param message: a commit message.
     """
+    from papis.utils import run
+
     logger.info("Committing '%s' with message '%s'.", path, message)
     run(["git", "commit", "-m", message], cwd=path)
 
@@ -44,6 +48,8 @@ def mv(from_path: str, to_path: str) -> None:
     :param to_path: destination where *from_path* is moved. If this is in the
         same parent directory as *from_path*, it is a simple rename.
     """
+    from papis.utils import run
+
     logger.info("Moving '%s' to '%s'.", from_path, to_path)
     run(["git", "mv", from_path, to_path], cwd=from_path)
 
@@ -59,6 +65,8 @@ def remove(path: str, resource: str,
     :param force: if *True*, the removal is forced so any errors (e.g. file
         does not exist) are silently ignored.
     """
+    from papis.utils import run
+
     logger.info("Removing '%s'.", path)
 
     flag_rec = "-r" if recursive else ""

@@ -1,23 +1,24 @@
 """
-This module controls the notes for every papis document.
+This module controls the notes for every Papis document.
 """
 import os
+from typing import TYPE_CHECKING
 
-import papis.api
 import papis.config
-import papis.document
-import papis.format
 import papis.logging
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def has_notes(doc: papis.document.Document) -> bool:
+def has_notes(doc: "papis.document.Document") -> bool:
     """Checks if the document has notes."""
     return "notes" in doc
 
 
-def notes_path(doc: papis.document.Document) -> str:
+def notes_path(doc: "papis.document.Document") -> str:
     """Get the path to the notes file corresponding to *doc*.
 
     If the document does not have attached notes, a filename is constructed (using
@@ -26,19 +27,22 @@ def notes_path(doc: papis.document.Document) -> str:
     :returns: a absolute filename that corresponds to the attached notes for
         *doc* (this file does not necessarily exist).
     """
-    from papis.paths import normalize_path
-
     if not has_notes(doc):
-        notes_name = papis.format.format(
+        from papis.format import format
+        notes_name = format(
             papis.config.getformatpattern("notes-name"), doc,
             default="notes.tex")
+
+        from papis.paths import normalize_path
         doc["notes"] = normalize_path(notes_name)
-        papis.api.save_doc(doc)
+
+        from papis.api import save_doc
+        save_doc(doc)
 
     return os.path.join(doc.get_main_folder() or "", doc["notes"])
 
 
-def notes_path_ensured(doc: papis.document.Document) -> str:
+def notes_path_ensured(doc: "papis.document.Document") -> str:
     """Get the path to the notes file corresponding to *doc* or create it if
     it does not exist.
 
@@ -55,10 +59,12 @@ def notes_path_ensured(doc: papis.document.Document) -> str:
 
         template = ""
         if os.path.exists(templatepath):
+            from papis.format import FormatFailedError, format
+
             with open(templatepath, encoding="utf-8") as fd:
                 try:
-                    template = papis.format.format(fd.read(), doc)
-                except papis.format.FormatFailedError as exc:
+                    template = format(fd.read(), doc)
+                except FormatFailedError as exc:
                     logger.error("Failed to format notes template at '%s'.",
                                  templatepath, exc_info=exc)
 

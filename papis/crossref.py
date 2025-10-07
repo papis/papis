@@ -2,6 +2,7 @@ import re
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
+import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
@@ -135,7 +136,6 @@ def _crossref_link(entry: list[dict[str, str]]) -> str | None:
 
 @cache
 def _get_crossref_key_conversion() -> list["papis.document.KeyConversionPair"]:
-    from papis.config import getstring
     from papis.document import EmptyKeyConversion, KeyConversionPair
 
     # NOTE: fields checked against the official API format
@@ -169,7 +169,7 @@ def _get_crossref_key_conversion() -> list["papis.document.KeyConversionPair"]:
             "action": lambda p: re.sub(r"(-[^-])", r"-\1", p),
         }]),
         KeyConversionPair("link", [{
-            "key": str(getstring("doc-url-key-name")),
+            "key": str(papis.config.getstring("doc-url-key-name")),
             "action": lambda x: _crossref_link(x)  # noqa: PLW0108
         }]),
         KeyConversionPair("issued", [

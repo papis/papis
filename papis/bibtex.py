@@ -15,6 +15,7 @@ import papis.logging
 
 if TYPE_CHECKING:
     import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 

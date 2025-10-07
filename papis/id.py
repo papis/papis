@@ -1,9 +1,11 @@
 import hashlib
 import random
-from warnings import warn
+from typing import TYPE_CHECKING
 
 import papis.logging
-from papis.document import Document, DocumentLike
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -13,7 +15,8 @@ logger = papis.logging.get_logger(__name__)
 ID_KEY_NAME: str = "papis_id"
 
 
-def compute_an_id(doc: Document, separator: str | None = None) -> str:
+def compute_an_id(doc: "papis.document.Document",
+                  separator: str | None = None) -> str:
     """Make an ID for the input document *doc*.
 
     This is a non-deterministic function if *separator* is *None* (a random value
@@ -39,6 +42,8 @@ def compute_an_id(doc: Document, separator: str | None = None) -> str:
 
 def key_name() -> str:
     """Get Papis ID key name."""
+    from warnings import warn
+
     warn("This function is deprecated and will be removed in the next "
          "version of Papis (after 0.15). Use 'papis.id.ID_KEY_NAME' instead.",
          DeprecationWarning, stacklevel=2)
@@ -46,7 +51,9 @@ def key_name() -> str:
     return ID_KEY_NAME
 
 
-def has_id(doc: DocumentLike) -> bool:
+def has_id(doc: "papis.document.DocumentLike") -> bool:
+    from warnings import warn
+
     warn("This function is deprecated and will be removed in the next "
          "version of Papis (after 0.15). Check for the 'papis.id.ID_KEY_NAME' "
          "key directly in the document instead.",
@@ -55,7 +62,7 @@ def has_id(doc: DocumentLike) -> bool:
     return ID_KEY_NAME in doc
 
 
-def get(doc: DocumentLike) -> str:
+def get(doc: "papis.document.DocumentLike") -> str:
     """Get the Papis ID from *doc*.
 
     This function does additional checking on the ID and can raise an error if it
