@@ -139,7 +139,8 @@ def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     data.update(data.pop("metadata", {}))
     key_conversion = _get_zenodo_key_conversion()
 
-    return papis.document.keyconversion_to_data(key_conversion, data)
+    from papis.document import keyconversion_to_data
+    return keyconversion_to_data(key_conversion, data)
 
 
 def is_valid_record_id(record_id: str) -> bool:
@@ -153,17 +154,21 @@ def is_valid_record_id(record_id: str) -> bool:
     if not record_id.isdigit():
         return False
 
-    with papis.utils.get_session() as session:
+    from papis.utils import get_session
+    with get_session() as session:
         response = session.get(ZENODO_URL.format(record_id=record_id))
 
     return response.ok
 
 
 def _get_zenodo_response(record_id: str) -> str:
-    with papis.utils.get_session() as session:
+    from papis import PAPIS_USER_AGENT
+    from papis.utils import get_session
+
+    with get_session() as session:
         response = session.get(
             ZENODO_URL.format(record_id=record_id.strip()),
-            headers={"user-agent": papis.PAPIS_USER_AGENT},
+            headers={"user-agent": PAPIS_USER_AGENT},
         )
 
     return response.content.decode()

@@ -1,7 +1,5 @@
 """This module implements custom exceptions used to make the code more readable."""
 
-import papis.strings
-
 
 class DefaultSettingValueMissing(KeyError):
     """Exception raised when a configuration setting is missing and has no
@@ -25,4 +23,5 @@ class DocumentFolderNotFound(FileNotFoundError):
     """Exception raised when a document has no main folder."""
 
     def __init__(self, doc: str) -> None:
-        super().__init__(f"{papis.strings.no_folder_attached_to_document}: '{doc}'")
+        from papis.strings import no_folder_attached_to_document
+        super().__init__(f"{no_folder_attached_to_document}: '{doc}'")

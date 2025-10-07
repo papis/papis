@@ -212,10 +212,10 @@ class TemporaryConfiguration:
         #: a temporary library to run tests on. The library is unpopulated by default
         self.libdir: str = ""
         #: When entering the context manager, this will contain the config
-        #: directory used by papis.
+        #: directory used by Papis.
         self.configdir: str = ""
         #: When entering the context manager, this will contain the config
-        #: file used by papis.
+        #: file used by Papis.
         self.configfile: str = ""
 
         #: Prefix for the temporary directory created for the test.
@@ -361,8 +361,8 @@ class TemporaryLibrary(TemporaryConfiguration):
         super().__enter__()
 
         # initialize library
-        import papis.library
-        lib = papis.library.Library(self.libname, [self.libdir])
+        from papis.library import Library
+        lib = Library(self.libname, [self.libdir])
 
         import papis.config
         papis.config.set("default-library", self.libname)
@@ -444,7 +444,7 @@ class ResourceCache:
     """
 
     def __init__(self, cachedir: str) -> None:
-        import papis.utils
+        from papis.utils import get_session
 
         #: The location of the resource directory.
         self.cachedir = os.path.abspath(cachedir)
@@ -452,7 +452,7 @@ class ResourceCache:
             raise ValueError(f"Cache directory does not exist: {self.cachedir}")
 
         #: A :class:`requests.Session` used to download remote resources.
-        self.session = papis.utils.get_session()
+        self.session = get_session()
 
     def get_remote_resource(
             self, filename: str, url: str,
@@ -512,8 +512,6 @@ class ResourceCache:
 
         import yaml
 
-        import papis.yaml
-
         force = force or not os.path.exists(filename)
         if force or PAPIS_UPDATE_RESOURCES in {"local", "both"}:
             assert data is not None
@@ -538,7 +536,8 @@ class ResourceCache:
             if ext == ".json":
                 return json.load(f)
             elif ext in {".yml", ".yaml"}:
-                return papis.yaml.yaml_to_data(filename)
+                from papis.yaml import yaml_to_data
+                return yaml_to_data(filename)
             else:
                 raise ValueError(f"Unknown file extension: '{ext}'")
 

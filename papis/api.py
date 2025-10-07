@@ -6,12 +6,13 @@ create Papis scripts.
 """
 
 from collections.abc import Callable, Sequence
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import papis.config
-import papis.document
 import papis.logging
-import papis.utils
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -64,17 +65,17 @@ def get_libraries() -> list[str]:
 
 
 def pick_doc(
-        documents: Sequence[papis.document.Document],
-        ) -> Sequence[papis.document.Document]:
+        documents: Sequence["papis.document.Document"],
+        ) -> Sequence["papis.document.Document"]:
     """
     Pick a subset of documents from the given *documents*.
 
     :param documents: a sequence of documents.
     :returns: the subset of *documents* selected by the user.
     """
-    import papis.pick
+    from papis.pick import pick_doc as _pick_doc
 
-    return papis.pick.pick_doc(documents)
+    return _pick_doc(documents)
 
 
 def pick(items: Sequence[T],
@@ -90,7 +91,7 @@ def pick(items: Sequence[T],
     :param match_filter: a callable to stringify the given item for display.
     :returns: the subset of *items* selected by the user.
     """
-    import papis.pick
+    from papis.pick import pick as _pick
 
     if header_filter is None:
         header_filter = str
@@ -98,7 +99,7 @@ def pick(items: Sequence[T],
     if match_filter is None:
         match_filter = str
 
-    return papis.pick.pick(
+    return _pick(
         items,
         default_index=default_index,
         header_filter=header_filter,
@@ -113,7 +114,9 @@ def open_file(file_path: str, wait: bool = True) -> None:
     :param wait: if *True*, wait for the completion of the opener program
         before continuing execution (blocking behavior).
     """
-    papis.utils.open_file(file_path, wait=wait)
+
+    from papis.utils import open_file as _open_file
+    _open_file(file_path, wait=wait)
 
 
 def open_dir(dir_path: str, wait: bool = True) -> None:
@@ -124,7 +127,9 @@ def open_dir(dir_path: str, wait: bool = True) -> None:
     :param wait: if *True*, wait for the completion of the opener program
         before continuing execution (blocking behavior).
     """
-    papis.utils.general_open(dir_path, "file-browser", wait=wait)
+
+    from papis.utils import general_open
+    general_open(dir_path, "file-browser", wait=wait)
 
 
 def edit_file(file_path: str, wait: bool = True) -> None:
@@ -135,11 +140,13 @@ def edit_file(file_path: str, wait: bool = True) -> None:
     :param wait: if *True*, wait for the completion of the editor before
         continuing execution (blocking behavior).
     """
-    papis.utils.general_open(file_path, "editor", wait=wait)
+
+    from papis.utils import general_open
+    general_open(file_path, "editor", wait=wait)
 
 
 def get_all_documents_in_lib(
-        library: str | None = None) -> list[papis.document.Document]:
+        library: str | None = None) -> list["papis.document.Document"]:
     """
     Get *all* documents in the given library.
 
@@ -159,7 +166,7 @@ def get_all_documents_in_lib(
 
 def get_documents_in_dir(
         directory: str,
-        search: str = "") -> list[papis.document.Document]:
+        search: str = "") -> list["papis.document.Document"]:
     """
     Get documents contained in the given *directory*.
 
@@ -178,7 +185,7 @@ def get_documents_in_dir(
 
 def get_documents_in_lib(
         library: str | None = None,
-        search: dict[str, Any] | str = "") -> list[papis.document.Document]:
+        search: dict[str, Any] | str = "") -> list["papis.document.Document"]:
     """
     Get documents contained in the given *library*.
 
@@ -223,7 +230,7 @@ def doi_to_data(doi: str) -> dict[str, Any]:
     return papis.crossref.doi_to_data(doi)
 
 
-def save_doc(doc: papis.document.Document) -> None:
+def save_doc(doc: "papis.document.Document") -> None:
     """
     Save the document to disk.
 

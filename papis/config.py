@@ -591,7 +591,7 @@ def get_configuration() -> Configuration:
         CURRENT_CONFIGURATION = Configuration()
 
         # Handle local configuration file, and merge it if it exists
-        local_config_file = papis.config.get("local-config-file")
+        local_config_file = get("local-config-file")
         merge_configuration_from_path(local_config_file, CURRENT_CONFIGURATION)
 
     return CURRENT_CONFIGURATION

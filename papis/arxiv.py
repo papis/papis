@@ -26,6 +26,7 @@ import re
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
+import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
@@ -48,7 +49,6 @@ def _get_arxiv_key_conversions() -> list["papis.document.KeyConversionPair"]:
     # NOTE: keys match attributes of arxiv.Result
     #   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
 
-    from papis.config import getstring
     from papis.document import KeyConversionPair, split_authors_name
 
     return [
@@ -60,7 +60,7 @@ def _get_arxiv_key_conversions() -> list["papis.document.KeyConversionPair"]:
         KeyConversionPair("entry_id", [{"key": "url", "action": None}]),
         KeyConversionPair("journal_ref", [{"key": "journal", "action": None}]),
         KeyConversionPair("pdf_url", [{
-            "key": getstring("doc-url-key-name"),
+            "key": papis.config.getstring("doc-url-key-name"),
             "action": None
         }]),
         KeyConversionPair("published", [

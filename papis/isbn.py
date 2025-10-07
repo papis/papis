@@ -2,7 +2,6 @@
 from typing import Any
 
 import papis.config
-import papis.document
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -43,24 +42,28 @@ def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
     :param data: Dictionary with data
     :returns: Dictionary with Papis key names
     """
-    cls = papis.document.KeyConversionPair
+    from papis.document import (
+        KeyConversionPair,
+        keyconversion_to_data,
+        split_authors_name,
+    )
+
     key_conversion = [
-        cls("authors", [{
+        KeyConversionPair("authors", [{
             "key": "author_list",
-            "action": papis.document.split_authors_name
+            "action": split_authors_name
         }]),
-        cls("isbn-13", [
+        KeyConversionPair("isbn-13", [
             {"key": "isbn", "action": None},
             {"key": "isbn-13", "action": None},
         ]),
-        cls("language", [
+        KeyConversionPair("language", [
             {"key": "language", "action": lambda x: x if x else "en"}
         ])
         ]
 
     data = {k.lower(): data[k] for k in data}
-    result = papis.document.keyconversion_to_data(
-        key_conversion, data, keep_unknown_keys=True)
+    result = keyconversion_to_data(key_conversion, data, keep_unknown_keys=True)
 
     # NOTE: 'isbnlib' does not give a type at all, so we can't know if this is
     # a proceeding or any other book-like format. Also, 'isbnlib' always uses

@@ -2,13 +2,14 @@ import os
 import pathlib
 import sys
 from collections.abc import Iterable, Iterator
-from typing import Literal
-from warnings import warn
+from typing import TYPE_CHECKING, Literal
 
 import papis.config
 import papis.logging
-from papis.document import DocumentLike, from_data
-from papis.strings import AnyString, FormatPattern
+
+if TYPE_CHECKING:
+    import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -147,10 +148,10 @@ def symlink(src: PathLike, dst: PathLike) -> None:
 
 
 def get_document_file_name(
-        doc: DocumentLike,
+        doc: "papis.document.DocumentLike",
         orig_path: PathLike,
         suffix: str = "", *,
-        file_name_format: AnyString | Literal[False] | None = None,
+        file_name_format: "papis.strings.AnyString | Literal[False] | None" = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
@@ -185,10 +186,11 @@ def get_document_file_name(
         file_name_format = orig_path.name
 
     from papis.filetype import get_document_extension
+    from papis.format import format
 
     # get formatted file name
     ext = get_document_extension(str(orig_path))
-    file_name_base = papis.format.format(file_name_format, doc, default="")
+    file_name_base = format(file_name_format, doc, default="")
 
     # ensure the file name is valid and within limits
     file_name_base = normalize_path(file_name_base)
@@ -211,22 +213,27 @@ def get_document_file_name(
 
 
 def get_document_hash_folder(
-        doc: DocumentLike,
+        doc: "papis.document.DocumentLike",
         paths: Iterable[str] | None = None, *,
         file_read_limit: int = 2000,
         seed: str | None = None) -> str:
+    from warnings import warn
+
     warn("'get_document_hash_folder' is deprecated and will be removed. "
          "Use 'papis.paths.get_document_folder' instead.",
          DeprecationWarning, stacklevel=2)
 
+    from papis.document import from_data
+    doc = from_data(doc)
+
     from papis.id import compute_an_id
-    return compute_an_id(from_data(dict(doc)), seed)
+    return compute_an_id(doc, seed)
 
 
 def get_document_folder(
-        doc: DocumentLike,
+        doc: "papis.document.DocumentLike",
         dirname: PathLike, *,
-        folder_name_format: AnyString | None = None) -> str:
+        folder_name_format: "papis.strings.AnyString | None" = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
@@ -251,6 +258,7 @@ def get_document_folder(
         except ValueError:
             folder_name_format = None
 
+    from papis.strings import FormatPattern
     if isinstance(folder_name_format, str):
         folder_name_format = FormatPattern(None, folder_name_format)
 
@@ -264,15 +272,17 @@ def get_document_folder(
         # could contain a backslash and ruin the hierarchy -- instead we clean it
         # and remove any such characters from messing up the folder name
 
+        from papis.format import FormatFailedError, format
+
         components: list[str] = []
         while tmp_path != dirname and is_relative_to(tmp_path, dirname):
             tmp_component = os.path.basename(tmp_path)
 
             try:
-                tmp_component = papis.format.format(
+                tmp_component = format(
                     FormatPattern(folder_name_format.formatter, tmp_component),
                     doc)
-            except papis.format.FormatFailedError as exc:
+            except FormatFailedError as exc:
                 logger.error("Could not format path for document.", exc_info=exc)
                 components.clear()
                 break
@@ -331,9 +341,9 @@ def _make_unique_file(filename: PathLike) -> str:
 
 
 def get_document_unique_folder(
-        doc: DocumentLike,
+        doc: "papis.document.DocumentLike",
         dirname: PathLike, *,
-        folder_name_format: AnyString | None = None) -> str:
+        folder_name_format: "papis.strings.AnyString | None" = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
 
@@ -375,10 +385,10 @@ def download_remote_files(in_document_paths: Iterable[str]) -> list[str | None]:
 
 
 def rename_document_files(
-        doc: DocumentLike,
+        doc: "papis.document.DocumentLike",
         in_document_paths: Iterable[str], *,
         allow_remote: bool | None = None,
-        file_name_format: AnyString | Literal[False] | None = None,
+        file_name_format: "papis.strings.AnyString | Literal[False] | None" = None,
         ) -> list[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.
@@ -401,6 +411,8 @@ def rename_document_files(
             file_name_format = papis.config.getformatpattern("add-file-name")
         except ValueError:
             file_name_format = None
+
+    from warnings import warn
 
     if allow_remote is not None:
         warn("The argument `allow_remote` to `rename_document_files` is deprecated "

@@ -1,10 +1,12 @@
 import re
-from typing import Any, ClassVar, NamedTuple, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, NamedTuple, Protocol
 
 import papis.config
-import papis.document
 import papis.logging
 from papis.strings import AnyString, FormatPattern
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -39,7 +41,7 @@ class MatcherCallable(Protocol):
     """
 
     def __call__(self,
-                 document: papis.document.Document,
+                 document: "papis.document.Document",
                  search: re.Pattern[str],
                  match_format: AnyString | None = None,
                  doc_key: str | None = None,
@@ -94,12 +96,12 @@ class DocMatcher:
     @classmethod
     def return_if_match(
             cls,
-            doc: papis.document.Document) -> papis.document.Document | None:
+            doc: "papis.document.Document") -> "papis.document.Document" | None:
         """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
 
-            >>> import papis.document
+            >>> from papis.document import from_data
             >>> from papis.database.cache import match_document
-            >>> doc = papis.document.from_data({'title': 'einstein'})
+            >>> doc = from_data({'title': 'einstein'})
             >>> DocMatcher.set_matcher(match_document)
             >>> result = DocMatcher.parse('einste')
             >>> DocMatcher.return_if_match(doc) is not None
