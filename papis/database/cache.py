@@ -1,18 +1,21 @@
 import os
 import re
+from typing import TYPE_CHECKING
 
 import papis.config
 import papis.logging
-from papis.database.base import Database as DatabaseBase, get_cache_file_path
-from papis.document import Document, describe
-from papis.exceptions import DocumentFolderNotFound
-from papis.library import Library
-from papis.strings import AnyString
+from papis.database.base import Database, get_cache_file_path
+
+if TYPE_CHECKING:
+    import papis.document
+    import papis.library
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
 
-def filter_documents(documents: list[Document], search: str = "") -> list[Document]:
+def filter_documents(documents: list["papis.document.Document"],
+                     search: str = "") -> list["papis.document.Document"]:
     """Filter documents based on the *search* string.
 
     :param search: a search string that will be parsed by
@@ -59,9 +62,9 @@ def filter_documents(documents: list[Document], search: str = "") -> list[Docume
 
 
 def match_document(
-        document: Document,
+        document: "papis.document.Document",
         search: re.Pattern[str],
-        match_format: AnyString | None = None,
+        match_format: "papis.strings.AnyString" | None = None,
         doc_key: str | None = None) -> re.Match[str] | None:
     """Match a document's keys to a given search pattern.
 
@@ -87,14 +90,14 @@ def match_document(
     return search.match(match_string)
 
 
-class Database(DatabaseBase):
+class PickleDatabase(Database):
     """A caching database backend for Papis based on :mod:`pickle`."""
 
-    def __init__(self, library: Library | None = None) -> None:
+    def __init__(self, library: "papis.library.Library | None" = None) -> None:
         super().__init__(library)
 
         self.use_cache = papis.config.getboolean("use-cache")
-        self.documents: list[Document] | None = None
+        self.documents: list[papis.document.Document] | None = None
         self.initialize()
 
     def get_backend_name(self) -> str:  # noqa: PLR6301
@@ -121,7 +124,7 @@ class Database(DatabaseBase):
             self.documents.clear()
             self.documents = None
 
-    def add(self, document: Document) -> None:
+    def add(self, document: "papis.document.Document") -> None:
         if not self.use_cache:
             return
 
@@ -132,6 +135,7 @@ class Database(DatabaseBase):
         if not os.path.exists(folder):
             raise ValueError(f"Document folder '{folder}' does not exist")
 
+        from papis.document import describe
         logger.debug("Adding document: '%s'.", describe(document))
         docs = self._get_documents()
 
@@ -140,37 +144,41 @@ class Database(DatabaseBase):
 
         self._save_documents()
 
-    def update(self, document: Document) -> None:
+    def update(self, document: "papis.document.Document") -> None:
         if not self.use_cache:
             return
 
+        from papis.document import describe
         logger.debug("Updating document: '%s'.", describe(document))
 
         docs = self._get_documents()
         result = self._locate_document(document)
         if not result:
+            from papis.exceptions import DocumentFolderNotFound
             raise DocumentFolderNotFound(describe(document))
 
         index, _ = result[0]
         docs[index] = document
         self._save_documents()
 
-    def delete(self, document: Document) -> None:
+    def delete(self, document: "papis.document.Document") -> None:
         if not self.use_cache:
             return
 
+        from papis.document import describe
         logger.debug("Deleting document: '%s'.", describe(document))
 
         docs = self._get_documents()
         result = self._locate_document(document)
         if not result:
+            from papis.exceptions import DocumentFolderNotFound
             raise DocumentFolderNotFound(describe(document))
 
         index, _ = result[0]
         docs.pop(index)
         self._save_documents()
 
-    def query(self, query_string: str) -> list[Document]:
+    def query(self, query_string: str) -> list["papis.document.Document"]:
         logger.debug("Querying database for '%s'.", query_string)
 
         docs = self._get_documents()
@@ -179,14 +187,14 @@ class Database(DatabaseBase):
 
         return filter_documents(docs, query_string)
 
-    def query_dict(self, query: dict[str, str]) -> list[Document]:
+    def query_dict(self, query: dict[str, str]) -> list["papis.document.Document"]:
         query_string = " ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> list[Document]:
+    def get_all_documents(self) -> list["papis.document.Document"]:
         return self._get_documents()
 
-    def _get_documents(self) -> list[Document]:
+    def _get_documents(self) -> list["papis.document.Document"]:
         if self.documents is not None:
             return self.documents
 
@@ -230,7 +238,9 @@ class Database(DatabaseBase):
     def _get_cache_file_path(self) -> str:
         return get_cache_file_path(self.lib.path_format())
 
-    def _locate_document(self, document: Document) -> list[tuple[int, Document]]:
+    def _locate_document(self,
+                         document: "papis.document.Document"
+                         ) -> list[tuple[int, "papis.document.Document"]]:
         from papis.id import ID_KEY_NAME
 
         # FIXME: Why are we iterating twice over the documents here?
@@ -251,6 +261,7 @@ class Database(DatabaseBase):
             return result
 
         # otherwise, we error
+        from papis.document import describe
         raise ValueError(
             f"Document could not be found in the library '{self.lib.name}': "
             f"'{describe(document)}'")

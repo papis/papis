@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 from papis.isbn import ISBN_SERVICE_NAMES, get_data
@@ -33,8 +32,9 @@ def cli(ctx: click.core.Context, query: str, service: str) -> None:
 
     logger.info("Looking up ISBN documents...")
 
+    from papis.document import from_data
     data = get_data(query=query, service=service)
-    docs = [papis.document.from_data(data=d) for d in data]
+    docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
     logger.info("Found %d documents.", len(docs))

@@ -3,8 +3,8 @@ import os
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-import papis.downloaders
-from papis.downloaders.usenix import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.usenix import USENIXDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 USENIX_LINK_URLS = [
@@ -26,10 +26,10 @@ def test_usenix_match() -> None:
         )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(USENIXDownloader.match(url), USENIXDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert USENIXDownloader.match(url) is None
 
 
 @pytest.mark.parametrize("url", USENIX_LINK_URLS)
@@ -37,12 +37,12 @@ def test_usenix_fetch(tmp_config: TemporaryConfiguration,
                       resource_cache: ResourceCache,
                       monkeypatch: MonkeyPatch,
                       url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("usenix")
-    assert cls is Downloader
+    cls = get_downloader_by_name("usenix")
+    assert cls is USENIXDownloader
 
     down = cls.match(url)
     assert down is not None
-    assert isinstance(down, Downloader)
+    assert isinstance(down, USENIXDownloader)
 
     uid = os.path.basename(url)
     infile = f"USENIX_{uid}.html"

@@ -1,9 +1,9 @@
 import re
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class AIPDownloader(Downloader):
     """Retrieve documents from `AIP Publishing <https://pubs.aip.org>`__"""
 
     def __init__(self, url: str) -> None:
@@ -13,10 +13,10 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         # https://aip.scitation.org/doi/10.1063/1.4873138
         if re.match(r".*(aip|aapt)\.scitation\.org.*", url):
-            return Downloader(url)
+            return AIPDownloader(url)
         else:
             return None
 

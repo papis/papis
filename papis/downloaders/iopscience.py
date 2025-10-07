@@ -1,10 +1,10 @@
 import re
 from typing import ClassVar
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class IOPscienceDownloader(Downloader):
     """Retrieve documents from `IOPscience <https://iopscience.iop.org>`__"""
 
     DOCUMENT_URL: ClassVar[str] = (
@@ -25,10 +25,10 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         url = url.replace("/pdf", "")
         if re.match(r".*iopscience\.iop\.org.*", url):
-            return Downloader(url)
+            return IOPscienceDownloader(url)
         else:
             return None
 

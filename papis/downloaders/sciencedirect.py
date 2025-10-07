@@ -1,9 +1,7 @@
 import re
 from typing import Any
 
-import papis.document
-import papis.downloaders
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 # a list of ScienceDirect tags that we consider to be text in _parse_full_abstract
 KNOWN_TEXT = {"inf", "__text__", "simple-para"}
@@ -85,7 +83,7 @@ def _parse_full_abstract(data: list[dict[str, Any]]) -> str:
     return ""
 
 
-class Downloader(papis.downloaders.Downloader):
+class ScienceDirectDownloader(Downloader):
     """Retrieve documents from `ScienceDirect <https://www.sciencedirect.com>`__"""
 
     def __init__(self, url: str) -> None:
@@ -95,9 +93,9 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         if re.match(r".*\.sciencedirect\.com.*", url):
-            return Downloader(url)
+            return ScienceDirectDownloader(url)
         else:
             return None
 
@@ -113,12 +111,14 @@ class Downloader(papis.downloaders.Downloader):
             import json
             rawdata = json.loads(scripts[0].text)
 
+            from papis.document import author_list_to_author
             data["author_list"] = _parse_author_list(rawdata["authors"]["content"][0])
-            data["author"] = papis.document.author_list_to_author(data)
+            data["author"] = author_list_to_author(data)
 
         # get main citation data
         # NOTE: this is second because the data is likely more accurate
-        data.update(papis.downloaders.base.parse_meta_headers(soup))
+        from papis.downloaders.base import parse_meta_headers
+        data.update(parse_meta_headers(soup))
         data["url"] = self.uri
 
         # get full abstract

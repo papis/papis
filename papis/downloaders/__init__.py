@@ -4,9 +4,8 @@ import tempfile
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-import papis.importer
 import papis.logging
-import papis.utils
+from papis.importer import Context, Importer, cache
 
 if TYPE_CHECKING:
     import bs4
@@ -17,7 +16,7 @@ logger = papis.logging.get_logger(__name__)
 DOWNLOADERS_EXTENSION_NAME = "papis.downloader"
 
 
-class Importer(papis.importer.Importer):
+class WebImporter(Importer):
     """Importer that tries to get data and files from implemented downloaders.
 
     This importer simply calls :func:`get_info_from_url` on the given URI.
@@ -27,14 +26,14 @@ class Importer(papis.importer.Importer):
         super().__init__(uri=uri, name="url")
 
     @classmethod
-    def match(cls, uri: str) -> papis.importer.Importer | None:
+    def match(cls, uri: str) -> Importer | None:
         return (
-            Importer(uri=uri)
+            WebImporter(uri=uri)
             if re.match(r" *http(s)?.*", uri) is not None
             else None
         )
 
-    @papis.importer.cache
+    @cache
     def fetch(self) -> None:
         self.logger.info("Attempting to import from URL '%s'.", self.uri)
         self.ctx = get_info_from_url(self.uri)
@@ -46,7 +45,7 @@ class Importer(papis.importer.Importer):
         self.fetch()
 
 
-class Downloader(papis.importer.Importer):
+class Downloader(Importer):
     """A base class for downloader instances implementing common functionality.
 
     In general, downloaders are expected to implement a subset of the methods
@@ -72,7 +71,7 @@ class Downloader(papis.importer.Importer):
     def __init__(self,
                  uri: str = "",
                  name: str = "",
-                 ctx: papis.importer.Context | None = None,
+                 ctx: Context | None = None,
                  expected_document_extension: str | Sequence[str] | None = None,
                  cookies: dict[str, str] | None = None,
                  priority: int = 1,
@@ -89,10 +88,12 @@ class Downloader(papis.importer.Importer):
         super().__init__(uri=uri, name=name, ctx=ctx)
         self.logger = papis.logging.get_logger(f"papis.downloader.{self.name}")
 
+        from papis.utils import get_session
+
         self.expected_document_extensions = expected_document_extension
         self.priority = priority
         self.cookies = cookies
-        self.session = papis.utils.get_session()
+        self.session = get_session()
 
         # NOTE: used to cache data
         self._soup: bs4.BeautifulSoup | None = None
@@ -126,7 +127,7 @@ class Downloader(papis.importer.Importer):
             f"Matching URI not implemented for '{cls.__module__}.{cls.__name__}'"
             )
 
-    @papis.importer.cache
+    @cache
     def fetch(self) -> None:
         """Fetch metadata and files for the given :attr:`~papis.importer.Importer.uri`.
 
@@ -171,8 +172,9 @@ class Downloader(papis.importer.Importer):
         else:
             bib_rawdata = self.get_bibtex_data()
             if bib_rawdata:
-                import papis.bibtex
-                datalist = papis.bibtex.bibtex_to_dict(bib_rawdata)
+                from papis.bibtex import bibtex_to_dict
+
+                datalist = bibtex_to_dict(bib_rawdata)
                 if datalist:
                     if len(datalist) > 1:
                         self.logger.warning(
@@ -432,7 +434,7 @@ def get_downloader_by_name(name: str) -> type[Downloader]:
 def get_info_from_url(
         url: str,
         expected_doc_format: str | None = None
-        ) -> papis.importer.Context:
+        ) -> Context:
     """Get information directly from the given *url*.
 
     :param url: the URL of a resource.
@@ -443,7 +445,7 @@ def get_info_from_url(
     downloaders = get_matching_downloaders(url)
     if not downloaders:
         logger.warning("No matching downloader found for '%s'.", url)
-        return papis.importer.Context()
+        return Context()
 
     logger.debug("Found %d matching downloaders.", len(downloaders))
 
@@ -519,8 +521,10 @@ def download_document(
     if cookies is None:
         cookies = {}
 
+    from papis.utils import get_session
+
     try:
-        with papis.utils.get_session() as session:
+        with get_session() as session:
             response = session.get(url, cookies=cookies, allow_redirects=True)
     except Exception as exc:
         logger.error("Failed to fetch '%s'.", url, exc_info=exc)

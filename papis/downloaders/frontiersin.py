@@ -1,9 +1,9 @@
 import re
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class FrontiersDownloader(Downloader):
     """Retrieve documents from `Frontiers <https://www.frontiersin.org>`__"""
 
     def __init__(self, url: str) -> None:
@@ -14,9 +14,9 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         if re.match(r".*frontiersin.org.*", url):
-            return Downloader(url)
+            return FrontiersDownloader(url)
         else:
             return None
 

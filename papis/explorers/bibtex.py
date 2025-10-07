@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 
@@ -21,10 +20,9 @@ def cli(ctx: click.Context, bibfile: str) -> None:
     logger.info("Reading BibTeX file '%s'...", bibfile)
 
     from papis.bibtex import bibtex_to_dict
+    from papis.document import from_data
 
-    docs = [
-        papis.document.from_data(d)
-        for d in bibtex_to_dict(bibfile)]
+    docs = [from_data(d) for d in bibtex_to_dict(bibfile)]
     ctx.obj["documents"] += docs
 
     logger.info("Found %d documents.", len(docs))

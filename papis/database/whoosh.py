@@ -39,16 +39,15 @@ from typing import TYPE_CHECKING
 
 import papis.config
 import papis.logging
-from papis.database.base import Database as DatabaseBase, get_cache_file_name
-from papis.document import Document, describe, from_folder
-from papis.exceptions import DocumentFolderNotFound
-from papis.id import ID_KEY_NAME
-from papis.library import Library
+from papis.database.base import Database, get_cache_file_name
 
 if TYPE_CHECKING:
     from whoosh.fields import FieldType, Schema
     from whoosh.index import Index
     from whoosh.writing import IndexWriter
+
+    import papis.document
+    import papis.library
 
 logger = papis.logging.get_logger(__name__)
 
@@ -56,8 +55,8 @@ logger = papis.logging.get_logger(__name__)
 WHOOSH_FOLDER_FIELD = "papis-folder"
 
 
-class Database(DatabaseBase):
-    def __init__(self, library: Library | None = None) -> None:
+class WhooshDatabase(Database):
+    def __init__(self, library: "papis.library.Library | None" = None) -> None:
         super().__init__(library)
 
         from papis.utils import get_cache_home
@@ -109,8 +108,10 @@ class Database(DatabaseBase):
             logger.warning("Clearing the database at '%s'...", self.get_cache_path())
             shutil.rmtree(self.index_dir)
 
-    def add(self, document: Document) -> None:
+    def add(self, document: "papis.document.Document") -> None:
+        from papis.document import describe
         logger.debug("Adding document: '%s'.", describe(document))
+
         schema_keys = self._get_schema_init_fields().keys()
         index = self._get_index()
         writer = index.writer()
@@ -118,19 +119,22 @@ class Database(DatabaseBase):
         self._add_document_with_writer(document, writer, schema_keys)
         writer.commit()
 
-    def update(self, document: Document) -> None:
+    def update(self, document: "papis.document.Document") -> None:
         self.delete(document)
         self.add(document)
 
-    def delete(self, document: Document) -> None:
+    def delete(self, document: "papis.document.Document") -> None:
+        from papis.document import describe
         logger.debug("Deleting document: '%s'.", describe(document))
+
         index = self._get_index()
         writer = index.writer()
 
+        from papis.id import ID_KEY_NAME
         writer.delete_by_term(ID_KEY_NAME, document[ID_KEY_NAME])
         writer.commit()
 
-    def query(self, query_string: str) -> list[Document]:
+    def query(self, query_string: str) -> list["papis.document.Document"]:
         logger.debug("Querying database for '%s'.", query_string)
 
         import time
@@ -140,6 +144,8 @@ class Database(DatabaseBase):
         index = self._get_index()
         qp = MultifieldParser(["title", "author", "tags"], schema=index.schema)
         qp.add_plugin(FuzzyTermPlugin())
+
+        from papis.document import from_folder
 
         t_start = time.time()
         query = qp.parse(query_string)
@@ -152,11 +158,11 @@ class Database(DatabaseBase):
 
         return documents
 
-    def query_dict(self, query: dict[str, str]) -> list[Document]:
+    def query_dict(self, query: dict[str, str]) -> list["papis.document.Document"]:
         query_string = " AND ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> list[Document]:
+    def get_all_documents(self) -> list["papis.document.Document"]:
         return self.query(self.get_all_query_string())
 
     def _create_index(self) -> None:
@@ -178,7 +184,7 @@ class Database(DatabaseBase):
         return bool(exists_in(self.index_dir))
 
     def _add_document_with_writer(self,
-                                  document: Document,
+                                  document: "papis.document.Document",
                                   writer: "IndexWriter",
                                   schema_keys: KeysView[str]) -> None:
         """Helper function that adds a document document (without committing).
@@ -191,8 +197,10 @@ class Database(DatabaseBase):
         # anything else, otherwise get `WHOOSH_FOLDER_FIELD` in your info.yaml
         self.maybe_compute_id(document)
 
+        from papis.document import describe
         folder = document.get_main_folder()
         if not folder:
+            from papis.exceptions import DocumentFolderNotFound
             raise DocumentFolderNotFound(describe(document))
 
         doc_schema = {
@@ -249,6 +257,7 @@ class Database(DatabaseBase):
         user_prototype = eval(papis.config.getstring("whoosh-schema-prototype"))
 
         # add default fields that should always be in the database
+        from papis.id import ID_KEY_NAME
         fields = {
             ID_KEY_NAME: ID(stored=True, unique=True),
             WHOOSH_FOLDER_FIELD: TEXT(stored=True)

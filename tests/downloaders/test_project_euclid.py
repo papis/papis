@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.projecteuclid import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.projecteuclid import ProjectEuclidDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 PROJECT_EUCLID_URLS = (
@@ -21,8 +21,8 @@ def test_project_euclid_fetch(tmp_config: TemporaryConfiguration,
                               resource_cache: ResourceCache,
                               monkeypatch: pytest.MonkeyPatch,
                               url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("projecteuclid")
-    assert cls is Downloader
+    cls = get_downloader_by_name("projecteuclid")
+    assert cls is ProjectEuclidDownloader
 
     down = cls.match(url)
     assert down is not None

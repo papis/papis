@@ -1,9 +1,9 @@
 import re
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class TheseFrDownloader(Downloader):
     """Retrieve documents from `theses.fr <https://theses.fr/en/>`__
 
     API Documentation: https://api.gouv.fr/documentation/scanR
@@ -13,13 +13,13 @@ class Downloader(papis.downloaders.Downloader):
         super().__init__(url, name="thesesfr", expected_document_extension="pdf")
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         # ID format ("nnt" in french). Not specified in the docs, but it's
         # the pattern that all the published theses until now follow.
         # https://documentation.abes.fr/aidetheses/thesesfr/index.html
         if re.match(r"(?:https?://(:?www\.)?theses\.fr/)?(\d{4}[A-Z]{3,5}\d{3,5})",
                     url):
-            return Downloader(url)
+            return TheseFrDownloader(url)
         else:
             return None
 

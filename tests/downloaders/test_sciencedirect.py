@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.sciencedirect import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.sciencedirect import ScienceDirectDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 SCIENCE_DIRECT_URLS = (
@@ -24,10 +24,10 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
         }
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(ScienceDirectDownloader.match(url), ScienceDirectDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert ScienceDirectDownloader.match(url) is None
 
 
 @pytest.mark.skip(reason="sciencedirect.com disallows web scraping")
@@ -36,8 +36,8 @@ def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,
                              monkeypatch: pytest.MonkeyPatch,
                              url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("sciencedirect")
-    assert cls is Downloader
+    cls = get_downloader_by_name("sciencedirect")
+    assert cls is ScienceDirectDownloader
 
     down = cls.match(url)
     assert down is not None

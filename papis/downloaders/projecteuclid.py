@@ -1,9 +1,10 @@
 import re
 
-import papis.downloaders.fallback
+from papis.downloaders import Downloader
+from papis.downloaders.fallback import FallbackDownloader
 
 
-class Downloader(papis.downloaders.fallback.Downloader):
+class ProjectEuclidDownloader(FallbackDownloader):
     """Retrieve documents from `Project Euclid <https://projecteuclid.org>`__"""
 
     _BIBTEX_URL = "https://projecteuclid.org/citation/download/citation-{}.bib"
@@ -16,9 +17,9 @@ class Downloader(papis.downloaders.fallback.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> "Downloader | None":
+    def match(cls, url: str) -> Downloader | None:
         if re.match(r".*projecteuclid\.org.*", url):
-            return Downloader(url)
+            return ProjectEuclidDownloader(url)
         else:
             return None
 

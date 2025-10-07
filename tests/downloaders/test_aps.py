@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.aps import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.aps import APSDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 APS_URLS = (
@@ -18,8 +18,8 @@ def test_aps_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("aps")
-    assert cls is Downloader
+    cls = get_downloader_by_name("aps")
+    assert cls is APSDownloader
 
     down = cls.match(url)
     assert down is not None

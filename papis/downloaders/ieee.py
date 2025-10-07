@@ -1,23 +1,25 @@
 import re
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class IEEEDownloader(Downloader):
     """Retrieve documents from `IEEE Xplore <https://ieeexplore.ieee.org>`__"""
 
     def __init__(self, url: str) -> None:
         super().__init__(url, name="ieee", expected_document_extension="pdf")
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         m = re.match(r"^ieee:(.*)", url, re.IGNORECASE)
         if m:
             url = f"https://ieeexplore.ieee.org/document/{m.group(1)}"
-            return Downloader(url)
+            return IEEEDownloader(url)
+
         if re.match(r".*ieee.org.*", url):
             url = re.sub(r"\.pdf.*$", "", url)
-            return Downloader(url)
+            return IEEEDownloader(url)
+
         else:
             return None
 
@@ -27,8 +29,7 @@ class Downloader(papis.downloaders.Downloader):
 
     def _get_bibtex_url(self) -> tuple[str, dict[str, str]]:
         identifier = self.get_identifier()
-        bibtex_url = \
-            "https://ieeexplore.ieee.org/xpl/downloadCitations?reload=true"
+        bibtex_url = "https://ieeexplore.ieee.org/xpl/downloadCitations?reload=true"
         data = {
             "recordIds": identifier,
             "citations-format": "citation-and-abstract",

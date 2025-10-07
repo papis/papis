@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urlparse
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
 def get_usenix_identifier(url: str) -> str | None:
@@ -20,7 +20,7 @@ def get_usenix_identifier(url: str) -> str | None:
     return f"{path_components[2]}-{path_components[4]}"
 
 
-class Downloader(papis.downloaders.Downloader):
+class USENIXDownloader(Downloader):
     """Retrieve documents from `USENIX <https://www.usenix.org>`__"""
 
     BIBTEX_URL_RE = re.compile(r"/biblio/export/bibtex/([0-9]+)$")
@@ -34,9 +34,9 @@ class Downloader(papis.downloaders.Downloader):
         self.identifier = get_usenix_identifier(url)
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         if re.match(r".*usenix.org/.*", url):
-            return cls(url)
+            return USENIXDownloader(url)
         else:
             return None
 

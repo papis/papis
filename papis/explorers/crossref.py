@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.crossref import (
     CROSSREF_FILTER_NAMES,
@@ -77,6 +76,7 @@ def cli(ctx: click.Context,
 
     logger.info("Looking up Crossref documents...")
 
+    from papis.document import from_data
     data = get_data(
         query=query,
         author=author,
@@ -85,7 +85,7 @@ def cli(ctx: click.Context,
         filters=dict(filters),
         sort=sort,
         order=order)
-    docs = [papis.document.from_data(data=d) for d in data]
+    docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
     logger.info("Found %s documents.", len(docs))

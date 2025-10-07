@@ -1,10 +1,11 @@
 import re
 from typing import Any, ClassVar
 
-import papis.downloaders.fallback
+from papis.downloaders import Downloader
+from papis.downloaders.fallback import FallbackDownloader
 
 
-class Downloader(papis.downloaders.fallback.Downloader):
+class HALDownloader(FallbackDownloader):
     """Retrieve documents from the `HAL <https://hal.science>`__ family of websites"""
 
     # NOTE: this only advertises subdomains maintained by CCSD
@@ -33,14 +34,14 @@ class Downloader(papis.downloaders.fallback.Downloader):
 
     @classmethod
     def match(
-            cls, url: str) -> papis.downloaders.fallback.Downloader | None:
+            cls, url: str) -> Downloader | None:
         subdomains = "|".join(cls.SUPPORTED_ARCHIVES_OUVERTES_SUBDOMAINS)
         if re.match(fr".*({subdomains})\.archives-ouvertes\.fr.*", url):
-            return Downloader(url)
+            return HALDownloader(url)
 
         subdomains = r"|".join(cls.SUPPORTED_HAL_SCIENCE_SUBDOMAINS)
         if re.match(fr".*//({subdomains})\.science.*", url):
-            return Downloader(url)
+            return HALDownloader(url)
 
         return None
 

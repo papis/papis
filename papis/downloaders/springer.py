@@ -1,10 +1,10 @@
 import re
 from typing import Any, ClassVar
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class SpringerLinkDownloader(Downloader):
     """Retrieve documents from `SpringerLink <https://link.springer.com>`__"""
 
     DOCUMENT_URL: ClassVar[str] = (
@@ -24,12 +24,15 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        return Downloader(url) if re.match(r".*link\.springer.com.*", url) else None
+    def match(cls, url: str) -> Downloader | None:
+        return (
+                SpringerLinkDownloader(url)
+                if re.match(r".*link\.springer.com.*", url) else None)
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
         soup = self._get_soup()
-        data = papis.downloaders.base.parse_meta_headers(soup)
+        data = parse_meta_headers(soup)
 
         if "publication_date" in data:
             dates = data["publication_date"].split("/")

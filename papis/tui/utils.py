@@ -1,10 +1,11 @@
 import re
 from collections.abc import Callable, Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
-from papis.api import T
+if TYPE_CHECKING:
+    from papis.api import T
 
 # Highlighting style used by pygments. This is a copy of the prompt_toolkit
 # default style, but changed to use ansi colors.
@@ -158,7 +159,7 @@ def prompt(
     return result or default
 
 
-def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
+def progress_bar(iterable: Iterable["T"]) -> Iterable["T"]:
     from prompt_toolkit.shortcuts import ProgressBar
     from prompt_toolkit.shortcuts.progress_bar import formatters
     from prompt_toolkit.styles import Style

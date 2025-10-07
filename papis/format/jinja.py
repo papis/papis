@@ -1,8 +1,10 @@
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import papis.logging
-from papis.document import Document, DocumentLike, describe, from_data
 from papis.format import FormatFailedError, Formatter, unescape
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -80,12 +82,14 @@ class Jinja2Formatter(Formatter):
 
     def format(self,
                fmt: str,
-               doc: DocumentLike,
+               doc: "papis.document.DocumentLike",
                doc_key: str = "",
                additional: dict[str, Any] | None = None,
                default: str | None = None) -> str:
         if additional is None:
             additional = {}
+
+        from papis.document import Document, describe, from_data
 
         fmt = unescape(fmt)
         if not isinstance(doc, Document):

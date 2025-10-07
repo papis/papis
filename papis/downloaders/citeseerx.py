@@ -1,25 +1,32 @@
 import os
 import re
-from typing import Any, ClassVar
+from functools import cache
+from typing import TYPE_CHECKING, Any, ClassVar
 
-import papis.document
-import papis.downloaders
+from papis.downloaders import Downloader
 
-_K = papis.document.KeyConversionPair
-article_key_conversion = [
-    _K("title", [papis.document.EmptyKeyConversion]),
-    _K("abstract", [papis.document.EmptyKeyConversion]),
-    _K("journal", [papis.document.EmptyKeyConversion]),
-    _K("urls", [papis.document.EmptyKeyConversion]),
-    _K("year", [papis.document.EmptyKeyConversion]),
-    _K("publisher", [papis.document.EmptyKeyConversion]),
-    _K("authors", [
-        {"key": "author_list", "action": papis.document.split_authors_name},
-    ])
-]
+if TYPE_CHECKING:
+    import papis.document
 
 
-class Downloader(papis.downloaders.Downloader):
+@cache
+def _get_citeseerx_key_conversions() -> list["papis.document.KeyConversionPair"]:
+    from papis.document import EmptyKeyConversion, KeyConversionPair, split_authors_name
+
+    return [
+        KeyConversionPair("title", [EmptyKeyConversion]),
+        KeyConversionPair("abstract", [EmptyKeyConversion]),
+        KeyConversionPair("journal", [EmptyKeyConversion]),
+        KeyConversionPair("urls", [EmptyKeyConversion]),
+        KeyConversionPair("year", [EmptyKeyConversion]),
+        KeyConversionPair("publisher", [EmptyKeyConversion]),
+        KeyConversionPair("authors", [
+            {"key": "author_list", "action": split_authors_name},
+        ])
+    ]
+
+
+class CiteSeerXDownloader(Downloader):
     """Retrieve documents from `CiteSeerX <https://citeseerx.ist.psu.edu>`__"""  # spell: disable
 
     # NOTE: not sure if this API is open for the public, but it seems to work
@@ -42,8 +49,8 @@ class Downloader(papis.downloaders.Downloader):
 
     @classmethod
     def match(cls,
-              url: str) -> papis.downloaders.Downloader | None:
-        return (Downloader(url)
+              url: str) -> Downloader | None:
+        return (CiteSeerXDownloader(url)
                 if re.match(r".*citeseerx\.ist\.psu\.edu.*", url)  # spell: disable
                 else None)
 
@@ -64,8 +71,9 @@ class Downloader(papis.downloaders.Downloader):
         data = json.loads(self._get_raw_data().decode())
 
         if "paper" in data:
-            return papis.document.keyconversion_to_data(
-                article_key_conversion, data["paper"])
+            from papis.document import keyconversion_to_data
+            return keyconversion_to_data(
+                _get_citeseerx_key_conversions(), data["paper"])
         else:
             return {}
 
