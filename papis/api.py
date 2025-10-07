@@ -160,8 +160,8 @@ def get_all_documents_in_lib(
     >>> len(docs)
     0
     """
-    import papis.database
-    return papis.database.get(library).get_all_documents()
+    from papis.database import get_database
+    return get_database(library).get_all_documents()
 
 
 def get_documents_in_dir(
@@ -193,8 +193,8 @@ def get_documents_in_lib(
     :param search: a search parameter used to filter the documents.
     :returns: a :class:`list` of filtered documents from *library*.
     """
-    import papis.database
-    db = papis.database.get(library)
+    from papis.database import get_database
+    db = get_database(library)
 
     if isinstance(search, str):
         return db.query(search)
@@ -214,8 +214,8 @@ def clear_lib_cache(lib: str | None = None) -> None:
 
     >>> clear_lib_cache()
     """
-    import papis.database
-    papis.database.get(lib).clear()
+    from papis.database import get_database
+    get_database(lib).clear()
 
 
 def doi_to_data(doi: str) -> dict[str, Any]:
@@ -226,8 +226,8 @@ def doi_to_data(doi: str) -> dict[str, Any]:
     :param doi: a valid DOI (Document Object Identifier).
     :returns: metadata for the given identifier.
     """
-    import papis.crossref
-    return papis.crossref.doi_to_data(doi)
+    from papis.crossref import doi_to_data as _doi_to_data
+    return _doi_to_data(doi)
 
 
 def save_doc(doc: "papis.document.Document") -> None:
@@ -239,8 +239,8 @@ def save_doc(doc: "papis.document.Document") -> None:
 
     :param doc: an existing document.
     """
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     doc.save()
     db.update(doc)

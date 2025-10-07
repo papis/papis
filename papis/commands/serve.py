@@ -7,17 +7,16 @@ import re
 import tempfile
 import urllib.parse
 from collections.abc import Callable, Iterator
-from typing import IO, Any
+from typing import IO, TYPE_CHECKING, Any
 
 import click
 
-import papis.api
-import papis.citations
 import papis.cli
 import papis.config
-import papis.document
 import papis.logging
-import papis.notes
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -167,24 +166,29 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def page_query(self, libname: str, query: str) -> None:
         self._handle_lib(libname)
         cleaned_query = urllib.parse.unquote_plus(query)
-        docs = papis.api.get_documents_in_lib(libname, cleaned_query)
+
+        from papis.api import get_documents_in_lib
+        docs = get_documents_in_lib(libname, cleaned_query)
         self.page_main(libname, docs, cleaned_query)
 
     def page_serve_all(self, libname: str) -> None:
         self._handle_lib(libname)
-        docs = papis.api.get_all_documents_in_lib(libname)
+
+        from papis.api import get_all_documents_in_lib
+        docs = get_all_documents_in_lib(libname)
         self.page_main(libname, docs, "All documents")
 
     def page_main(self,
                   libname: str | None = None,
-                  docs: list[papis.document.Document] | None = None,
+                  docs: list["papis.document.Document"] | None = None,
                   query: str | None = None) -> None:
-        import papis.web.search
+        from papis.web.search import QUERY_PLACEHOLDER, html
 
         if docs is None:
             docs = []
 
-        libname = libname or papis.api.get_lib_name()
+        from papis.api import get_all_documents_in_lib, get_lib_name
+        libname = libname or get_lib_name()
         self._handle_lib(libname)
 
         self.send_response(200)
@@ -192,15 +196,15 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         if len(docs) == 0:
             if papis.config.getboolean("serve-empty-query-get-all-documents"):
-                docs = papis.api.get_all_documents_in_lib(libname)
+                docs = get_all_documents_in_lib(libname)
 
         libfolder = papis.config.get_lib_from_name(libname).paths[0]
-        placeholder = papis.web.search.QUERY_PLACEHOLDER
-        page = papis.web.search.html(documents=docs,
-                                     libname=libname,
-                                     libfolder=libfolder,
-                                     pretitle=query or "HOME",
-                                     query=query or placeholder)
+        placeholder = QUERY_PLACEHOLDER
+        page = html(documents=docs,
+                    libname=libname,
+                    libfolder=libfolder,
+                    pretitle=query or "HOME",
+                    query=query or placeholder)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
@@ -208,74 +212,86 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     @redirecting("/library")
     def clear_cache(self, libname: str) -> None:
         self._handle_lib(libname)
-        db = papis.database.get(libname)
+
+        from papis.database import get_database
+        db = get_database(libname)
         db.clear()
         db.initialize()
 
     @ok_html
     def page_tags(self, libname: str | None = None,
                   sort_by: str | None = None) -> None:
-        import papis.web.tags
-
-        libname = libname or papis.api.get_lib_name()
+        from papis.api import get_all_documents_in_lib, get_lib_name
+        libname = libname or get_lib_name()
         self._handle_lib(libname)
-        docs = papis.api.get_all_documents_in_lib(libname)
+        docs = get_all_documents_in_lib(libname)
+
+        from papis.web.tags import ensure_tags_list, html
         tags_of_tags = [tag
                         for d in docs
-                        for tag in papis.web.tags.ensure_tags_list(d["tags"])]
+                        for tag in ensure_tags_list(d["tags"])]
         if TAGS_LIST.get(libname) is None:
             TAGS_LIST[libname] = collections.defaultdict(int)
             for tag in tags_of_tags:
                 TAGS_LIST[libname][tag] += 1  # type: ignore[index]
 
-        page = papis.web.tags.html(libname=libname,
-                                   pretitle="TAGS",
-                                   tags=TAGS_LIST[libname] or {},
-                                   sort_by=sort_by or "")
+        page = html(libname=libname,
+                    pretitle="TAGS",
+                    tags=TAGS_LIST[libname] or {},
+                    sort_by=sort_by or "")
 
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
     def page_tags_refresh(self, libname: str | None = None) -> None:
-        libname = libname or papis.api.get_lib_name()
+        from papis.api import get_lib_name
+        libname = libname or get_lib_name()
+
         self._handle_lib(libname)
         TAGS_LIST[libname] = None
         self.redirect(f"/library/{libname}/tags")
 
     @ok_html
     def page_libraries(self) -> None:
-        import papis.web.libraries
+        from papis.api import get_lib_name
+        libname = get_lib_name()
 
-        libname = papis.api.get_lib_name()
-        page = papis.web.libraries.html(libname=libname)
+        from papis.web.libraries import html
+        page = html(libname=libname)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
     def page_document(self, libname: str, papis_id: str) -> None:
-        import papis.web.docview
+        from papis.web.docview import html
 
         doc = self._get_document(libname, papis_id)
-        page = papis.web.docview.html(libname=libname, doc=doc)
+        page = html(libname=libname, doc=doc)
         self.wfile.write(bytes(str(page), "utf-8"))
         self.wfile.flush()
 
     @ok_html
     def fetch_citations(self, libname: str, papis_id: str) -> None:
         doc = self._get_document(libname, papis_id)
-        papis.citations.fetch_and_save_citations(doc)
+
+        from papis.citations import fetch_and_save_citations
+        fetch_and_save_citations(doc)
         self._redirect_back()
 
     @ok_html
     def fetch_cited_by(self, libname: str, papis_id: str) -> None:
         doc = self._get_document(libname, papis_id)
-        papis.citations.fetch_and_save_cited_by_from_database(doc)
+
+        from papis.citations import fetch_and_save_cited_by_from_database
+        fetch_and_save_cited_by_from_database(doc)
         self._redirect_back()
 
     def get_libraries(self) -> None:
         logger.info("Getting libraries.")
-        libs = papis.api.get_libraries()
+
+        from papis.api import get_libraries
+        libs = get_libraries()
         logger.debug("Found libraries: '%s'.", "', '".join(libs))
 
         self._ok()
@@ -294,17 +310,21 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def get_all_documents(self, libname: str) -> None:
         self._handle_lib(libname)
-        docs = papis.api.get_all_documents_in_lib(libname)
+
+        from papis.api import get_all_documents_in_lib
+        docs = get_all_documents_in_lib(libname)
         self.serve_documents(docs)
 
     def get_query(self, libname: str, query: str) -> None:
         self._handle_lib(libname)
         cleaned_query = urllib.parse.unquote(query)
         logger.info("Querying in library '%s' for '%s'.", libname, cleaned_query)
-        docs = papis.api.get_documents_in_lib(libname, cleaned_query)
+
+        from papis.api import get_documents_in_lib
+        docs = get_documents_in_lib(libname, cleaned_query)
         self.serve_documents(docs)
 
-    def serve_documents(self, docs: list[papis.document.Document]) -> None:
+    def serve_documents(self, docs: list["papis.document.Document"]) -> None:
         """
         Serve a list of documents and set the files attribute to
         the full paths so that the user can reach them.
@@ -338,9 +358,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self.redirect(back_url)
 
     def get_document_format(self, libname: str, query: str, fmt: str) -> None:
-        from papis.commands.export import run as export
+        from papis.api import get_documents_in_lib
+        docs = get_documents_in_lib(libname, query)
 
-        docs = papis.api.get_documents_in_lib(libname, query)
+        from papis.commands.export import run as export
         fmts = export(docs, fmt)
 
         self._ok()
@@ -381,13 +402,16 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   )
 
     def _handle_lib(self, libname: str) -> None:  # noqa: PLR6301
-        papis.api.set_lib_from_name(libname)
+        from papis.api import set_lib_from_name
+        set_lib_from_name(libname)
 
     def _get_document(self,
                       libname: str,
-                      papis_id: str) -> papis.document.Document:
+                      papis_id: str) -> "papis.document.Document":
         self._handle_lib(libname)
-        db = papis.database.get(libname)
+
+        from papis.database import get_database
+        db = get_database(libname)
         doc = db.find_by_id(papis_id)
         if not doc:
             raise ValueError(
@@ -406,8 +430,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         doc = self._get_document(libname, papis_id)
         form = self._get_form("POST")
         new_notes = form.getvalue("value")
-        notes_path = papis.notes.notes_path(doc)
-        with open(notes_path, "w+", encoding="utf-8") as fdr:
+
+        from papis.notes import notes_path
+        path = notes_path(doc)
+
+        with open(path, "w+", encoding="utf-8") as fdr:
             fdr.write(new_notes)
         self._redirect_back()
 
@@ -430,8 +457,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                 mode="w+", delete=False, encoding="utf-8"
                 ) as fdr:
             fdr.write(new_info)
+
+        from papis.yaml import yaml_to_data
         try:
-            papis.yaml.yaml_to_data(fdr.name, raise_exception=True)
+            yaml_to_data(fdr.name, raise_exception=True)
         except ValueError as e:
             self._send_json_error(404, f"Error in info file: {e}")
             os.unlink(fdr.name)
@@ -442,7 +471,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             with open(info_path, "w+", encoding="utf-8") as _fdr:
                 _fdr.write(new_info)
             doc.load()
-            papis.api.save_doc(doc)
+
+            from papis.api import save_doc
+            save_doc(doc)
+
             self._redirect_back()
             return
 
@@ -466,9 +498,9 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         self._redirect_back()
 
     def serve_static(self, static_path: str, params: str) -> None:
-        import papis.web.static
+        from papis.web.static import static_paths
 
-        folders = papis.web.static.static_paths()
+        folders = static_paths()
         partial_path = urllib.parse.unquote_plus(static_path)
         for folder in folders:
             path = os.path.join(folder, partial_path)
@@ -573,10 +605,10 @@ def cli(address: str, port: int, git: bool) -> None:
     USE_GIT = git
     server_address = (address, port)
 
-    import papis.web.pdfjs
+    from papis.web.pdfjs import detect_pdfjs, error_message
 
-    if not papis.web.pdfjs.detect_pdfjs():
-        logger.warning(papis.web.pdfjs.error_message())
+    if not detect_pdfjs():
+        logger.warning(error_message())
 
     logger.info("Starting server in address 'http://%s:%s'.",
                 address or "localhost",
