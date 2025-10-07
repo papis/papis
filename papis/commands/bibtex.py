@@ -128,10 +128,7 @@ import click
 
 import papis.cli
 import papis.config
-import papis.database
-import papis.format
 import papis.logging
-import papis.strings
 from papis.commands import AliasedGroup
 from papis.explorers.bibtex import cli as bibtex_explorer
 
@@ -189,9 +186,10 @@ def cli_add(ctx: click.Context,
     docs = []
 
     if refs_file:
+        from papis.database import get_database
         from papis.tui.utils import progress_bar
 
-        db = papis.database.get()
+        db = get_database()
 
         references = []
         found = 0
@@ -246,7 +244,9 @@ def cli_update(ctx: click.Context, _all: bool,
     if not _all:
         picked_docs = pick_doc(docs)
         if not picked_docs or not picked_docs[0]:
-            logger.warning(papis.strings.no_documents_retrieved_message)
+            from papis.strings import no_documents_retrieved_message
+
+            logger.warning(no_documents_retrieved_message)
             return
 
         picked_doc = picked_docs[0]
@@ -256,12 +256,14 @@ def cli_update(ctx: click.Context, _all: bool,
     logger.info("This uses the keys %s to determine a match in the library.",
                 unique_document_keys)
 
+    from papis.document import describe
+
     for j, doc in enumerate(docs):
         if picked_doc and doc["ref"] != picked_doc["ref"]:
             continue
 
         logger.info("Checking for BibTeX entry in the '%s' library: '%s'.",
-                    libname, papis.document.describe(doc))
+                    libname, describe(doc))
 
         try:
             libdoc = locate_document_in_lib(
@@ -282,7 +284,7 @@ def cli_update(ctx: click.Context, _all: bool,
 
         if todb:
             logger.info("Adding BibTeX entry to library document: '%s'.",
-                        papis.document.describe(libdoc))
+                        describe(libdoc))
             if keys:
                 libdoc.update({k: doc[k] for k in keys if k in doc})
             else:
@@ -306,15 +308,17 @@ def cli_open(ctx: click.Context) -> None:
     docs = pick_doc(docs)
 
     if not docs:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
+    from papis.document import describe
     doc = docs[0]
 
     libname = papis.config.get_lib_name()
     unique_document_keys = papis.config.getlist("unique-document-keys")
     logger.info("Checking the '%s' library for document: '%s'",
-                libname, papis.document.describe(doc))
+                libname, describe(doc))
 
     from papis.utils import locate_document_in_lib
 
@@ -365,25 +369,30 @@ def cli_edit(ctx: click.Context,
     libname = papis.config.get_lib_name()
     unique_document_keys = papis.config.getlist("unique-document-keys")
 
+    from papis.document import describe
+    from papis.utils import locate_document_in_lib
+
     not_found = 0
     for doc in docs:
         try:
-            located = papis.utils.locate_document_in_lib(
+            located = locate_document_in_lib(
                 doc, libname, unique_document_keys=unique_document_keys,
             )
         except IndexError:
             not_found += 1
             logger.warning("Document not found in library '%s': %s.",
-                           libname,
-                           papis.document.describe(doc))
+                           libname, describe(doc))
             continue
 
         if set_tuples:
+            from papis.format import FormatFailedError, format
+            from papis.strings import process_format_pattern_pair
+
             for k, v in set_tuples:
-                kp, vp = papis.strings.process_format_pattern_pair(k, v)
+                kp, vp = process_format_pattern_pair(k, v)
                 try:
-                    located[kp] = papis.format.format(vp, located)
-                except papis.format.FormatFailedError as exc:
+                    located[kp] = format(vp, located)
+                except FormatFailedError as exc:
                     logger.error("Could not format '%s' with value '%s'.",
                                  kp, vp, exc_info=exc)
 
@@ -406,7 +415,8 @@ def cli_browse(ctx: click.Context, key: str | None) -> None:
 
     docs = pick_doc(ctx.obj["documents"])
     if not docs:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     if key:
@@ -438,7 +448,8 @@ def cli_ref(ctx: click.Context, out: str | None) -> None:
     docs = pick_doc(docs)
 
     if not docs:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     ref = docs[0]["ref"]
@@ -508,6 +519,8 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
     unique_docs = []
     duplicated_docs = []
 
+    from papis.document import describe
+
     while True:
         if len(docs) == 0:
             break
@@ -525,8 +538,8 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
                     "Found a duplicate document for key '%s' with value '%s'.\n"
                     "\t%s\n\t%s",
                     key, doc_value,
-                    papis.document.describe(doc),
-                    papis.document.describe(other))
+                    describe(doc),
+                    describe(other))
         docs = [d for (i, d) in enumerate(docs) if i not in indices]
 
     logger.info("Found %d unique documents.", len(unique_docs))
@@ -561,14 +574,15 @@ def cli_doctor(ctx: click.Context, key: list[str]) -> None:
         papis bibtex doctor -k title -k url -k doi
     """
     logger.info("Checking for existence of keys '%s'.", "', '".join(key))
-
     failed = [(d, keys) for d, keys in [(d, [k for k in key if k not in d])
                                         for d in ctx.obj["documents"]]
               if keys]
 
+    from papis.document import describe
+
     for j, (doc, keys) in enumerate(failed):
         logger.info("%d. {c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
-                    j, papis.document.describe(doc))
+                    j, describe(doc))
         for k in keys:
             logger.info("\tMissing: %s", k)
 
@@ -631,9 +645,11 @@ def cli_iscited(ctx: click.Context, _files: list[str]) -> None:
 
     logger.info("Found %s documents with no citations.", len(unfound))
 
+    from papis.document import describe
+
     for j, doc in enumerate(unfound):
         logger.info("%d. {c.Fore.RED}%-80.80s{c.Style.RESET_ALL}",
-                    j, papis.document.describe(doc))
+                    j, describe(doc))
 
 
 @cli.command("import")
@@ -665,6 +681,7 @@ def cli_import(ctx: click.Context, out: str | None, _all: bool) -> None:
         papis.config.set_lib_from_name(out)
 
     from papis.commands.add import run
+    from papis.document import describe
 
     for j, doc in enumerate(docs):
         file_value = None
@@ -672,7 +689,7 @@ def cli_import(ctx: click.Context, out: str | None, _all: bool) -> None:
         for k in ("file", "FILE"):
             logger.info(
                 "%d. {c.Fore.YELLOW}%-80.80s{c.Style.RESET_ALL}",
-                j, papis.document.describe(doc))
+                j, describe(doc))
             if k in doc:
                 file_value = doc[k]
                 logger.info("\tKey '%s' exists", k)

@@ -298,6 +298,7 @@ ignore = [
     "PLR0911", # too-many-return-statements
     "PLR0912", # too-many-branches
     "PLR0913", # too-many-arguments
+    "PLR0914", # too-many-local-variables
     "PLR0915", # too-many-statements
     "PLR0917", # too-many-positional
     "PLR1702", # too-many-nested-blocks

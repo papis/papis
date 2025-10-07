@@ -51,16 +51,17 @@ Command-line interface
 
 import os
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import click
 
 import papis.cli
 import papis.config
-import papis.document
-import papis.format
-import papis.id
 import papis.logging
-import papis.strings
+
+if TYPE_CHECKING:
+    import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -152,13 +153,13 @@ def list_plugins(show_paths: bool = False,
     return []
 
 
-def list_documents(documents: Sequence[papis.document.Document],
+def list_documents(documents: Sequence["papis.document.Document"],
                    show_files: bool = False,
                    show_dir: bool = False,
                    show_id: bool = False,
                    show_info: bool = False,
                    show_notes: bool = False,
-                   show_format: papis.strings.AnyString = "",
+                   show_format: "papis.strings.AnyString" = "",
                    template: str | None = None
                    ) -> list[str]:
     """List document properties.
@@ -172,7 +173,8 @@ def list_documents(documents: Sequence[papis.document.Document],
         return [f for doc in documents for f in doc.get_files()]
 
     if show_id:
-        return [papis.id.get(d) for d in documents]
+        from papis.id import get as get_id
+        return [get_id(d) for d in documents]
 
     if show_notes:
         return [f for doc in documents for f in doc.get_notes()]
@@ -189,9 +191,11 @@ def list_documents(documents: Sequence[papis.document.Document],
             with open(template, encoding="utf-8") as fd:
                 show_format = fd.read()
 
+        from papis.document import describe
+        from papis.format import format
+
         return [
-            papis.format.format(show_format, document,
-                                default=papis.document.describe(document))
+            format(show_format, document, default=describe(document))
             for document in documents
         ]
 
@@ -226,7 +230,7 @@ run = list_documents
     default="")
 @papis.cli.bool_flag(
     "--paths", "show_paths",
-    help="List configuration paths used by papis.")
+    help="List configuration paths used by Papis.")
 @papis.cli.bool_flag(
     "--libraries", "show_libraries",
     help="List defined libraries.")
@@ -303,7 +307,8 @@ def cli(query: str,
         query, doc_folder, sort_field, sort_reverse, _all)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     objects = run(

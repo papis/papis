@@ -5,7 +5,7 @@ This module serves as an lightweight interface for ``git`` related functions.
 from collections.abc import Sequence
 
 import papis.logging
-import papis.utils
+from papis.utils import run
 
 logger = papis.logging.get_logger(__name__)
 
@@ -14,7 +14,7 @@ def init(path: str) -> None:
     """Initialize a git repository at *path*."""
 
     logger.info("Initializing git repository: '%s'.", path)
-    papis.utils.run(["git", "init"], cwd=path)
+    run(["git", "init"], cwd=path)
 
 
 def add(path: str, resource: str) -> None:
@@ -24,7 +24,7 @@ def add(path: str, resource: str) -> None:
     :param resource: a resource (e.g. ``info.yaml`` file) to add to the index.
     """
     logger.info("Adding '%s'.", path)
-    papis.utils.run(["git", "add", resource], cwd=path)
+    run(["git", "add", resource], cwd=path)
 
 
 def commit(path: str, message: str) -> None:
@@ -34,7 +34,7 @@ def commit(path: str, message: str) -> None:
     :param message: a commit message.
     """
     logger.info("Committing '%s' with message '%s'.", path, message)
-    papis.utils.run(["git", "commit", "-m", message], cwd=path)
+    run(["git", "commit", "-m", message], cwd=path)
 
 
 def mv(from_path: str, to_path: str) -> None:
@@ -45,7 +45,7 @@ def mv(from_path: str, to_path: str) -> None:
         same parent directory as *from_path*, it is a simple rename.
     """
     logger.info("Moving '%s' to '%s'.", from_path, to_path)
-    papis.utils.run(["git", "mv", from_path, to_path], cwd=from_path)
+    run(["git", "mv", from_path, to_path], cwd=from_path)
 
 
 def remove(path: str, resource: str,
@@ -63,7 +63,7 @@ def remove(path: str, resource: str,
 
     flag_rec = "-r" if recursive else ""
     flag_force = "-f" if force else ""
-    papis.utils.run(["git", "rm", flag_force, flag_rec, resource], cwd=path)
+    run(["git", "rm", flag_force, flag_rec, resource], cwd=path)
 
 
 def add_and_commit_resource(path: str, resource: str, message: str) -> None:

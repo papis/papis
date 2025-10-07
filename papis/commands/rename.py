@@ -53,33 +53,36 @@ Command-line interface
     :prog: papis rename
 """
 
+from typing import TYPE_CHECKING
+
 import click
 
 import papis.cli
 import papis.config
-import papis.database
-import papis.document
-import papis.format
-import papis.git
 import papis.logging
-import papis.strings
-import papis.tui.utils
-from papis.exceptions import DocumentFolderNotFound
+
+if TYPE_CHECKING:
+    import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         new_folder_name: str,
         git: bool = False) -> None:
     import os
     import shutil
 
-    db = papis.database.get()
+    from papis.database import get_database
+    db = get_database()
     folder = document.get_main_folder()
 
+    from papis.document import describe
+
     if not folder:
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        from papis.exceptions import DocumentFolderNotFound
+        raise DocumentFolderNotFound(describe(document))
 
     parent = os.path.dirname(folder)
     new_folder_path = os.path.join(parent, new_folder_name)
@@ -90,7 +93,8 @@ def run(document: papis.document.Document,
 
     logger.info("Rename '%s' to '%s'.", folder, new_folder_name)
     if git:
-        papis.git.mv_and_commit_resource(
+        from papis.git import mv_and_commit_resource
+        mv_and_commit_resource(
             folder, new_folder_path,
             f"Rename '{folder}' to '{new_folder_name}'")
     else:
@@ -117,7 +121,7 @@ def run(document: papis.document.Document,
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
-        folder_name: papis.strings.AnyString,
+        folder_name: "papis.strings.AnyString",
         _all: bool,
         batch: bool,
         git: bool,
@@ -138,23 +142,22 @@ def cli(query: str,
                                                            _all
                                                            )
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
+    from papis.format import format
     from papis.paths import normalize_path
+    from papis.tui.utils import confirm
 
     renames = []
     for document in documents:
         current_name = document.get_main_folder_name()
-        new_name = papis.format.format(folder_name, document)
+        new_name = format(folder_name, document)
         new_name = normalize_path(new_name)
 
-        if not batch:
-            confirm_rename = papis.tui.utils.confirm(
-                f"Rename '{current_name}' to '{new_name}'?")
-
-            if not confirm_rename:
-                continue
+        if not batch and not confirm(f"Rename '{current_name}' to '{new_name}'?"):
+            continue
 
         renames.append((document, new_name))
 

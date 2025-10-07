@@ -58,26 +58,21 @@ Command-line interface
 """
 
 import os
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
-import papis
 import papis.cli
-import papis.commands.rm
-import papis.commands.update
-import papis.database
-import papis.document
 import papis.logging
-import papis.pick
-import papis.strings
-import papis.utils
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(keep: papis.document.Document,
-        erase: papis.document.Document,
+def run(keep: "papis.document.Document",
+        erase: "papis.document.Document",
         data: dict[str, Any],
         files: list[str],
         keep_both: bool,
@@ -91,11 +86,16 @@ def run(keep: papis.document.Document,
             logger.info("Moving '%s' to '%s'.", f, to_folder)
             shutil.copy(f, to_folder)
             keep["files"] += [os.path.basename(f)]
-    papis.commands.update.run(keep, data, git=git)
+
+    from papis.commands.update import run as update
+    update(keep, data, git=git)
 
     if not keep_both:
-        logger.info("Removing '%s'.", papis.document.describe(erase))
-        papis.commands.rm.run(erase, git=git)
+        from papis.commands.rm import run as rm
+        from papis.document import describe
+
+        logger.info("Removing '%s'.", describe(erase))
+        rm(erase, git=git)
     else:
         logger.info("Keeping both documents.")
 
@@ -129,19 +129,26 @@ def cli(query: str,
         sort_reverse: bool,
         pick: bool) -> None:
     """Merge two documents from a given library."""
-    documents = papis.database.get().query(query)
+    from papis.database import get_database
+
+    db = get_database()
+    documents = db.query(query)
+
+    from papis.document import describe, from_folder, sort, to_dict
 
     if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
+        documents = sort(documents, sort_field, sort_reverse)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
-    documents = papis.pick.pick_doc(documents)
+    from papis.pick import pick_doc
+    documents = pick_doc(documents)
 
     if pick:
-        other_documents = papis.pick.pick_doc(documents)
+        other_documents = pick_doc(documents)
         documents += other_documents
 
     if len(documents) != 2:
@@ -151,9 +158,9 @@ def cli(query: str,
         return
 
     a = documents[0]
-    data_a = papis.document.to_dict(a)
+    data_a = to_dict(a)
     b = documents[1]
-    data_b = papis.document.to_dict(b)
+    data_b = to_dict(b)
 
     to_pop = ["files"]
     for d in (data_a, data_b):
@@ -161,20 +168,20 @@ def cli(query: str,
             if key in d:
                 d.pop(key)
 
-    papis.utils.update_doc_from_data_interactively(data_a,
-                                                   data_b,
-                                                   papis.document.describe(b))
+    from papis.utils import update_doc_from_data_interactively
+    update_doc_from_data_interactively(data_a, data_b, describe(b))
 
+    from papis.tui.utils import confirm, select_range
     files: list[str] = []
     for doc in documents:
-        indices = papis.tui.utils.select_range(
+        indices = select_range(
             doc.get_files(),
             "Documents from A to keep",
             accept_none=True,
-            bottom_toolbar=papis.document.describe(a))
+            bottom_toolbar=describe(a))
         files += [doc.get_files()[i] for i in indices]
 
-    if not papis.tui.utils.confirm("Are you sure you want to merge?"):
+    if not confirm("Are you sure you want to merge?"):
         return
 
     keep = b if second else a
@@ -184,7 +191,7 @@ def cli(query: str,
         import shutil
 
         os.makedirs(out, exist_ok=True)
-        keep = papis.document.from_folder(out)
+        keep = from_folder(out)
         keep["files"] = []
         for f in files:
             shutil.copy(f, out)

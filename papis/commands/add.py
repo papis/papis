@@ -104,29 +104,29 @@ Command-line interface
 
 import os
 from typing import TYPE_CHECKING, Any
-from warnings import warn
 
 import click
 
 import papis.cli
 import papis.config
 import papis.logging
-from papis.document import Document, describe, dump, from_data, move as move_doc
-from papis.importer import Context, get_available_importers
-from papis.strings import AnyString, get_timestamp
+from papis.importer import get_available_importers
 
 if TYPE_CHECKING:
     import papis.citations
+    import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
 
 def get_file_name(
-        doc: Document,
+        doc: "papis.document.Document",
         original_filepath: str,
         suffix: str = "",
-        file_name_format: AnyString | None = None,
+        file_name_format: "papis.strings.AnyString | None" = None,
         base_name_limit: int = 150) -> str:
+    from warnings import warn
     warn("'get_file_name' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_file_name' instead.",
          DeprecationWarning, stacklevel=2)
@@ -137,6 +137,7 @@ def get_file_name(
 
 
 def get_hash_folder(data: dict[str, Any], document_paths: list[str]) -> str:
+    from warnings import warn
     warn("'get_hash_folder' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_hash_folder' instead.",
          DeprecationWarning, stacklevel=2)
@@ -146,6 +147,7 @@ def get_hash_folder(data: dict[str, Any], document_paths: list[str]) -> str:
 
 
 def ensure_new_folder(path: str) -> str:
+    from warnings import warn
     warn("'ensure_new_folder' is deprecated and will be removed in the next "
          "version. Use 'papis.paths.get_document_unique_folder' instead.",
          DeprecationWarning, stacklevel=2)
@@ -156,8 +158,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: list[str],
         data: dict[str, Any] | None = None,
-        folder_name: AnyString | None = None,
-        file_name: AnyString | None = None,
+        folder_name: "papis.strings.AnyString | None" = None,
+        file_name: "papis.strings.AnyString | None" = None,
         subfolder: str | None = None,
         base_path: str | None = None,
         batch: bool = False,
@@ -200,6 +202,9 @@ def run(paths: list[str],
 
     in_document_paths = paths
     temp_dir = tempfile.mkdtemp()
+
+    from papis.document import Document, describe, dump
+
     tmp_document = Document(folder=temp_dir, data=data)
     papis.database.get().maybe_compute_id(tmp_document)
 
@@ -346,10 +351,14 @@ def run(paths: list[str],
         if not ask_confirm("Do you want to add the new document?"):
             return
 
+    from papis.document import move as move_doc
+
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
     move_doc(tmp_document, out_folder_path)
 
-    papis.database.get().add(tmp_document)
+    from papis.database import get as get_database
+    db = get_database()
+    db.add(tmp_document)
 
     if git:
         from papis.git import add_and_commit_resource
@@ -442,8 +451,8 @@ def cli(files: list[str],
         set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: AnyString,
-        file_name: AnyString | None,
+        folder_name: "papis.strings.AnyString",
+        file_name: "papis.strings.AnyString | None",
         from_importer: list[tuple[str, str]],
         batch: bool,
         confirm: bool,
@@ -503,6 +512,8 @@ def cli(files: list[str],
     importers = fetch_importers(importers, download_files=download_files)
     imported = collect_from_importers(importers, batch=batch, use_files=download_files)
 
+    from papis.importer import Context
+
     ctx = Context()
     ctx.data = imported.data
     ctx.files = [f for f in files if os.path.exists(f)] + imported.files
@@ -525,6 +536,7 @@ def cli(files: list[str],
         return
 
     if papis.config.getboolean("time-stamp"):
+        from papis.strings import get_timestamp
         ctx.data["time-added"] = get_timestamp()
 
     from papis.pick import pick_subfolder_from_lib
@@ -534,6 +546,7 @@ def cli(files: list[str],
 
     if fetch_citations:
         from papis.citations import fetch_citations as fetch_citations_for_doc
+        from papis.document import from_data
 
         try:
             logger.info("Fetching citations for document.")

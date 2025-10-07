@@ -10,71 +10,88 @@ Command-line interface
     :prog: papis edit
 """
 
+from typing import TYPE_CHECKING
+
 import click
 
-import papis.api
 import papis.cli
 import papis.config
-import papis.database
-import papis.document
-import papis.git
-import papis.hooks
 import papis.logging
-import papis.notes
-import papis.strings
-import papis.utils
-from papis.exceptions import DocumentFolderNotFound
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         wait: bool = True,
         git: bool = False) -> None:
+    from papis.document import describe, to_dict
+
     info_file_path = document.get_info_file()
     if not info_file_path:
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        from papis.exceptions import DocumentFolderNotFound
+        raise DocumentFolderNotFound(describe(document))
 
-    old_dict = papis.document.to_dict(document)
-    papis.utils.general_open(info_file_path, "editor", wait=wait)
+    old_dict = to_dict(document)
+
+    from papis.utils import general_open
+    general_open(info_file_path, "editor", wait=wait)
+
     document.load()
-    new_dict = papis.document.to_dict(document)
+    new_dict = to_dict(document)
 
     # If nothing changed there is nothing else to be done
     if old_dict == new_dict:
         logger.debug("No changes made to the document.")
         return
 
-    papis.hooks.run("on_edit_done", document)
-    papis.database.get().update(document)
+    from papis.hooks import run as run_hook
+    run_hook("on_edit_done", document)
+
+    from papis.database import get_database
+    db = get_database()
+    db.update(document)
+
     if git:
-        papis.git.add_and_commit_resource(
+        from papis.git import add_and_commit_resource
+        add_and_commit_resource(
             str(document.get_main_folder()),
             info_file_path,
-            f"Update information for '{papis.document.describe(document)}'")
+            f"Update information for '{describe(document)}'")
 
 
-def edit_notes(document: papis.document.Document,
+def edit_notes(document: "papis.document.Document",
                git: bool = False) -> None:
+    from papis.document import describe
+
     logger.debug("Editing notes.")
     notes = document.get("notes", None)
+
     if notes is not None and not isinstance(notes, str):
         logger.error(
             "Cannot edit notes! Ensure that a single relative file name "
             "is present in the 'info.yml' file.")
         logger.error("Notes have type '%s' not 'str': %s",
-                     type(notes).__name__, papis.document.describe(document))
+                     type(notes).__name__, describe(document))
         return
 
-    notes_path = papis.notes.notes_path_ensured(document)
-    papis.api.edit_file(notes_path)
+    from papis.notes import notes_path_ensured
+    notes_path = notes_path_ensured(document)
+
+    from papis.api import edit_file
+    edit_file(notes_path)
+
     if git:
+        from papis.git import add_and_commit_resources
+
         folder = document.get_main_folder()
         if folder:
-            msg = f"Update notes for '{papis.document.describe(document)}'"
-            papis.git.add_and_commit_resources(folder,
-                                               [notes_path, document.get_info_file()],
-                                               msg)
+            msg = f"Update notes for '{describe(document)}'"
+            add_and_commit_resources(folder,
+                                     [notes_path, document.get_info_file()],
+                                     msg)
 
 
 @click.command("edit")
@@ -107,7 +124,8 @@ def cli(query: str,
                                                            sort_reverse,
                                                            _all)
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     if editor is not None:

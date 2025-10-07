@@ -37,7 +37,6 @@ from typing import NamedTuple
 import click
 
 import papis.config
-import papis.git
 import papis.logging
 
 logger = papis.logging.get_logger(__name__)
@@ -172,9 +171,11 @@ def cli(dir_path: str | None) -> None:
     if use_git and not _is_git_repository(library_path):
         if confirm(f"Library '{library_path}' is not a git repository and 'use-git' "
                    "is enabled. Would you like to initialize a git repository?"):
-            papis.git.init(library_path)
-            papis.git.add(library_path, ".")
-            papis.git.commit(library_path, f"Initialized library '{library_name}'")
+            from papis.git import add as git_add, commit as git_commit, init as git_init
+
+            git_init(library_path)
+            git_add(library_path, ".")
+            git_commit(library_path, f"Initialized library '{library_name}'")
 
     if confirm("Do you want to save?"):
         config_folder = papis.config.get_config_folder()

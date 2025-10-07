@@ -69,35 +69,39 @@ Command-line interface
 """
 
 import os
+from typing import TYPE_CHECKING
 
 import click
 
-import papis.api
 import papis.cli
 import papis.config
-import papis.document
-import papis.format
 import papis.logging
-import papis.strings
-from papis.exceptions import DocumentFolderNotFound
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         opener: str | None = None,
         folder: bool = False,
         mark: bool = False) -> None:
     if opener is not None:
         papis.config.set("opentool", papis.config.escape_interp(opener))
 
+    from papis.document import describe, from_data
+
     doc_folder = document.get_main_folder()
     if doc_folder is None:
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        from papis.exceptions import DocumentFolderNotFound
+        raise DocumentFolderNotFound(describe(document))
+
+    from papis.api import open_dir, open_file, pick
+    from papis.format import format
 
     if folder:
-        # Open directory
-        papis.api.open_dir(doc_folder)
+        open_dir(doc_folder)
     else:
         if mark:
             logger.debug("Getting document's marks.")
@@ -117,12 +121,10 @@ def run(document: papis.document.Document,
                         "No mark name format given. Set 'mark-format-name' "
                         "in the configuration file")
 
-                mark_dict = papis.api.pick(
+                mark_dict = pick(
                     marks,
-                    header_filter=lambda x: papis.format.format(
-                        mark_fmt, x, doc_key=mark_name),
-                    match_filter=lambda x: papis.format.format(
-                        mark_fmt, x, doc_key=mark_name))
+                    header_filter=lambda x: format(mark_fmt, x, doc_key=mark_name),
+                    match_filter=lambda x: format(mark_fmt, x, doc_key=mark_name))
 
                 if mark_dict:
                     if not mark_opener:
@@ -130,9 +132,9 @@ def run(document: papis.document.Document,
                             "No mark opener format given. Set 'mark-opener-format' "
                             "in the configuration file")
 
-                    opener = papis.format.format(
+                    opener = format(
                         mark_opener,
-                        papis.document.from_data(mark_dict[0]),
+                        from_data(mark_dict[0]),
                         doc_key=mark_name)
 
                     logger.info("Setting opener to '%s'.", opener)
@@ -141,11 +143,12 @@ def run(document: papis.document.Document,
         files = document.get_files()
         if not files:
             logger.error("The chosen document has no files attached: '%s'.",
-                         papis.document.describe(document))
+                         describe(document))
             return
-        files_to_open = papis.api.pick(files, header_filter=os.path.basename)
+
+        files_to_open = pick(files, header_filter=os.path.basename)
         for file_to_open in files_to_open:
-            papis.api.open_file(file_to_open, wait=False)
+            open_file(file_to_open, wait=False)
 
 
 @click.command("open")
@@ -178,7 +181,8 @@ def cli(query: str, doc_folder: tuple[str, ...], tool: str, folder: bool,
                                                            sort_reverse,
                                                            _all)
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     for document in documents:

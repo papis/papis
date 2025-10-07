@@ -1,15 +1,16 @@
 import configparser
 import os
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 import platformdirs
 
-import papis.exceptions
-import papis.library
 import papis.logging
-from papis.strings import FormatPattern
+
+if TYPE_CHECKING:
+    import papis.library
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -157,13 +158,13 @@ def get_default_settings() -> PapisConfigType:
     if DEFAULT_SETTINGS is None:
         DEFAULT_SETTINGS = {}
 
-        import papis.defaults
+        from papis.defaults import settings
         DEFAULT_SETTINGS.update({
-            GENERAL_SETTINGS_NAME: papis.defaults.settings,
+            GENERAL_SETTINGS_NAME: settings,
         })
 
-        import papis.tui
-        DEFAULT_SETTINGS.update(papis.tui.get_default_settings())
+        from papis.tui import get_default_settings
+        DEFAULT_SETTINGS.update(get_default_settings())
 
     return DEFAULT_SETTINGS
 
@@ -417,7 +418,8 @@ def general_get(key: str,
         if qualified_key in general_settings:
             return general_settings[qualified_key]
 
-        raise papis.exceptions.DefaultSettingValueMissing(qualified_key)
+        from papis.exceptions import DefaultSettingValueMissing
+        raise DefaultSettingValueMissing(qualified_key)
 
     return value
 
@@ -483,7 +485,8 @@ def getstring(key: str, section: str | None = None) -> str:
     return str(result)
 
 
-def getformatpattern(key: str, section: str | None = None) -> FormatPattern:
+def getformatpattern(key: str,
+                     section: str | None = None) -> "papis.strings.FormatPattern":
     """Retrieve a format pattern from the configuration file.
 
     Format patterns use the :class:`~papis.strings.FormatPattern` class to
@@ -520,16 +523,20 @@ def getformatpattern(key: str, section: str | None = None) -> FormatPattern:
     formatter = getstring("formatter")
     result: str | None = None
 
+    from papis.exceptions import DefaultSettingValueMissing
+
     for f in get_available_formatters():
         try:
             tmp = general_get(f"{key}.{f}", section=section, data_type=str)
-        except papis.exceptions.DefaultSettingValueMissing:
+        except DefaultSettingValueMissing:
             pass
         else:
             result, formatter = tmp, f
 
     if result is None:
         result = general_get(key, section=section, data_type=str)
+
+    from papis.strings import FormatPattern
 
     if isinstance(result, FormatPattern):
         return result
@@ -606,7 +613,7 @@ def merge_configuration_from_path(path: str | None,
     configuration.handle_includes()
 
 
-def set_lib(library: papis.library.Library) -> None:
+def set_lib(library: "papis.library.Library") -> None:
     """Set the current library."""
 
     global CURRENT_LIBRARY
@@ -629,7 +636,7 @@ def set_lib_from_name(libname: str) -> None:
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname: str) -> papis.library.Library:
+def get_lib_from_name(libname: str) -> "papis.library.Library":
     """Get a library object from a name.
 
     :param libname: the name of a library in the configuration file or a path
@@ -639,11 +646,13 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
     default_settings = get_default_settings()
     libs = get_libs_from_config(config)
 
+    from papis.library import Library, from_paths
+
     if libname not in libs:
         if os.path.isdir(libname):
             logger.warning("Setting path '%s' as the main library folder.", libname)
 
-            lib = papis.library.from_paths([libname])
+            lib = from_paths([libname])
             # NOTE: can't use set(...) here due to cyclic dependencies
             config[lib.name] = {"dirs": str([escape_interp(libname)])}
         else:
@@ -673,7 +682,7 @@ def get_lib_from_name(libname: str) -> papis.library.Library:
                     "\t'dir' must be a path to an existing folder.\n"
                     "\t'dirs' must be a list of paths.") from exc
 
-        lib = papis.library.Library(libname, paths)
+        lib = Library(libname, paths)
 
     return lib
 
@@ -688,7 +697,7 @@ def get_lib_name() -> str:
     return get_lib().name
 
 
-def get_lib() -> papis.library.Library:
+def get_lib() -> "papis.library.Library":
     """Get current library.
 
     If there is no library set before, the default library will be retrieved.
@@ -713,7 +722,9 @@ def get_lib() -> papis.library.Library:
 
         set_lib_from_name(lib)
 
-    assert isinstance(CURRENT_LIBRARY, papis.library.Library)
+    from papis.library import Library
+    assert isinstance(CURRENT_LIBRARY, Library)
+
     return CURRENT_LIBRARY
 
 
