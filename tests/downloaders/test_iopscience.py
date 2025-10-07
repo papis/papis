@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.iopscience import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.iopscience import IOPscienceDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 IOPSCIENCE_URLS = (
@@ -18,8 +18,8 @@ def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
                            url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("iopscience")
-    assert cls is Downloader
+    cls = get_downloader_by_name("iopscience")
+    assert cls is IOPscienceDownloader
 
     down = cls.match(url)
     assert down is not None

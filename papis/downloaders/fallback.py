@@ -1,9 +1,9 @@
 from typing import Any
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class FallbackDownloader(Downloader):
     """Retrieve documents from websites using Dublin Core or Google Scholar metadata"""
 
     def __init__(self, uri: str, name: str = "fallback",
@@ -17,12 +17,14 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        return Downloader(url)
+    def match(cls, url: str) -> Downloader | None:
+        return FallbackDownloader(url)
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
+
         soup = self._get_soup()
-        data = papis.downloaders.base.parse_meta_headers(soup)
+        data = parse_meta_headers(soup)
 
         if "url" not in data:
             data["url"] = self.uri

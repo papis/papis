@@ -1,9 +1,10 @@
 import re
 
-import papis.downloaders.fallback
+from papis.downloaders import Downloader
+from papis.downloaders.fallback import FallbackDownloader
 
 
-class Downloader(papis.downloaders.fallback.Downloader):
+class APSDownloader(FallbackDownloader):
     """Retrieve documents from `APS <https://aps.org>`__"""
 
     def __init__(self, url: str) -> None:
@@ -14,8 +15,8 @@ class Downloader(papis.downloaders.fallback.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.fallback.Downloader | None:
-        return Downloader(url) if re.match(r".*aps.org.*", url) else None
+    def match(cls, url: str) -> Downloader | None:
+        return APSDownloader(url) if re.match(r".*aps.org.*", url) else None
 
     def get_bibtex_url(self) -> str | None:
         url = "{}?type=bibtex&download=true".format(

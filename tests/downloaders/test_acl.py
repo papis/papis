@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.acl import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.acl import ACLAnthologyDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 ACL_URLS = (
@@ -24,10 +24,10 @@ def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
     )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(ACLAnthologyDownloader.match(url), ACLAnthologyDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert ACLAnthologyDownloader.match(url) is None
 
 
 @pytest.mark.parametrize("url", ACL_URLS)
@@ -37,8 +37,8 @@ def test_acl_fetch(
     monkeypatch: pytest.MonkeyPatch,
     url: str,
 ) -> None:
-    cls_ = papis.downloaders.get_downloader_by_name("acl")
-    assert cls_ is Downloader
+    cls_ = get_downloader_by_name("acl")
+    assert cls_ is ACLAnthologyDownloader
 
     down = cls_.match(url)
     assert down is not None

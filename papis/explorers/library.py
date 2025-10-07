@@ -36,9 +36,9 @@ def cli(ctx: click.Context,
     if doc_folder:
         ctx.obj["documents"] += [from_folder(d) for d in doc_folder]
 
-    from papis.database import get
+    from papis.database import get_database
 
-    db = get(library_name=library)
+    db = get_database(library_name=library)
     docs = db.query(query)
     logger.info("Found %d documents.", len(docs))
 

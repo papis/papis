@@ -1,6 +1,6 @@
 import pytest
 
-from papis.downloaders.thesesfr import Downloader
+from papis.downloaders.thesesfr import TheseFrDownloader
 from papis.testing import TemporaryConfiguration
 
 
@@ -12,10 +12,10 @@ def test_match(tmp_config: TemporaryConfiguration) -> None:
     ]
     invalid_urls = ["http://google.com", "2014TOU", "ASDF"]  # spell: disable
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(TheseFrDownloader.match(url), TheseFrDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert TheseFrDownloader.match(url) is None
 
 
 @pytest.mark.parametrize(
@@ -29,7 +29,7 @@ def test_match(tmp_config: TemporaryConfiguration) -> None:
 )
 def test_get_identifier(query: str, expected: str,
                         tmp_config: TemporaryConfiguration) -> None:
-    d = Downloader(query)
+    d = TheseFrDownloader(query)
     actual = d.get_identifier()
     assert actual == expected
 
@@ -44,7 +44,7 @@ def test_get_identifier(query: str, expected: str,
     ],
 )
 def test_get_document_url(query: str, expected: str) -> None:
-    d = Downloader(query)
+    d = TheseFrDownloader(query)
     actual = d.get_document_url()
     assert actual == expected
 
@@ -60,6 +60,6 @@ def test_get_document_url(query: str, expected: str) -> None:
 )
 def test_get_bibtex_url(query: str, expected: str,
                         tmp_config: TemporaryConfiguration) -> None:
-    d = Downloader(query)
+    d = TheseFrDownloader(query)
     actual = d.get_bibtex_url()
     assert actual == expected

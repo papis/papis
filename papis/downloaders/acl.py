@@ -1,10 +1,10 @@
 import re
 from typing import Any
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class ACLAnthologyDownloader(Downloader):
     """Retrieve documents from `ACL Anthology <https://aclanthology.org>`__"""
 
     def __init__(self, url: str) -> None:
@@ -16,8 +16,11 @@ class Downloader(papis.downloaders.Downloader):
         )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        return Downloader(url) if re.match(r".*aclanthology\.org.*", url) else None
+    def match(cls, url: str) -> Downloader | None:
+        if re.match(r".*aclanthology\.org.*", url):
+            return ACLAnthologyDownloader(url)
+        else:
+            return None
 
     def fetch_acl_data(self) -> dict[str, str]:
         soup = self._get_soup()
@@ -37,8 +40,10 @@ class Downloader(papis.downloaders.Downloader):
         return data
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
+
         soup = self._get_soup()
-        data = papis.downloaders.base.parse_meta_headers(soup)
+        data = parse_meta_headers(soup)
 
         # wrong field scraped: use bibtex to get correct abstract
         data.pop("abstract")

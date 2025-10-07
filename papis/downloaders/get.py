@@ -1,16 +1,16 @@
 import re
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class DocumentDownloader(Downloader):
     """Retrieve documents from remote PDF, EPUB or other files"""
 
     def __init__(self, url: str) -> None:
         super().__init__(url, name="get", priority=0)
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         """
         >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is None  # spell: disable
         False
@@ -22,7 +22,7 @@ class Downloader(papis.downloaders.Downloader):
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
         m = re.match(fr"^http.*\.({endings})$", url, re.IGNORECASE)
         if m:
-            d = Downloader(url)
+            d = DocumentDownloader(url)
 
             extension = m.group(1)
             d.expected_document_extensions = (extension,)

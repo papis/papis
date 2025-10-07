@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.hal import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.hal import HALDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 HAL_URLS = (
@@ -27,10 +27,10 @@ def test_hal_match(tmp_config: TemporaryConfiguration) -> None:
         )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader), url
+        assert isinstance(HALDownloader.match(url), HALDownloader), url
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None, url
+        assert HALDownloader.match(url) is None, url
 
 
 @pytest.mark.parametrize("url", HAL_URLS[1::2])
@@ -38,8 +38,8 @@ def test_hal_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("hal")
-    assert cls is Downloader
+    cls = get_downloader_by_name("hal")
+    assert cls is HALDownloader
 
     down = cls.match(url)
     assert down is not None

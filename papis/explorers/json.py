@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 
@@ -23,8 +22,10 @@ def cli(ctx: click.Context, jsonfile: str) -> None:
 
     import json
 
+    from papis.document import from_data
+
     with open(jsonfile, encoding="utf-8") as f:
-        docs = [papis.document.from_data(d) for d in json.load(f)]
+        docs = [from_data(d) for d in json.load(f)]
         ctx.obj["documents"] += docs
 
     logger.info("Found %s documents.", len(docs))

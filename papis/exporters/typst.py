@@ -1,65 +1,67 @@
-from typing import Any
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
 import papis.logging
-from papis.document import (
-    Document,
-    EmptyKeyConversion,
-    KeyConversionPair,
-    describe,
-    split_authors_name,
-)
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
-# NOTE: not all fields are implemented, since they're not well-supported
-PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP = [
-    KeyConversionPair("title", [EmptyKeyConversion]),
-    KeyConversionPair("author", [{
-        "key": "author",
-        # NOTE: this is mostly the case in tests, but might as well include it
-        "action": lambda a: to_hayagriva_authors(split_authors_name([a]))
-    }]),
-    KeyConversionPair("author_list", [{
-        "key": "author",
-        "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
-    }]),
-    KeyConversionPair("year", [{"key": "date", "action": None}]),
-    KeyConversionPair("date", [{"key": "date", "action": None}]),
-    KeyConversionPair("editor", [{
-        "key": "editor",
-        "action": lambda a: to_hayagriva_authors(split_authors_name([a]))
-    }]),
-    KeyConversionPair("editor_list", [{
-        "key": "editor",
-        "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
-    }]),
-    KeyConversionPair("publisher", [EmptyKeyConversion]),
-    KeyConversionPair("location", [EmptyKeyConversion]),
-    KeyConversionPair("venue", [{"key": "location", "action": None}]),
-    KeyConversionPair("organization", [EmptyKeyConversion]),
-    KeyConversionPair("institution", [{"key": "organization", "action": None}]),
-    KeyConversionPair("issue", [EmptyKeyConversion]),
-    KeyConversionPair("volume", [EmptyKeyConversion]),
-    KeyConversionPair("volumes", [{"key": "volume-total", "action": None}]),
-    KeyConversionPair("edition", [EmptyKeyConversion]),
-    KeyConversionPair("pages", [{"key": "page-range", "action": None}]),
-    KeyConversionPair("pagetotal", [{"key": "page-total", "action": None}]),
-    KeyConversionPair("url", [EmptyKeyConversion]),
-    KeyConversionPair("doi", [EmptyKeyConversion]),
-    KeyConversionPair("eprint", [{"key": "serial-number", "action": None}]),
-    KeyConversionPair("isbn", [EmptyKeyConversion]),
-    KeyConversionPair("issn", [EmptyKeyConversion]),
-    KeyConversionPair("language", [EmptyKeyConversion]),
-    # NOTE: this is mostly for the parent
-    KeyConversionPair("journal", [{"key": "title", "action": None}]),
-]
+
+@cache
+def _get_hayagriva_key_conversions() -> list["papis.document.KeyConversionPair"]:
+    # NOTE: not all fields are implemented, since they're not well-supported
+    from papis.document import EmptyKeyConversion, KeyConversionPair, split_authors_name
+
+    return [
+        KeyConversionPair("title", [EmptyKeyConversion]),
+        KeyConversionPair("author", [{
+            "key": "author",
+            # NOTE: this is mostly the case in tests, but might as well include it
+            "action": lambda a: to_hayagriva_authors(split_authors_name([a]))
+        }]),
+        KeyConversionPair("author_list", [{
+            "key": "author",
+            "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
+        }]),
+        KeyConversionPair("year", [{"key": "date", "action": None}]),
+        KeyConversionPair("date", [{"key": "date", "action": None}]),
+        KeyConversionPair("editor", [{
+            "key": "editor",
+            "action": lambda a: to_hayagriva_authors(split_authors_name([a]))
+        }]),
+        KeyConversionPair("editor_list", [{
+            "key": "editor",
+            "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
+        }]),
+        KeyConversionPair("publisher", [EmptyKeyConversion]),
+        KeyConversionPair("location", [EmptyKeyConversion]),
+        KeyConversionPair("venue", [{"key": "location", "action": None}]),
+        KeyConversionPair("organization", [EmptyKeyConversion]),
+        KeyConversionPair("institution", [{"key": "organization", "action": None}]),
+        KeyConversionPair("issue", [EmptyKeyConversion]),
+        KeyConversionPair("volume", [EmptyKeyConversion]),
+        KeyConversionPair("volumes", [{"key": "volume-total", "action": None}]),
+        KeyConversionPair("edition", [EmptyKeyConversion]),
+        KeyConversionPair("pages", [{"key": "page-range", "action": None}]),
+        KeyConversionPair("pagetotal", [{"key": "page-total", "action": None}]),
+        KeyConversionPair("url", [EmptyKeyConversion]),
+        KeyConversionPair("doi", [EmptyKeyConversion]),
+        KeyConversionPair("eprint", [{"key": "serial-number", "action": None}]),
+        KeyConversionPair("isbn", [EmptyKeyConversion]),
+        KeyConversionPair("issn", [EmptyKeyConversion]),
+        KeyConversionPair("language", [EmptyKeyConversion]),
+        # NOTE: this is mostly for the parent
+        KeyConversionPair("journal", [{"key": "title", "action": None}]),
+    ]
 
 
 def to_hayagriva_authors(authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [{"given-name": a["given"], "name": a["family"]} for a in authors]
 
 
-def to_hayagriva(doc: Document) -> dict[str, Any]:
+def to_hayagriva(doc: "papis.document.Document") -> dict[str, Any]:
     from contextlib import suppress
 
     from papis.hayagriva import (
@@ -92,7 +94,7 @@ def to_hayagriva(doc: Document) -> dict[str, Any]:
     data: dict[str, Any] = {"type": htype.capitalize()}
     parent: dict[str, Any] = {"type": ptype.capitalize()} if ptype else {}
 
-    for foreign_key, conversions in PAPIS_TO_HAYAGRIVA_KEY_CONVERSION_MAP:
+    for foreign_key, conversions in _get_hayagriva_key_conversions():
         if foreign_key not in doc:
             continue
 
@@ -125,7 +127,7 @@ def to_hayagriva(doc: Document) -> dict[str, Any]:
     return data
 
 
-def exporter(documents: list[Document]) -> str:
+def exporter(documents: list["papis.document.Document"]) -> str:
     """Convert document to the Hayagriva format used by Typst."""
     import yaml
 
@@ -142,6 +144,7 @@ def exporter(documents: list[Document]) -> str:
             while unique_ref in results:
                 unique_ref = f"{ref}{next(suffix)}"
 
+            from papis.document import describe
             logger.warning("Document with reference '%s' already exists (duplicate). "
                            "Create a new ref names '%s' for this document: %s",
                            ref, unique_ref, describe(doc))

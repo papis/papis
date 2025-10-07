@@ -1,10 +1,10 @@
 import re
 from typing import Any, ClassVar
 
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class AnnualReviewsDownloader(Downloader):
     """Retrieve documents from `Annual Reviews <https://www.annualreviews.org>`__"""
 
     DOCUMENT_URL: ClassVar[str] = "https://annualreviews.org/doi/pdf/{doi}"
@@ -22,9 +22,9 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
+    def match(cls, url: str) -> Downloader | None:
         if re.match(r".*annualreviews.org.*", url):
-            return Downloader(url)
+            return AnnualReviewsDownloader(url)
         else:
             return None
 
@@ -47,9 +47,11 @@ class Downloader(papis.downloaders.Downloader):
             return None
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
+
         data = {}
         soup = self._get_soup()
-        data.update(papis.downloaders.base.parse_meta_headers(soup))
+        data.update(parse_meta_headers(soup))
 
         if "author_list" in data:
             return data
@@ -85,7 +87,8 @@ class Downloader(papis.downloaders.Downloader):
                 }
             )
 
+        from papis.document import author_list_to_author
         data["author_list"] = author_list
-        data["author"] = papis.document.author_list_to_author(data)
+        data["author"] = author_list_to_author(data)
 
         return data

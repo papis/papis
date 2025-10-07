@@ -152,7 +152,9 @@ class FzfPicker(Picker[T]):
         fmt = papis.config.getformatpattern("fzf-header-format")
 
         def _header_filter(d: T) -> str:
-            if isinstance(d, papis.document.Document):
+            from papis.document import Document
+
+            if isinstance(d, Document):
                 import colorama
                 return format(fmt, d, additional={"c": colorama})
             else:

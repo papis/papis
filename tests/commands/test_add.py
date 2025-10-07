@@ -47,9 +47,9 @@ def test_add_run(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     # add no files
     run([], data={"author": "Evangelista", "title": "MRCI"})
 
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     doc, = db.query_dict({"author": "Evangelista"})
     assert len(doc.get_files()) == 0
 
@@ -94,14 +94,14 @@ def test_add_auto_doctor_run(tmp_library: TemporaryLibrary) -> None:
     paths: list[str] = []
 
     import papis.config
-    import papis.database
 
     # add document with auto-doctor on
     papis.config.set("doctor-default-checks", ["keys-missing", "key-type", "refs"])
     run(paths, data=data, auto_doctor=True)
 
     # check that all the broken fields are fixed
-    db = papis.database.get()
+    from papis.database import get_database
+    db = get_database()
     doc, = db.query_dict({"author": "Kutzelnigg"})
 
     assert doc["author_list"] == [{"given": "Werner", "family": "Kutzelnigg"}]
@@ -120,9 +120,9 @@ def test_add_set_cli(tmp_library: TemporaryLibrary) -> None:
          "--batch"])
     assert result.exit_code == 0
 
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     doc, = db.query_dict({"author": "Bertrand Russell"})
     assert doc["title"] == "Principia"
     assert not doc.get_files()
@@ -143,9 +143,9 @@ def test_add_link_cli(tmp_library: TemporaryLibrary) -> None:
          filename])
     assert result.exit_code == 0
 
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     doc, = db.query_dict({"author": "Plato"})
 
     files = doc.get_files()
@@ -169,9 +169,9 @@ def test_add_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
          filename])
     assert result.exit_code == 0
 
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     doc, = db.query_dict({"author": "Aristotle"})
 
     folder = doc.get_main_folder()
@@ -206,10 +206,11 @@ def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
             ["--from", "folder", folder])
         assert result.exit_code == 0
 
-    from papis.database.cache import Database
+    from papis.database import get_database
+    db = get_database()
 
-    db = papis.database.get()
-    if not isinstance(db, Database):
+    from papis.database.cache import PickleDatabase
+    if not isinstance(db, PickleDatabase):
         return
 
     db.documents = None

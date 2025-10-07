@@ -7,12 +7,13 @@ from papis.testing import TemporaryLibrary
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_query(tmp_library: TemporaryLibrary) -> None:
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     db.initialize()
 
-    assert isinstance(db, papis.database.cache.Database)
+    from papis.database.cache import PickleDatabase
+    assert isinstance(db, PickleDatabase)
     assert db.get_backend_name() == "papis"
 
     docs = db.query(".")
@@ -26,14 +27,15 @@ def test_database_query(tmp_library: TemporaryLibrary) -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_reload(tmp_library: TemporaryLibrary) -> None:
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
-    assert isinstance(db, papis.database.cache.Database)
+    db = get_database()
+
+    from papis.database.cache import PickleDatabase
+    assert isinstance(db, PickleDatabase)
 
     ndocs = len(db.get_all_documents())
 
-    assert isinstance(db, papis.database.cache.Database)
     db._save_documents()
     db.documents = None
 
@@ -43,16 +45,17 @@ def test_database_reload(tmp_library: TemporaryLibrary) -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_database_missing(tmp_library: TemporaryLibrary) -> None:
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
-    assert isinstance(db, papis.database.cache.Database)
+    db = get_database()
+
+    from papis.database.cache import PickleDatabase
+    assert isinstance(db, PickleDatabase)
 
     docs = db.get_all_documents()
     doc = docs[0]
     db.delete(doc)
 
-    assert isinstance(db, papis.database.cache.Database)
     with pytest.raises(
             Exception,
             match="Document could not be found"):
@@ -72,9 +75,9 @@ def test_filter_documents() -> None:
 
 @pytest.mark.library_setup(settings={"database-backend": "papis"})
 def test_cache_path(tmp_library: TemporaryLibrary) -> None:
-    import papis.database
+    from papis.database import get_database
 
-    db = papis.database.get()
+    db = get_database()
     _ = db.get_all_documents()
 
     assert os.path.exists(db.get_cache_path())

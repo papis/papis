@@ -1,10 +1,10 @@
 import re
 from typing import Any, ClassVar
 
-import papis.downloaders
+from papis.downloaders import Downloader
 
 
-class Downloader(papis.downloaders.Downloader):
+class ACSDownloader(Downloader):
     """Retrieve documents from `ACS Publications <https://pubs.acs.org>`__"""
 
     DOCUMENT_URL: ClassVar[str] = (
@@ -25,12 +25,14 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        return Downloader(url) if re.match(r".*acs.org.*", url) else None
+    def match(cls, url: str) -> Downloader | None:
+        return ACSDownloader(url) if re.match(r".*acs.org.*", url) else None
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
+
         soup = self._get_soup()
-        data = papis.downloaders.base.parse_meta_headers(soup)
+        data = parse_meta_headers(soup)
 
         return data
 

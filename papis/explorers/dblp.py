@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 
@@ -41,9 +40,10 @@ def cli(
     logger.info("Looking up DBLP documents...")
 
     from papis.dblp import get_data
+    from papis.document import from_data
 
     data = get_data(query=query, max_results=max_results)
-    docs = [papis.document.from_data(data=d) for d in data]
+    docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
     logger.info("Found %d documents.", len(docs))

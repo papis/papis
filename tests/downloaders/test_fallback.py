@@ -1,7 +1,7 @@
 import pytest
 
-import papis.downloaders
-from papis.downloaders.fallback import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.fallback import FallbackDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 FALLBACK_URLS = (
@@ -16,8 +16,8 @@ def test_fallback_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,
                         monkeypatch: pytest.MonkeyPatch,
                         url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("fallback")
-    assert cls is Downloader
+    cls = get_downloader_by_name("fallback")
+    assert cls is FallbackDownloader
 
     down = cls.match(url)
     assert down is not None

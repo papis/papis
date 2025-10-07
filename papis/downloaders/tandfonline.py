@@ -1,22 +1,12 @@
 import re
 from typing import Any, ClassVar
 
-import papis.document
-import papis.downloaders.base
+from papis.downloaders import Downloader
 
 tf_to_bibtex_converter = {
     # FIXME: what other types are there?
     "research-article": "article",
 }   # Dict[str, str]
-
-_K = papis.document.KeyConversionPair
-article_key_conversion = [
-    _K("type", [{"key": None, "action": lambda x: tf_to_bibtex_converter.get(x, x)}]),
-    _K("date", [
-        {"key": "year", "action": lambda x: _parse_year(x)},  # noqa: PLW0108
-        {"key": "month", "action": lambda x: _parse_month(x)},  # noqa: PLW0108
-    ])
-]
 
 
 def _parse_year(date: str) -> int | None:
@@ -35,7 +25,7 @@ def _parse_month(date: str) -> int | None:
         return None
 
 
-class Downloader(papis.downloaders.Downloader):
+class TaylorFrancisDownloader(Downloader):
     """Retrieve documents from `Taylor & Francis <https://www.tandfonline.com>`__"""
 
     BASE_URL: ClassVar[str] = "https://www.tandfonline.com/doi/full"
@@ -57,15 +47,27 @@ class Downloader(papis.downloaders.Downloader):
             )
 
     @classmethod
-    def match(cls, url: str) -> papis.downloaders.Downloader | None:
-        return (Downloader(url)
+    def match(cls, url: str) -> Downloader | None:
+        return (TaylorFrancisDownloader(url)
                 if re.match(r".*tandfonline.com.*", url) else None)
 
     def get_data(self) -> dict[str, Any]:
+        from papis.downloaders.base import parse_meta_headers
         soup = self._get_soup()
-        data = papis.downloaders.base.parse_meta_headers(soup)
+        data = parse_meta_headers(soup)
 
-        data = papis.document.keyconversion_to_data(
+        from papis.document import KeyConversionPair, keyconversion_to_data
+        article_key_conversion = [
+            KeyConversionPair("type", [
+                {"key": None, "action": lambda x: tf_to_bibtex_converter.get(x, x)}
+            ]),
+            KeyConversionPair("date", [
+                {"key": "year", "action": _parse_year},
+                {"key": "month", "action": _parse_month},
+            ])
+        ]
+
+        data = keyconversion_to_data(
             article_key_conversion, data, keep_unknown_keys=True)
 
         if "doi" not in data and "doi" in self.uri:

@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.acs import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.acs import ACSDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 ACS_URLS = (
@@ -24,10 +24,10 @@ def test_acs_match(tmp_config: TemporaryConfiguration) -> None:
         )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(ACSDownloader.match(url), ACSDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert ACSDownloader.match(url) is None
 
 
 @pytest.mark.skip(reason="acs.org disallows web scrapers (cloudflare)")
@@ -36,8 +36,8 @@ def test_acs_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("acs")
-    assert cls is Downloader
+    cls = get_downloader_by_name("acs")
+    assert cls is ACSDownloader
 
     down = cls.match(url)
     assert down is not None

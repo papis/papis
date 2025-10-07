@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 
@@ -27,9 +26,9 @@ def cli(ctx: click.Context, yamlfile: str) -> None:
     except ImportError:
         from yaml import SafeLoader as Loader  # type: ignore[assignment]
 
+    from papis.document import from_data
     with open(yamlfile, encoding="utf-8") as fd:
-        docs = [papis.document.from_data(d)
-                for d in yaml.load_all(fd, Loader=Loader)]
+        docs = [from_data(d) for d in yaml.load_all(fd, Loader=Loader)]
     ctx.obj["documents"] += docs
 
     logger.info("Found %d documents.", len(docs))

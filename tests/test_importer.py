@@ -117,12 +117,12 @@ def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> N
     assert len(importers) == 1
     assert isinstance(importers[0], DOIImporter)
 
-    from papis.downloaders.usenix import Downloader as UsenixDownloader
+    from papis.downloaders.usenix import USENIXDownloader
 
     importers = get_matching_importers_by_name(name_and_uris, include_downloaders=True)
     assert len(importers) == 2
     assert isinstance(importers[0], DOIImporter)
-    assert isinstance(importers[1], UsenixDownloader)
+    assert isinstance(importers[1], USENIXDownloader)
 
 
 def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
@@ -137,15 +137,15 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     assert len(importers) == 1
     assert isinstance(importers[0], ArxivImporter)
 
-    from papis.downloaders.fallback import Downloader as FallbackDownloader
-    from papis.downloaders.usenix import Downloader as UsenixDownloader
+    from papis.downloaders.fallback import FallbackDownloader
+    from papis.downloaders.usenix import USENIXDownloader
 
     importers = get_matching_importers_by_uri(
         "https://www.usenix.org/conference/nsdi22/presentation/goyal",
         include_downloaders=True)
     assert len(importers) == 2
     assert isinstance(importers[0], FallbackDownloader)
-    assert isinstance(importers[1], UsenixDownloader)
+    assert isinstance(importers[1], USENIXDownloader)
 
 
 def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:

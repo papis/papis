@@ -1,6 +1,5 @@
 import click
 
-import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
 
@@ -58,6 +57,7 @@ def cli(ctx: click.Context,
     logger.info("Looking up arXiv documents...")
 
     from papis.arxiv import get_data
+    from papis.document import from_data
 
     data = get_data(
         query=query,
@@ -71,7 +71,7 @@ def cli(ctx: click.Context,
         id_list=id_list,
         page=page or 0,
         max_results=max_results)
-    docs = [papis.document.from_data(data=d) for d in data]
+    docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
     logger.info("Found %s documents.", len(docs))

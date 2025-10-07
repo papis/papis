@@ -151,8 +151,10 @@ def pick_doc(documents: Sequence["papis.document.Document"], *,
 
     from functools import partial
 
-    header_filter = partial(papis.format.format, header_format)
-    match_filter = partial(papis.format.format, match_format)
+    from papis.format import format
+
+    header_filter = partial(format, header_format)
+    match_filter = partial(format, match_format)
 
     return pick(documents,
                 header_filter=header_filter,
@@ -199,8 +201,10 @@ def pick_library(libs: list[str] | None = None, *,
     def header_filter(lib: str) -> str:
         import colorama
 
+        from papis.format import format
+
         library = papis.config.get_lib_from_name(lib)
-        return papis.format.format(header_format, {
+        return format(header_format, {
             "name": library.name,
             "dir": library.paths[0],
             "paths": library.paths

@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.annualreviews import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.annualreviews import AnnualReviewsDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 ANNUAL_REVIEWS_URLS = (
@@ -24,10 +24,10 @@ def test_annual_review_match(tmp_config: TemporaryConfiguration) -> None:
         )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(AnnualReviewsDownloader.match(url), AnnualReviewsDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert AnnualReviewsDownloader.match(url) is None
 
 
 @pytest.mark.skip(reason="annualreviews.org disallows web scrapers (cloudflare)")
@@ -36,8 +36,8 @@ def test_annual_review_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,
                              monkeypatch: pytest.MonkeyPatch,
                              url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("annualreviews")
-    assert cls is Downloader
+    cls = get_downloader_by_name("annualreviews")
+    assert cls is AnnualReviewsDownloader
 
     down = cls.match(url)
     assert down is not None

@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import papis.downloaders
-from papis.downloaders.springer import Downloader
+from papis.downloaders import get_downloader_by_name
+from papis.downloaders.springer import SpringerLinkDownloader
 from papis.testing import ResourceCache, TemporaryConfiguration
 
 SPRINGER_LINK_URLS = (
@@ -24,10 +24,10 @@ def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
         )
 
     for url in valid_urls:
-        assert isinstance(Downloader.match(url), Downloader)
+        assert isinstance(SpringerLinkDownloader.match(url), SpringerLinkDownloader)
 
     for url in invalid_urls:
-        assert Downloader.match(url) is None
+        assert SpringerLinkDownloader.match(url) is None
 
 
 @pytest.mark.parametrize("url", SPRINGER_LINK_URLS)
@@ -35,8 +35,8 @@ def test_springer_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,
                         monkeypatch: pytest.MonkeyPatch,
                         url: str) -> None:
-    cls = papis.downloaders.get_downloader_by_name("springer")
-    assert cls is Downloader
+    cls = get_downloader_by_name("springer")
+    assert cls is SpringerLinkDownloader
 
     down = cls.match(url)
     assert down is not None
