@@ -128,14 +128,16 @@ import collections
 import os
 import re
 from collections.abc import Callable
-from typing import Any, NamedTuple, TypeAlias
+from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias
 
 import click
 
 import papis.cli
 import papis.config
-import papis.document
 import papis.logging
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -143,7 +145,7 @@ logger = papis.logging.get_logger(__name__)
 #: check and is expected to wrap all the required data, so it takes no arguments.
 FixFn: TypeAlias = Callable[[], None]
 #: Callable for doctor document checks.
-CheckFn: TypeAlias = Callable[[papis.document.Document], list["Error"]]
+CheckFn: TypeAlias = Callable[["papis.document.Document"], list["Error"]]
 
 
 class Error(NamedTuple):
@@ -163,7 +165,7 @@ class Error(NamedTuple):
     #: will change the attached :attr:`doc`.
     fix_action: FixFn | None
     #: The document that generated the error.
-    doc: papis.document.Document | None
+    doc: "papis.document.Document | None"
 
 
 class Check(NamedTuple):
@@ -178,7 +180,7 @@ REGISTERED_CHECKS: dict[str, Check] = {}
 
 
 def make_error(
-        doc: papis.document.Document,
+        doc: "papis.document.Document",
         name: str, *,
         msg: str,
         payload: str,
@@ -233,7 +235,7 @@ def registered_checks_names() -> list[str]:
 FILES_CHECK_NAME = "files"
 
 
-def files_check(doc: papis.document.Document) -> list[Error]:
+def files_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check whether the files of a document actually exist in the filesystem.
 
@@ -280,7 +282,7 @@ def files_check(doc: papis.document.Document) -> list[Error]:
 KEYS_MISSING_CHECK_NAME = "keys-missing"
 
 
-def keys_missing_check(doc: papis.document.Document) -> list[Error]:
+def keys_missing_check(doc: "papis.document.Document") -> list[Error]:
     """
     Checks whether the keys provided in the configuration
     option :confval:`doctor-keys-missing-keys` exist in the document
@@ -289,6 +291,7 @@ def keys_missing_check(doc: papis.document.Document) -> list[Error]:
     :returns: a :class:`list` of errors, one for each missing key.
     """
     from papis.defaults import NOT_SET
+    from papis.document import author_list_to_author, split_authors_name
 
     keys = papis.config.get("keys-exist-keys", section="doctor")
     if keys is NOT_SET:
@@ -310,7 +313,7 @@ def keys_missing_check(doc: papis.document.Document) -> list[Error]:
 
             logger.info("[FIX] Parsing 'author_list' into 'author': '%s'.",
                         doc["author_list"])
-            doc["author"] = papis.document.author_list_to_author(doc)
+            doc["author"] = author_list_to_author(doc)
 
         def fixer_author_list_from_author() -> None:
             if "author" not in doc:
@@ -318,7 +321,7 @@ def keys_missing_check(doc: papis.document.Document) -> list[Error]:
 
             logger.info("[FIX] Parsing 'author' into 'author_list': '%s'.",
                         doc["author"])
-            doc["author_list"] = papis.document.split_authors_name(doc["author"])
+            doc["author_list"] = split_authors_name(doc["author"])
 
         if key == "author":
             return fixer_author_from_author_list
@@ -338,7 +341,7 @@ REFS_CHECK_NAME = "refs"
 REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
 
 
-def refs_check(doc: papis.document.Document) -> list[Error]:
+def refs_check(doc: "papis.document.Document") -> list[Error]:
     """
     Checks that a ref exists and if not it tries to create one
     according to the :confval:`ref-format` configuration option.
@@ -386,7 +389,7 @@ DUPLICATED_KEYS_SEEN: dict[str, set[str]] = collections.defaultdict(set)
 DUPLICATED_KEYS_NAME = "duplicated-keys"
 
 
-def duplicated_keys_check(doc: papis.document.Document) -> list[Error]:
+def duplicated_keys_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check for duplicated keys in the list given by the
     :confval:`doctor-duplicated-keys-keys` configuration option.
@@ -419,7 +422,7 @@ def duplicated_keys_check(doc: papis.document.Document) -> list[Error]:
 DUPLICATED_VALUES_NAME = "duplicated-values"
 
 
-def duplicated_values_check(doc: papis.document.Document) -> list[Error]:
+def duplicated_values_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check if the keys given by :confval:`doctor-duplicated-values-keys`
     contain any duplicate entries. These keys are expected to be lists of items.
@@ -475,7 +478,7 @@ def duplicated_values_check(doc: papis.document.Document) -> list[Error]:
 BIBTEX_TYPE_CHECK_NAME = "bibtex-type"
 
 
-def bibtex_type_check(doc: papis.document.Document) -> list[Error]:
+def bibtex_type_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check that the document type is compatible with BibTeX or BibLaTeX type descriptors.
 
@@ -512,7 +515,7 @@ def bibtex_type_check(doc: papis.document.Document) -> list[Error]:
 BIBLATEX_TYPE_ALIAS_CHECK_NAME = "biblatex-type-alias"
 
 
-def biblatex_type_alias_check(doc: papis.document.Document) -> list[Error]:
+def biblatex_type_alias_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check that the BibLaTeX type of the document is not a known alias.
 
@@ -551,7 +554,7 @@ BIBLATEX_KEY_ALIAS_IGNORED = {"journal"}
 BIBLATEX_KEY_ALIAS_CHECK_NAME = "biblatex-key-alias"
 
 
-def biblatex_key_alias_check(doc: papis.document.Document) -> list[Error]:
+def biblatex_key_alias_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check that no BibLaTeX keys in the document are known aliases.
 
@@ -583,7 +586,7 @@ def biblatex_key_alias_check(doc: papis.document.Document) -> list[Error]:
 BIBLATEX_REQUIRED_KEYS_CHECK_NAME = "biblatex-required-keys"
 
 
-def biblatex_required_keys_check(doc: papis.document.Document) -> list[Error]:
+def biblatex_required_keys_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check that required BibLaTeX keys are part of the document based on its type.
 
@@ -639,7 +642,7 @@ BIBLATEX_KEY_CONVERT_NUMBER_REGEX = re.compile(
 )
 
 
-def biblatex_key_convert_check(doc: papis.document.Document) -> list[Error]:
+def biblatex_key_convert_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check if any BibLaTeX keys in the document are incorrectly assigned.
 
@@ -742,7 +745,7 @@ def get_key_type_check_keys() -> dict[str, type]:
     return processed_keys
 
 
-def key_type_check(doc: papis.document.Document) -> list[Error]:
+def key_type_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check document keys have expected types.
 
@@ -761,6 +764,8 @@ def key_type_check(doc: papis.document.Document) -> list[Error]:
                        "Use 'doctor-key-type-separator' instead.")
 
     separator = separator.strip("'").strip('"') if separator else None
+
+    from papis.document import describe
 
     def make_fixer(key: str, cls: type) -> FixFn:
         def fixer_convert_list() -> None:
@@ -800,7 +805,7 @@ def key_type_check(doc: papis.document.Document) -> list[Error]:
                 doc[key] = cls(value)
             except Exception as exc:
                 logger.error("Failed to convert key '%s' to '%s': '%s'.",
-                             key, cls, papis.document.describe(doc), exc_info=exc)
+                             key, cls, describe(doc), exc_info=exc)
 
         if cls is list:
             return fixer_convert_list
@@ -830,7 +835,7 @@ HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});", r
 HTML_CODES_CHECK_NAME = "html-codes"
 
 
-def html_codes_check(doc: papis.document.Document) -> list[Error]:
+def html_codes_check(doc: "papis.document.Document") -> list[Error]:
     """
     Checks that the keys in :confval:`doctor-html-codes-keys`
     configuration options do not contain any HTML codes like ``&amp;`` etc.
@@ -877,7 +882,7 @@ HTML_TAGS_REGEX = re.compile(r"<.*?>")
 HTML_TAGS_WHITESPACE_REGEX = re.compile(r"\s+")
 
 
-def html_tags_check(doc: papis.document.Document) -> list[Error]:
+def html_tags_check(doc: "papis.document.Document") -> list[Error]:
     """
     Checks that the keys in :confval:`doctor-html-tags-keys`
     configuration options do not contain any HTML tags like ``<href>`` etc.
@@ -940,11 +945,12 @@ def html_tags_check(doc: papis.document.Document) -> list[Error]:
     keys = papis.config.getlist("html-tags-keys", section="doctor")
     keys.extend(papis.config.getlist("html-tags-keys-extend", section="doctor"))
 
+    from papis.document import describe
+
     for key in keys:
         value = doc.get(key)
         if value is None:
-            logger.debug("Key '%s' not found in document: '%s'",
-                         key, papis.document.describe(doc))
+            logger.debug("Key '%s' not found in document: '%s'", key, describe(doc))
             continue
 
         if not isinstance(value, str):
@@ -973,7 +979,7 @@ STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b([A-Z])(?!\.)\b")
 STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b[A-Z]\.)(?=[A-Z])")
 
 
-def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
+def string_cleaner_check(doc: "papis.document.Document") -> list[Error]:
     """
     Check string keys in the document for various errors.
 
@@ -988,6 +994,7 @@ def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
     :returns: a :class:`list` of errors, one for each string-based key that has
         unexpected formatting.
     """
+    from papis.document import author_list_to_author
 
     def has_extra_newlines(key: str, value: str) -> bool:
         return "\n" in value
@@ -1047,7 +1054,7 @@ def string_cleaner_check(doc: papis.document.Document) -> list[Error]:
                 author.update({"given": pattern.sub(sub, author["given"])})
 
             doc["author_list"] = author_list
-            doc["author"] = papis.document.author_list_to_author(doc)
+            doc["author"] = author_list_to_author(doc)
             logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
 
         return fixer
@@ -1129,7 +1136,7 @@ DEPRECATED_CHECK_NAMES = {
 }
 
 
-def gather_errors(documents: list[papis.document.Document],
+def gather_errors(documents: list["papis.document.Document"],
                   checks: list[str] | None = None) -> list[Error]:
     """Run all *checks* over the list of *documents*.
 
@@ -1159,7 +1166,7 @@ def gather_errors(documents: list[papis.document.Document],
     return errors
 
 
-def fix_errors(doc: papis.document.Document,
+def fix_errors(doc: "papis.document.Document",
                checks: list[str] | None = None) -> None:
     """Fix errors in *doc* for the given *checks*.
 
@@ -1167,13 +1174,15 @@ def fix_errors(doc: papis.document.Document,
     not possible for many of the existing checks, but can be used to quickly
     clean up a document.
     """
+    from papis.document import describe
+
     errors = gather_errors([doc], checks=checks)
 
     fixed = 0
     for error in errors:
         if not error.fix_action:
             logger.error("Cannot fix '%s' error for document '%s': %s",
-                         error.name, papis.document.describe(doc), error.msg)
+                         error.name, describe(doc), error.msg)
             continue
 
         try:
@@ -1181,7 +1190,7 @@ def fix_errors(doc: papis.document.Document,
             fixed += 1
         except Exception as exc:
             logger.error("Failed to fix '%s' error for document '%s': %s",
-                         error.name, papis.document.describe(doc), error.msg,
+                         error.name, describe(doc), error.msg,
                          exc_info=exc)
 
     if errors:
@@ -1209,6 +1218,7 @@ def process_errors(errors: list[Error],
 
     from papis.api import save_doc
     from papis.commands.edit import run as edit_run
+    from papis.document import describe
 
     fixed = 0
     for i, error in enumerate(errors):
@@ -1237,7 +1247,7 @@ def process_errors(errors: list[Error],
             except Exception as exc:
                 logger.error("Failed to fix '%s' for document '%s'.",
                              error.name,
-                             papis.document.describe(error.doc)
+                             describe(error.doc)
                              if error.doc else "unknown",
                              exc_info=exc)
 
@@ -1255,7 +1265,7 @@ def process_errors(errors: list[Error],
         logger.info("Auto-fixed %d / %d errors!", fixed, len(errors))
 
 
-def run(doc: papis.document.Document,
+def run(doc: "papis.document.Document",
         checks: list[str] | None = None,
         fix: bool = True,
         explain: bool = False,

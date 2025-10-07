@@ -35,7 +35,9 @@ from typing import TYPE_CHECKING
 import click
 
 import papis.cli
+import papis.config
 import papis.logging
+from papis import __version__
 from papis.commands import CommandPluginLoaderGroup
 
 if TYPE_CHECKING:
@@ -57,7 +59,7 @@ def generate_profile_writing_function(profiler: "cProfile.Profile",
     cls=CommandPluginLoaderGroup,
     invoke_without_command=False)
 @click.help_option("--help", "-h")
-@click.version_option(version=papis.__version__)
+@click.version_option(version=__version__)
 @papis.cli.bool_flag(
     "-v", "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG).",
@@ -119,8 +121,6 @@ def run(ctx: click.Context,
         set_list: list[tuple[str, str]],
         color: str,
         np: int | None) -> None:
-    import papis.config
-
     if np:
         os.environ["PAPIS_NP"] = str(np)
 
@@ -148,7 +148,9 @@ def run(ctx: click.Context,
 
     # read in configuration from current library
     if pick_lib:
-        picked_libs = papis.pick.pick_library()
+        from papis.pick import pick_library
+
+        picked_libs = pick_library()
         if picked_libs:
             lib = picked_libs[0]
 
@@ -194,7 +196,7 @@ def run(ctx: click.Context,
         elif ctx.invoked_subcommand != "init":
             logger.warning("No configuration file exists at '%s'.", config_file)
             logger.warning("Create a configuration file and define your "
-                           "libraries before using papis. You can use "
+                           "libraries before using Papis. You can use "
                            "'papis init /path/to/my/library' for a quick "
                            "interactive setup.")
 

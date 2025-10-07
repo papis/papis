@@ -55,11 +55,7 @@ import click
 
 import papis.cli
 import papis.config
-import papis.database
-import papis.document
 import papis.logging
-import papis.pick
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -68,7 +64,8 @@ def run(folder: str, command: list[str] | None = None) -> None:
     if command is None:
         return
 
-    papis.utils.run(command, cwd=folder, wait=True)
+    from papis.utils import run as run_command
+    run_command(command, cwd=folder, wait=True)
 
 
 @click.command("run", context_settings={"ignore_unknown_options": True})
@@ -98,21 +95,26 @@ def cli(run_command: list[str],
         _all: bool) -> None:
     """Run an arbitrary shell command in the library or command folder."""
 
+    from papis.database import get_database
+    db = get_database()
+
+    from papis.document import from_folder, sort
     documents = []
 
     if doc_folder:
-        documents = [papis.document.from_folder(d) for d in doc_folder]
+        documents = [from_folder(d) for d in doc_folder]
     elif pick:
-        documents = papis.database.get().query(pick)
+        documents = db.query(pick)
 
     if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
+        documents = sort(documents, sort_field, sort_reverse)
 
     if not _all and pick:
-        documents = papis.pick.pick_doc(documents)
+        from papis.pick import pick_doc
+        documents = pick_doc(documents)
 
     if _all and not pick:
-        documents = papis.database.get().get_all_documents()
+        documents = db.get_all_documents()
 
     if documents:
         folders = [d for d in [d.get_main_folder() for d in documents] if d]

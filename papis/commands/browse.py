@@ -61,18 +61,21 @@ Command-line interface
     :prog: papis browse
 """
 
+from typing import TYPE_CHECKING
+
 import click
 
 import papis.cli
 import papis.config
-import papis.document
 import papis.logging
-import papis.strings
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         browse: bool = True) -> str | None:
     """Open the document's URL in the selected :confval:`browser`.
 
@@ -153,7 +156,8 @@ def cli(query: str,
                                                            sort_reverse,
                                                            _all)
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     if key:

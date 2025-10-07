@@ -11,7 +11,7 @@ Examples
         papis tag --add TAG1 --add TAG2 QUERY
 
   This will add TAG1 and TAG2 to a document matched by QUERY. You can repeat
-  ``--add`` as many times as you need. The query is any query supported by papis.
+  ``--add`` as many times as you need. The query is any query supported by Papis.
   If the query matches more than one document, Papis' picker will be started to
   let you pick the document from those matched (just as with Papis' other
   commands).
@@ -62,8 +62,7 @@ from typing import Any
 import click
 
 import papis.cli
-import papis.importer
-import papis.strings
+import papis.logging
 
 logger = papis.logging.get_logger(__name__)
 
@@ -128,12 +127,15 @@ def cli(
     )
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     from papis.commands.update import run, run_append, run_drop, run_remove, run_rename
 
     key_types: dict[str, type] = {"tags": list}
+
+    from papis.importer import Context
 
     success = True
     processed_documents: list[Any] = []
@@ -151,7 +153,7 @@ def cli(
             )
             break
 
-        ctx = papis.importer.Context()
+        ctx = Context()
 
         ctx.data.update(document)
         if drop and success:

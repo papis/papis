@@ -9,36 +9,39 @@ Command-line interface
 """
 
 import os
+from typing import TYPE_CHECKING
 
 import click
 
 import papis.cli
 import papis.config
-import papis.database
-import papis.document
-import papis.git
 import papis.logging
-import papis.strings
-from papis.exceptions import DocumentFolderNotFound
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         new_folder_path: str,
         git: bool = False) -> None:
+    from papis.document import describe
 
     folder = document.get_main_folder()
     if not folder:
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        from papis.exceptions import DocumentFolderNotFound
+        raise DocumentFolderNotFound(describe(document))
 
     if git:
-        papis.git.mv(folder, new_folder_path)
+        from papis.git import mv as git_mv
+        git_mv(folder, new_folder_path)
     else:
         import shutil
         shutil.move(folder, new_folder_path)
 
-    db = papis.database.get()
+    from papis.database import get_database
+    db = get_database()
     db.delete(document)
 
     new_document_folder = os.path.join(
@@ -71,7 +74,8 @@ def cli(query: str,
                                                        sort_field,
                                                        sort_reverse)
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     document = documents[0]

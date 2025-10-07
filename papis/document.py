@@ -7,7 +7,6 @@ from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, TypedDict
 
 import papis.config
-import papis.format
 import papis.logging
 
 if TYPE_CHECKING:
@@ -175,8 +174,9 @@ def author_list_to_author(
             "Cannot join the author list if the settings 'multiple-authors-separator' "
             "and 'multiple-authors-format' are not present in the configuration")
 
+    from papis.format import format
     return separator.join([
-        papis.format.format(multiple_authors_format, author, doc_key="au")
+        format(multiple_authors_format, author, doc_key="au")
         for author in data["author_list"]
         ])
 
@@ -441,22 +441,22 @@ class Document(dict[str, Any]):
             from papis.exceptions import DocumentFolderNotFound
             raise DocumentFolderNotFound(describe(self))
 
-        import papis.yaml
+        from papis.yaml import data_to_yaml
 
         allow_unicode = papis.config.getboolean("info-allow-unicode")
-        papis.yaml.data_to_yaml(self.get_info_file(),
-                                dict(self),
-                                allow_unicode=allow_unicode)
+        data_to_yaml(self.get_info_file(),
+                     dict(self),
+                     allow_unicode=allow_unicode)
 
     def load(self) -> None:
         """Load information from the info file."""
-        import papis.yaml
         info_file = self.get_info_file()
         if not info_file or not os.path.exists(info_file):
             return
 
+        from papis.yaml import yaml_to_data
         try:
-            data = papis.yaml.yaml_to_data(info_file, raise_exception=True)
+            data = yaml_to_data(info_file, raise_exception=True)
         except Exception as exc:
             logger.error(
                 "Error reading info file at '%s'. Please check it!",
@@ -545,7 +545,8 @@ def describe(document: Document | dict[str, Any]) -> str:
     :returns: a string description of the current document using
         :confval:`document-description-format`.
     """
-    return papis.format.format(
+    from papis.format import format
+    return format(
         papis.config.getformatpattern("document-description-format"),
         document, default=document.get("title", str(document)))
 

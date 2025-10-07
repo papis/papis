@@ -29,28 +29,30 @@ Command-line interface
 """
 
 import os
+from typing import TYPE_CHECKING
 
 import click
 
-import papis.api
 import papis.cli
-import papis.document
-import papis.git
 import papis.logging
-import papis.strings
-from papis.exceptions import DocumentFolderNotFound
+
+if TYPE_CHECKING:
+    import papis.document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: "papis.document.Document",
         filepaths: list[str],
         file_name: str | None = None,
         link: bool = False,
         git: bool = False) -> None:
+    from papis.document import describe
+    from papis.exceptions import DocumentFolderNotFound
+
     doc_folder = document.get_main_folder()
     if not doc_folder or not os.path.exists(doc_folder):
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        raise DocumentFolderNotFound(describe(document))
 
     import shutil
 
@@ -109,14 +111,17 @@ def run(document: papis.document.Document,
     if "files" not in document:
         document["files"] = []
 
+    from papis.api import save_doc
     document["files"] += new_filenames
-    papis.api.save_doc(document)
+    save_doc(document)
 
     if git:
-        papis.git.add_and_commit_resources(
+        from papis.git import add_and_commit_resources
+
+        add_and_commit_resources(
             doc_folder,
             [*new_filenames, document.get_info_file()],
-            f"Add new files to '{papis.document.describe(document)}'")
+            f"Add new files to '{describe(document)}'")
 
 
 @click.command("addto")
@@ -153,10 +158,13 @@ def cli(query: str,
         query, doc_folder, sort_field, sort_reverse)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+
+        logger.warning(no_documents_retrieved_message)
         return
 
-    docs = papis.api.pick_doc(documents)
+    from papis.api import pick_doc
+    docs = pick_doc(documents)
 
     if not docs:
         return

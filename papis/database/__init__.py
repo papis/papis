@@ -1,25 +1,30 @@
-import papis.logging
-from papis.library import Library
+from typing import TYPE_CHECKING
 
-from .base import Database
+import papis.config
+import papis.logging
+from papis.database.base import Database
+
+if TYPE_CHECKING:
+    import papis.library
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES: dict[Library, Database] = {}
+DATABASES: dict["papis.library.Library", Database] = {}
 
 
-def _instantiate_database(backend_name: str, library: Library) -> Database:
+def _instantiate_database(backend_name: str,
+                          library: "papis.library.Library") -> Database:
     if backend_name == "papis":
-        import papis.database.cache
-        return papis.database.cache.Database(library)
+        from papis.database.cache import Database as CacheDatabase
+        return CacheDatabase(library)
     elif backend_name == "whoosh":
-        import papis.database.whoosh
-        return papis.database.whoosh.Database(library)
+        from papis.database.whoosh import Database as WhooshDatabase
+        return WhooshDatabase(library)
     else:
         raise ValueError(f"Invalid database backend: '{backend_name}'")
 
 
-def get(library_name: str | None = None) -> Database:
+def get_database(library_name: str | None = None) -> Database:
     """Get the database for the library *library_name*.
 
     If *library_name* is *None*, then the current database is retrieved from
@@ -30,12 +35,10 @@ def get(library_name: str | None = None) -> Database:
     :return: the caching database for the given library. The same database is
         returned on repeated calls to this function.
     """
-    from papis.config import get_lib, get_lib_from_name
-
     if library_name is None:
-        library = get_lib()
+        library = papis.config.get_lib()
     else:
-        library = get_lib_from_name(library_name)
+        library = papis.config.get_lib_from_name(library_name)
 
     backend = papis.config.getstring("database-backend") or "papis"
     try:
@@ -45,6 +48,10 @@ def get(library_name: str | None = None) -> Database:
         DATABASES[library] = database
 
     return database
+
+
+def get(library_name: str | None = None) -> Database:
+    return get_database(library_name)
 
 
 def get_all_query_string() -> str:

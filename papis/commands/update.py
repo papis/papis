@@ -135,18 +135,18 @@ Command-line interface
 
 import ast
 from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
 import papis.cli
 import papis.config
-import papis.document
-import papis.format
 import papis.logging
-import papis.strings
 from papis.importer import get_available_importers
-from papis.strings import AnyString, process_format_pattern_pair
+
+if TYPE_CHECKING:
+    import papis.document
+    import papis.strings
 
 logger = papis.logging.get_logger(__name__)
 
@@ -166,8 +166,8 @@ def try_parsing_str(key: str, value: str) -> str:
 
 
 def run_set(
-    document: papis.document.DocumentLike,
-    to_set: Sequence[tuple[str, AnyString]],
+    document: "papis.document.DocumentLike",
+    to_set: Sequence[tuple[str, "papis.strings.AnyString"]],
     key_types: dict[str, type],
 ) -> None:
     """
@@ -175,11 +175,13 @@ def run_set(
     input document. Each tuple is (KEY, VALUE) and results in setting the KEY to
     the VALUE in the document.
     """
+    from papis.format import format
     from papis.paths import normalize_path
+    from papis.strings import process_format_pattern_pair
 
     for orig_key, orig_value in to_set:
         key, vformat = process_format_pattern_pair(orig_key, orig_value)
-        value = papis.format.format(vformat, document, default=str(vformat))
+        value = format(vformat, document, default=str(vformat))
         value = try_parsing_str(key, value)
 
         if isinstance(value, int) and key_types.get(key) is str:
@@ -211,8 +213,8 @@ def run_set(
 
 
 def run_append(
-    document: papis.document.DocumentLike,
-    to_append: Sequence[tuple[str, AnyString]],
+    document: "papis.document.DocumentLike",
+    to_append: Sequence[tuple[str, "papis.strings.AnyString"]],
     key_types: dict[str, type],
     batch: bool,
 ) -> bool:
@@ -223,7 +225,9 @@ def run_append(
 
     :returns: A boolean indicating whether the update was successful.
     """
+    from papis.format import format
     from papis.paths import normalize_path
+    from papis.strings import process_format_pattern_pair
 
     success = True
     processed_lists = set()
@@ -243,7 +247,7 @@ def run_append(
                 success = False
                 break
 
-        value = papis.format.format(vformat, document, default=str(vformat))
+        value = format(vformat, document, default=str(vformat))
         type_doc = type(document.get(key))
         type_conf = key_types.get(key)
         if type_doc is str or (type_doc is type(None) and type_conf is str):
@@ -274,8 +278,8 @@ def run_append(
 
 
 def run_remove(
-    document: papis.document.DocumentLike,
-    to_remove: Sequence[tuple[str, AnyString]],
+    document: "papis.document.DocumentLike",
+    to_remove: Sequence[tuple[str, "papis.strings.AnyString"]],
     batch: bool
 ) -> bool:
     """
@@ -285,6 +289,8 @@ def run_remove(
 
     :returns: A boolean indicating whether the update was successful.
     """
+    from papis.strings import process_format_pattern_pair
+
     success = True
     for orig_key, orig_value in to_remove:
         key, value = process_format_pattern_pair(orig_key, orig_value)
@@ -319,7 +325,7 @@ def run_remove(
     return success
 
 
-def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) -> None:
+def run_drop(document: "papis.document.DocumentLike", to_remove: Sequence[str]) -> None:
     """
     Processes a list of ``to_drop`` strings and applies the resulting changes
     to the input document. Each string is a KEY whose value is set to None
@@ -336,8 +342,9 @@ def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) ->
 
 
 def run_rename(
-    document: papis.document.DocumentLike,
-    to_rename: Sequence[tuple[str, AnyString, AnyString]],
+    document: "papis.document.DocumentLike",
+    to_rename: Sequence[
+        tuple[str, "papis.strings.AnyString", "papis.strings.AnyString"]],
     key_types: dict[str, type],
     batch: bool,
 ) -> bool:
@@ -358,7 +365,7 @@ def run_rename(
 
 
 def run(
-    document: papis.document.Document,
+    document: "papis.document.Document",
     data: dict[str, Any] | None = None,
     git: bool = False,
     auto_doctor: bool = False,
@@ -374,10 +381,12 @@ def run(
     folder = document.get_main_folder()
     info = document.get_info_file()
 
+    from papis.document import describe
+
     if not folder or not info:
         from papis.exceptions import DocumentFolderNotFound
 
-        raise DocumentFolderNotFound(papis.document.describe(document))
+        raise DocumentFolderNotFound(describe(document))
 
     document.update(data)
 
@@ -389,8 +398,7 @@ def run(
         from papis.commands.doctor import fix_errors
 
         logger.info(
-            "Running doctor auto-fixers on document: '%s'.",
-            papis.document.describe(document),
+            "Running doctor auto-fixers on document: '%s'.", describe(document),
         )
         fix_errors(document)
 
@@ -403,7 +411,7 @@ def run(
         add_and_commit_resource(
             folder,
             info,
-            f"Update information for '{papis.document.describe(document)}'",
+            f"Update information for '{describe(document)}'",
         )
 
 
@@ -502,8 +510,12 @@ def cli(
         query, doc_folder, sort_field, sort_reverse, _all
     )
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
+
+    from papis.commands.doctor import get_key_type_check_keys
+    known_key_types = get_key_type_check_keys()
 
     from papis.importer import (
         Context,
@@ -513,9 +525,7 @@ def cli(
         get_matching_importers_by_name,
     )
 
-    known_key_types = papis.commands.doctor.get_key_type_check_keys()
     processed_documents = []
-
     for document in documents:
         ctx = Context()
 
@@ -536,7 +546,8 @@ def cli(
             success = run_rename(ctx.data, to_rename, known_key_types, batch)
 
         if success:
-            logger.info("Updating %s.", papis.document.describe(document))
+            from papis.document import describe
+            logger.info("Updating %s.", describe(document))
 
             # get metadata from importers and merge them all together
             if from_importer:

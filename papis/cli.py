@@ -1,13 +1,13 @@
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 from click.shell_completion import CompletionItem
 
 import papis.config
-import papis.database
-import papis.document
-import papis.pick
+
+if TYPE_CHECKING:
+    import papis.document
 
 DecoratorCallable = Callable[..., Any]
 
@@ -144,7 +144,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 def handle_doc_folder_or_query(
         query: str,
         doc_folder: str | tuple[str, ...] | None,
-        ) -> list[papis.document.Document]:
+        ) -> list["papis.document.Document"]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -156,18 +156,24 @@ def handle_doc_folder_or_query(
         :func:`papis.document.from_folder`).
     """
     if doc_folder:
+        from papis.document import from_folder
+
         if not isinstance(doc_folder, tuple):
             doc_folder = (doc_folder,)
 
-        return [papis.document.from_folder(f) for f in doc_folder]
-    return papis.database.get().query(query)
+        return [from_folder(f) for f in doc_folder]
+
+    from papis.database import get_database
+
+    db = get_database()
+    return db.query(query)
 
 
 def handle_doc_folder_query_sort(
         query: str,
         doc_folder: str | tuple[str, ...] | None,
         sort_field: str | None,
-        sort_reverse: bool) -> list[papis.document.Document]:
+        sort_reverse: bool) -> list["papis.document.Document"]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_or_query`, but also handles the
@@ -181,7 +187,8 @@ def handle_doc_folder_query_sort(
     documents = handle_doc_folder_or_query(query, doc_folder)
 
     if sort_field:
-        documents = papis.document.sort(documents, sort_field, sort_reverse)
+        from papis.document import sort
+        documents = sort(documents, sort_field, sort_reverse)
 
     return documents
 
@@ -191,7 +198,7 @@ def handle_doc_folder_query_all_sort(
         doc_folder: str | tuple[str, ...] | None,
         sort_field: str | None,
         sort_reverse: bool,
-        _all: bool) -> list[papis.document.Document]:
+        _all: bool) -> list["papis.document.Document"]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_query_sort`, but also handles the
@@ -206,7 +213,8 @@ def handle_doc_folder_query_all_sort(
                                              sort_reverse)
 
     if not _all:
-        documents = [doc for doc in papis.pick.pick_doc(documents) if doc]
+        from papis.pick import pick_doc
+        documents = [doc for doc in pick_doc(documents) if doc]
 
     return documents
 

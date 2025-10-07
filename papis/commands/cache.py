@@ -53,15 +53,13 @@ import os
 import click
 
 import papis.cli
-import papis.commands
-import papis.document
-import papis.strings
+from papis.commands import AliasedGroup
 
 logger = papis.logging.get_logger(__name__)
 
 
 @click.group("cache",
-             cls=papis.commands.AliasedGroup,
+             cls=AliasedGroup,
              invoke_without_command=False,
              chain=False)
 @click.help_option("--help", "-h")
@@ -85,12 +83,15 @@ def update(query: str,
     """
     Reload info.yaml files from disk and update the cache.
     """
-    db = papis.database.get()
+    from papis.database import get_database
+
+    db = get_database()
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     for doc in documents:
@@ -108,7 +109,10 @@ def clear() -> None:
 
     The next invocation of any command that uses the cache will rebuild it.
     """
-    papis.database.get().clear()
+    from papis.database import get_database
+
+    db = get_database()
+    db.clear()
 
 
 @cli.command("reset")
@@ -117,8 +121,9 @@ def reset() -> None:
     """
     Reset the cache (clear and rebuild).
     """
-    db = papis.database.get()
+    from papis.database import get_database
 
+    db = get_database()
     db.clear()
     db.initialize()
     _ = db.get_all_documents()
@@ -133,19 +138,20 @@ def add(doc_folder: tuple[str, ...]) -> None:
 
     This is useful for adding single folders from a previous synchronization step.
     """
-    for d in doc_folder:
-        doc = papis.document.from_folder(d)
+    from papis.database import get_database
+    db = get_database()
 
+    from papis.document import describe, from_folder
+
+    for d in doc_folder:
+        doc = from_folder(d)
         if not doc:
-            logger.error("The path '%s' did not contain a valid info.yaml file.",
+            logger.error("The path '%s' did not contain a valid 'info.yaml' file.",
                          doc_folder)
             continue
 
-        db = papis.database.get()
         db.add(doc)
-
-        logger.info("Successfully added '%s' to the cache",
-                    papis.document.describe(doc))
+        logger.info("Successfully added '%s' to the cache.", describe(doc))
 
 
 @cli.command("rm")
@@ -162,11 +168,12 @@ def rm(query: str,
     """
     Delete documents from the cache.
     """
+    from papis.database import get_database
 
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 
-    db = papis.database.get()
+    db = get_database()
     for doc in documents:
         db.delete(doc)
 
@@ -179,7 +186,10 @@ def pwd() -> None:
     """
     Print the path to the cache file or directory.
     """
-    print(papis.database.get().get_cache_path())
+    from papis.database import get_database
+
+    db = get_database()
+    click.echo(db.get_cache_path())
 
 
 @cli.command("update-newer")
@@ -196,17 +206,22 @@ def update_newer(query: str,
     """
     Update documents newer than the cache modification time.
     """
-    db = papis.database.get()
+    from papis.database import get_database
+    db = get_database()
+
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 
     if not documents:
-        logger.warning(papis.strings.no_documents_retrieved_message)
+        from papis.strings import no_documents_retrieved_message
+        logger.warning(no_documents_retrieved_message)
         return
 
     updated_documents_count = 0
     cache_path = db.get_cache_path()
     cache_path_mtime = os.stat(cache_path).st_mtime
+
+    from papis.document import describe
 
     for doc in documents:
         info = doc.get_info_file()
@@ -216,7 +231,7 @@ def update_newer(query: str,
         info_mtime = os.stat(info).st_mtime
         if cache_path_mtime < info_mtime:
             updated_documents_count += 1
-            logger.info("Updating newer '%s'.", papis.document.describe(doc))
+            logger.info("Updating newer '%s'.", describe(doc))
 
             doc.load()
             db.update(doc)
