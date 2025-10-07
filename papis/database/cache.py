@@ -64,7 +64,7 @@ def filter_documents(documents: list["papis.document.Document"],
 def match_document(
         document: "papis.document.Document",
         search: re.Pattern[str],
-        match_format: "papis.strings.AnyString" | None = None,
+        match_format: "papis.strings.AnyString | None" = None,
         doc_key: str | None = None) -> re.Match[str] | None:
     """Match a document's keys to a given search pattern.
 

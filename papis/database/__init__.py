@@ -62,7 +62,7 @@ def get_all_query_string() -> str:
 def clear_cached() -> None:
     """Clear cached databases.
 
-    After this function is called, all subsequent calls to :func:`get` will
-    recreate the database for the given library.
+    After this function is called, all subsequent calls to :func:`get_database`
+    will recreate the database for the given library.
     """
     DATABASES.clear()
