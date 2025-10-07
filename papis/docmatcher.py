@@ -96,7 +96,7 @@ class DocMatcher:
     @classmethod
     def return_if_match(
             cls,
-            doc: "papis.document.Document") -> "papis.document.Document" | None:
+            doc: "papis.document.Document") -> "papis.document.Document | None":
         """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
 
             >>> from papis.document import from_data

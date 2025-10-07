@@ -113,10 +113,10 @@ class Importer:
     def fetch(self) -> None:
         """Fetch metadata and files for the given :attr:`~papis.importer.Importer.uri`.
 
-        This method calls :meth:`Importer.fetch_data` and :meth:`Importer.fetch_files`
-        to get all the information available for the document. It is recommended
-        to implement the two methods separately, if possible, for maximum
-        flexibility.
+        This method calls :meth:`~papis.importer.Importer.fetch_data` and
+        :meth:`~papis.importer.Importer.fetch_files` to get all the information
+        available for the document. It is recommended to implement the two
+        methods separately, if possible, for maximum flexibility.
 
         The imported data is stored in :attr:`~papis.importer.Importer.ctx` and
         it is not queried again on subsequent calls to this function.
