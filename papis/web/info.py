@@ -1,13 +1,17 @@
+from typing import TYPE_CHECKING
+
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.document
 import papis.web.ace
 import papis.web.html as wh
 import papis.web.paths as wp
 
+if TYPE_CHECKING:
+    import papis.document
 
-def widget(doc: papis.document.Document, libname: str) -> None:
+
+def widget(doc: "papis.document.Document", libname: str) -> None:
     yaml_id = "info-yaml-source"
     yaml_input_id = "info-yaml-textarea"
     yaml_content = ""

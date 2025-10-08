@@ -2,6 +2,7 @@ import re
 
 import dominate.tags as t
 
+import papis.config
 import papis.web.header
 import papis.web.html as wh
 import papis.web.navbar

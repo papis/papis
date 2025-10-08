@@ -1,13 +1,17 @@
+from typing import TYPE_CHECKING
+
 import dominate.tags as t
 
-import papis.document
 import papis.web.document
 import papis.web.html as wh
 import papis.web.paths as wp
 
+if TYPE_CHECKING:
+    import papis.document
+
 
 def html(libname: str,
-         doc: papis.document.Document) -> t.html_tag:
+         doc: "papis.document.Document") -> t.html_tag:
     input_types = {
         # "string": default
         "textarea": ["abstract"],

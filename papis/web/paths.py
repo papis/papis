@@ -1,11 +1,12 @@
 from typing import Any
 
-import papis.id
-
 
 def _ref(doc: dict[str, Any]) -> str | None:
-    if papis.id.has_id(doc):
-        return papis.id.get(doc)
+    from papis.id import get as get_id, has_id
+
+    if has_id(doc):
+        return get_id(doc)
+
     return None
 
 
@@ -17,7 +18,9 @@ def format_if_has_id(doc: dict[str, Any],
     Formats the string *fmt* only if *doc* has the ``papis_id`` key, since the
     path requires it.
     """
-    if papis.id.has_id(doc):
+    from papis.id import has_id
+
+    if has_id(doc):
         return fmt.format(*args, **kwargs)
     return ""
 

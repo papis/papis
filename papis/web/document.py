@@ -1,15 +1,18 @@
 import os
 import urllib.parse
+from typing import TYPE_CHECKING
 
 import dominate.tags as t
 
-import papis.document
 import papis.web.html as wh
 import papis.web.paths as wp
 import papis.web.tags
 
+if TYPE_CHECKING:
+    import papis.document
 
-def links(doc: papis.document.Document, small: bool = True) -> None:
+
+def links(doc: "papis.document.Document", small: bool = True) -> None:
     with t.div(cls="btn-group", role="group"):
 
         def url_link(icon: str, title: str, href: str) -> None:
@@ -41,10 +44,10 @@ def links(doc: papis.document.Document, small: bool = True) -> None:
                      f"https://ui.adsabs.harvard.edu/search/q=title:{quoted_title}"
                      )
 
+        from papis.document import describe
         url_link("globe", "ddg",
                  "https://duckduckgo.com/?q={}"
-                 .format(urllib.parse.quote(papis.document.describe(doc),
-                                            safe="")))
+                 .format(urllib.parse.quote(describe(doc), safe="")))
 
 
 def _doc_files_icons(files: list[str],
@@ -64,7 +67,7 @@ def _doc_files_icons(files: list[str],
 
 def render(libname: str,
            libfolder: str,
-           doc: papis.document.Document) -> t.html_tag:
+           doc: "papis.document.Document") -> t.html_tag:
 
     doc_link = wp.doc_server_path(libname, doc)
 
