@@ -17,7 +17,6 @@ from prompt_toolkit.layout.containers import (
 from prompt_toolkit.layout.controls import FormattedTextControl
 
 import papis.logging
-import papis.utils
 
 logger = papis.logging.get_logger(__name__)
 
@@ -235,12 +234,12 @@ class OptionsList(ConditionalContainer, Generic[Option]):
 
         self.last_query_text = self.query_text
 
+        from papis.utils import parmap
         f = functools.partial(match_against_regex, regex)
-        results = papis.utils.parmap(f,
-                                     [(i, matcher)
-                                      for i, matcher in
-                                      enumerate(self.options_matchers)
-                                      if i in search_indices])
+        results = parmap(
+            f,
+            [(i, matcher) for i, matcher in enumerate(self.options_matchers)
+             if i in search_indices])
 
         self.indices = [i for i in results if i is not None]
 

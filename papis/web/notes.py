@@ -1,16 +1,18 @@
 import os
+from typing import TYPE_CHECKING
 
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.document
-import papis.notes
 import papis.web.ace
 import papis.web.html as wh
 import papis.web.paths as wp
 
+if TYPE_CHECKING:
+    import papis.document
 
-def widget(libname: str, doc: papis.document.Document) -> None:
+
+def widget(libname: str, doc: "papis.document.Document") -> None:
     notes_id = "notes-source"
     notes_input_id = "notes-input-source"
     notes_content = ""
@@ -21,9 +23,11 @@ def widget(libname: str, doc: papis.document.Document) -> None:
                                                          notes_input_id)
 
     # TODO add org mode somehow and check extensions
+    from papis.notes import has_notes, notes_path
+
     notes_extension = "markdown"
-    if papis.notes.has_notes(doc):
-        filepath = papis.notes.notes_path(doc)
+    if has_notes(doc):
+        filepath = notes_path(doc)
         if os.path.exists(filepath):
             with open(filepath, encoding="utf-8") as fd:
                 notes_content = fd.read()

@@ -8,7 +8,6 @@ from typing import Any
 import dominate.tags as t
 import dominate.util as tu
 
-import papis.document
 import papis.web.paths as wp
 
 
@@ -18,10 +17,12 @@ def widget(documents: Sequence[dict[str, Any]],
     """
     Creates a div element and a script with the timeline API used.
     """
+    from papis.document import describe
+
     t.div(id=_id, style="width: 100%; height: 300px;")
 
     def _make_text(_d: dict[str, Any]) -> str:
-        text = papis.document.describe(_d)
+        text = describe(_d)
         href = wp.doc_server_path(libname, _d)
         if href:
             return fr"<a href='{href}'>{text}<i class='fa fa-check'></i></a>"

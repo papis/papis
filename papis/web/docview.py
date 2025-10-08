@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import dominate.tags as t
 import dominate.util as tu
@@ -15,6 +15,9 @@ import papis.web.notes
 import papis.web.paths as wp
 import papis.web.pdfjs
 
+if TYPE_CHECKING:
+    import papis.document
+
 
 def _click_tab_selector_link_in_url() -> None:
     t.script(tu.raw("""
@@ -27,16 +30,17 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def html(libname: str, doc: papis.document.Document) -> t.html_tag:
+def html(libname: str, doc: "papis.document.Document") -> t.html_tag:
     """
     View of a single document to edit the information of the YAML file,
     and maybe in the future to update the information.
     """
     from papis.commands.doctor import gather_errors, registered_checks_names
+    from papis.config import get_lib_from_name
 
     checks = registered_checks_names()
     errors = gather_errors([doc], checks)
-    libfolder = papis.config.get_lib_from_name(libname).paths[0]
+    libfolder = get_lib_from_name(libname).paths[0]
 
     from papis.exporters.bibtex import exporter as bibtex
 
@@ -162,6 +166,13 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                                 with t.div():
                                     t.img(src=unquoted_file_path)
 
+                    from papis.citations import (
+                        get_citations,
+                        get_cited_by,
+                        has_citations,
+                        has_cited_by,
+                    )
+
                     with t.div(id="citations-tab",
                                role="tabpanel",
                                aria_labelledby="citations-tab",
@@ -172,8 +183,8 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                             libfolder,
                             timeline_id="main-citations-timeline",
                             fetch_path=wp.fetch_citations_server_path,
-                            checker=papis.citations.has_citations,
-                            getter=papis.citations.get_citations,
+                            checker=has_citations,
+                            getter=get_citations,
                             ads_fmt=("https://ui.adsabs.harvard.edu/abs/"
                                      "{doi}/references"))
 
@@ -187,8 +198,8 @@ def html(libname: str, doc: papis.document.Document) -> t.html_tag:
                             libfolder,
                             timeline_id="main-cited-by-timeline",
                             fetch_path=wp.fetch_cited_by_server_path,
-                            checker=papis.citations.has_cited_by,
-                            getter=papis.citations.get_cited_by,
+                            checker=has_cited_by,
+                            getter=get_cited_by,
                             ads_fmt=("https://ui.adsabs.harvard.edu/abs/"
                                      "{doi}/citations"))
 

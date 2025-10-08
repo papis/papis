@@ -1,24 +1,26 @@
 import urllib.parse
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import dominate.tags as t
 
-import papis.citations
-import papis.document
 import papis.web.document
 import papis.web.html as wh
 import papis.web.timeline
 
+if TYPE_CHECKING:
+    import papis.citations
+    import papis.document
 
-def render(doc: papis.document.Document,
+
+def render(doc: "papis.document.Document",
            libname: str,
            libfolder: str,
            timeline_id: str,
            fetch_path: Callable[[str, dict[str, Any]], str],
-           checker: Callable[[papis.document.Document], bool],
-           getter: Callable[[papis.document.Document],
-                            papis.citations.Citations],
+           checker: Callable[["papis.document.Document"], bool],
+           getter: Callable[["papis.document.Document"],
+                            "papis.citations.Citations"],
            ads_fmt: str) -> None:
 
     with t.form(action=fetch_path(libname, doc),
@@ -35,15 +37,16 @@ def render(doc: papis.document.Document,
                     wh.icon_span("globe", "ads")
 
     if checker(doc):
+        from papis.document import from_data
+
         citations = getter(doc)
         if papis.config.getboolean("serve-enable-timeline"):
             papis.web.timeline.widget(citations, libname, timeline_id)
+
         with t.ol(cls="list-group"):
             with t.li(cls="list-group-item"):
                 for cit in citations:
-                    papis.web.document.render(libname,
-                                              libfolder,
-                                              papis.document.from_data(cit))
+                    papis.web.document.render(libname, libfolder, from_data(cit))
     else:
         if "doi" in doc:
             quoted_doi = urllib.parse.quote(doc["doi"], safe="")
