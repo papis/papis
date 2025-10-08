@@ -503,6 +503,7 @@ def getformatpattern(key: str,
     the default formatter is used, as defined by :confval:`formatter`.
     Formatters are checked in alphabetical order and the last one is returned.
 
+        >>> from papis.strings import FormatPattern
         >>> set("add-open", "hello world")
         >>> r = getformatpattern("add-open")
         >>> r.formatter

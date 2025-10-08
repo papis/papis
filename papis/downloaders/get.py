@@ -12,11 +12,11 @@ class DocumentDownloader(Downloader):
     @classmethod
     def match(cls, url: str) -> Downloader | None:
         """
-        >>> Downloader.match('https://wha2341!@#!@$%!@#file.pdf') is None  # spell: disable
+        >>> DocumentDownloader.match('https://wha2341!@#!@$%!@#file.pdf') is None  # spell: disable
         False
-        >>> Downloader.match('https://whateverpt?is?therefile.epub') is None
+        >>> DocumentDownloader.match('https://whateverpt?is?therefile.epub') is None
         False
-        >>> Downloader.match('https://whatever?path?is?therefile') is None
+        >>> DocumentDownloader.match('https://whatever?path?is?therefile') is None
         True
         """  # noqa: E501
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
