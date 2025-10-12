@@ -20,7 +20,7 @@ class ZenodoImporter(Importer):
         super().__init__(name="zenodo", uri=uri, ctx=Context())
 
     @classmethod
-    def match(cls, uri: str) -> "ZenodoImporter | None":
+    def match(cls, uri: str) -> ZenodoImporter | None:
         from papis.zenodo import is_valid_record_id
 
         if is_valid_record_id(uri):

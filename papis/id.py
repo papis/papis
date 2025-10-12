@@ -17,7 +17,7 @@ logger = papis.logging.get_logger(__name__)
 ID_KEY_NAME: str = "papis_id"
 
 
-def compute_an_id(doc: "papis.document.Document",
+def compute_an_id(doc: papis.document.Document,
                   separator: str | None = None) -> str:
     """Make an ID for the input document *doc*.
 
@@ -53,7 +53,7 @@ def key_name() -> str:
     return ID_KEY_NAME
 
 
-def has_id(doc: "papis.document.DocumentLike") -> bool:
+def has_id(doc: papis.document.DocumentLike) -> bool:
     from warnings import warn
 
     warn("This function is deprecated and will be removed in the next "
@@ -64,7 +64,7 @@ def has_id(doc: "papis.document.DocumentLike") -> bool:
     return ID_KEY_NAME in doc
 
 
-def get(doc: "papis.document.DocumentLike") -> str:
+def get(doc: papis.document.DocumentLike) -> str:
     """Get the Papis ID from *doc*.
 
     This function does additional checking on the ID and can raise an error if it

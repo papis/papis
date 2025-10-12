@@ -69,7 +69,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: "papis.document.Document",
+def run(document: papis.document.Document,
         new_folder_name: str,
         git: bool = False) -> None:
     import os
@@ -122,7 +122,7 @@ def run(document: "papis.document.Document",
 @papis.cli.sort_option()
 @papis.cli.doc_folder_option()
 def cli(query: str,
-        folder_name: "papis.strings.AnyString",
+        folder_name: papis.strings.AnyString,
         _all: bool,
         batch: bool,
         git: bool,

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import papis.document
 
 
-def widget(libname: str, doc: "papis.document.Document") -> None:
+def widget(libname: str, doc: papis.document.Document) -> None:
     notes_id = "notes-source"
     notes_input_id = "notes-input-source"
     notes_content = ""

@@ -10,7 +10,7 @@ class ISBNImporter(Importer):
         super().__init__(name="isbn", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "ISBNImporter | None":
+    def match(cls, uri: str) -> ISBNImporter | None:
         from isbnlib import notisbn
 
         if notisbn(uri):

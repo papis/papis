@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     import papis.document
 
 
-def exporter(documents: list["papis.document.Document"]) -> str:
+def exporter(documents: list[papis.document.Document]) -> str:
     """Convert document to the YAML format."""
     import yaml
 

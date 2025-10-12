@@ -27,7 +27,7 @@ class ArxivImporter(Importer):
         return f"{ARXIV_ABS_URL}/{self.arxivid}"
 
     @classmethod
-    def match(cls, uri: str) -> "ArxivImporter | None":
+    def match(cls, uri: str) -> ArxivImporter | None:
         from papis.arxiv import ARXIV_ABS_URL, find_arxivid_in_text, is_arxivid
 
         arxivid = find_arxivid_in_text(uri)
@@ -56,7 +56,7 @@ class ArxivFromPDFImporter(ArxivImporter):
         self.name = "pdf2arxivid"
 
     @classmethod
-    def match(cls, uri: str) -> "ArxivFromPDFImporter | None":
+    def match(cls, uri: str) -> ArxivFromPDFImporter | None:
         from papis.filetype import get_document_extension
 
         if not os.path.exists(uri) or os.path.isdir(uri):

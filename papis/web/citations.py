@@ -15,14 +15,14 @@ if TYPE_CHECKING:
     import papis.document
 
 
-def render(doc: "papis.document.Document",
+def render(doc: papis.document.Document,
            libname: str,
            libfolder: str,
            timeline_id: str,
            fetch_path: Callable[[str, dict[str, Any]], str],
-           checker: Callable[["papis.document.Document"], bool],
-           getter: Callable[["papis.document.Document"],
-                            "papis.citations.Citations"],
+           checker: Callable[[papis.document.Document], bool],
+           getter: Callable[[papis.document.Document],
+                            papis.citations.Citations],
            ads_fmt: str) -> None:
 
     with t.form(action=fetch_path(libname, doc),

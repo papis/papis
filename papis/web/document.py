@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import papis.document
 
 
-def links(doc: "papis.document.Document", small: bool = True) -> None:
+def links(doc: papis.document.Document, small: bool = True) -> None:
     with t.div(cls="btn-group", role="group"):
 
         def url_link(icon: str, title: str, href: str) -> None:
@@ -69,7 +69,7 @@ def _doc_files_icons(files: list[str],
 
 def render(libname: str,
            libfolder: str,
-           doc: "papis.document.Document") -> t.html_tag:
+           doc: papis.document.Document) -> t.html_tag:
 
     doc_link = wp.doc_server_path(libname, doc)
 

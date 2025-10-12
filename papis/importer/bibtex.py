@@ -15,7 +15,7 @@ class BibTeXImporter(Importer):
         super().__init__(name="bibtex", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "BibTeXImporter | None":
+    def match(cls, uri: str) -> BibTeXImporter | None:
         # FIXME: this should not do a full download + parse just to check if this
         # might be a BibTeX file
         importer = BibTeXImporter(uri=uri)

@@ -34,7 +34,7 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def get_session() -> "requests.Session":
+def get_session() -> requests.Session:
     """Create a :class:`requests.Session` for ``papis``.
 
     This session has the expected ``User-Agent`` (see
@@ -255,11 +255,11 @@ def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     return normalize_path(doc_path)
 
 
-def locate_document_in_lib(document: "papis.document.Document",
+def locate_document_in_lib(document: papis.document.Document,
                            library: str | None = None,
                            *,
                            unique_document_keys: list[str] | None = None,
-                           ) -> "papis.document.Document":
+                           ) -> papis.document.Document:
     """Locate a document in a library.
 
     This function falls back to :confval:`unique-document-keys` to determine if the
@@ -292,9 +292,9 @@ def locate_document_in_lib(document: "papis.document.Document",
 
 
 def locate_document(
-        document: "papis.document.Document",
-        documents: Iterable["papis.document.Document"]
-        ) -> "papis.document.Document | None":
+        document: papis.document.Document,
+        documents: Iterable[papis.document.Document]
+        ) -> papis.document.Document | None:
     """Locate a *document* in a list of *documents*.
 
     This function uses the :confval:`unique-document-keys`
@@ -321,7 +321,7 @@ def locate_document(
     return None
 
 
-def folders_to_documents(folders: Iterable[str]) -> list["papis.document.Document"]:
+def folders_to_documents(folders: Iterable[str]) -> list[papis.document.Document]:
     """Load a list of documents from their respective *folders*.
 
     :param folders: a list of folder paths to load from.
@@ -340,7 +340,7 @@ def folders_to_documents(folders: Iterable[str]) -> list["papis.document.Documen
 
 
 def update_doc_from_data_interactively(
-        document: "papis.document.DocumentLike",
+        document: papis.document.DocumentLike,
         data: dict[str, Any],
         data_name: str) -> None:
     """Shows a TUI to update the *document* interactively with fields from *data*.
@@ -391,7 +391,7 @@ def get_matching_importer_or_downloader(
         uri: str,
         download_files: bool | None = None,
         only_data: bool | None = None
-        ) -> list["papis.importer.Importer"]:
+        ) -> list[papis.importer.Importer]:
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
@@ -419,7 +419,7 @@ def get_matching_importer_by_name(
         name_and_uris: Iterable[tuple[str, str]],
         download_files: bool | None = None,
         only_data: bool | None = None,
-        ) -> list["papis.importer.Importer"]:
+        ) -> list[papis.importer.Importer]:
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and download_files is not None:
@@ -444,11 +444,11 @@ def get_matching_importer_by_name(
 
 
 def collect_importer_data(
-        importers: Iterable["papis.importer.Importer"],
+        importers: Iterable[papis.importer.Importer],
         batch: bool = True,
         use_files: bool | None = None,
         only_data: bool | None = None,
-        ) -> "papis.importer.Context":
+        ) -> papis.importer.Context:
     # FIXME: this is here for backwards compatibility and should be removed
     # before we release the next version
     if only_data is not None and use_files is not None:

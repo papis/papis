@@ -72,7 +72,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(documents: list["papis.document.Document"], to_format: str) -> str:
+def run(documents: list[papis.document.Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 

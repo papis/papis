@@ -11,7 +11,7 @@ from papis.document import Document
 from papis.testing import TemporaryConfiguration
 
 
-def get_docs() -> list["Document"]:
+def get_docs() -> list[Document]:
     from papis.document import from_data
 
     yamlfile = os.path.join(os.path.dirname(__file__), "data", "licl.yaml")
@@ -21,7 +21,7 @@ def get_docs() -> list["Document"]:
 
 def docmatcher_matcher(
         res: tuple[bool, int],
-        document: "Document",
+        document: Document,
         search: re.Pattern[str],
         match_format: str | None = None,
         doc_key: str | None = None,

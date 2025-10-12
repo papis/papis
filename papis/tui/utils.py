@@ -161,7 +161,7 @@ def prompt(
     return result or default
 
 
-def progress_bar(iterable: Iterable["T"]) -> Iterable["T"]:
+def progress_bar(iterable: Iterable[T]) -> Iterable[T]:
     from prompt_toolkit.shortcuts import ProgressBar
     from prompt_toolkit.shortcuts.progress_bar import formatters
     from prompt_toolkit.styles import Style

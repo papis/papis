@@ -36,7 +36,7 @@ def _handle_pubmed_pages(pages: str) -> str:
 
 
 @cache
-def _get_pubmed_key_conversion() -> list["papis.document.KeyConversionPair"]:
+def _get_pubmed_key_conversion() -> list[papis.document.KeyConversionPair]:
     from papis.document import EmptyKeyConversion, KeyConversionPair
 
     return [

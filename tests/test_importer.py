@@ -39,7 +39,7 @@ def test_custom_context_importer(tmp_config: TemporaryConfiguration) -> None:
             super().__init__(uri=uri, name="SimpleImporter", ctx=CustomContext())
 
         @classmethod
-        def match(cls, uri: str) -> "CustomContextImporter":
+        def match(cls, uri: str) -> CustomContextImporter:
             importer = CustomContextImporter(uri=uri, ctx=CustomContext())
             return importer
 
@@ -63,7 +63,7 @@ def test_cache(tmp_config: TemporaryConfiguration) -> None:
             super().__init__(uri=uri, name="SimpleImporter", **kwargs)
 
         @classmethod
-        def match(cls, uri: str) -> "SimpleImporter":
+        def match(cls, uri: str) -> SimpleImporter:
             importer = SimpleImporter(uri=uri)
             importer.ctx.data = data
             return importer

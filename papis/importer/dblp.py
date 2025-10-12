@@ -12,7 +12,7 @@ class DBLPImporter(Importer):
         super().__init__(name="dblp", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "DBLPImporter | None":
+    def match(cls, uri: str) -> DBLPImporter | None:
         from papis.dblp import DBLP_URL_FORMAT, is_valid_dblp_key
 
         if re.match(r".*dblp\.org.*\.html", uri):

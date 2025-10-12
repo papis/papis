@@ -11,7 +11,7 @@ class CrossrefDownloader(Downloader):
         self.doi = doi
 
     @classmethod
-    def match(cls, uri: str) -> "CrossrefDownloader | None":
+    def match(cls, uri: str) -> CrossrefDownloader | None:
         from doi import find_doi_in_text
 
         doi = find_doi_in_text(uri)

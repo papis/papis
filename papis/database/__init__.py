@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES: dict["papis.library.Library", "Database"] = {}
+DATABASES: dict[papis.library.Library, Database] = {}
 
 
 def _instantiate_database(backend_name: str,
-                          library: "papis.library.Library") -> "Database":
+                          library: papis.library.Library) -> Database:
     if backend_name == "papis":
         from papis.database.cache import PickleDatabase
         return PickleDatabase(library)
@@ -26,7 +26,7 @@ def _instantiate_database(backend_name: str,
         raise ValueError(f"Invalid database backend: '{backend_name}'")
 
 
-def get_database(library_name: str | None = None) -> "Database":
+def get_database(library_name: str | None = None) -> Database:
     """Get the database for the library *library_name*.
 
     If *library_name* is *None*, then the current database is retrieved from
@@ -52,7 +52,7 @@ def get_database(library_name: str | None = None) -> "Database":
     return database
 
 
-def get(library_name: str | None = None) -> "Database":
+def get(library_name: str | None = None) -> Database:
     return get_database(library_name)
 
 

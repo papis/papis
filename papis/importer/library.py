@@ -12,7 +12,7 @@ class FromLibraryImporter(Importer):
         super().__init__(name="lib", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "FromLibraryImporter | None":
+    def match(cls, uri: str) -> FromLibraryImporter | None:
         from papis.config import get_lib_from_name
 
         try:
@@ -47,7 +47,7 @@ class FromFolderImporter(Importer):
         super().__init__(name="folder", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "FromFolderImporter | None":
+    def match(cls, uri: str) -> FromFolderImporter | None:
         return FromFolderImporter(uri=uri) if os.path.isdir(uri) else None
 
     def fetch(self) -> None:

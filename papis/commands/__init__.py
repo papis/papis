@@ -146,7 +146,7 @@ class CommandPluginLoaderGroup(click.Group):
     command_class = FullHelpCommand
 
     @cached_property
-    def command_plugins(self) -> dict[str, "CommandPlugin"]:
+    def command_plugins(self) -> dict[str, CommandPlugin]:
         """A mapping of command names to available command plugins."""
         return get_commands(COMMAND_NAMESPACE_NAME,
                             extern_matcher=EXTERNAL_COMMAND_REGEX)

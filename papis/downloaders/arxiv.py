@@ -17,7 +17,7 @@ class ArxivDownloader(Downloader):
         self.arxivid = arxivid
 
     @classmethod
-    def match(cls, url: str) -> "ArxivDownloader | None":
+    def match(cls, url: str) -> ArxivDownloader | None:
         from papis.arxiv import ARXIV_ABS_URL, find_arxivid_in_text
 
         arxivid = find_arxivid_in_text(url)
@@ -27,7 +27,7 @@ class ArxivDownloader(Downloader):
             return None
 
     @cached_property
-    def result(self) -> "arxiv.Result | None":
+    def result(self) -> arxiv.Result | None:
         import arxiv
 
         client = arxiv.Client()

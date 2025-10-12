@@ -145,7 +145,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(
         data: dict[str, Any],
         separator: str | None = None,
-        multiple_authors_format: "papis.strings.AnyString | None" = None) -> str:
+        multiple_authors_format: papis.strings.AnyString | None = None) -> str:
     """Convert a list of authors into a single author string.
 
     This uses the :confval:`multiple-authors-separator` and the
@@ -298,7 +298,7 @@ class DocHtmlEscaped(dict[str, Any]):
     '&gt; &gt;&lt; int &amp; &quot;&quot; &quot;'
     """
 
-    def __init__(self, doc: "Document") -> None:
+    def __init__(self, doc: Document) -> None:
         self.doc = doc
 
     def __getitem__(self, key: str) -> str:
@@ -349,7 +349,7 @@ class Document(dict[str, Any]):
         """
         return ""
 
-    def copy(self) -> "Document":
+    def copy(self) -> Document:
         """Make a shallow copy of the :class:`Document`."""
         doc = Document(data=dict(self))
 

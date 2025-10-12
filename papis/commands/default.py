@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def generate_profile_writing_function(profiler: "cProfile.Profile",
+def generate_profile_writing_function(profiler: cProfile.Profile,
                                       filename: str) -> Callable[[], None]:
     def _on_finish() -> None:
         profiler.disable()

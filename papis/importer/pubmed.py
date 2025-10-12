@@ -10,7 +10,7 @@ class PubMedImporter(Importer):
         super().__init__(name="pubmed", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "PubMedImporter | None":
+    def match(cls, uri: str) -> PubMedImporter | None:
         from papis.pubmed import is_valid_pmid
 
         if is_valid_pmid(uri):

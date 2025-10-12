@@ -154,13 +154,13 @@ def list_plugins(show_paths: bool = False,
     return []
 
 
-def list_documents(documents: Sequence["papis.document.Document"],
+def list_documents(documents: Sequence[papis.document.Document],
                    show_files: bool = False,
                    show_dir: bool = False,
                    show_id: bool = False,
                    show_info: bool = False,
                    show_notes: bool = False,
-                   show_format: "papis.strings.AnyString" = "",
+                   show_format: papis.strings.AnyString = "",
                    template: str | None = None
                    ) -> list[str]:
     """List document properties.

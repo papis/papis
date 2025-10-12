@@ -108,7 +108,7 @@ class Downloader(Importer):
         self.session.close()
 
     @classmethod
-    def match(cls, url: str) -> "Downloader | None":
+    def match(cls, url: str) -> Downloader | None:
         """Check if the downloader can process the given URL.
 
         For example, an importer that supports links from the arXiv can check
@@ -240,7 +240,7 @@ class Downloader(Importer):
         """
         return self.session.get(self.uri, cookies=self.cookies).content
 
-    def _get_soup(self) -> "bs4.BeautifulSoup":
+    def _get_soup(self) -> bs4.BeautifulSoup:
         """Create an instance of :class:`bs4.BeautifulSoup` that parses
         the results from :meth:`_get_body`.
         """
@@ -463,7 +463,7 @@ def get_info_from_url(
     return down.ctx
 
 
-def _get_filename_from_response(response: "requests.Response") -> str | None:
+def _get_filename_from_response(response: requests.Response) -> str | None:
     filename = None
 
     # NOTE: we can guess the filename from the response headers

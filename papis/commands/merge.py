@@ -72,8 +72,8 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(keep: "papis.document.Document",
-        erase: "papis.document.Document",
+def run(keep: papis.document.Document,
+        erase: papis.document.Document,
         data: dict[str, Any],
         files: list[str],
         keep_both: bool,

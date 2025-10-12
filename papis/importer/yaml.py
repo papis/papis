@@ -12,7 +12,7 @@ class YAMLImporter(Importer):
         super().__init__(name="yaml", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "YAMLImporter | None":
+    def match(cls, uri: str) -> YAMLImporter | None:
         """Check if the *uri* points to an existing YAML file."""
         importer = None
         if os.path.exists(uri) and not os.path.isdir(uri):

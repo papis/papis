@@ -44,7 +44,7 @@ def get_cache_file_path(libpaths: str) -> str:
 class Database(ABC):
     """Abstract base class for Papis caching database backends."""
 
-    def __init__(self, library: "papis.library.Library | None" = None) -> None:
+    def __init__(self, library: papis.library.Library | None = None) -> None:
         if library is None:
             from papis.config import get_lib
             library = get_lib()
@@ -89,19 +89,19 @@ class Database(ABC):
         """
 
     @abstractmethod
-    def add(self, document: "papis.document.Document") -> None:
+    def add(self, document: papis.document.Document) -> None:
         """Add a new document to the database."""
 
     @abstractmethod
-    def update(self, document: "papis.document.Document") -> None:
+    def update(self, document: papis.document.Document) -> None:
         """Replace an existing document in the database."""
 
     @abstractmethod
-    def delete(self, document: "papis.document.Document") -> None:
+    def delete(self, document: papis.document.Document) -> None:
         """Remove a document from the database."""
 
     @abstractmethod
-    def query(self, query_string: str) -> list["papis.document.Document"]:
+    def query(self, query_string: str) -> list[papis.document.Document]:
         """Find a document in the database by the given *query_string*.
 
         The query string can have a more complex syntax based on the database
@@ -109,14 +109,14 @@ class Database(ABC):
         """
 
     @abstractmethod
-    def query_dict(self, query: dict[str, str]) -> list["papis.document.Document"]:
+    def query_dict(self, query: dict[str, str]) -> list[papis.document.Document]:
         """Find a document in the database that matches the keys in *query*."""
 
     @abstractmethod
-    def get_all_documents(self) -> list["papis.document.Document"]:
+    def get_all_documents(self) -> list[papis.document.Document]:
         """Get all documents in the database."""
 
-    def find_by_id(self, identifier: str) -> "papis.document.Document | None":
+    def find_by_id(self, identifier: str) -> papis.document.Document | None:
         """Find a document in the library by its Papis ID *identifier*."""
         from papis.id import ID_KEY_NAME
 
@@ -126,7 +126,7 @@ class Database(ABC):
 
         return results[0] if results else None
 
-    def maybe_compute_id(self, doc: "papis.document.Document") -> None:
+    def maybe_compute_id(self, doc: papis.document.Document) -> None:
         """Compute a Papis ID for the document *doc*.
 
         If the document already has an ID, then the document is skipped and the

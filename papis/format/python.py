@@ -103,7 +103,7 @@ class PythonFormatter(Formatter):
 
     def format(self,
                fmt: str,
-               doc: "papis.document.DocumentLike",
+               doc: papis.document.DocumentLike,
                doc_key: str = "",
                additional: dict[str, Any] | None = None,
                default: str | None = None) -> str:

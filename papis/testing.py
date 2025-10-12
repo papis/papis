@@ -241,7 +241,7 @@ class TemporaryConfiguration:
             filetype, suffix=suffix, prefix=prefix,
             dir=self.tmpdir)
 
-    def __enter__(self) -> "TemporaryConfiguration":
+    def __enter__(self) -> TemporaryConfiguration:
         if self._tmpdir is not None:
             raise ValueError(f"'{type(self).__name__}' cannot be nested")
 
@@ -359,7 +359,7 @@ class TemporaryLibrary(TemporaryConfiguration):
         #: contain random files and keys, which can be used for testing.
         self.populate = populate
 
-    def __enter__(self) -> "TemporaryLibrary":
+    def __enter__(self) -> TemporaryLibrary:
         super().__enter__()
 
         # initialize library

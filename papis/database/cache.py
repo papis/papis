@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def filter_documents(documents: list["papis.document.Document"],
-                     search: str = "") -> list["papis.document.Document"]:
+def filter_documents(documents: list[papis.document.Document],
+                     search: str = "") -> list[papis.document.Document]:
     """Filter documents based on the *search* string.
 
     :param search: a search string that will be parsed by
@@ -64,9 +64,9 @@ def filter_documents(documents: list["papis.document.Document"],
 
 
 def match_document(
-        document: "papis.document.Document",
+        document: papis.document.Document,
         search: re.Pattern[str],
-        match_format: "papis.strings.AnyString | None" = None,
+        match_format: papis.strings.AnyString | None = None,
         doc_key: str | None = None) -> re.Match[str] | None:
     """Match a document's keys to a given search pattern.
 
@@ -95,7 +95,7 @@ def match_document(
 class PickleDatabase(Database):
     """A caching database backend for Papis based on :mod:`pickle`."""
 
-    def __init__(self, library: "papis.library.Library | None" = None) -> None:
+    def __init__(self, library: papis.library.Library | None = None) -> None:
         super().__init__(library)
 
         self.use_cache = papis.config.getboolean("use-cache")
@@ -126,7 +126,7 @@ class PickleDatabase(Database):
             self.documents.clear()
             self.documents = None
 
-    def add(self, document: "papis.document.Document") -> None:
+    def add(self, document: papis.document.Document) -> None:
         if not self.use_cache:
             return
 
@@ -146,7 +146,7 @@ class PickleDatabase(Database):
 
         self._save_documents()
 
-    def update(self, document: "papis.document.Document") -> None:
+    def update(self, document: papis.document.Document) -> None:
         if not self.use_cache:
             return
 
@@ -163,7 +163,7 @@ class PickleDatabase(Database):
         docs[index] = document
         self._save_documents()
 
-    def delete(self, document: "papis.document.Document") -> None:
+    def delete(self, document: papis.document.Document) -> None:
         if not self.use_cache:
             return
 
@@ -180,7 +180,7 @@ class PickleDatabase(Database):
         docs.pop(index)
         self._save_documents()
 
-    def query(self, query_string: str) -> list["papis.document.Document"]:
+    def query(self, query_string: str) -> list[papis.document.Document]:
         logger.debug("Querying database for '%s'.", query_string)
 
         docs = self._get_documents()
@@ -189,14 +189,14 @@ class PickleDatabase(Database):
 
         return filter_documents(docs, query_string)
 
-    def query_dict(self, query: dict[str, str]) -> list["papis.document.Document"]:
+    def query_dict(self, query: dict[str, str]) -> list[papis.document.Document]:
         query_string = " ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> list["papis.document.Document"]:
+    def get_all_documents(self) -> list[papis.document.Document]:
         return self._get_documents()
 
-    def _get_documents(self) -> list["papis.document.Document"]:
+    def _get_documents(self) -> list[papis.document.Document]:
         if self.documents is not None:
             return self.documents
 
@@ -241,8 +241,8 @@ class PickleDatabase(Database):
         return get_cache_file_path(self.lib.path_format())
 
     def _locate_document(self,
-                         document: "papis.document.Document"
-                         ) -> list[tuple[int, "papis.document.Document"]]:
+                         document: papis.document.Document
+                         ) -> list[tuple[int, papis.document.Document]]:
         from papis.id import ID_KEY_NAME
 
         # FIXME: Why are we iterating twice over the documents here?

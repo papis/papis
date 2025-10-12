@@ -67,7 +67,7 @@ def get_text_from_html(html: str) -> str:
 
 
 @cache
-def _get_zenodo_key_conversion() -> list["papis.document.KeyConversionPair"]:
+def _get_zenodo_key_conversion() -> list[papis.document.KeyConversionPair]:
     from datetime import datetime
 
     from papis.document import KeyConversionPair
