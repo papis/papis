@@ -9,11 +9,10 @@ import papis.web.html as wh
 import papis.web.paths as wp
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 
-def html(libname: str,
-         doc: papis.document.Document) -> t.html_tag:
+def html(libname: str, doc: Document) -> t.html_tag:
     input_types = {
         # "string": default
         "textarea": ["abstract"],

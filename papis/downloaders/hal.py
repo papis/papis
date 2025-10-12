@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import re
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
-from papis.downloaders import Downloader
 from papis.downloaders.fallback import FallbackDownloader
+
+if TYPE_CHECKING:
+    from papis.downloaders import Downloader
 
 
 class HALDownloader(FallbackDownloader):

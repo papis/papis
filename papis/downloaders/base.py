@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, TypedDict
 
 if TYPE_CHECKING:
-    import bs4
+    from collections.abc import Iterator
+
+    from bs4 import BeautifulSoup
 
 
 class MetaEquivalence(TypedDict):
@@ -94,7 +95,7 @@ meta_equivalences: list[MetaEquivalence] = [
 ]
 
 
-def parse_meta_headers(soup: bs4.BeautifulSoup) -> dict[str, Any]:
+def parse_meta_headers(soup: BeautifulSoup) -> dict[str, Any]:
     data: dict[str, Any] = {}
     for equiv in meta_equivalences:
         elements = soup.find_all(equiv["tag"], attrs=equiv["attrs"])
@@ -129,7 +130,7 @@ def parse_meta_headers(soup: bs4.BeautifulSoup) -> dict[str, Any]:
     return data
 
 
-def parse_meta_authors(soup: bs4.BeautifulSoup) -> list[dict[str, Any]]:
+def parse_meta_authors(soup: BeautifulSoup) -> list[dict[str, Any]]:
     # find author tags
     authors = soup.find_all(name="meta", attrs={"name": "citation_author"})
     if not authors:

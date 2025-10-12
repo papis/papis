@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import papis.logging
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
 
 logger = papis.logging.get_logger(__name__)
 

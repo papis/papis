@@ -6,16 +6,16 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.library
     from papis.database.base import Database
+    from papis.library import Library
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES: dict[papis.library.Library, Database] = {}
+DATABASES: dict[Library, Database] = {}
 
 
 def _instantiate_database(backend_name: str,
-                          library: papis.library.Library) -> Database:
+                          library: Library) -> Database:
     if backend_name == "papis":
         from papis.database.cache import PickleDatabase
         return PickleDatabase(library)

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import os
 import re
+from typing import TYPE_CHECKING
 
-from papis.testing import TemporaryConfiguration, TemporaryLibrary
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration, TemporaryLibrary
 
 
 def test_unique_suffixes() -> None:

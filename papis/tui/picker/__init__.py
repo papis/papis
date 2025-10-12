@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import threading
-from collections.abc import Callable, Sequence
 from functools import cache, partial
-from typing import Any, Generic, TypedDict
+from typing import TYPE_CHECKING, Any, Generic, TypedDict
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -27,6 +26,9 @@ from .widgets import (
     Option,
     OptionsList,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 __all__ = [
     "PickerApplication"

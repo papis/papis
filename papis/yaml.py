@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
@@ -16,6 +15,9 @@ except ImportError:
         SafeDumper as Dumper,
         SafeLoader as Loader,
     )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 logger = papis.logging.get_logger(__name__)
 

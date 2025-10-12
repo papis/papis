@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.aps import APSDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 APS_URLS = (
     "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.145901",

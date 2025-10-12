@@ -20,13 +20,16 @@ from __future__ import annotations
 
 import os
 import sys
-from collections.abc import Callable
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import docutils
 from docutils.parsers.rst import Directive
-from sphinx import application
 from sphinx_click.ext import ClickDirective
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from sphinx import application
 
 
 class CustomClickDirective(ClickDirective):     # type: ignore[misc]

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from papis.testing import TemporaryConfiguration
 
 
 def load_json(filename: str, data_getter: Callable[[], Any] | None = None) -> Any:

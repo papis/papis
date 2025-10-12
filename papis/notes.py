@@ -10,17 +10,17 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def has_notes(doc: papis.document.Document) -> bool:
+def has_notes(doc: Document) -> bool:
     """Checks if the document has notes."""
     return "notes" in doc
 
 
-def notes_path(doc: papis.document.Document) -> str:
+def notes_path(doc: Document) -> str:
     """Get the path to the notes file corresponding to *doc*.
 
     If the document does not have attached notes, a filename is constructed (using
@@ -44,7 +44,7 @@ def notes_path(doc: papis.document.Document) -> str:
     return os.path.join(doc.get_main_folder() or "", doc["notes"])
 
 
-def notes_path_ensured(doc: papis.document.Document) -> str:
+def notes_path_ensured(doc: Document) -> str:
     """Get the path to the notes file corresponding to *doc* or create it if
     it does not exist.
 

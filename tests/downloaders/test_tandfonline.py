@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.tandfonline import TaylorFrancisDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 TANDFONLINE_URLS = (
     "https://www.tandfonline.com/doi/full/10.1080/00268976.2013.788745",

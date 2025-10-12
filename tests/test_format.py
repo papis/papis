@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import papis.document
 import papis.format
-from papis.testing import TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.config_setup(settings={"formatter": "python"})

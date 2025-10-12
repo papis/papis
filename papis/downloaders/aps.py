@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-import re
+from typing import TYPE_CHECKING
 
-from papis.downloaders import Downloader
 from papis.downloaders.fallback import FallbackDownloader
+
+if TYPE_CHECKING:
+    from papis.downloaders import Downloader
 
 
 class APSDownloader(FallbackDownloader):
@@ -18,6 +20,7 @@ class APSDownloader(FallbackDownloader):
 
     @classmethod
     def match(cls, url: str) -> Downloader | None:
+        import re
         return APSDownloader(url) if re.match(r".*aps.org.*", url) else None
 
     def get_bibtex_url(self) -> str | None:

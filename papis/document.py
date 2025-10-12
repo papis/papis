@@ -4,14 +4,15 @@ from __future__ import annotations
 import enum
 import os
 import re
-from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, TypedDict
 
 import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.strings
+    from collections.abc import Callable, Sequence
+
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -145,7 +146,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
 def author_list_to_author(
         data: dict[str, Any],
         separator: str | None = None,
-        multiple_authors_format: papis.strings.AnyString | None = None) -> str:
+        multiple_authors_format: AnyString | None = None) -> str:
     """Convert a list of authors into a single author string.
 
     This uses the :confval:`multiple-authors-separator` and the

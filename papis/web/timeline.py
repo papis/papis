@@ -4,13 +4,15 @@ information.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import dominate.tags as t
 import dominate.util as tu
 
 import papis.web.paths as wp
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def widget(documents: Sequence[dict[str, Any]],

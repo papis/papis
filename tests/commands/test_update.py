@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import os
-from typing import Any
-
-import pytest
+from typing import TYPE_CHECKING
 
 import papis.database
-from papis.document import Document
 from papis.testing import PapisRunner, ResourceCache, TemporaryLibrary
+
+if TYPE_CHECKING:
+    import pytest
+
+    from papis.document import Document, DocumentLike
 
 
 def _get_resource_file(filename: str) -> str:
@@ -21,7 +23,7 @@ def _get_resource_file(filename: str) -> str:
 
 
 def update_doc_from_data_interactively(
-    document: Document, data: dict[str, Any], data_name: str
+    document: Document, data: DocumentLike, data_name: str
 ) -> None:
     document.update(data)
 

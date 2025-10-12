@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import os
-
-from _pytest.logging import LogCaptureFixture
-from _pytest.monkeypatch import MonkeyPatch
+from typing import TYPE_CHECKING
 
 import papis.config
 import papis.database
-from papis.testing import TemporaryLibrary
+
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
+    from _pytest.monkeypatch import MonkeyPatch
+
+    from papis.testing import TemporaryLibrary
 
 
 def test_rename_run(tmp_library: TemporaryLibrary) -> None:

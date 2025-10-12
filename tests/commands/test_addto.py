@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any
-
-import pytest
+from typing import TYPE_CHECKING, Any
 
 import papis.database
 from papis.testing import PapisRunner, TemporaryLibrary, create_random_file
+
+if TYPE_CHECKING:
+    import pytest
 
 PDF_URL = "http://example.com/single-page-test.pdf"
 PDF_URL_BASE = "single-page-test.pdf"

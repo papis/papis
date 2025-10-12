@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import os
 import shutil
+from typing import TYPE_CHECKING
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 
 import papis.database
 from papis.testing import PapisRunner, TemporaryLibrary
+
+if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
 
 
 def test_rm_run(tmp_library: TemporaryLibrary) -> None:

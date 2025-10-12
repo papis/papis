@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.fallback import FallbackDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 FALLBACK_URLS = (
     "https://peerj.com/articles/4886/",

@@ -3,10 +3,12 @@ from __future__ import annotations
 import os
 import re
 from functools import cached_property
-from importlib.metadata import EntryPoint
-from typing import Any, Literal, NamedTuple
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 import click
+
+if TYPE_CHECKING:
+    from importlib.metadata import EntryPoint
 
 #: Name of the entry point namespace for :class:`~click.Command` plugins.
 COMMAND_NAMESPACE_NAME = "papis.command"

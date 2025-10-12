@@ -8,7 +8,7 @@ import papis.logging
 from papis.strings import AnyString, FormatPattern
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
@@ -43,7 +43,7 @@ class MatcherCallable(Protocol):
     """
 
     def __call__(self,
-                 document: papis.document.Document,
+                 document: Document,
                  search: re.Pattern[str],
                  match_format: AnyString | None = None,
                  doc_key: str | None = None,
@@ -98,7 +98,7 @@ class DocMatcher:
     @classmethod
     def return_if_match(
             cls,
-            doc: papis.document.Document) -> papis.document.Document | None:
+            doc: Document) -> Document | None:
         """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
 
             >>> from papis.document import from_data

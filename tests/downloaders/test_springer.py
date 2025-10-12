@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.springer import SpringerLinkDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 SPRINGER_LINK_URLS = (
     "https://link.springer.com/article/10.1007/s10924-010-0192-1",

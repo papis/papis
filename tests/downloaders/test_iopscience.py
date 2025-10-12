@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.iopscience import IOPscienceDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 IOPSCIENCE_URLS = (
     "https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002",

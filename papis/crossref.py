@@ -8,7 +8,7 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -137,7 +137,7 @@ def _crossref_link(entry: list[dict[str, str]]) -> str | None:
 
 
 @cache
-def _get_crossref_key_conversion() -> list[papis.document.KeyConversionPair]:
+def _get_crossref_key_conversion() -> list[KeyConversionPair]:
     from papis.document import EmptyKeyConversion, KeyConversionPair
 
     # NOTE: fields checked against the official API format

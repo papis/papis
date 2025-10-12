@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import os
 import tempfile
+from typing import TYPE_CHECKING
 
 import papis.database
-from papis.testing import TemporaryLibrary
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryLibrary
 
 
 def test_mv_run(tmp_library: TemporaryLibrary) -> None:

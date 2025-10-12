@@ -38,12 +38,12 @@ import papis.cli
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: Document,
         filepaths: list[str],
         file_name: str | None = None,
         link: bool = False,

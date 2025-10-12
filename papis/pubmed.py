@@ -4,7 +4,7 @@ from functools import cache
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import KeyConversionPair
 
 #: Name of the official PubMed database (see the `official documentation <
 #: https://api.ncbi.nlm.nih.gov/lit/ctxp>`__).
@@ -36,7 +36,7 @@ def _handle_pubmed_pages(pages: str) -> str:
 
 
 @cache
-def _get_pubmed_key_conversion() -> list[papis.document.KeyConversionPair]:
+def _get_pubmed_key_conversion() -> list[KeyConversionPair]:
     from papis.document import EmptyKeyConversion, KeyConversionPair
 
     return [

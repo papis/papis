@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from papis.testing import TemporaryConfiguration
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 def test_settings(tmp_config: TemporaryConfiguration) -> None:

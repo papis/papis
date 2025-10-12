@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
-from papis.testing import TemporaryLibrary
+if TYPE_CHECKING:
+    from papis.testing import TemporaryLibrary
 
 
 def test_simple(tmp_library: TemporaryLibrary) -> None:

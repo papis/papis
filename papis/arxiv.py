@@ -33,7 +33,7 @@ import papis.logging
 if TYPE_CHECKING:
     import arxiv
 
-    import papis.document
+    from papis.document import KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -46,7 +46,7 @@ ARXIV_PDF_URL = "https://arxiv.org/pdf"
 
 
 @cache
-def _get_arxiv_key_conversions() -> list[papis.document.KeyConversionPair]:
+def _get_arxiv_key_conversions() -> list[KeyConversionPair]:
     # NOTE: keys match attributes of arxiv.Result
     #   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
 

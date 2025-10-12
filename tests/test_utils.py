@@ -3,10 +3,12 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
+from typing import TYPE_CHECKING
 
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 def test_get_cache_home(tmp_config: TemporaryConfiguration,

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from papis.downloaders import Downloader
 
 
@@ -17,14 +15,18 @@ class FrontiersDownloader(Downloader):
 
     @classmethod
     def match(cls, url: str) -> Downloader | None:
+        import re
         if re.match(r".*frontiersin.org.*", url):
             return FrontiersDownloader(url)
         else:
             return None
 
     def get_doi(self) -> str | None:
+        import re
+
         url = self.uri
         self.logger.debug("Parsing DOI from '%s'.", url)
+
         mdoi = re.match(r".*/articles/([^/]+/[^/?&%^$]+).*", url)
         if mdoi:
             doi = mdoi.group(1)

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 import re
+from typing import TYPE_CHECKING
 
 import pytest
 
-from papis.testing import ResourceCache, TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
 

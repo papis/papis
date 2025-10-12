@@ -3,9 +3,12 @@ This module serves as an lightweight interface for ``git`` related functions.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import papis.logging
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 logger = papis.logging.get_logger(__name__)
 

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import os
-import re
 from functools import partial
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
-from papis.document import Document
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    import re
+
+    from papis.document import Document
+    from papis.testing import TemporaryConfiguration
 
 
 def get_docs() -> list[Document]:
