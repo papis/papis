@@ -7,6 +7,8 @@ import papis.logging
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
 
+    from papis.document import DocumentLike
+
 logger = papis.logging.get_logger(__name__)
 
 ImporterT = TypeVar("ImporterT", bound="Importer")
@@ -290,7 +292,7 @@ def get_matching_importers_by_uri(
 
 
 def get_matching_importers_by_doc(
-        doc: papis.document.DocumentLike, *,
+        doc: DocumentLike, *,
         include_downloaders: bool = False,
     ) -> list[Importer]:
     """Get importers that match the given document.

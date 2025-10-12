@@ -47,15 +47,34 @@ intersphinx_mapping = {
     "pytest": ("https://docs.pytest.org/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://requests.readthedocs.io/en/latest", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
 }
 
 linkcode_resolve = make_link_resolve("https://github.com/papis/papis", "main")
 
 autodoc_member_order = "bysource"
+
+papis_missing_reference_aliases = {
+    # external
+    "BuildEnvironment": "class:sphinx.environment.BuildEnvironment",
+    "EntryPoint": "py:class:importlib.metadata.EntryPoint",
+    "Sphinx": "class:sphinx.application.Sphinx",
+    "pending_xref": "class:sphinx.addnodes.pending_xref",
+    # internal
+    "AnyString": "obj:papis.strings.AnyString",
+    "CheckFn": "obj:papis.commands.doctor.CheckFn",
+    "Citations": "obj:papis.citations.Citations",
+    "Document": "class:papis.document.Document",
+    "DocumentLike": "obj:papis.document.DocumentLike",
+    "FixFn": "obj:papis.commands.doctor.FixFn",
+    "PathLike": "obj:papis.paths.PathLike",
+}
+
 nitpick_ignore_regex = [
-    ["py:class", r".*AnyString"],
-    ["py:class", r".*DocumentLike"],
-    ["py:class", r".*SubRequest"],
+    # NOTE: docutils does not seem to have Sphinx docs to link to
+    ["py:class", ".*TextElement"],
+    # NOTE: this is a private pytest class that does not seem to be documented
+    ["py:class", ".*SubRequest"]
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import pathlib
 import sys
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 import papis.config
 import papis.logging
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 #: A union type for allowable paths.
-PathLike = pathlib.Path | str
+PathLike: TypeAlias = pathlib.Path | str
 
 # NOTE: private error codes for Windows
 WIN_ERROR_PRIVILEGE_NOT_HELD = 1314

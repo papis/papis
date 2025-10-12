@@ -29,7 +29,10 @@ from sphinx_click.ext import ClickDirective
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from sphinx import application
+    from docutils.nodes import TextElement
+    from sphinx.addnodes import pending_xref
+    from sphinx.application import Sphinx
+    from sphinx.environment import BuildEnvironment
 
 
 class CustomClickDirective(ClickDirective):     # type: ignore[misc]
@@ -205,7 +208,7 @@ def make_link_resolve(
     return linkcode_resolve
 
 
-def remove_module_docstring(app: application.Sphinx,
+def remove_module_docstring(app: Sphinx,
                             what: str,
                             name: str,
                             obj: object,
@@ -218,14 +221,110 @@ def remove_module_docstring(app: application.Sphinx,
         del lines[:]
 
 
-def setup(app: application.Sphinx) -> dict[str, Any]:
+def process_autodoc_missing_reference(
+        app: Sphinx,
+        env: BuildEnvironment,
+        node: pending_xref,
+        contnode: TextElement
+        ) -> TextElement | None:
+    """Fix missing references due to string annotations.
+
+    This uses an alias dictionary called ``papis_missing_reference_aliases``
+    that maps each unknown type to a reference type and actual type full name.
+    For example, say that the ``Document`` reference is not recognized
+    properly. We know that this object is in the ``papis.document`` module as a
+    class. Then, we write:
+
+    .. code:: python
+
+        papis_missing_reference_aliases: dict[str, str] = {
+            "Document": "py:class:papis.document.Document",
+        }
+    """
+    missing_reference_aliases = app.config.papis_missing_reference_aliases
+    if not missing_reference_aliases:
+        return None
+
+    from sphinx.util import logging
+    logger = logging.getLogger("papis.sphinx_ext")
+
+    # check if this is a known alias
+    target = node["reftarget"]
+    if target not in missing_reference_aliases:
+        return None
+
+    # parse alias
+    fullname = missing_reference_aliases[target]
+    parts = fullname.split(":")
+    if len(parts) == 1:
+        domain = "py"
+        reftype = "obj"
+        reftarget, = parts
+    elif len(parts) == 2:
+        domain = "py"
+        reftype, reftarget = parts
+    elif len(parts) == 3:
+        domain, reftype, reftarget = parts
+    else:
+        logger.error("Could not parse alias for '%s': '%s'.", target, fullname)
+        return None
+
+    if domain != "py":
+        logger.error("Domain not supported for '%s': '%s'.", target, domain)
+        return None
+
+    # parse module and object from reftarget
+    parts = reftarget.split(".")
+    if len(parts) == 1:
+        inventory = module = objname = parts[0]
+    elif len(parts) >= 2:
+        inventory = parts[0]
+        module = ".".join(parts[:-1])
+        objname = parts[-1]
+    else:
+        logger.error("Could not parse reftarget for '%s': '%s'.", target, reftarget)
+        return None
+
+    # rewrite attributes
+    node.attributes["refdomain"] = domain
+    node.attributes["reftype"] = reftype
+    node.attributes[f"{domain}:module"] = module
+
+    # resolve reference
+    from sphinx.ext import intersphinx
+
+    if intersphinx.inventory_exists(env, inventory):
+        node.attributes["reftarget"] = reftarget
+
+        new_node = intersphinx.resolve_reference_in_inventory(
+            env, inventory, node, contnode)
+    else:
+        new_node = None
+        if intersphinx.inventory_exists(env, "python"):
+            node.attributes["reftarget"] = reftarget
+
+            new_node = intersphinx.resolve_reference_in_inventory(
+                env, "python", node, contnode)
+
+        if new_node is None:
+            py_domain = env.get_domain(domain)
+            new_node = py_domain.resolve_xref(  # type: ignore[assignment,unused-ignore]
+                env, node["refdoc"], app.builder, reftype, objname,
+                node, contnode)
+
+    return new_node
+
+
+def setup(app: Sphinx) -> dict[str, Any]:
     from sphinx.util.docfields import Field
 
     app.setup_extension("sphinx_click.ext")
 
+    # click
     app.add_directive("click", CustomClickDirective, override=True)
     app.add_directive("papis-config", PapisConfig)
 
+    # config
     app.add_object_type(
         "confval",
         "confval",
@@ -237,6 +336,14 @@ def setup(app: application.Sphinx) -> dict[str, Any]:
             Field("section", label="Section", has_arg=False, names=("section",)),
         ])
 
+    # missing values
+    # FIXME: Sphinx seems to be very bad when working with variables under
+    # TYPE_CHECKING or just when using `from __future__ import annotations`.
+    app.add_config_value("papis_missing_reference_aliases", {}, "env", types=dict,
+                         description="mapping for missing references")
+    app.connect("missing-reference", process_autodoc_missing_reference)
+
+    # docs
     app.connect("autodoc-process-docstring", remove_module_docstring)
 
     return {
