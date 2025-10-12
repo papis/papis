@@ -5,6 +5,8 @@ the `manual`_).
 .. _manual: https://ctan.org/pkg/biblatex?lang=en
 .. _biblatex_software: https://ctan.org/pkg/biblatex-software?lang=en
 """
+from __future__ import annotations
+
 import os
 import string
 from functools import cache

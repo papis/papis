@@ -11,6 +11,7 @@ Command-line interface
 .. click:: papis.commands.rm:cli
     :prog: papis rm
 """
+from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING

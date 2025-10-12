@@ -32,6 +32,7 @@ and the documents are added to the database. When adding documents, only the
 keys in the schema are stored. This means that, e.g., if ``publisher`` is not in
 the schema you will not be able to search for the publisher through a query.
 """
+from __future__ import annotations
 
 import os
 from collections.abc import KeysView

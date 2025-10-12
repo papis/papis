@@ -9,6 +9,7 @@ Command-line interface
 .. click:: papis.commands.edit:cli
     :prog: papis edit
 """
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 

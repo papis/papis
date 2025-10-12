@@ -2,6 +2,8 @@
 This file creates a timeline of documents with year and possibly month
 information.
 """
+from __future__ import annotations
+
 from collections.abc import Sequence
 from typing import Any
 

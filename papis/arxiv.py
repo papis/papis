@@ -20,6 +20,7 @@ id     Id (use id_list instead)
 all    All of the above
 ====== ========================
 """
+from __future__ import annotations
 
 import os
 import re

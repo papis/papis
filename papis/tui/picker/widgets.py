@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition, has_focus
 from prompt_toolkit.formatted_text import AnyFormattedText

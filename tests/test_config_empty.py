@@ -1,6 +1,7 @@
 # NOTE: these tests need to be in a new file to ensure that no papis modules
 # are loaded before the configuration file is set; some modules like
 # `papis.bibtex` have import side effects involving the config and interfere
+from __future__ import annotations
 
 import pytest
 

@@ -60,6 +60,7 @@ Command-line interface
 .. click:: papis.commands.browse:cli
     :prog: papis browse
 """
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 

@@ -48,6 +48,7 @@ Command-line interface
 .. click:: papis.commands.list:cli
     :prog: papis list
 """
+from __future__ import annotations
 
 import os
 from collections.abc import Sequence

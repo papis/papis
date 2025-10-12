@@ -55,6 +55,7 @@ Command-line interface
 .. click:: papis.commands.export:cli
     :prog: papis export
 """
+from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING

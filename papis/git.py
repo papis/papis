@@ -1,6 +1,7 @@
 """
 This module serves as an lightweight interface for ``git`` related functions.
 """
+from __future__ import annotations
 
 from collections.abc import Sequence
 

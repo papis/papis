@@ -44,6 +44,7 @@ Command-line interface
 .. click:: papis.commands.citations:cli
     :prog: papis citations
 """
+from __future__ import annotations
 
 import click
 

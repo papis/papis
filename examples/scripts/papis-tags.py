@@ -21,6 +21,7 @@ a document. However, for this script the following formats are supported:
   e.g. ``"tag name 1, tag name 2, tag name 3"``.
 * a space-separated string of tags, e.g. ``"tag-name-1 tag-name-2 tag-name-3"``.
 """
+from __future__ import annotations
 
 import re
 

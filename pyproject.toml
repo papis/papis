@@ -318,6 +318,7 @@ multiline-quotes = "double"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
+required-imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 python_version = "3.10"

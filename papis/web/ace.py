@@ -1,6 +1,7 @@
 """
 Module for helping ace.js editor functionality.
 """
+from __future__ import annotations
 
 
 def make_onsubmit_function(name: str, editor: str, content_id: str) -> str:

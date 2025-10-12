@@ -52,6 +52,7 @@ Command-line interface
 .. click:: papis.commands.rename:cli
     :prog: papis rename
 """
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 

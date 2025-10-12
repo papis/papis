@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # vim-run: python % -p 3.3 ../Dockerfile --norun
+from __future__ import annotations
 
 import pathlib
 

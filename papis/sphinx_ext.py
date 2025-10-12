@@ -16,6 +16,7 @@ for documenting Papis configuration values.
 These are included by default when adding it to the ``extensions`` list in your
 Sphinx configuration.
 """
+from __future__ import annotations
 
 import os
 import sys

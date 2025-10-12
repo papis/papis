@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import urllib.parse
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any

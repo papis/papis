@@ -69,6 +69,7 @@ Command-line interface
 .. click:: papis.commands.config:cli
     :prog: papis config
 """
+from __future__ import annotations
 
 from typing import Any
 

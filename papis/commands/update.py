@@ -132,6 +132,7 @@ Command-line interface
 .. click:: papis.commands.update:cli
     :prog: papis update
 """
+from __future__ import annotations
 
 import ast
 from collections.abc import Sequence

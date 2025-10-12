@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def test_pygments() -> None:
     # This function exists after version 2.2.0 only
     from pygments.lexers import find_lexer_class_by_name

@@ -1,4 +1,5 @@
 """This module implements custom exceptions used to make the code more readable."""
+from __future__ import annotations
 
 
 class DefaultSettingValueMissing(KeyError):

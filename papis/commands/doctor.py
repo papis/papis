@@ -123,6 +123,7 @@ Command-line interface
 .. click:: papis.commands.doctor:cli
     :prog: papis doctor
 """
+from __future__ import annotations
 
 import collections
 import os

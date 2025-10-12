@@ -40,6 +40,7 @@ Command Options
     A list of words to always uppercase and leave unabbreviated if they appear
     in the journal title.
 """
+from __future__ import annotations
 
 import json
 import os
