@@ -7,7 +7,7 @@ fi
 
 set -ex
 
-for pyversion in 3.10 3.11 3.12 3.13; do
+for pyversion in 3.10 3.11 3.12 3.13 3.14; do
     "$CTRT" build \
         --build-arg "PYTHON_VERSION=$pyversion" \
         -t "papisdev:$pyversion" \
