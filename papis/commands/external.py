@@ -1,6 +1,7 @@
 """
 This module define the entry point for external scripts to be called by Papis.
 """
+from __future__ import annotations
 
 import os
 import re

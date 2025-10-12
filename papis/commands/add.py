@@ -101,6 +101,7 @@ Command-line interface
 .. click:: papis.commands.add:cli
     :prog: papis add
 """
+from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING, Any

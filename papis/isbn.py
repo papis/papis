@@ -1,4 +1,6 @@
 # See https://github.com/xlcnd/isbnlib for details
+from __future__ import annotations
+
 from typing import Any
 
 import papis.config

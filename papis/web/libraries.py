@@ -1,6 +1,8 @@
 """
 Creates the libraries view.
 """
+from __future__ import annotations
+
 import dominate.tags as t
 
 import papis.web.header

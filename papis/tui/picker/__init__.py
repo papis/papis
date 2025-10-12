@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import threading
 from collections.abc import Callable, Sequence
 from functools import cache, partial

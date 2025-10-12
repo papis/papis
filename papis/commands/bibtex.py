@@ -120,6 +120,7 @@ Command-line interface
     :prog: papis bibtex
     :nested: full
 """
+from __future__ import annotations
 
 import os
 import re

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import papis.utils
 from papis.document import from_data
 from papis.testing import PapisRunner, TemporaryLibrary

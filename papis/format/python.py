@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from string import Formatter as StringFormatter
 from typing import TYPE_CHECKING, Any, ClassVar
 

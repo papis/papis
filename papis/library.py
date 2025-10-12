@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import os
 from collections.abc import Sequence

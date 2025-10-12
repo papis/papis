@@ -13,6 +13,7 @@ A simple usage of this command is::
 
     papis ga -a Einstein
 """
+from __future__ import annotations
 
 import os
 

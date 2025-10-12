@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import urllib.parse
 from typing import TYPE_CHECKING

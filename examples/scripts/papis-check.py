@@ -32,6 +32,7 @@ Command Options
     A list of key values to be checked by default by the command
     ``check``. E.g: ``check-keys = ["author", "doi"]``.
 """
+from __future__ import annotations
 
 import os
 from collections.abc import Sequence

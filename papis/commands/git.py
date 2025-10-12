@@ -24,6 +24,7 @@ Command-line interface
 .. click:: papis.commands.git:cli
     :prog: papis git
 """
+from __future__ import annotations
 
 import click
 

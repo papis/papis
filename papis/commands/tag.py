@@ -56,6 +56,7 @@ Command-line interface
     :prog: papis tag
 
 """
+from __future__ import annotations
 
 from typing import Any
 

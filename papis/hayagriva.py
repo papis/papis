@@ -1,5 +1,6 @@
 # NOTE: the Hayagriva YAML format is described at
 #   https://github.com/typst/hayagriva/blob/main/docs/file-format.md
+from __future__ import annotations
 
 HAYAGRIVA_TYPES = frozenset({
     "article", "chapter", "entry", "anthos", "report", "thesis", "web",

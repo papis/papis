@@ -7,6 +7,7 @@ Command-line interface
 .. click:: papis.commands.mv:cli
     :prog: papis mv
 """
+from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING

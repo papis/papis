@@ -48,6 +48,8 @@ Command-line interface
     :prog: papis cache
     :nested: full
 """
+from __future__ import annotations
+
 import os
 
 import click

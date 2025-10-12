@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dominate
 import dominate.tags as t
 

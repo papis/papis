@@ -1,6 +1,8 @@
 """
 This module controls the notes for every Papis document.
 """
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 

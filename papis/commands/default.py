@@ -27,6 +27,7 @@ Command-line interface
 .. click:: papis.commands.default:run
     :prog: papis
 """
+from __future__ import annotations
 
 import os
 from collections.abc import Callable

@@ -95,6 +95,7 @@ Command-line interface
     :prog: papis explore
     :nested: full
 """
+from __future__ import annotations
 
 import shlex
 

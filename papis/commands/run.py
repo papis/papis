@@ -50,6 +50,7 @@ Command-line interface
 .. click:: papis.commands.run:cli
     :prog: papis run
 """
+from __future__ import annotations
 
 import click
 

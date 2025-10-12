@@ -67,6 +67,7 @@ Command-line interface
 .. click:: papis.commands.open:cli
     :prog: papis open
 """
+from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING

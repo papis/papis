@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from papis.downloaders import get_downloader_by_name

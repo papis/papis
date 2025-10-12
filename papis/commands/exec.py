@@ -32,6 +32,7 @@ Command-line interface
 .. click:: papis.commands.exec:cli
     :prog: papis exec
 """
+from __future__ import annotations
 
 import sys
 

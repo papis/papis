@@ -30,6 +30,7 @@ Command-line interface
 .. click:: papis.commands.init:cli
     :prog: papis init
 """
+from __future__ import annotations
 
 import os
 from typing import NamedTuple
