@@ -46,7 +46,7 @@ ARXIV_PDF_URL = "https://arxiv.org/pdf"
 
 
 @cache
-def _get_arxiv_key_conversions() -> list["papis.document.KeyConversionPair"]:
+def _get_arxiv_key_conversions() -> list[papis.document.KeyConversionPair]:
     # NOTE: keys match attributes of arxiv.Result
     #   https://lukasschwab.me/arxiv.py/index.html#Result.__init__
 
@@ -75,7 +75,7 @@ def _get_arxiv_key_conversions() -> list["papis.document.KeyConversionPair"]:
     ]
 
 
-def arxiv_to_papis(result: "arxiv.Result") -> dict[str, Any]:
+def arxiv_to_papis(result: arxiv.Result) -> dict[str, Any]:
     from papis.document import keyconversion_to_data
 
     key_conversion = _get_arxiv_key_conversions()

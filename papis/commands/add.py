@@ -122,10 +122,10 @@ logger = papis.logging.get_logger(__name__)
 
 
 def get_file_name(
-        doc: "papis.document.Document",
+        doc: papis.document.Document,
         original_filepath: str,
         suffix: str = "",
-        file_name_format: "papis.strings.AnyString | None" = None,
+        file_name_format: papis.strings.AnyString | None = None,
         base_name_limit: int = 150) -> str:
     from warnings import warn
     warn("'get_file_name' is deprecated and will be removed in the next "
@@ -159,8 +159,8 @@ def ensure_new_folder(path: str) -> str:
 
 def run(paths: list[str],
         data: dict[str, Any] | None = None,
-        folder_name: "papis.strings.AnyString | None" = None,
-        file_name: "papis.strings.AnyString | None" = None,
+        folder_name: papis.strings.AnyString | None = None,
+        file_name: papis.strings.AnyString | None = None,
         subfolder: str | None = None,
         base_path: str | None = None,
         batch: bool = False,
@@ -170,7 +170,7 @@ def run(paths: list[str],
         git: bool = False,
         link: bool = False,
         move: bool = False,
-        citations: "papis.citations.Citations | None" = None,
+        citations: papis.citations.Citations | None = None,
         auto_doctor: bool = False) -> None:
     """
     :param paths: Paths to the documents to be added.
@@ -452,8 +452,8 @@ def cli(files: list[str],
         set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
-        folder_name: "papis.strings.AnyString",
-        file_name: "papis.strings.AnyString | None",
+        folder_name: papis.strings.AnyString,
+        file_name: papis.strings.AnyString | None,
         from_importer: list[tuple[str, str]],
         batch: bool,
         confirm: bool,

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @cache
-def _get_citeseerx_key_conversions() -> list["papis.document.KeyConversionPair"]:
+def _get_citeseerx_key_conversions() -> list[papis.document.KeyConversionPair]:
     from papis.document import EmptyKeyConversion, KeyConversionPair, split_authors_name
 
     return [

@@ -19,7 +19,7 @@ logger = papis.logging.get_logger(__name__)
 PapisConfigType = dict[str, dict[str, Any]]
 
 CURRENT_LIBRARY = None
-CURRENT_CONFIGURATION: "Configuration | None" = None
+CURRENT_CONFIGURATION: Configuration | None = None
 
 DEFAULT_SETTINGS: PapisConfigType | None = None
 OVERRIDE_VARS: dict[str, str | None] = {
@@ -488,7 +488,7 @@ def getstring(key: str, section: str | None = None) -> str:
 
 
 def getformatpattern(key: str,
-                     section: str | None = None) -> "papis.strings.FormatPattern":
+                     section: str | None = None) -> papis.strings.FormatPattern:
     """Retrieve a format pattern from the configuration file.
 
     Format patterns use the :class:`~papis.strings.FormatPattern` class to
@@ -616,7 +616,7 @@ def merge_configuration_from_path(path: str | None,
     configuration.handle_includes()
 
 
-def set_lib(library: "papis.library.Library") -> None:
+def set_lib(library: papis.library.Library) -> None:
     """Set the current library."""
 
     global CURRENT_LIBRARY
@@ -639,7 +639,7 @@ def set_lib_from_name(libname: str) -> None:
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname: str) -> "papis.library.Library":
+def get_lib_from_name(libname: str) -> papis.library.Library:
     """Get a library object from a name.
 
     :param libname: the name of a library in the configuration file or a path
@@ -700,7 +700,7 @@ def get_lib_name() -> str:
     return get_lib().name
 
 
-def get_lib() -> "papis.library.Library":
+def get_lib() -> papis.library.Library:
     """Get current library.
 
     If there is no library set before, the default library will be retrieved.

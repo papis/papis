@@ -182,7 +182,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def page_main(self,
                   libname: str | None = None,
-                  docs: list["papis.document.Document"] | None = None,
+                  docs: list[papis.document.Document] | None = None,
                   query: str | None = None) -> None:
         from papis.web.search import QUERY_PLACEHOLDER, html
 
@@ -326,7 +326,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         docs = get_documents_in_lib(libname, cleaned_query)
         self.serve_documents(docs)
 
-    def serve_documents(self, docs: list["papis.document.Document"]) -> None:
+    def serve_documents(self, docs: list[papis.document.Document]) -> None:
         """
         Serve a list of documents and set the files attribute to
         the full paths so that the user can reach them.
@@ -409,7 +409,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def _get_document(self,
                       libname: str,
-                      papis_id: str) -> "papis.document.Document":
+                      papis_id: str) -> papis.document.Document:
         self._handle_lib(libname)
 
         from papis.database import get_database

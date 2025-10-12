@@ -32,7 +32,7 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def html(libname: str, doc: "papis.document.Document") -> t.html_tag:
+def html(libname: str, doc: papis.document.Document) -> t.html_tag:
     """
     View of a single document to edit the information of the YAML file,
     and maybe in the future to update the information.

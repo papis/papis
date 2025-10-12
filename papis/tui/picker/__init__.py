@@ -102,7 +102,7 @@ def get_keys_info() -> dict[str, KeyInfo]:
     }
 
 
-def create_keybindings(app: "PickerApplication[Any]") -> KeyBindings:
+def create_keybindings(app: PickerApplication[Any]) -> KeyBindings:
     keys_info = get_keys_info()
     kb = KeyBindings()
 
@@ -197,7 +197,7 @@ def create_keybindings(app: "PickerApplication[Any]") -> KeyBindings:
     return kb
 
 
-def get_commands(app: "PickerApplication[Any]") -> tuple[list[Command], KeyBindings]:
+def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBindings]:
     kb = KeyBindings()
     keys_info = get_keys_info()
 

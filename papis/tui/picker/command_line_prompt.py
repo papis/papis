@@ -33,7 +33,7 @@ class Command:
     def __init__(
             self,
             name: str,
-            run: Callable[["Command"], Any],
+            run: Callable[[Command], Any],
             aliases: list[str] | None = None) -> None:
         if aliases is None:
             aliases = []

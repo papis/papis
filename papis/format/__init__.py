@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 # A cache for loaded formatters
-FORMATTER_CACHE: dict[str, "Formatter"] = {}
+FORMATTER_CACHE: dict[str, Formatter] = {}
 #: Name of the entry point namespace for :class:`Formatter` plugins.
 FORMATTER_NAMESPACE_NAME = "papis.format"
 
@@ -46,7 +46,7 @@ class Formatter:
 
     def format(self,
                fmt: str,
-               doc: "DocumentLike",
+               doc: DocumentLike,
                doc_key: str = "",
                additional: dict[str, Any] | None = None,
                default: str | None = None) -> str:
@@ -114,8 +114,8 @@ def get_cached_formatter(name: str | None = None) -> Formatter:
     return f
 
 
-def format(fmt: "AnyString",
-           doc: "DocumentLike",
+def format(fmt: AnyString,
+           doc: DocumentLike,
            doc_key: str = "",
            additional: dict[str, Any] | None = None,
            default: str | None = None) -> str:

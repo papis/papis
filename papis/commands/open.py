@@ -84,7 +84,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: "papis.document.Document",
+def run(document: papis.document.Document,
         opener: str | None = None,
         folder: bool = False,
         mark: bool = False) -> None:

@@ -297,7 +297,7 @@ bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlr
 
 
 @cache
-def _get_bibtexparser_key_conversion() -> list["papis.document.KeyConversionPair"]:
+def _get_bibtexparser_key_conversion() -> list[papis.document.KeyConversionPair]:
     from bibtexparser.latexenc import latex_to_unicode
 
     from papis.document import KeyConversionPair, split_authors_name
@@ -331,7 +331,7 @@ def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
     return keyconversion_to_data(key_conversion, entry, keep_unknown_keys=True)
 
 
-def bibtex_to_dict(bibtex: str) -> list["papis.document.DocumentLike"]:
+def bibtex_to_dict(bibtex: str) -> list[papis.document.DocumentLike]:
     """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
 
     This will convert an entry like:
@@ -401,8 +401,8 @@ def ref_cleanup(ref: str,
     return str(ref).strip()
 
 
-def create_reference(doc: "papis.document.DocumentLike", *,
-                     ref_format: "papis.strings.AnyString | None" = None,
+def create_reference(doc: papis.document.DocumentLike, *,
+                     ref_format: papis.strings.AnyString | None = None,
                      ref_word_separator: str | None = None,
                      force: bool = False) -> str:
     """Try to create a reference for the document *doc*.
@@ -453,7 +453,7 @@ def create_reference(doc: "papis.document.DocumentLike", *,
     return ref_cleanup(ref, ref_word_separator=ref_word_separator)
 
 
-def author_list_to_author(doc: "papis.document.Document",
+def author_list_to_author(doc: papis.document.Document,
                           author_list: list[dict[str, Any]]) -> str:
     """Construct the BibTeX author field from the document's *author_list*.
 
@@ -493,7 +493,7 @@ def author_list_to_author(doc: "papis.document.Document",
     return " and ".join(result)
 
 
-def to_bibtex(document: "papis.document.Document", *, indent: int = 2) -> str:
+def to_bibtex(document: papis.document.Document, *, indent: int = 2) -> str:
     from warnings import warn
 
     warn("'papis.bibtex.to_bibtex' is deprecated and will be removed in Papis v0.16. "

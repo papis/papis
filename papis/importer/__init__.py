@@ -73,7 +73,7 @@ class Importer:
         self.logger = papis.logging.get_logger(f"papis.importer.{self.name}")
 
     @classmethod
-    def match(cls, uri: str) -> "Importer | None":
+    def match(cls, uri: str) -> Importer | None:
         """Check if the importer can process the given URI.
 
         For example, an importer that supports links from arXiv can check that
@@ -96,7 +96,7 @@ class Importer:
             )
 
     @classmethod
-    def match_data(cls, data: dict[str, Any]) -> "Importer | None":
+    def match_data(cls, data: dict[str, Any]) -> Importer | None:
         """Check if the importer can process the given metadata.
 
         This method can be used to search for valid URIs inside the *data* that
@@ -288,7 +288,7 @@ def get_matching_importers_by_uri(
 
 
 def get_matching_importers_by_doc(
-        doc: "papis.document.DocumentLike", *,
+        doc: papis.document.DocumentLike, *,
         include_downloaders: bool = False,
     ) -> list[Importer]:
     """Get importers that match the given document.

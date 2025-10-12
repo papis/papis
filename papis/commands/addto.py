@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: "papis.document.Document",
+def run(document: papis.document.Document,
         filepaths: list[str],
         file_name: str | None = None,
         link: bool = False,

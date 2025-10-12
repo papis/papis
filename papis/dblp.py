@@ -58,7 +58,7 @@ def _dblp_authors(entries: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 @cache
-def _get_dblp_key_conversion() -> list["papis.document.KeyConversionPair"]:
+def _get_dblp_key_conversion() -> list[papis.document.KeyConversionPair]:
     from papis.document import KeyConversionPair
 
     return [

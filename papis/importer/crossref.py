@@ -12,12 +12,12 @@ class CrossrefImporter(Importer):
         super().__init__(name="crossref", uri=uri)
 
     @classmethod
-    def match(cls, uri: str) -> "CrossrefImporter | None":
+    def match(cls, uri: str) -> CrossrefImporter | None:
         # There is no way to check if it matches
         return None
 
     @classmethod
-    def match_data(cls, data: dict[str, Any]) -> "CrossrefImporter | None":
+    def match_data(cls, data: dict[str, Any]) -> CrossrefImporter | None:
         if "title" in data:
             return CrossrefImporter(uri=data["title"])
 

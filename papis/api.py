@@ -66,8 +66,8 @@ def get_libraries() -> list[str]:
 
 
 def pick_doc(
-        documents: Sequence["papis.document.Document"],
-        ) -> Sequence["papis.document.Document"]:
+        documents: Sequence[papis.document.Document],
+        ) -> Sequence[papis.document.Document]:
     """
     Pick a subset of documents from the given *documents*.
 
@@ -147,7 +147,7 @@ def edit_file(file_path: str, wait: bool = True) -> None:
 
 
 def get_all_documents_in_lib(
-        library: str | None = None) -> list["papis.document.Document"]:
+        library: str | None = None) -> list[papis.document.Document]:
     """
     Get *all* documents in the given library.
 
@@ -167,7 +167,7 @@ def get_all_documents_in_lib(
 
 def get_documents_in_dir(
         directory: str,
-        search: str = "") -> list["papis.document.Document"]:
+        search: str = "") -> list[papis.document.Document]:
     """
     Get documents contained in the given *directory*.
 
@@ -186,7 +186,7 @@ def get_documents_in_dir(
 
 def get_documents_in_lib(
         library: str | None = None,
-        search: dict[str, Any] | str = "") -> list["papis.document.Document"]:
+        search: dict[str, Any] | str = "") -> list[papis.document.Document]:
     """
     Get documents contained in the given *library*.
 
@@ -231,7 +231,7 @@ def doi_to_data(doi: str) -> dict[str, Any]:
     return _doi_to_data(doi)
 
 
-def save_doc(doc: "papis.document.Document") -> None:
+def save_doc(doc: papis.document.Document) -> None:
     """
     Save the document to disk.
 

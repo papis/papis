@@ -14,7 +14,7 @@ class DOIImporter(Importer):
         self.doi = doi
 
     @classmethod
-    def match(cls, uri: str) -> "DOIImporter | None":
+    def match(cls, uri: str) -> DOIImporter | None:
         from doi import validate_doi
 
         from papis.crossref import DOI_ORG_URL
@@ -27,7 +27,7 @@ class DOIImporter(Importer):
             return DOIImporter(f"{DOI_ORG_URL}/{uri}", uri)
 
     @classmethod
-    def match_data(cls, data: dict[str, Any]) -> "DOIImporter | None":
+    def match_data(cls, data: dict[str, Any]) -> DOIImporter | None:
         if "doi" in data:
             from papis.crossref import DOI_ORG_URL
 
@@ -72,7 +72,7 @@ class DOIFromPDFImporter(DOIImporter):
         self.name = "pdf2doi"
 
     @classmethod
-    def match(cls, uri: str) -> "DOIFromPDFImporter | None":
+    def match(cls, uri: str) -> DOIFromPDFImporter | None:
         from papis.filetype import get_document_extension
 
         if (not os.path.exists(uri)
@@ -93,7 +93,7 @@ class DOIFromPDFImporter(DOIImporter):
         return imp
 
     @classmethod
-    def match_data(cls, data: dict[str, Any]) -> "DOIFromPDFImporter | None":
+    def match_data(cls, data: dict[str, Any]) -> DOIFromPDFImporter | None:
         raise NotImplementedError
 
     def fetch_files(self) -> None:

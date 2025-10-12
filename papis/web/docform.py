@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def html(libname: str,
-         doc: "papis.document.Document") -> t.html_tag:
+         doc: papis.document.Document) -> t.html_tag:
     input_types = {
         # "string": default
         "textarea": ["abstract"],

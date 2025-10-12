@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: "papis.document.Document",
+def run(document: papis.document.Document,
         filepath: str | None = None,
         notespath: str | None = None,
         git: bool = False) -> None:

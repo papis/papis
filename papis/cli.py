@@ -146,7 +146,7 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 def handle_doc_folder_or_query(
         query: str,
         doc_folder: str | tuple[str, ...] | None,
-        ) -> list["papis.document.Document"]:
+        ) -> list[papis.document.Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -175,7 +175,7 @@ def handle_doc_folder_query_sort(
         query: str,
         doc_folder: str | tuple[str, ...] | None,
         sort_field: str | None,
-        sort_reverse: bool) -> list["papis.document.Document"]:
+        sort_reverse: bool) -> list[papis.document.Document]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_or_query`, but also handles the
@@ -200,7 +200,7 @@ def handle_doc_folder_query_all_sort(
         doc_folder: str | tuple[str, ...] | None,
         sort_field: str | None,
         sort_reverse: bool,
-        _all: bool) -> list["papis.document.Document"]:
+        _all: bool) -> list[papis.document.Document]:
     """Query database for documents.
 
     Similar to :func:`handle_doc_folder_query_sort`, but also handles the

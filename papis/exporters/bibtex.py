@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def to_bibtex(document: "papis.document.Document", *,
+def to_bibtex(document: papis.document.Document, *,
               bibtex_unicode: bool | None = None,
               bibtex_journal_key: str | None = None,
               bibtex_export_file: bool | None = None,
@@ -150,7 +150,7 @@ def to_bibtex(document: "papis.document.Document", *,
     return str(dumps(db, writer=writer).strip())
 
 
-def exporter(documents: list["papis.document.Document"]) -> str:
+def exporter(documents: list[papis.document.Document]) -> str:
     """Convert documents into a list of BibLaTeX entries"""
     from papis.document import describe
 

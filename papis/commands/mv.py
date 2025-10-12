@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: "papis.document.Document",
+def run(document: papis.document.Document,
         new_folder_path: str,
         git: bool = False) -> None:
     from papis.document import describe
