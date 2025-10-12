@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
-import papis.cli
 from papis.commands import CommandPlugin, CommandPluginLoaderGroup, get_commands
+
+if TYPE_CHECKING:
+    from papis.cli import DecoratorCallable
 
 #: Name of the entry point namespace for explorer plugins.
 EXPLORER_NAMESPACE_NAME = "papis.explorer"
@@ -18,9 +20,9 @@ class ExplorerLoaderGroup(CommandPluginLoaderGroup):
         return get_commands(EXPLORER_NAMESPACE_NAME, extern_matcher=False)
 
 
-def as_explorer(name: str) -> papis.cli.DecoratorCallable:
+def as_explorer(name: str) -> DecoratorCallable:
     """Adds standard options to an explorer command."""
-    def wrapper(f: papis.cli.DecoratorCallable) -> Any:
+    def wrapper(f: DecoratorCallable) -> Any:
         f = click.help_option("-h", "--help")(f)
         f = click.pass_context(f)
         f = click.command(name)(f)

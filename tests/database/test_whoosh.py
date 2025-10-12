@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 import papis.database
-from papis.testing import TemporaryLibrary
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryLibrary
 
 
 @pytest.mark.library_setup(settings={"database-backend": "whoosh"})

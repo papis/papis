@@ -3,9 +3,12 @@
 # `papis.bibtex` have import side effects involving the config and interfere
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.config_setup(overwrite=True, settings={})

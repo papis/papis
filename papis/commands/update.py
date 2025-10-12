@@ -135,7 +135,6 @@ Command-line interface
 from __future__ import annotations
 
 import ast
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import click
@@ -146,8 +145,10 @@ import papis.logging
 from papis.importer import get_available_importers
 
 if TYPE_CHECKING:
-    import papis.document
-    import papis.strings
+    from collections.abc import Sequence
+
+    from papis.document import Document, DocumentLike
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -167,8 +168,8 @@ def try_parsing_str(key: str, value: str) -> str:
 
 
 def run_set(
-    document: papis.document.DocumentLike,
-    to_set: Sequence[tuple[str, papis.strings.AnyString]],
+    document: DocumentLike,
+    to_set: Sequence[tuple[str, AnyString]],
     key_types: dict[str, type],
 ) -> None:
     """
@@ -214,8 +215,8 @@ def run_set(
 
 
 def run_append(
-    document: papis.document.DocumentLike,
-    to_append: Sequence[tuple[str, papis.strings.AnyString]],
+    document: DocumentLike,
+    to_append: Sequence[tuple[str, AnyString]],
     key_types: dict[str, type],
     batch: bool,
 ) -> bool:
@@ -279,8 +280,8 @@ def run_append(
 
 
 def run_remove(
-    document: papis.document.DocumentLike,
-    to_remove: Sequence[tuple[str, papis.strings.AnyString]],
+    document: DocumentLike,
+    to_remove: Sequence[tuple[str, AnyString]],
     batch: bool
 ) -> bool:
     """
@@ -326,7 +327,7 @@ def run_remove(
     return success
 
 
-def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) -> None:
+def run_drop(document: DocumentLike, to_remove: Sequence[str]) -> None:
     """
     Processes a list of ``to_drop`` strings and applies the resulting changes
     to the input document. Each string is a KEY whose value is set to None
@@ -343,9 +344,9 @@ def run_drop(document: papis.document.DocumentLike, to_remove: Sequence[str]) ->
 
 
 def run_rename(
-    document: papis.document.DocumentLike,
+    document: DocumentLike,
     to_rename: Sequence[
-        tuple[str, papis.strings.AnyString, papis.strings.AnyString]],
+        tuple[str, AnyString, AnyString]],
     key_types: dict[str, type],
     batch: bool,
 ) -> bool:
@@ -366,7 +367,7 @@ def run_rename(
 
 
 def run(
-    document: papis.document.Document,
+    document: Document,
     data: dict[str, Any] | None = None,
     git: bool = False,
     auto_doctor: bool = False,

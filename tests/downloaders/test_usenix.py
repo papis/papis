@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.usenix import USENIXDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
+
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 USENIX_LINK_URLS = [
     "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov",

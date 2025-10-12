@@ -30,7 +30,6 @@ Command-line interface
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import click
@@ -43,6 +42,7 @@ from papis.commands import CommandPluginLoaderGroup
 
 if TYPE_CHECKING:
     import cProfile
+    from collections.abc import Callable
 
 logger = papis.logging.get_logger(__name__)
 

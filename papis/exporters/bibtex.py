@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def to_bibtex(document: papis.document.Document, *,
+def to_bibtex(document: Document, *,
               bibtex_unicode: bool | None = None,
               bibtex_journal_key: str | None = None,
               bibtex_export_file: bool | None = None,
@@ -150,7 +150,7 @@ def to_bibtex(document: papis.document.Document, *,
     return str(dumps(db, writer=writer).strip())
 
 
-def exporter(documents: list[papis.document.Document]) -> str:
+def exporter(documents: list[Document]) -> str:
     """Convert documents into a list of BibLaTeX entries"""
     from papis.document import describe
 

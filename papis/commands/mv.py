@@ -19,12 +19,12 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: Document,
         new_folder_path: str,
         git: bool = False) -> None:
     from papis.document import describe

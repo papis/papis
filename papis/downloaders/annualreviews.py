@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from typing import Any, ClassVar
 
 from papis.downloaders import Downloader
@@ -25,6 +24,7 @@ class AnnualReviewsDownloader(Downloader):
 
     @classmethod
     def match(cls, url: str) -> Downloader | None:
+        import re
         if re.match(r".*annualreviews.org.*", url):
             return AnnualReviewsDownloader(url)
         else:
@@ -57,6 +57,8 @@ class AnnualReviewsDownloader(Downloader):
 
         if "author_list" in data:
             return data
+
+        import re
 
         cleanregex = re.compile(r"(^\s*|\s*$|&)")
         editorregex = re.compile(r"([\n|]|\(Reviewing\s*Editor\))")

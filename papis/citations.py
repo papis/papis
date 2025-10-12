@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from collections.abc import Sequence
+
+    from papis.document import Document, DocumentLike
 
 logger = papis.logging.get_logger(__name__)
 
@@ -29,13 +30,13 @@ def _delete_citations_key(citations: Citations) -> None:
 # =============================================================================
 
 
-def get_metadata_citations(doc: papis.document.DocumentLike) -> Citations:
+def get_metadata_citations(doc: DocumentLike) -> Citations:
     """Get the citations in the metadata that contain a DOI."""
     return [cit for cit in doc.get("citations", [])
             if isinstance(cit, dict) and "doi" in cit]
 
 
-def fetch_citations(doc: papis.document.Document) -> Citations:
+def fetch_citations(doc: Document) -> Citations:
     """Retrieve citations for the document.
 
     Citation retrieval is mainly based on querying Crossref metadata based on the
@@ -115,8 +116,7 @@ def get_citations_from_database(dois: Sequence[str]) -> Citations:
     return dois_with_data
 
 
-def update_and_save_citations_from_database_from_doc(
-        doc: papis.document.Document) -> None:
+def update_and_save_citations_from_database_from_doc(doc: Document) -> None:
     """Update the citations file of an existing document.
 
     This function will get any existing citations in the document, update them
@@ -153,7 +153,7 @@ def update_citations_from_database(citations: Citations) -> Citations:
     return new_citations
 
 
-def save_citations(doc: papis.document.Document, citations: Citations) -> None:
+def save_citations(doc: Document, citations: Citations) -> None:
     """Save the *citations* to the document's citation file."""
 
     file_path = get_citations_file(doc)
@@ -166,14 +166,14 @@ def save_citations(doc: papis.document.Document, citations: Citations) -> None:
     list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
-def fetch_and_save_citations(doc: papis.document.Document) -> None:
+def fetch_and_save_citations(doc: Document) -> None:
     """Retrieve citations from available sources and save them to the citations file."""
     citations = fetch_citations(doc)
     if citations:
         save_citations(doc, citations)
 
 
-def get_citations_file(doc: papis.document.Document) -> str | None:
+def get_citations_file(doc: Document) -> str | None:
     """Get the document's citation file path (see
     :confval:`citations-file-name`).
 
@@ -187,7 +187,7 @@ def get_citations_file(doc: papis.document.Document) -> str | None:
     return os.path.join(folder, file_name)
 
 
-def has_citations(doc: papis.document.Document) -> bool:
+def has_citations(doc: Document) -> bool:
     """
     :returns: *True* if the document has an existing citations file and *False*
         otherwise.
@@ -199,7 +199,7 @@ def has_citations(doc: papis.document.Document) -> bool:
     return os.path.exists(file_path)
 
 
-def get_citations(doc: papis.document.Document) -> Citations:
+def get_citations(doc: Document) -> Citations:
     """Retrieve citations from the document's citation file."""
 
     if has_citations(doc):
@@ -218,7 +218,7 @@ def get_citations(doc: papis.document.Document) -> Citations:
 # =============================================================================
 
 
-def get_cited_by_file(doc: papis.document.Document) -> str | None:
+def get_cited_by_file(doc: Document) -> str | None:
     """Get the documents cited-by file (see :confval:`cited-by-file-name`).
 
     :returns: an absolute path to the cited-by file for *doc*.
@@ -232,7 +232,7 @@ def get_cited_by_file(doc: papis.document.Document) -> str | None:
     return os.path.join(folder, file_name)
 
 
-def has_cited_by(doc: papis.document.Document) -> bool:
+def has_cited_by(doc: Document) -> bool:
     """
     :returns: *True* if the document has a cited-by file and *False* otherwise.
     """
@@ -242,7 +242,7 @@ def has_cited_by(doc: papis.document.Document) -> bool:
     return os.path.exists(file_path)
 
 
-def save_cited_by(doc: papis.document.Document, citations: Citations) -> None:
+def save_cited_by(doc: Document, citations: Citations) -> None:
     """Save the cited-by list *citations* to the document's cited-by file."""
     file_path = get_citations_file(doc)
     if not file_path:
@@ -253,7 +253,7 @@ def save_cited_by(doc: papis.document.Document, citations: Citations) -> None:
     list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
-def _cites_me_p(doi_doc: tuple[str, papis.document.Document]) -> Citation | None:
+def _cites_me_p(doi_doc: tuple[str, Document]) -> Citation | None:
     doi, doc = doi_doc
     if not has_citations(doc):
         return None
@@ -294,7 +294,7 @@ def fetch_cited_by_from_database(cit: Citation) -> Citations:
     return result
 
 
-def fetch_and_save_cited_by_from_database(doc: papis.document.Document) -> None:
+def fetch_and_save_cited_by_from_database(doc: Document) -> None:
     """Call :func:`fetch_cited_by_from_database` and :func:`save_cited_by`."""
     citations = fetch_cited_by_from_database(doc)
 
@@ -306,7 +306,7 @@ def fetch_and_save_cited_by_from_database(doc: papis.document.Document) -> None:
         list_to_path(citations, file_path, allow_unicode=allow_unicode)
 
 
-def get_cited_by(doc: papis.document.Document) -> Citations:
+def get_cited_by(doc: Document) -> Citations:
     """Get cited-by citations for the given document."""
 
     if has_cited_by(doc):

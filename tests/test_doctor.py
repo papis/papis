@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import os
 import tempfile
+from typing import TYPE_CHECKING
 
 import pytest
 
 import papis.api
 import papis.document
-from papis.testing import TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 DOCTOR_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 

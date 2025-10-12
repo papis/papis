@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 ARXIV_TEST_URLS = [
     ("/URI(https://arxiv.org/abs/1305.2291v2)>>", "1305.2291v2"),

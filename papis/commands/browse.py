@@ -71,13 +71,12 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
-        browse: bool = True) -> str | None:
+def run(document: Document, browse: bool = True) -> str | None:
     """Open the document's URL in the selected :confval:`browser`.
 
     :arg browse: if *True*, the URL is opened after it is found, instead of just

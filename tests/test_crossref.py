@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 RESOURCEDIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),

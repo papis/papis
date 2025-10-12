@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from papis.testing import ResourceCache, TemporaryLibrary
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryLibrary
 
 
 @pytest.mark.resource_setup(cachedir="resources/zenodo")

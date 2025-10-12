@@ -67,12 +67,12 @@ import papis.logging
 from papis.exporters import get_available_exporters
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(documents: list[papis.document.Document], to_format: str) -> str:
+def run(documents: list[Document], to_format: str) -> str:
     """
     Exports several documents into something else.
 

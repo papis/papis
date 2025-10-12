@@ -286,6 +286,7 @@ select = [
     "PL",  # pylint
     "Q",   # flake8-quotes
     "RUF", # ruff
+    "TC",  # flake8-type-checking
     "UP",  # pyupgrade
     "W",   # pycodestyle
 ]

@@ -3,16 +3,19 @@ from __future__ import annotations
 import os
 import random
 import tempfile
-from collections.abc import Iterator, Sequence
-from types import TracebackType
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import click
 import click.testing
 import pytest
-from _pytest.config import Config
-from _pytest.config.argparsing import Parser
-from _pytest.fixtures import SubRequest
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator, Sequence
+    from types import TracebackType
+
+    from _pytest.config import Config
+    from _pytest.config.argparsing import Parser
+    from _pytest.fixtures import SubRequest
 
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:

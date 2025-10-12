@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Any
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document, KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
 
 
 @cache
-def _get_hayagriva_key_conversions() -> list[papis.document.KeyConversionPair]:
+def _get_hayagriva_key_conversions() -> list[KeyConversionPair]:
     # NOTE: not all fields are implemented, since they're not well-supported
     from papis.document import EmptyKeyConversion, KeyConversionPair, split_authors_name
 
@@ -63,7 +63,7 @@ def to_hayagriva_authors(authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [{"given-name": a["given"], "name": a["family"]} for a in authors]
 
 
-def to_hayagriva(doc: papis.document.Document) -> dict[str, Any]:
+def to_hayagriva(doc: Document) -> dict[str, Any]:
     from contextlib import suppress
 
     from papis.hayagriva import (
@@ -129,7 +129,7 @@ def to_hayagriva(doc: papis.document.Document) -> dict[str, Any]:
     return data
 
 
-def exporter(documents: list[papis.document.Document]) -> str:
+def exporter(documents: list[Document]) -> str:
     """Convert document to the Hayagriva format used by Typst."""
     import yaml
 

@@ -10,10 +10,10 @@ import papis.web.html as wh
 import papis.web.paths as wp
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 
-def widget(doc: papis.document.Document, libname: str) -> None:
+def widget(doc: Document, libname: str) -> None:
     yaml_id = "info-yaml-source"
     yaml_input_id = "info-yaml-textarea"
     yaml_content = ""

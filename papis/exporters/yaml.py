@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 
-def exporter(documents: list[papis.document.Document]) -> str:
+def exporter(documents: list[Document]) -> str:
     """Convert document to the YAML format."""
     import yaml
 

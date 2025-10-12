@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import papis.config
 import papis.database
-from papis.testing import TemporaryLibrary
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryLibrary
 
 PAPIS_DB_BACKENDS = ["papis"]
 

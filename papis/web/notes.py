@@ -11,10 +11,10 @@ import papis.web.html as wh
 import papis.web.paths as wp
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 
-def widget(libname: str, doc: papis.document.Document) -> None:
+def widget(libname: str, doc: Document) -> None:
     notes_id = "notes-source"
     notes_input_id = "notes-input-source"
     notes_content = ""

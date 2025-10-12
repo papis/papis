@@ -20,12 +20,12 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-def run(document: papis.document.Document,
+def run(document: Document,
         wait: bool = True,
         git: bool = False) -> None:
     from papis.document import describe, to_dict
@@ -63,7 +63,7 @@ def run(document: papis.document.Document,
             f"Update information for '{describe(document)}'")
 
 
-def edit_notes(document: papis.document.Document,
+def edit_notes(document: Document,
                git: bool = False) -> None:
     from papis.document import describe
 

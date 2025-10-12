@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-import click
+from typing import TYPE_CHECKING
 
 import papis.cli
 import papis.logging
 from papis.explorers import as_explorer
+
+if TYPE_CHECKING:
+    import click
 
 logger = papis.logging.get_logger(__name__)
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import configparser
 import os
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 import click
@@ -11,8 +10,10 @@ import platformdirs
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.library
-    import papis.strings
+    from collections.abc import Callable
+
+    from papis.library import Library
+    from papis.strings import FormatPattern
 
 logger = papis.logging.get_logger(__name__)
 
@@ -488,7 +489,7 @@ def getstring(key: str, section: str | None = None) -> str:
 
 
 def getformatpattern(key: str,
-                     section: str | None = None) -> papis.strings.FormatPattern:
+                     section: str | None = None) -> FormatPattern:
     """Retrieve a format pattern from the configuration file.
 
     Format patterns use the :class:`~papis.strings.FormatPattern` class to
@@ -616,7 +617,7 @@ def merge_configuration_from_path(path: str | None,
     configuration.handle_includes()
 
 
-def set_lib(library: papis.library.Library) -> None:
+def set_lib(library: Library) -> None:
     """Set the current library."""
 
     global CURRENT_LIBRARY
@@ -639,7 +640,7 @@ def set_lib_from_name(libname: str) -> None:
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname: str) -> papis.library.Library:
+def get_lib_from_name(libname: str) -> Library:
     """Get a library object from a name.
 
     :param libname: the name of a library in the configuration file or a path
@@ -700,7 +701,7 @@ def get_lib_name() -> str:
     return get_lib().name
 
 
-def get_lib() -> papis.library.Library:
+def get_lib() -> Library:
     """Get current library.
 
     If there is no library set before, the default library will be retrieved.

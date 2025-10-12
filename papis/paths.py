@@ -3,15 +3,16 @@ from __future__ import annotations
 import os
 import pathlib
 import sys
-from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Literal
 
 import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
-    import papis.strings
+    from collections.abc import Iterable, Iterator
+
+    from papis.document import DocumentLike
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -150,10 +151,10 @@ def symlink(src: PathLike, dst: PathLike) -> None:
 
 
 def get_document_file_name(
-        doc: papis.document.DocumentLike,
+        doc: DocumentLike,
         orig_path: PathLike,
         suffix: str = "", *,
-        file_name_format: papis.strings.AnyString | Literal[False] | None = None,
+        file_name_format: AnyString | Literal[False] | None = None,
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
@@ -215,7 +216,7 @@ def get_document_file_name(
 
 
 def get_document_hash_folder(
-        doc: papis.document.DocumentLike,
+        doc: DocumentLike,
         paths: Iterable[str] | None = None, *,
         file_read_limit: int = 2000,
         seed: str | None = None) -> str:
@@ -233,9 +234,9 @@ def get_document_hash_folder(
 
 
 def get_document_folder(
-        doc: papis.document.DocumentLike,
+        doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: papis.strings.AnyString | None = None) -> str:
+        folder_name_format: AnyString | None = None) -> str:
     """Generate a folder name for the document at *dirname*.
 
     This function uses :confval:`add-folder-name` to generate a folder name for
@@ -343,9 +344,9 @@ def _make_unique_file(filename: PathLike) -> str:
 
 
 def get_document_unique_folder(
-        doc: papis.document.DocumentLike,
+        doc: DocumentLike,
         dirname: PathLike, *,
-        folder_name_format: papis.strings.AnyString | None = None) -> str:
+        folder_name_format: AnyString | None = None) -> str:
     """A wrapper around :func:`get_document_folder` that ensures that the
     folder is unique by adding suffixes.
 
@@ -387,10 +388,10 @@ def download_remote_files(in_document_paths: Iterable[str]) -> list[str | None]:
 
 
 def rename_document_files(
-        doc: papis.document.DocumentLike,
+        doc: DocumentLike,
         in_document_paths: Iterable[str], *,
         allow_remote: bool | None = None,
-        file_name_format: papis.strings.AnyString | Literal[False] | None = None,
+        file_name_format: AnyString | Literal[False] | None = None,
         ) -> list[str]:
     """Rename *in_document_paths* according to *file_name_format* and ensure
     uniqueness.

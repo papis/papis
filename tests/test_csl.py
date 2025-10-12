@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from papis.testing import TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 def test_csl_export(tmp_config: TemporaryConfiguration) -> None:

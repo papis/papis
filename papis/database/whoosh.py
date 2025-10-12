@@ -35,7 +35,6 @@ the schema you will not be able to search for the publisher through a query.
 from __future__ import annotations
 
 import os
-from collections.abc import KeysView
 from typing import TYPE_CHECKING
 
 import papis.config
@@ -43,12 +42,14 @@ import papis.logging
 from papis.database.base import Database, get_cache_file_name
 
 if TYPE_CHECKING:
+    from collections.abc import KeysView
+
     from whoosh.fields import FieldType, Schema
     from whoosh.index import Index
     from whoosh.writing import IndexWriter
 
-    import papis.document
-    import papis.library
+    from papis.document import Document
+    from papis.library import Library
 
 logger = papis.logging.get_logger(__name__)
 
@@ -57,7 +58,7 @@ WHOOSH_FOLDER_FIELD = "papis-folder"
 
 
 class WhooshDatabase(Database):
-    def __init__(self, library: papis.library.Library | None = None) -> None:
+    def __init__(self, library: Library | None = None) -> None:
         super().__init__(library)
 
         from papis.utils import get_cache_home
@@ -109,7 +110,7 @@ class WhooshDatabase(Database):
             logger.warning("Clearing the database at '%s'...", self.get_cache_path())
             shutil.rmtree(self.index_dir)
 
-    def add(self, document: papis.document.Document) -> None:
+    def add(self, document: Document) -> None:
         from papis.document import describe
         logger.debug("Adding document: '%s'.", describe(document))
 
@@ -120,11 +121,11 @@ class WhooshDatabase(Database):
         self._add_document_with_writer(document, writer, schema_keys)
         writer.commit()
 
-    def update(self, document: papis.document.Document) -> None:
+    def update(self, document: Document) -> None:
         self.delete(document)
         self.add(document)
 
-    def delete(self, document: papis.document.Document) -> None:
+    def delete(self, document: Document) -> None:
         from papis.document import describe
         logger.debug("Deleting document: '%s'.", describe(document))
 
@@ -135,7 +136,7 @@ class WhooshDatabase(Database):
         writer.delete_by_term(ID_KEY_NAME, document[ID_KEY_NAME])
         writer.commit()
 
-    def query(self, query_string: str) -> list[papis.document.Document]:
+    def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)
 
         import time
@@ -159,11 +160,11 @@ class WhooshDatabase(Database):
 
         return documents
 
-    def query_dict(self, query: dict[str, str]) -> list[papis.document.Document]:
+    def query_dict(self, query: dict[str, str]) -> list[Document]:
         query_string = " AND ".join(f'{key}:"{val}" ' for key, val in query.items())
         return self.query(query_string)
 
-    def get_all_documents(self) -> list[papis.document.Document]:
+    def get_all_documents(self) -> list[Document]:
         return self.query(self.get_all_query_string())
 
     def _create_index(self) -> None:
@@ -185,7 +186,7 @@ class WhooshDatabase(Database):
         return bool(exists_in(self.index_dir))
 
     def _add_document_with_writer(self,
-                                  document: papis.document.Document,
+                                  document: Document,
                                   writer: IndexWriter,
                                   schema_keys: KeysView[str]) -> None:
         """Helper function that adds a document document (without committing).

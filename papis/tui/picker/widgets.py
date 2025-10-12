@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition, has_focus
-from prompt_toolkit.formatted_text import AnyFormattedText
 from prompt_toolkit.formatted_text.html import HTML
 from prompt_toolkit.layout import Dimension
 from prompt_toolkit.layout.containers import (
@@ -18,6 +19,9 @@ from pygments.lexers import find_lexer_class_by_name
 
 from .command_line_prompt import Command, CommandLinePrompt
 from .options_list import Option, OptionsList
+
+if TYPE_CHECKING:
+    from prompt_toolkit.formatted_text import AnyFormattedText
 
 __all__ = [
     "Command",

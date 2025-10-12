@@ -35,8 +35,7 @@ Command Options
 from __future__ import annotations
 
 import os
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 
@@ -45,6 +44,9 @@ import papis.cli
 import papis.config
 import papis.document
 import papis.logging
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.check")

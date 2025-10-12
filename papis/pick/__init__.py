@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import os
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
-    import papis.strings
+    from collections.abc import Callable, Sequence
+
+    from papis.document import Document
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -116,11 +117,11 @@ def pick(items: Sequence[T],
                     default_index)
 
 
-def pick_doc(documents: Sequence[papis.document.Document], *,
+def pick_doc(documents: Sequence[Document], *,
              header_format_file: str | None = None,
-             header_format: papis.strings.AnyString | None = None,
-             match_format: papis.strings.AnyString | None = None,
-             ) -> list[papis.document.Document]:
+             header_format: AnyString | None = None,
+             match_format: AnyString | None = None,
+             ) -> list[Document]:
     """Pick from a sequence of *documents* using :func:`pick`.
 
     This function uses the :confval:`header-format-file` setting or, if not
@@ -186,7 +187,7 @@ def pick_subfolder_from_lib(libname: str) -> list[str]:
 
 
 def pick_library(libs: list[str] | None = None, *,
-                 header_format: papis.strings.AnyString | None = None,
+                 header_format: AnyString | None = None,
                  ) -> list[str]:
     """Pick a library from the current configuration.
 

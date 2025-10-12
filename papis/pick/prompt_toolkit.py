@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable, Sequence
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import papis.logging
 from papis.pick import Picker
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 logger = papis.logging.get_logger(__name__)
 T = TypeVar("T")

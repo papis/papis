@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -58,7 +58,7 @@ def _dblp_authors(entries: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 @cache
-def _get_dblp_key_conversion() -> list[papis.document.KeyConversionPair]:
+def _get_dblp_key_conversion() -> list[KeyConversionPair]:
     from papis.document import KeyConversionPair
 
     return [

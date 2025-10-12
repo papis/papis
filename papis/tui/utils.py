@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Any
 
 import click
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
     from papis.api import T
 
 # Highlighting style used by pygments. This is a copy of the prompt_toolkit

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from typing import Any, ClassVar
 
 from papis.downloaders import Downloader
@@ -28,6 +27,7 @@ class ACSDownloader(Downloader):
 
     @classmethod
     def match(cls, url: str) -> Downloader | None:
+        import re
         return ACSDownloader(url) if re.match(r".*acs.org.*", url) else None
 
     def get_data(self) -> dict[str, Any]:

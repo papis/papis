@@ -51,7 +51,6 @@ Command-line interface
 from __future__ import annotations
 
 import os
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import click
@@ -61,8 +60,10 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    import papis.document
-    import papis.strings
+    from collections.abc import Sequence
+
+    from papis.document import Document
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
@@ -154,13 +155,13 @@ def list_plugins(show_paths: bool = False,
     return []
 
 
-def list_documents(documents: Sequence[papis.document.Document],
+def list_documents(documents: Sequence[Document],
                    show_files: bool = False,
                    show_dir: bool = False,
                    show_id: bool = False,
                    show_info: bool = False,
                    show_notes: bool = False,
-                   show_format: papis.strings.AnyString = "",
+                   show_format: AnyString = "",
                    template: str | None = None
                    ) -> list[str]:
     """List document properties.

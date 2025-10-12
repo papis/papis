@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 import requests
 
-from papis.testing import ResourceCache, TemporaryConfiguration
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 DBLP_KEYS_VALID = [
     "books/sp/02/ST2002",

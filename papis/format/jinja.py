@@ -6,7 +6,7 @@ import papis.logging
 from papis.format import FormatFailedError, Formatter, unescape
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import DocumentLike
 
 logger = papis.logging.get_logger(__name__)
 
@@ -18,7 +18,7 @@ class Jinja2Formatter(Formatter):
     This formatter is named ``"jinja2"`` and can be set using the
     :confval:`formatter` setting in the configuration file. The
     format pattern has access to the ``doc`` variable, that is always a
-    :class:`papis.document.Document`. A pattern using this formatter can look
+    :class:`Document`. A pattern using this formatter can look
     like:
 
     .. code:: python
@@ -84,7 +84,7 @@ class Jinja2Formatter(Formatter):
 
     def format(self,
                fmt: str,
-               doc: papis.document.DocumentLike,
+               doc: DocumentLike,
                doc_key: str = "",
                additional: dict[str, Any] | None = None,
                default: str | None = None) -> str:

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
 from papis.downloaders import get_downloader_by_name
 from papis.downloaders.annualreviews import AnnualReviewsDownloader
-from papis.testing import ResourceCache, TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 ANNUAL_REVIEWS_URLS = (
     "https://www.annualreviews.org/doi/10.1146/annurev-conmatphys-031214-014726",

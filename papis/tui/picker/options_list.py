@@ -3,8 +3,7 @@ from __future__ import annotations
 import functools
 import os
 import re
-from collections.abc import Callable, Sequence
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.data_structures import Point
@@ -19,6 +18,9 @@ from prompt_toolkit.layout.containers import (
 from prompt_toolkit.layout.controls import FormattedTextControl
 
 import papis.logging
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 logger = papis.logging.get_logger(__name__)
 

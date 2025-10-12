@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 import dominate.tags as t
@@ -18,7 +17,9 @@ import papis.web.paths as wp
 import papis.web.pdfjs
 
 if TYPE_CHECKING:
-    import papis.document
+    from collections.abc import Callable
+
+    from papis.document import Document
 
 
 def _click_tab_selector_link_in_url() -> None:
@@ -32,7 +33,7 @@ def _click_tab_selector_link_in_url() -> None:
     """))
 
 
-def html(libname: str, doc: papis.document.Document) -> t.html_tag:
+def html(libname: str, doc: Document) -> t.html_tag:
     """
     View of a single document to edit the information of the YAML file,
     and maybe in the future to update the information.

@@ -8,11 +8,11 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from papis.downloaders import Downloader
 
 if TYPE_CHECKING:
-    import papis.document
+    from papis.document import KeyConversionPair
 
 
 @cache
-def _get_citeseerx_key_conversions() -> list[papis.document.KeyConversionPair]:
+def _get_citeseerx_key_conversions() -> list[KeyConversionPair]:
     from papis.document import EmptyKeyConversion, KeyConversionPair, split_authors_name
 
     return [

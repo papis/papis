@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import papis.config
-from papis.testing import TemporaryConfiguration
+
+if TYPE_CHECKING:
+    from papis.testing import TemporaryConfiguration
 
 
 @pytest.mark.config_setup(overwrite=True, settings={})

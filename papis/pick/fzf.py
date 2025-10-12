@@ -3,10 +3,12 @@ from __future__ import annotations
 import re
 import subprocess as sp
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Sequence
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from papis.pick import Picker
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 T = TypeVar("T")
 

@@ -3,13 +3,14 @@ from __future__ import annotations
 import os
 import re
 import tempfile
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import papis.logging
 from papis.importer import Context, Importer, cache
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import bs4
     import requests
 

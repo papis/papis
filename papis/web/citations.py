@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import urllib.parse
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 import dominate.tags as t
@@ -11,18 +10,19 @@ import papis.web.html as wh
 import papis.web.timeline
 
 if TYPE_CHECKING:
-    import papis.citations
-    import papis.document
+    from collections.abc import Callable
+
+    from papis.citations import Citations
+    from papis.document import Document
 
 
-def render(doc: papis.document.Document,
+def render(doc: Document,
            libname: str,
            libfolder: str,
            timeline_id: str,
            fetch_path: Callable[[str, dict[str, Any]], str],
-           checker: Callable[[papis.document.Document], bool],
-           getter: Callable[[papis.document.Document],
-                            papis.citations.Citations],
+           checker: Callable[[Document], bool],
+           getter: Callable[[Document], Citations],
            ads_fmt: str) -> None:
 
     with t.form(action=fetch_path(libname, doc),
