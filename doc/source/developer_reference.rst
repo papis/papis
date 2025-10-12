@@ -93,6 +93,8 @@ Developer API reference
 ``papis.format``
 ----------------
 
+.. autoclass:: papis.strings.AnyString
+
 .. autoclass:: papis.strings.FormatPattern
 
 .. automodule:: papis.format

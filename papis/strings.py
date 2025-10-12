@@ -57,6 +57,7 @@ class FormatPattern(NamedTuple):
         return hash(self.pattern)
 
 
+#: A union of allowable formatting string types.
 AnyString: TypeAlias = str | FormatPattern
 
 
