@@ -204,10 +204,14 @@ def run(paths: list[str],
     in_document_paths = paths
     temp_dir = tempfile.mkdtemp()
 
+    from papis.database import get as get_database
+
+    db = get_database()
+
     from papis.document import Document, describe, dump
 
     tmp_document = Document(folder=temp_dir, data=data)
-    papis.database.get().maybe_compute_id(tmp_document)
+    db.maybe_compute_id(tmp_document)
 
     # reference building
     # NOTE: this needs to go before any papis.format calls, so that those can
@@ -356,9 +360,6 @@ def run(paths: list[str],
 
     logger.info("[MV] '%s' to '%s'.", tmp_document.get_main_folder(), out_folder_path)
     move_doc(tmp_document, out_folder_path)
-
-    from papis.database import get as get_database
-    db = get_database()
     db.add(tmp_document)
 
     if git:
