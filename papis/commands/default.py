@@ -175,8 +175,12 @@ def run(ctx: click.Context,
         if lib is None:
             lib = papis.config.getstring("default-library")
 
-    papis.config.set_lib_from_name(lib)
-    library = papis.config.get_lib()
+    try:
+        papis.config.set_lib_from_name(lib)
+        library = papis.config.get_lib()
+    except RuntimeError as exc:
+        logger.error("Could not set library '%s'.", lib, exc_info=exc)
+        raise SystemExit(1) from None
 
     configuration = papis.config.get_configuration()
     if library.paths:
