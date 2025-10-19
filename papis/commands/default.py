@@ -64,7 +64,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @papis.cli.bool_flag(
     "-v", "--verbose",
     help="Make the output verbose (equivalent to --log DEBUG).",
-    default="PAPIS_DEBUG" in os.environ)
+    default=lambda: "PAPIS_DEBUG" in os.environ)
 @click.option(
     "--profile",
     help="Print profiling information into file.",
@@ -93,18 +93,18 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @click.option(
     "--color",
     type=click.Choice(["always", "auto", "no"]),
-    default=os.environ.get("PAPIS_LOG_COLOR", "auto"),
+    default=lambda: os.environ.get("PAPIS_LOG_COLOR", "auto"),
     help="Prevent the output from having color.")
 @click.option(
     "--log",
     help="Logging level.",
     type=click.Choice(["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]),
-    default=os.environ.get("PAPIS_LOG_LEVEL", "INFO"))
+    default=lambda: os.environ.get("PAPIS_LOG_LEVEL", "INFO"))
 @click.option(
     "--logfile",
     help="File to dump the log.",
     type=str,
-    default=os.environ.get("PAPIS_LOG_FILE"))
+    default=lambda: os.environ.get("PAPIS_LOG_FILE"))
 @click.option(
     "--np",
     help="Use number of processors for multicore functionalities in Papis.",
