@@ -111,7 +111,6 @@ import click
 import papis.cli
 import papis.config
 import papis.logging
-from papis.importer import get_available_importers
 
 if TYPE_CHECKING:
     from papis.citations import Citations
@@ -407,10 +406,11 @@ def run(paths: list[str],
 @click.option(
     "--from", "from_importer",
     help="Add document from a specific importer.",
-    type=(click.Choice(get_available_importers()), str),
+    type=str,
     nargs=2,
     multiple=True,
     default=(),)
+@papis.cli.bool_flag("--list-importers", help="List all supported importers.")
 @papis.cli.bool_flag(
     "-b", "--batch",
     help="Batch mode, do not prompt or otherwise.")
@@ -456,6 +456,7 @@ def cli(files: list[str],
         folder_name: AnyString,
         file_name: AnyString | None,
         from_importer: list[tuple[str, str]],
+        list_importers: bool,
         batch: bool,
         confirm: bool,
         open_file: bool,
@@ -479,9 +480,24 @@ def cli(files: list[str],
     from papis.importer import (
         collect_from_importers,
         fetch_importers,
+        get_available_importers,
         get_matching_importers_by_name,
         get_matching_importers_by_uri,
     )
+
+    if list_importers:
+        from papis.commands.list import list_plugins
+        for o in list_plugins(show_importers=True, verbose=True):
+            click.echo(o)
+        return
+
+    known_importers = get_available_importers()
+    extra_importers = {name for name, _ in from_importer}.difference(known_importers)
+    if extra_importers:
+        logger.error("Unknown importers chosen with '--from': ['%s'].",
+                     "', '".join(extra_importers))
+        logger.error("Supported importers are: ['%s'].", "', '".join(known_importers))
+        return
 
     if from_importer:
         importers = get_matching_importers_by_name(from_importer)

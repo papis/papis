@@ -104,7 +104,6 @@ import click
 import papis.cli
 import papis.logging
 from papis.explorers import ExplorerLoaderGroup
-from papis.exporters import get_available_exporters
 
 logger = papis.logging.get_logger(__name__)
 
@@ -208,16 +207,22 @@ def cmd(ctx: click.Context, command: str) -> None:
 @click.help_option("--help", "-h")
 @click.option(
     "-f", "--format", "fmt",
-    help="Export format.",
-    type=click.Choice(get_available_exporters()),
-    default="bibtex",)
+    help="Export format for document metadata.",
+    type=str,
+    default="bibtex",
+)
+@papis.cli.bool_flag("--list-exporters", help="List all supported exporters.")
 @click.option(
     "-o",
     "--out",
-    help="Outfile to write information to.",
+    help="Output file for document metadata.",
     type=click.Path(),
-    default=None,)
-def explorer(ctx: click.Context, fmt: str, out: str) -> None:
+    default=None,
+)
+def explorer(ctx: click.Context,
+             fmt: str,
+             list_exporters: bool,
+             out: str) -> None:
     """
     Export retrieved documents into various formats.
 
@@ -230,6 +235,20 @@ def explorer(ctx: click.Context, fmt: str, out: str) -> None:
             crossref -m 200 -a 'Schrodinger' \\
             export --format yaml --out lib.yaml
     """
+    if list_exporters:
+        from papis.commands.list import list_plugins
+        for o in list_plugins(show_exporters=True, verbose=True):
+            click.echo(o)
+        return
+
+    from papis.exporters import get_available_exporters
+    known_exporters = get_available_exporters()
+
+    if fmt not in known_exporters:
+        logger.error("Unknown export format '--format': '%s'.", fmt)
+        logger.error("Supported formats are: ['%s'].", "', '".join(known_exporters))
+        return
+
     docs = ctx.obj["documents"]
 
     from papis.commands.export import run
