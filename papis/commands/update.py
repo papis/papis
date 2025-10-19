@@ -142,7 +142,6 @@ import click
 import papis.cli
 import papis.config
 import papis.logging
-from papis.importer import get_available_importers
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -424,23 +423,22 @@ def run(
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@papis.cli.bool_flag("--auto", help="Try to parse information from different sources.")
+@papis.cli.bool_flag("--auto", help="Try to gather metadata from different sources.")
 @papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
-    help="Apply papis doctor to newly added documents.",
+    help="Apply automatic doctor fixes to newly added documents.",
     default=lambda: papis.config.getboolean("auto-doctor"),
 )
 @click.option(
     "--from",
     "from_importer",
-    help="Add document from a specific importer ({}).".format(
-        ", ".join(get_available_importers())
-    ),
-    type=(click.Choice(get_available_importers()), str),
+    help="Add document from a specific importer.",
+    type=(str, str),
     nargs=2,
     multiple=True,
     default=(),
 )
+@papis.cli.bool_flag("--list-importers", help="List all supported importers.")
 @click.option(
     "-s",
     "--set",
@@ -493,6 +491,7 @@ def cli(
     git: bool,
     doc_folder: tuple[str, ...],
     from_importer: list[tuple[str, str]],
+    list_importers: bool,
     batch: bool,
     auto: bool,
     auto_doctor: bool,
@@ -506,8 +505,30 @@ def cli(
     to_rename: list[tuple[str, str, str]],
 ) -> None:
     """Update document metadata."""
-    success = True
+    from papis.importer import (
+        Context,
+        collect_from_importers,
+        fetch_importers,
+        get_available_importers,
+        get_matching_importers_by_doc,
+        get_matching_importers_by_name,
+    )
 
+    if list_importers:
+        from papis.commands.list import list_plugins
+        for o in list_plugins(show_importers=True, verbose=True):
+            click.echo(o)
+        return
+
+    known_importers = get_available_importers()
+    extra_importers = {name for name, _ in from_importer}.difference(known_importers)
+    if extra_importers:
+        logger.error("Unknown importers chosen with '--from': ['%s'].",
+                     "', '".join(extra_importers))
+        logger.error("Supported importers are: ['%s'].", "', '".join(known_importers))
+        return
+
+    # retrieve documents
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all
     )
@@ -519,14 +540,7 @@ def cli(
     from papis.commands.doctor import get_key_type_check_keys
     known_key_types = get_key_type_check_keys()
 
-    from papis.importer import (
-        Context,
-        collect_from_importers,
-        fetch_importers,
-        get_matching_importers_by_doc,
-        get_matching_importers_by_name,
-    )
-
+    success = True
     processed_documents = []
     for document in documents:
         ctx = Context()

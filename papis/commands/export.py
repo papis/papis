@@ -64,7 +64,6 @@ import click
 
 import papis.cli
 import papis.logging
-from papis.exporters import get_available_exporters
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -116,18 +115,21 @@ def run(documents: list[Document], to_format: str) -> str:
 @click.option(
     "-o",
     "--out",
-    help="Outfile or outdir.",
-    default=None)
+    help="Output file (or directory if used with --folder) for document metadata.",
+    default=None,
+)
 @click.option(
     "-f",
     "--format", "fmt",
-    help="Format for the document.",
-    type=click.Choice(get_available_exporters()),
-    default="bibtex",)
+    help="Export format for document metadata.",
+    type=str,
+    default="bibtex",
+)
+@papis.cli.bool_flag("--list-exporters", help="List all supported exporters.")
 @papis.cli.bool_flag(
     "-p",
     "--append",
-    help="Append to outfile instead of overwriting.")
+    help="Append to '--out' path instead of overwriting.")
 @papis.cli.bool_flag(
     "-b",
     "--batch",
@@ -139,10 +141,24 @@ def cli(query: str,
         folder: str,
         out: str,
         fmt: str,
+        list_exporters: bool,
         append: bool,
         batch: bool,
         _all: bool) -> None:
     """Export a document from a given library."""
+    if list_exporters:
+        from papis.commands.list import list_plugins
+        for o in list_plugins(show_exporters=True, verbose=True):
+            click.echo(o)
+        return
+
+    from papis.exporters import get_available_exporters
+    known_exporters = get_available_exporters()
+
+    if fmt not in known_exporters:
+        logger.error("Unknown export format '--format': '%s'.", fmt)
+        logger.error("Supported formats are: ['%s'].", "', '".join(known_exporters))
+        return
 
     documents = papis.cli.handle_doc_folder_query_all_sort(query,
                                                            doc_folder,

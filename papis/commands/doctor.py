@@ -1292,13 +1292,11 @@ def run(doc: Document,
 @papis.cli.query_argument()
 @papis.cli.sort_option()
 @click.option("-t", "--checks", "_checks",
-              default=lambda: (
-                  papis.config.getlist("default-checks", section="doctor")
-                  + papis.config.getlist("default-checks-extend", section="doctor")),
+              default=(),
               multiple=True,
-              type=click.Choice(registered_checks_names()
-                                + list(DEPRECATED_CHECK_NAMES)),
+              type=str,
               help="Checks to run on every document.")
+@papis.cli.bool_flag("--list-checks", help="List all supported checks.")
 @papis.cli.bool_flag("--json", "_json",
                      help="Output the results in JSON format.")
 @papis.cli.bool_flag("--fix",
@@ -1322,10 +1320,41 @@ def cli(query: str,
         edit: bool,
         explain: bool,
         _checks: list[str],
+        list_checks: bool,
         _json: bool,
         suggest: bool,
         all_checks: bool) -> None:
     """Check for common problems in documents."""
+    if list_checks:
+        from papis.commands.list import list_plugins
+        for o in list_plugins(show_doctor=True, verbose=True):
+            click.echo(o)
+        return
+
+    if all_checks:
+        checks = list(REGISTERED_CHECKS)
+    else:
+        if not _checks:
+            checks = (
+                papis.config.getlist("default-checks", section="doctor")
+                + papis.config.getlist("default-checks-extend", section="doctor"))
+
+        # NOTE: ensure uniqueness of the checks so we don't run the same ones
+        checks = list(set(_checks))
+
+        known_checks = registered_checks_names() + list(DEPRECATED_CHECK_NAMES)
+        extra_checks = set(checks).difference(known_checks)
+        if extra_checks:
+            if _checks:
+                logger.error("Unknown checks chosen with '--check': ['%s'].",
+                             "', '".join(extra_checks))
+            else:
+                logger.error("Unknown checks found in the configuration file: ['%s'].",
+                             "', '".join(extra_checks))
+
+            logger.error("Supported checks are: ['%s'].", "', '".join(known_checks))
+            return
+
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all)
 
@@ -1334,12 +1363,6 @@ def cli(query: str,
 
         logger.warning(no_documents_retrieved_message)
         return
-
-    if all_checks:
-        checks = list(REGISTERED_CHECKS)
-    else:
-        # NOTE: ensure uniqueness of the checks so we don't run the same ones
-        checks = list(set(_checks))
 
     new_checks = []
     for check in checks:
