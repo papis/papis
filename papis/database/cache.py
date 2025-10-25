@@ -22,7 +22,7 @@ def filter_documents(documents: list[Document],
     """Filter documents based on the *search* string.
 
     :param search: a search string that will be parsed by
-        :class:`~papis.docmatcher.DocMatcher`.
+        :class:`~papis.docmatcher.parse_query`.
     :returns: a list of filtered documents.
 
     >>> document = papis.document.from_data({'author': 'einstein'})
@@ -34,12 +34,9 @@ def filter_documents(documents: list[Document],
     False
 
     """
-    from papis.docmatcher import DocMatcher
+    from papis.docmatcher import make_document_matcher
 
-    DocMatcher.set_search(search)
-    DocMatcher.set_matcher(match_document)
-    DocMatcher.parse()
-
+    match = make_document_matcher(search, matcher=match_document)
     logger.debug("Filtering %d docs (search '%s').", len(documents), search)
 
     import sys
@@ -50,12 +47,12 @@ def filter_documents(documents: list[Document],
     # FIXME: find a better solution for this that works for both OSes
     if sys.platform == "win32":
         filtered_docs = [
-            d for d in (DocMatcher.return_if_match(d) for d in documents)
+            d for d in (match(d) for d in documents)
             if d is not None]
     else:
         from papis.utils import parmap
 
-        result = parmap(DocMatcher.return_if_match, documents)
+        result = parmap(match, documents)
         filtered_docs = [d for d in result if d is not None]
 
     t_delta = 1000 * (time.time() - t_start)

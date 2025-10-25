@@ -32,23 +32,22 @@ def docmatcher_matcher(
 
 
 def test_docmatcher(tmp_config: TemporaryConfiguration) -> None:
-    from papis.docmatcher import DocMatcher
+    from papis.docmatcher import DocumentMatcher, make_document_matcher
 
-    DocMatcher.set_search("author:einstein")
-    assert DocMatcher.search == "author:einstein"
-    DocMatcher.set_search("author:seitz")
-    assert DocMatcher.search == "author:seitz"
-
-    DocMatcher.parse()
-    assert DocMatcher.parsed_search is not None
+    matcher = make_document_matcher("author:einstein")
+    assert isinstance(matcher, DocumentMatcher)
+    assert matcher.search == "author:einstein"
+    assert matcher.query is not None
 
     docs = get_docs()
     assert len(list(docs)) == 16
 
+    from dataclasses import replace
+
+    matcher = make_document_matcher("author:seitz")
     for res in [(True, 16), (False, 0)]:
-        DocMatcher.set_matcher(partial(docmatcher_matcher, res))
-        filtered = list(
-            filter(lambda x: x is not None, map(DocMatcher.return_if_match, docs)))
+        matcher = replace(matcher, matcher=partial(docmatcher_matcher, res))
+        filtered = [doc for doc in map(matcher, docs) if doc is not None]
         assert len(filtered) == res[1]
 
 
