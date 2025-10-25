@@ -76,7 +76,7 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
 
 
 def query_argument(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``query`` argument as a :mod:`click` decorator."""
+    """Adds a ``query`` argument as a :func:`click.argument` decorator."""
     return click.argument(
         "query",
         default=lambda: papis.config.getstring("default-query-string"),
@@ -85,7 +85,7 @@ def query_argument(**attrs: Any) -> DecoratorCallable:
 
 
 def query_option(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``-q``, ``--query`` option as a :mod:`click` decorator."""
+    """Adds a ``-q``, ``--query`` option as a :func:`click.option` decorator."""
 
     return click.option(
         "-q", "--query",
@@ -96,7 +96,9 @@ def query_option(**attrs: Any) -> DecoratorCallable:
 
 
 def sort_option(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``--sort`` and a ``--reverse`` option as a :mod:`click` decorator."""
+    """Adds a ``--sort`` and a ``--reverse`` option as a :func:`click.option`
+    decorator.
+    """
     def decorator(f: DecoratorCallable) -> Any:
         sort = click.option(
             "--sort", "sort_field",
@@ -115,7 +117,7 @@ def sort_option(**attrs: Any) -> DecoratorCallable:
 
 
 def doc_folder_option(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``--doc-folder`` argument as a :mod:`click` decorator."""
+    """Adds a ``--doc-folder`` argument as a :func:`click.option` decorator."""
     return click.option(
         "--doc-folder",
         default=None,
@@ -126,7 +128,7 @@ def doc_folder_option(**attrs: Any) -> DecoratorCallable:
 
 
 def all_option(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``--all`` option as a :mod:`click` decorator."""
+    """Adds a ``--all`` option as a :func:`click.option` decorator."""
     return bool_flag(
         "-a", "--all", "_all",
         help="Apply action to all matching documents.",
@@ -134,7 +136,7 @@ def all_option(**attrs: Any) -> DecoratorCallable:
 
 
 def git_option(**attrs: Any) -> DecoratorCallable:
-    """Adds a ``--git`` option as a :mod:`click` decorator."""
+    """Adds a ``--git`` option as a :func:`click.option` decorator."""
     git_help = attrs.pop("help", "Commit changes to git.")
     return bool_flag(
         "--git/--no-git",

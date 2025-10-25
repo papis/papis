@@ -4,8 +4,8 @@ Testing
 Papis uses :mod:`pytest` for its testing infrastructure and makes use of some of
 its more advanced features (such as
 `fixtures <https://docs.pytest.org/en/latest/explanation/fixtures.html>`__) to
-set everything up. The command-line interface is based on :mod:`click` and is
-tested using their testing helpers.
+set everything up. The command-line interface is based on :func:`click.command`
+and is tested using their testing helpers.
 
 We give here an overview of the pieces needed to test the various parts of the
 Papis codebase, but in general mimicking existing tests is your best choice.
