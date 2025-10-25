@@ -45,6 +45,7 @@ def test_docmatcher(tmp_config: TemporaryConfiguration) -> None:
     from dataclasses import replace
 
     matcher = make_document_matcher("author:seitz")
+    assert isinstance(matcher, DocumentMatcher)
     for res in [(True, 16), (False, 0)]:
         matcher = replace(matcher, matcher=partial(docmatcher_matcher, res))
         filtered = [doc for doc in map(matcher, docs) if doc is not None]
