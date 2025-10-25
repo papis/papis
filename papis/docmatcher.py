@@ -1,20 +1,24 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, NamedTuple, Protocol
+from warnings import warn
 
 import papis.config
 import papis.logging
 from papis.strings import AnyString, FormatPattern
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
 class ParseResult(NamedTuple):
-    """Result from parsing a search string.
+    """Result from parsing a search string using :func:`parse_query`.
 
     For example, a search string such as ``"author:einstein"`` will result in:
 
@@ -64,60 +68,19 @@ class MatcherCallable(Protocol):
         """
 
 
+# NOTE: this is deprecated because it doesn't work well with multiprocessing in
+# Python 3.14. In particular, it does not pickle properly when used with the
+# 'forkserver' backend on Linux and friends.
 class DocMatcher:
-    """This class implements the mini query language for papis.
-
-    The (static) methods should be used as follows:
-
-    * First, the search string has to be set::
-
-        DocMatcher.set_search(search_string)
-
-    * Then, the parse method should be called in order to decipher the
-      *search_string*::
-
-        DocMatcher.parse()
-
-    * Finally, the :class:`DocMatcher` is ready to match documents with the input
-      query via::
-
-        DocMatcher.return_if_match(doc)
-    """
-
-    #: Search string from which the matcher is constructed.
     search: ClassVar[str] = ""
-    #: A parsed version of the :attr:`search` string using :func:`parse_query`.
     parsed_search: ClassVar[list[ParseResult] | None] = None
-    #: A :class:`MatcherCallable` used to match the document to the
-    #: :attr:`parsed_search`.
     matcher: ClassVar[MatcherCallable | None] = None
-    #: A format pattern (defaulting to :confval:`match-format`) used
-    #: to match the parsed search results if no document key is present.
     match_format: ClassVar[FormatPattern] = FormatPattern(None, "")
 
     @classmethod
     def return_if_match(
             cls,
             doc: Document) -> Document | None:
-        """Use :attr:`DocMatcher.parsed_search` to match the *doc* against the query.
-
-            >>> from papis.document import from_data
-            >>> from papis.database.cache import match_document
-            >>> doc = from_data({'title': 'einstein'})
-            >>> DocMatcher.set_matcher(match_document)
-            >>> result = DocMatcher.parse('einste')
-            >>> DocMatcher.return_if_match(doc) is not None
-            True
-            >>> result = DocMatcher.parse('heisenberg')
-            >>> DocMatcher.return_if_match(doc) is not None
-            False
-            >>> result = DocMatcher.parse('title : ein')
-            >>> DocMatcher.return_if_match(doc) is not None
-            True
-
-        :param doc: a Papis document to match against.
-        """
-
         match = None
         if cls.parsed_search is None or cls.matcher is None:
             return match
@@ -134,45 +97,18 @@ class DocMatcher:
 
     @classmethod
     def set_search(cls, search: str) -> None:
-        """Set the search for this instance of the matcher.
-
-            >>> DocMatcher.set_search('author:Hummel')
-            >>> DocMatcher.search
-            'author:Hummel'
-        """
-
         cls.search = search
 
     @classmethod
     def set_matcher(cls, matcher: MatcherCallable) -> None:
-        """Set the matcher callable for the search.
-
-            >>> from papis.database.cache import match_document
-            >>> DocMatcher.set_matcher(match_document)
-        """
         cls.matcher = matcher
 
     @classmethod
     def parse(cls, search: str | None = None) -> list[ParseResult]:
-        """Parse the main query text.
+        warn("'DocMatcher' is deprecated and will be removed in Papis v0.16. Use "
+             "'make_document_matcher' instead.",
+             DeprecationWarning, stacklevel=2)
 
-        This method will also set :attr:`DocMatcher.parsed_search` to the
-        resulting parsed query and it will return it too.
-
-            >>> print(DocMatcher.parse('hello author : einstein'))
-            [['hello'], ['author', 'einstein']]
-            >>> print(DocMatcher.parse(''))
-            []
-            >>> print(\
-                DocMatcher.parse(\
-                    '"hello world whatever :" tags : \\\'hello ::::\\\''))
-            [['hello world whatever :'], ['tags', 'hello ::::']]
-            >>> print(DocMatcher.parse('hello'))
-            [['hello']]
-
-        :param search: a custom search text string that overwrite :attr:`search`.
-        :returns: a parsed query.
-        """
         if search is None:
             search = cls.search
 
@@ -180,6 +116,83 @@ class DocMatcher:
         cls.parsed_search = parse_query(search)
 
         return cls.parsed_search
+
+
+@dataclass(frozen=True)
+class DocumentMatcher:
+    """A class that can be used to match documents to a query.
+
+    .. automethod:: __call__
+    """
+
+    #: Initial search string used for the matcher.
+    search: str
+    #: The query resulting from :func:`parse_query`.
+    query: list[ParseResult]
+    #: A format that is used to match a document against.
+    match_format: FormatPattern
+    #: A callable used to match a document to the :attr:`query` using the
+    #: :attr:`match_format`.
+    matcher: MatcherCallable
+
+    def __call__(self, doc: Document) -> Document | None:
+        """Use the stored :attr:`query` to match the document.
+
+        """
+        match = None
+        for p in self.query:
+            match = (
+                doc
+                if self.matcher(doc, p.pattern, self.match_format, p.doc_key)
+                else None)
+
+            # NOTE: exit if a pattern did not match the document => means the
+            # document does not fully match the search query
+            if not match:
+                break
+
+        return match
+
+
+def make_document_matcher(
+        search: str, *,
+        matcher: MatcherCallable | None = None,
+        match_format: AnyString | None = None,
+    ) -> Callable[[Document], Document | None]:
+    """Create a callable that can be used to match documents against the given
+    *search* query.
+
+        >>> from papis.document import from_data
+        >>> doc = from_data({'title': 'einstein'})
+        >>> matcher = make_document_matcher('einste')
+        >>> matcher(doc) is not None
+        True
+        >>> matcher = make_document_matcher('heisenberg')
+        >>> matcher(doc) is not None
+        False
+        >>> matcher = make_document_matcher('title : ein')
+        >>> matcher(doc) is not None
+        True
+
+    :param matcher: a callable used to match the documents. This defaults to
+        :func:`~papis.database.cache.match_document`.
+    :param match_format: a format used to match against the query. This defaults
+        to :confval:`match-format`.
+    """
+    if matcher is None:
+        from papis.database.cache import match_document
+        matcher = match_document
+
+    if match_format is None:
+        match_format = papis.config.getformatpattern("match-format")
+
+    if isinstance(match_format, str):
+        match_format = FormatPattern(None, match_format)
+
+    query = parse_query(search)
+    return DocumentMatcher(
+        search=search, query=query, match_format=match_format, matcher=matcher
+    )
 
 
 def get_regex_from_search(search: str) -> re.Pattern[str]:
@@ -223,6 +236,17 @@ def parse_query(query_string: str) -> list[ParseResult]:
     They can be escaped by enclosing them in quotes. Otherwise, each individual
     word in the search query will give another :class:`ParseResult`. Each
     search term can contain additional regex characters.
+
+        >>> print(parse_query('hello author : einstein'))
+        [['hello'], ['author', 'einstein']]
+        >>> print(parse_query(''))
+        []
+        >>> print(\
+            parse_query(\
+                '"hello world whatever :" tags : \\\'hello ::::\\\''))
+        [['hello world whatever :'], ['tags', 'hello ::::']]
+        >>> print(parse_query('hello'))
+        [['hello']]
 
     :param query_string: a search string to parse into a structured format.
     :returns: a list of parsing results for each token in the query string.
