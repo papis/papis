@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# vim-run: python % -p 3.3 ../Dockerfile --norun
+# vim-run: python % -p 3.13 ../Dockerfile --norun
 from __future__ import annotations
 
 import pathlib
@@ -19,6 +19,7 @@ def main(dockerfile: pathlib.Path, py_version: str, *, norun: bool = False) -> i
     folder = dockerfile.parent.resolve()
     command = [
         "docker",
+        "buildx",
         "build",
         str(folder),
         "-t",
@@ -27,8 +28,8 @@ def main(dockerfile: pathlib.Path, py_version: str, *, norun: bool = False) -> i
         f"PYTHON_VERSION={py_version}",
     ]
 
-    print(">> Command:")
-    print(" ".join(command))
+    print("Command")
+    print(">>", " ".join(command))
 
     if not norun:
         import subprocess
@@ -49,8 +50,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--python-version", help="Python version",
-        choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(8, 14))],
-        default="3.12")
+        choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(8, 15))],
+        default="3.13")
     parser.add_argument("dockerfile", type=pathlib.Path, default="Dockerfile")
     parser.add_argument(
         "--norun",
