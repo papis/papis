@@ -47,7 +47,7 @@ ruff:								## Run ruff check (linting checks)
 .PHONY: ruff
 
 mypy:								## Run mypy (type annotations)
-	$(PYTHON) -m mypy papis tests examples tools
+	$(PYTHON) -m mypy
 	@echo -e "\e[1;32mmypy clean!\e[0m"
 .PHONY: mypy
 
