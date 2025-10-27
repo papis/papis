@@ -25,6 +25,12 @@
             types-pygments = final.buildPythonPackage rec {
               pname = "types-Pygments";
               version = "2.19.0.20250305";
+              pyproject = true;
+              build-system = [ final.setuptools ];
+
+              dependencies = [
+                final.types-docutils
+              ];
 
               src = final.fetchPypi {
                 inherit version;
