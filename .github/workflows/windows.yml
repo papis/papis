@@ -53,7 +53,7 @@ jobs:
         pyinstaller --clean tools/windows/papis_onedir.spec
 
     - name: Publish binary as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: papis-${{env.PAPIS_VERSION}}.exe
         path: ${{ github.workspace }}/dist/papis.exe
@@ -79,7 +79,7 @@ jobs:
         wix build -ext WixToolset.UI.wixext -o dist/papis.msi tools\windows\papis.wxs
 
     - name: Publish installer as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: papis-${{env.PAPIS_VERSION}}.msi
         path: ${{ github.workspace }}/dist/papis.msi
