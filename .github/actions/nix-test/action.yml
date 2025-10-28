@@ -1,0 +1,23 @@
+name: run tests with nix
+runs:
+  using: "composite"
+  steps:      
+    - run: nix flake check
+      shell: bash
+    - name: install papis from nix flake into profile.
+      # this also persists the papis package as gcroot, so it is not garbage
+      # collected and is persisted in the cache
+      run: nix profile install '.#papis'
+      shell: bash
+    - name: run unit tests in nix devShell
+      run: nix develop --command bash -c "python -m pytest -v papis tests"
+      shell: bash
+    - name: persist devshell as gcroot, s.t., it is cached
+      run: |
+        rm /nix/var/nix/gcroots/devshell || true
+        ln -s $(nix develop --command bash -c 'echo $NIX_GCROOT') /nix/var/nix/gcroots/devshell
+      shell: bash
+    # now the cache-nix-action post code runs and persists the nix store,
+    # after running garbage collection. Since we have both papis installed as
+    # profile and the devshell saved as gcroot, the cache should contain all
+    # nix derivations need for papis. This should speed up the CI quite a bit.

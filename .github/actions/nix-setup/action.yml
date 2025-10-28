@@ -1,0 +1,25 @@
+name: setup nix and nix store cache
+runs:
+  using: "composite"
+  steps:
+    - name: Install nix
+      uses: nixbuild/nix-quick-install-action@v34
+    - name: Restore and save nix store from cache
+      uses: nix-community/cache-nix-action@v6.1.3
+      with:
+        # save a new cache every time the ci file or the flake changes
+        primary-key: nix-cache-${{ hashFiles('.github/workflows/nix-flake.yaml', 'flake.nix', 'flake.lock') }}
+        # if no hit, restore current versions of individual caches
+        restore-prefixes-first-match: nix-cache-
+        # purge all versions of the cache
+        purge: true
+        purge-prefixes: nix-cache-
+        # created more than 0 seconds ago relative to the start of the `Post Restore` phase
+        purge-created: 0
+        # except the version with the `primary-key`, if it exists
+        purge-primary-key: never
+        # and collect garbage in the Nix store until it reaches this size in bytes
+        gc-max-store-size: 0M
+    - name: check installed nix version
+      run: which nix; nix build --version
+      shell: bash
