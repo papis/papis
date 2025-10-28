@@ -1,0 +1,31 @@
+name: Nix flake update PR
+
+on:
+  workflow_dispatch:
+  schedule:
+    # first of the month at 16:00 UTC
+    - cron: "00 16 1 * *"
+
+jobs:
+  update-nix-flake:
+    name: nix flake update and test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: setup nix
+        uses: ./.github/actions/nix-setup
+      - name: update nix flake inputs
+        run: |
+          nix flake update
+          git status
+      - name: run tests with nix
+        uses: ./.github/actions/nix-test
+      - name: create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: update-nix-flake
+          title: "Chore: Update nix flake inputs"
+      # requires allowing PRs from github actions: https://github.com/peter-evans/create-pull-request?tab=readme-ov-file#workflow-permissions
