@@ -512,7 +512,7 @@ def cli(files: list[str],
         if importers and not batch:
             from papis.tui.utils import select_range
 
-            logger.info("These importers where automatically matched. "
+            logger.info("These importers were automatically matched. "
                         "Select the ones you want to use.")
 
             matching_indices = select_range(
