@@ -166,7 +166,7 @@ def cli(
 
         if to_remove and success:
             to_remove_tuples = [("tags", tag) for tag in to_remove]
-            success = run_remove(ctx.data, to_remove_tuples, False)
+            success, _ = run_remove(ctx.data, to_remove_tuples, False)
 
         if to_rename:
             to_rename_tuples = [
