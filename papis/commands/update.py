@@ -362,8 +362,8 @@ def run_rename(
 
     :returns: A boolean indicating whether the update was successful.
     """
-    to_remove = [x[:2] for x in to_rename]
-    to_append = [x[::2] for x in to_rename]
+    to_remove = [(x[0], x[1]) for x in to_rename]
+    to_append = [(x[0], x[2]) for x in to_rename]
 
     success, any_removed = run_remove(document, to_remove, batch)
     if success and any_removed:
