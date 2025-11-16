@@ -569,7 +569,7 @@ def cli(
 
         if success:
             from papis.document import describe
-            logger.info("Updating %s.", describe(document))
+            logger.info("Processing '%s.'", describe(document))
 
             # get metadata from importers and merge them all together
             if from_importer:
