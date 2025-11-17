@@ -104,7 +104,7 @@ test = [
 ]
 # Type-checking
 typing = [
-    "mypy>=0.7",
+    "mypy>=1.0",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
@@ -125,7 +125,7 @@ optional = [
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "citeproc-py>=0.6",
-    "markdownify>=0.11.6",
+    "markdownify>=1.0.0",
 ]
 # Custom Sphinx directives for Papis docs
 "papis.sphinx_ext" = [
@@ -341,7 +341,6 @@ module = [
     "filetype.*",
     "habanero.*",
     "isbnlib.*",
-    "markdownify.*",
     "sphinx_click.*",
     "whoosh.*",
 ]

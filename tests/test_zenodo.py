@@ -19,10 +19,8 @@ def test_zenodo_id_to_data(tmp_library: TemporaryLibrary,
     import papis.zenodo
 
     if markdownify:
-        from importlib.metadata import version
-
         pytest.importorskip("markdownify")
-        v = "_" if version("markdownify") >= "0.14" else "_pre_0_14_"
+        v = "_"
     else:
         v = "_html_"
         monkeypatch.setattr(
