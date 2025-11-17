@@ -66,8 +66,6 @@ def test_lingbuzz_fetch(
 
     down.fetch()
     extracted_data = down.ctx.data
-    with open(f'/tmp/{outfile}', 'w') as f:
-        f.write(json.dumps(extracted_data))
     expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
     assert extracted_data == expected_data
