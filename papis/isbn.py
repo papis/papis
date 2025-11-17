@@ -191,6 +191,8 @@ def meta_fallback(isbn: str | None, service: str) -> dict[str, Any] | None:
 
 try:
     from isbnlib import notisbn
+
+    __all__ = ["notisbn"]
 except ImportError:
     notisbn = notisbn_fallback
 
@@ -218,7 +220,7 @@ def get_data(
             isbn = isbn_from_words(query)
             data = meta(isbn, service=service)
         except ISBNLibException:
-            return None
+            return []
     except ImportError:
         isbn = isbn_from_words_fallback(query)
         data = meta_fallback(isbn, service=service)
