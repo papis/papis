@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 import os
-import json
 from typing import TYPE_CHECKING
-import logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 import pytest
 
