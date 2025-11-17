@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from typing import Any
 from bs4 import Tag
 import re
 from datetime import datetime
+from typing import Any
 
 from papis.downloaders import Downloader
 
 
 def _parse_author(author: str) -> dict[str, str]:
-    # NOTE: lingbuzz does store given and family names properly, but they only seem to be accessible from the homepage
+    # NOTE: lingbuzz does store given and family names properly
+    # NOTE: but they only seem to be accessible from the homepage
     # TODO: get them somehow
     split_name = author.split()
     return {
@@ -27,7 +28,7 @@ def _parse_year(date: str) -> int:
 
 
 def _get_table_cell_value(table: Tag, label: str) -> str:
-    label_cell = table.find('td', string=label)
+    label_cell = table.find("td", string=label)
     if label_cell:
         value_cell = label_cell.next_sibling
         if value_cell and isinstance(value_cell.text, str):
