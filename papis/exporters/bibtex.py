@@ -131,9 +131,10 @@ def to_bibtex(document: Document, *,
         entry[bib_key] = bib_value
 
     # handle file exporting
-    files = document.get_files()
-    if bibtex_export_file and files:
-        entry["file"] = ";".join(files)
+    if bibtex_export_file:
+        files = document.get_files()
+        if files:
+            entry["file"] = ";".join(files)
 
     # dump the BibTeX data using bibtexparser
     from bibtexparser import dumps
