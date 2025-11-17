@@ -166,7 +166,7 @@ def cli(
 
         if to_remove and success:
             to_remove_tuples = [("tags", tag) for tag in to_remove]
-            success = run_remove(ctx.data, to_remove_tuples, False)
+            success, _ = run_remove(ctx.data, to_remove_tuples, False)
 
         if to_rename:
             to_rename_tuples = [
@@ -175,6 +175,9 @@ def cli(
             success = run_rename(ctx.data, to_rename_tuples, key_types, False)
 
         if success:
+            from papis.document import describe
+            logger.info("Processing tags in '%s.'", describe(document))
+
             processed_documents.append((document, ctx.data))
 
         if not success:
@@ -190,5 +193,3 @@ def cli(
 
     for document, data in processed_documents:
         run(document, data=data, git=git, auto_doctor=False)
-
-    logger.info("Updated tags in %d documents", len(processed_documents))

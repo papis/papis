@@ -282,17 +282,20 @@ def run_remove(
     document: DocumentLike,
     to_remove: Sequence[tuple[str, AnyString]],
     batch: bool
-) -> bool:
+) -> tuple[bool, bool]:
     """
     Processes a list of ``to_remove`` tuples and applies the resulting changes
     to the input document. Each tuple is (KEY, VALUE) and results in removing
     the VALUE from the KEY item.
 
-    :returns: A boolean indicating whether the update was successful.
+    :returns: A tuple of (success, any_removed) where success indicates whether
+        the operation completed without errors, and any_removed indicates whether
+        any items were actually removed.
     """
     from papis.strings import process_format_pattern_pair
 
     success = True
+    any_removed = False
     for orig_key, orig_value in to_remove:
         key, value = process_format_pattern_pair(orig_key, orig_value)
 
@@ -300,9 +303,11 @@ def run_remove(
             if isinstance(document.get(key), list):
                 try:
                     document[key].remove(value)
+                    any_removed = True
                 except ValueError:
                     try:
                         document[key].remove(int(str(value)))
+                        any_removed = True
                     except ValueError:
                         pass  # do nothing if there is nothing to remove
             else:
@@ -323,7 +328,7 @@ def run_remove(
                 value,
             )
 
-    return success
+    return success, any_removed
 
 
 def run_drop(document: DocumentLike, to_remove: Sequence[str]) -> None:
@@ -357,10 +362,11 @@ def run_rename(
 
     :returns: A boolean indicating whether the update was successful.
     """
-    to_remove = [x[:2] for x in to_rename]
-    to_append = [x[::2] for x in to_rename]
-    success = run_remove(document, to_remove, batch)
-    if success:
+    to_remove = [(x[0], x[1]) for x in to_rename]
+    to_append = [(x[0], x[2]) for x in to_rename]
+
+    success, any_removed = run_remove(document, to_remove, batch)
+    if success and any_removed:
         success = run_append(document, to_append, key_types, batch)
     return success
 
@@ -553,7 +559,7 @@ def cli(
             success = run_append(ctx.data, to_append, known_key_types, batch)
 
         if to_remove and success:
-            success = run_remove(ctx.data, to_remove, batch)
+            success, _ = run_remove(ctx.data, to_remove, batch)
 
         if to_drop and success:
             run_drop(ctx.data, to_drop)
@@ -563,7 +569,7 @@ def cli(
 
         if success:
             from papis.document import describe
-            logger.info("Updating %s.", describe(document))
+            logger.info("Processing '%s.'", describe(document))
 
             # get metadata from importers and merge them all together
             if from_importer:
