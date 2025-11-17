@@ -11,7 +11,7 @@ class ISBNImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> ISBNImporter | None:
-        from isbnlib import notisbn
+        from papis.isbn import notisbn
 
         if notisbn(uri):
             return None
@@ -19,14 +19,9 @@ class ISBNImporter(Importer):
         return ISBNImporter(uri=uri)
 
     def fetch_data(self) -> None:
-        from isbnlib import ISBNLibException
-
         from papis.isbn import data_to_papis, get_data
 
-        try:
-            data = get_data(self.uri)
-        except ISBNLibException:
-            data = None
+        data = get_data(self.uri)
 
         if data:
             self.ctx.data = data_to_papis(data[0])
