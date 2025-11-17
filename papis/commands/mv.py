@@ -1,5 +1,7 @@
 """
-This command can be used to move a document to a new folder.
+The ``mv`` command is used to organise a library moving their documents inside
+subfolders, which can be optionally created from a format adapted to each
+document.
 
 Command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^
