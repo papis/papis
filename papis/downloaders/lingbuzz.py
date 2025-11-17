@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from bs4 import Tag
 import re
 from datetime import datetime
 from typing import Any
+
+from bs4 import Tag
 
 from papis.downloaders import Downloader
 
