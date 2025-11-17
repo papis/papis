@@ -8,6 +8,33 @@ from datetime import datetime
 from papis.downloaders import Downloader
 
 
+def _parse_author(author: str) -> dict[str, str]:
+    # NOTE: lingbuzz does store given and family names properly, but they only seem to be accessible from the homepage
+    # TODO: get them somehow
+    split_name = author.split()
+    return {
+        "given": " ".join(split_name[:-1]),
+        "family": split_name[-1]
+    }
+
+
+def _parse_month(date: str) -> int:
+    return datetime.strptime(date, "%B %Y").month
+
+
+def _parse_year(date: str) -> int:
+    return datetime.strptime(date, "%B %Y").year
+
+
+def _get_table_cell_value(table: Tag, label: str) -> str:
+    label_cell = table.find('td', string=label)
+    if label_cell:
+        value_cell = label_cell.next_sibling
+        if value_cell and isinstance(value_cell.text, str):
+            return value_cell.text
+    return ""
+
+
 class LingbuzzDownloader(Downloader):
     """Retrieve documents from `LingBuzz <https://lingbuzz.net>`__"""
 
@@ -20,34 +47,10 @@ class LingbuzzDownloader(Downloader):
 
     @classmethod
     def match(cls, url: str) -> Downloader | None:
-        import re
         if re.match(r".*(lingbuzz\.net|ling\.auf\.net).*", url):
             return LingbuzzDownloader(url)
         else:
             return None
-
-    def _parse_author(self, author: str) -> dict[str, str]:
-        # NOTE: lingbuzz does store given and family names properly, but they only seem to be accessible from the homepage
-        # TODO: get them somehow
-        split_name = author.split()
-        return {
-            "given": " ".join(split_name[:-1]),
-            "family": split_name[-1]
-        }
-
-    def _parse_month(self, date: str) -> int:
-        return datetime.strptime(date, "%B %Y").month
-
-    def _parse_year(self, date: str) -> int:
-        return datetime.strptime(date, "%B %Y").year
-
-    def _get_table_cell_value(self, table: Tag, label: str) -> str:
-        label_cell = table.find('td', string=label)
-        if label_cell:
-            value_cell = label_cell.next_sibling
-            if value_cell and isinstance(value_cell.text, str):
-                return value_cell.text
-        return ""
 
     def get_doi(self) -> str | None:
         # some authors provide doi in the "published in" field
@@ -74,13 +77,13 @@ class LingbuzzDownloader(Downloader):
 
             author_as = center.find_all("a")[1:]
             if author_as:
-                data["author_list"] = [self._parse_author(a.text) for a in author_as]
+                data["author_list"] = [_parse_author(a.text) for a in author_as]
                 data["author"] = author_list_to_author(data)
 
             date: str = center.contents[-1].get_text()
             if date:
-                data["month"] = self._parse_month(date)
-                data["year"] = self._parse_year(date)
+                data["month"] = _parse_month(date)
+                data["year"] = _parse_year(date)
 
             abstract_match = re.search(
                 r"<\/center>\xa0<p><\/p>(.*?)<table",
@@ -92,11 +95,11 @@ class LingbuzzDownloader(Downloader):
 
         table = soup.find("table")
         if isinstance(table, Tag):
-            published_in = self._get_table_cell_value(table, "Published in: ")
+            published_in = _get_table_cell_value(table, "Published in: ")
             if published_in:
                 data["note"] = "Published in: " + published_in
 
-            keywords = self._get_table_cell_value(table, "keywords: ")
+            keywords = _get_table_cell_value(table, "keywords: ")
             if keywords:
                 data["keywords"] = keywords
 
