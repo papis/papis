@@ -356,24 +356,23 @@ def bibtex_to_dict(bibtex: str) -> list[DocumentLike]:
     :returns: a list of entries from the BibTeX data in a compatible format.
     """
     from bibtexparser.bparser import BibTexParser
-    parser = BibTexParser(
-        common_strings=True,
-        ignore_nonstandard_types=False,
-        homogenize_fields=False,
-        interpolate_strings=True)
 
-    # bibtexparser has too many debug messages to be useful
-    import logging
-    logging.getLogger("bibtexparser.bparser").setLevel(logging.WARNING)
+    with papis.logging.quiet("bibtexparser.bparser"):
+        parser = BibTexParser(
+            common_strings=True,
+            ignore_nonstandard_types=False,
+            homogenize_fields=False,
+            interpolate_strings=True)
 
-    if os.path.exists(bibtex):
-        with open(bibtex, encoding="utf-8") as fd:
-            logger.debug("Reading in file: '%s'.", bibtex)
-            text = fd.read()
-    else:
-        text = bibtex
+        if os.path.exists(bibtex):
+            with open(bibtex, encoding="utf-8") as fd:
+                logger.debug("Reading in file: '%s'.", bibtex)
+                text = fd.read()
+        else:
+            text = bibtex
 
-    entries = parser.parse(text, partial=True).entries
+        entries = parser.parse(text, partial=True).entries
+
     return [bibtexparser_entry_to_papis(entry) for entry in entries]
 
 
