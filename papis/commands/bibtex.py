@@ -164,7 +164,7 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
         bibtex_explorer.callback(bibfile)
 
 
-cli.add_command(bibtex_explorer, "red")
+cli.add_command(bibtex_explorer, "read")
 
 
 @cli.command("add")
@@ -559,7 +559,7 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
 @cli.command("doctor")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to test for uniqueness, default is ref.",
+              help="Key to check exists in all documents",
               multiple=True,
               default=("doi", "url", "year", "title", "author"),
               type=str)
