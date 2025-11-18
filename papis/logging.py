@@ -3,9 +3,14 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from typing import Any
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any
 
 import colorama as c
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
 LEVEL_TO_COLOR = {
@@ -89,6 +94,20 @@ def _disable_color(color: str = "auto") -> bool:
         # NOTE: https://no-color.org/
         or (color == "auto" and "NO_COLOR" in os.environ)
         )
+
+
+@contextmanager
+def quiet(name: str) -> Iterator[None]:
+    """Temporarily sets the logging in the given module to ``WARNING``."""
+    logger = logging.getLogger(name)
+
+    previous_level = logger.level
+    logger.setLevel(logging.WARNING)
+
+    try:
+        yield None
+    finally:
+        logger.setLevel(previous_level)
 
 
 def setup(level: int | str | None = None,
