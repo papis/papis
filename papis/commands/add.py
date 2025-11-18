@@ -413,7 +413,7 @@ def run(paths: list[str],
 @papis.cli.bool_flag("--list-importers", help="List all supported importers.")
 @papis.cli.bool_flag(
     "-b", "--batch",
-    help="Batch mode, do not prompt or otherwise.")
+    help="Batch mode (do not prompt or otherwise).")
 @papis.cli.bool_flag(
     "--confirm/--no-confirm",
     help="Ask to confirm before adding to the collection.",
