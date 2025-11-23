@@ -21,7 +21,7 @@ class ISBNImporter(Importer):
     def fetch_data(self) -> None:
         from papis.isbn import data_to_papis, get_data
 
-        data = get_data(self.uri)
+        data = get_data(isbn_like=self.uri)
 
         if data:
             self.ctx.data = data_to_papis(data[0])

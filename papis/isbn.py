@@ -17,6 +17,7 @@ logger = papis.logging.get_logger(__name__)
 #: A list of services supported by :mod:`isbnlib`. Note that not all versions
 #: have support for all of these versions.
 ISBN_SERVICE_NAMES = ("goob", "openl", "wiki")
+USER_AGENT = "Mozilla/5.0"
 
 
 def format_title(title: str | None, subtitle: str | None = None) -> str:
@@ -25,11 +26,15 @@ def format_title(title: str | None, subtitle: str | None = None) -> str:
     )
 
 
+def strip_isbnlike(isbn_like: str) -> str:
+    return "".join(c for c in isbn_like.upper() if c in "0123456789X")
+
+
 def notisbn_fallback(isbn: str | None) -> bool:
     if isbn is None:
         return True
     # Remove non-required symbols such as hyphens or spaces
-    isbn = "".join(c for c in isbn.upper() if c in "0123456789X")
+    isbn = strip_isbnlike(isbn)
     # Check length and position of X (only possible for ISBN-10 at position 10)
     if len(isbn) not in {10, 13} or isbn.find("X") not in {
         10 * (len(isbn) == 10) - 1,
@@ -48,7 +53,7 @@ def notisbn_fallback(isbn: str | None) -> bool:
 
 
 def json_request(url: str) -> Any | None:
-    r = requests.get(url, headers={"user-agent": "Mozilla/5.0"})
+    r = requests.get(url, headers={"user-agent": USER_AGENT})
     if r.status_code != 200:
         return None
     try:
@@ -58,9 +63,9 @@ def json_request(url: str) -> Any | None:
     return data
 
 
-def isbn_from_words_fallback(query: str) -> str:
+def googlebooks_isbn_search(query: str) -> str:
     # This assumes the query to be an ISBN
-    query = "".join(c for c in query.upper() if c in "0123456789X")
+    query = strip_isbnlike(query)
     base_api_link = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
     data = json_request(requests.utils.requote_uri(base_api_link + query))
     if not data:
@@ -76,6 +81,35 @@ def isbn_from_words_fallback(query: str) -> str:
             if d.get("type") == "ISBN_13":
                 return str(d["identifier"])
     return ""
+
+
+def isbn_from_words_fallback(query: str) -> str:
+    search_provider_url = "http://www.google.com/search?q="
+    search_url = (
+        search_provider_url
+        + "ISBN+"
+        + requests.utils.requote_uri(query.replace(" ", "+"))
+    )
+    r = requests.get(
+        search_url,
+        headers={
+            "user-agent": USER_AGENT,
+            "Content-Type": 'text/plain; charset="UTF-8"',
+            "Content-Transfer-Encoding": "Quoted-Printable",
+        },
+    )
+    regex = re.compile(
+        r"97[89]-?[0-9]{10}|" r"97[89]-[-0-9]{13}|" r"[-0-9]{9,15}[0-9xX]",
+        re.M,
+    )
+    potential_isbns = regex.findall(r.text)
+    isbn = ""
+    for i in potential_isbns:
+        if not notisbn_fallback(i):
+            isbn = googlebooks_isbn_search(i)
+            if len(isbn) > 0:
+                break
+    return isbn
 
 
 def meta_goob(isbn: str) -> dict[str, Any] | None:
@@ -198,7 +232,7 @@ except ImportError:
 
 
 def get_data(
-    query: str = "", service: str | None = None
+    query: str = "", isbn_like: str = "", service: str | None = None
 ) -> list[dict[str, Any]]:
     logger.debug("Trying to retrieve ISBN from query: '%s'.", query)
 
@@ -213,16 +247,25 @@ def get_data(
         )
         return []
 
+    if isbn_like:
+        isbn = strip_isbnlike(isbn_like)
+    elif query:
+        isbn = None
+    else:
+        raise ValueError("must provide either 'isbn_like' or 'query'")
+
     try:
         from isbnlib import ISBNLibException, isbn_from_words, meta
 
         try:
-            isbn = isbn_from_words(query)
+            if not isbn:
+                isbn = isbn_from_words(query)
             data = meta(isbn, service=service)
         except ISBNLibException:
             return []
     except ImportError:
-        isbn = isbn_from_words_fallback(query)
+        if not isbn:
+            isbn = isbn_from_words_fallback(query)
         data = meta_fallback(isbn, service=service)
 
     if isinstance(data, dict):
