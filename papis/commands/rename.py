@@ -30,7 +30,6 @@ Examples
 
   This will give you a folder named "rick-astley-never-gonna".
 
-
 - To stop Papis from asking for confirmation, use the ``--batch`` flag:
 
    .. code:: sh
