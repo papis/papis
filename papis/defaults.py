@@ -121,7 +121,7 @@ settings: dict[str, Any] = {
     "search-engine": "https://duckduckgo.com",
 
     # edit
-    "notes-name": "notes.tex",
+    "notes-name": _f("notes.tex"),
     "notes-template": "",
 
     # doctor
