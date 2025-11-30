@@ -17,6 +17,14 @@ if TYPE_CHECKING:
 DecoratorCallable = Callable[..., Any]
 
 
+class KeyParamType(click.ParamType):
+    name: str = "key"
+
+
+class ValueParamType(click.ParamType):
+    name: str = "value"
+
+
 class FormatPatternParamType(click.ParamType):
     #: Name of the parameter type (shown in the command-line).
     name: str = "pattern"

@@ -226,7 +226,7 @@ def cli_add(ctx: click.Context,
                      help="Update the library document from the BibTeX file.")
 @click.option("-k", "--keys",
               help="Update only given keys (can be given multiple times).",
-              type=str,
+              type=papis.cli.KeyParamType(),
               multiple=True)
 @click.pass_context
 def cli_update(ctx: click.Context, _all: bool,
@@ -342,7 +342,7 @@ def cli_open(ctx: click.Context) -> None:
 @click.option("-s", "--set", "set_tuples",
               help="Update a document with key value pairs.",
               multiple=True,
-              type=(str, papis.cli.FormatPatternParamType()),)
+              type=(papis.cli.KeyParamType(), papis.cli.FormatPatternParamType()),)
 @papis.cli.all_option()
 @click.pass_context
 def cli_edit(ctx: click.Context,
@@ -491,7 +491,7 @@ def cli_save(ctx: click.Context, bibfile: str, force: bool) -> None:
 @click.option("-k", "--key",
               help="Field to order by.",
               default=None,
-              type=str,
+              type=papis.cli.KeyParamType(),
               required=True)
 @papis.cli.bool_flag("-r", "--reverse", help="Reverse the sort order.")
 @click.pass_context
@@ -508,7 +508,7 @@ def cli_sort(ctx: click.Context, key: str | None, reverse: bool) -> None:
 @click.option("-k", "--key",
               help="Field to test for uniqueness, default is ref.",
               default="ref",
-              type=str)
+              type=papis.cli.KeyParamType())
 @click.option("-o",
               help="Output the discarded documents to a file.",
               default=None,
@@ -562,7 +562,7 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
               help="Key to check exists in all documents",
               multiple=True,
               default=("doi", "url", "year", "title", "author"),
-              type=str)
+              type=papis.cli.KeyParamType())
 @click.pass_context
 def cli_doctor(ctx: click.Context, key: list[str]) -> None:
     """
@@ -592,7 +592,9 @@ def cli_doctor(ctx: click.Context, key: list[str]) -> None:
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
               help="Text file to check for references.",
-              multiple=True, required=True, type=str)
+              multiple=True,
+              required=True,
+              type=click.Path(exists=True))
 @click.pass_context
 def cli_filter_cited(ctx: click.Context, _files: list[str]) -> None:
     """
@@ -622,7 +624,9 @@ def cli_filter_cited(ctx: click.Context, _files: list[str]) -> None:
 @click.help_option("-h", "--help")
 @click.option("-f", "--file", "_files",
               help="Text file to check for references.",
-              multiple=True, required=True, type=str)
+              multiple=True,
+              required=True,
+              type=click.Path(exists=True))
 @click.pass_context
 def cli_iscited(ctx: click.Context, _files: list[str]) -> None:
     """
