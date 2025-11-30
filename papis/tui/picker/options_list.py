@@ -320,8 +320,9 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         logger.debug("Processing headers.")
 
         self.options_headers = []
-        for _opt in self.get_options():
-            prestring = self.header_filter(_opt) + "\n"
+        for opt in self.get_options():
+            prestring = self.header_filter(opt) + "\n"
+
             try:
                 htmlobject = HTML(prestring).formatted_text
             except Exception as exc:
