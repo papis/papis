@@ -385,7 +385,7 @@ def run(paths: list[str],
     "-s", "--set", "set_list",
     help="Set some information before.",
     multiple=True,
-    type=(str, str))
+    type=(papis.cli.KeyParamType(), papis.cli.ValueParamType()))
 @click.option(
     "-d", "--subfolder",
     help="Subfolder in the library.",
