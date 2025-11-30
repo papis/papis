@@ -135,6 +135,7 @@ Command-line interface
 from __future__ import annotations
 
 import ast
+import os
 from typing import TYPE_CHECKING, Any
 
 import click
@@ -152,7 +153,7 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def try_parsing_str(key: str, value: str) -> str:
+def _try_parsing_str(key: str, value: str) -> Any:
     """
     Tries to parse the input string as a python expression.
 
@@ -160,16 +161,75 @@ def try_parsing_str(key: str, value: str) -> str:
         otherwise an unchanged string.
     """
     try:
-        value = ast.literal_eval(value)
+        result = ast.literal_eval(value)
     except (SyntaxError, ValueError):
         logger.debug("Value '%s' of key '%s' is not a python expression.", value, key)
-    return value
+        result = value
+
+    return result
+
+
+def _move_files(directory: str, src: str, dst: str) -> str:
+    if src == dst:
+        return dst
+
+    src = os.path.join(directory, src)
+    if not os.path.exists(src):
+        return dst
+
+    from papis.paths import _make_unique_file
+    dst = _make_unique_file(os.path.join(directory, dst))
+
+    import shutil
+    shutil.copyfile(src, dst)
+
+    return os.path.basename(dst)
+
+
+def _parse_file_name(document: DocumentLike, value: str) -> tuple[int, str] | None:
+    if ":" in value:
+        start, value = value.split(":", maxsplit=1)
+
+        if not start:
+            index = 0
+        elif start.isdigit():
+            index = int(start)
+        else:
+            logger.error(
+                "Expected an 'INDEX:FILENAME' format for 'files': '%s'.",
+                value)
+            return None
+    else:
+        index = 0
+
+    maxidx = len(document.get("files", []))
+    if not 0 <= index < maxidx:
+        if maxidx == 0:
+            from papis.document import describe
+            logger.error("Document has no files: '%s'. Use 'papis addto' to "
+                         "add files instead.", describe(document))
+        else:
+            logger.error(
+                "No file with given index in document with %d files: %d.",
+                maxidx, index)
+        return None
+
+    if value.upper() == "DEFAULT":
+        from papis.format import format
+
+        file_name_format = papis.config.getformatpattern("add-file-name")
+        value = format(file_name_format, document, default="")
+        if not value:
+            value = document["files"][index]
+
+    return index, value
 
 
 def run_set(
     document: DocumentLike,
     to_set: Sequence[tuple[str, AnyString]],
-    key_types: dict[str, type],
+    key_types: dict[str, type], *,
+    document_folder: str | None = None,
 ) -> None:
     """
     Processes a list of ``to_set`` tuples and applies the resulting changes to the
@@ -183,34 +243,49 @@ def run_set(
     for orig_key, orig_value in to_set:
         key, vformat = process_format_pattern_pair(orig_key, orig_value)
         value = format(vformat, document, default=str(vformat))
-        value = try_parsing_str(key, value)
 
-        if isinstance(value, int) and key_types.get(key) is str:
-            value = str(value)
-        if key == "notes" and isinstance(value, str):
-            # TODO: handle renames/deletions of files on disk
-            document[key] = normalize_path(value)
-            logger.warning(
-                "Document note renamed in the info.yaml file. This does not "
-                "rename any files on disk."
-            )
-        elif key == "files" and isinstance(value, list):
-            # TODO: handle renames/deletions of files on disk
-            document[key] = []
-            for file in value:
-                if isinstance(file, str):
-                    document[key].append(normalize_path(file))
-                else:
-                    document[key].append(value)
-            logger.warning(
-                "Document files renamed in the info.yaml file. This does not "
-                "rename any files on disk."
-            )
-        elif key == "ref" and isinstance(value, str):
+        if key == "notes":
+            if isinstance(value, str):
+                if value.upper() == "DEFAULT":
+                    notes_name_format = papis.config.getformatpattern("notes-name")
+                    value = format(notes_name_format, document)
+
+                value = normalize_path(value)
+            else:
+                logger.warning("Value for key 'notes' has unsupported type: '%s'.",
+                               type(value).__name__)
+                continue
+
+            # NOTE: if a notes file exist, rename it both in info.yaml and on disk
+            #       otherwise just set it in the info.yaml
+            notes_file = document.get(key)
+            if notes_file and document_folder:
+                value = _move_files(document_folder, notes_file, value)
+            document[key] = value
+        elif key == "files":
+            prev_files = document[key]
+            result = _parse_file_name(document, value)
+            if result is not None:
+                index, value = result
+                value = normalize_path(value)
+
+                if document_folder:
+                    value = _move_files(document_folder, prev_files[index], value)
+                document[key][index] = value
+        elif key == "ref":
             from papis.bibtex import ref_cleanup
             document[key] = ref_cleanup(value)
         else:
-            document[key] = value
+            if (cls := key_types.get(key)) is not None:
+                # NOTE: try to convert to the type from `key_types` and fallback
+                # to just setting the value as a string otherwise, so that the
+                # user can maybe fix it later.
+                try:
+                    document[key] = cls(value)
+                except Exception:
+                    document[key] = value
+            else:
+                document[key] = value
 
 
 def run_append(
@@ -254,7 +329,7 @@ def run_append(
         if type_doc is str or (type_doc is type(None) and type_conf is str):
             document[key] = document.setdefault(key, "") + value
         elif type_doc is list or (type_doc is type(None) and type_conf is list):
-            value = try_parsing_str(key, value)
+            value = _try_parsing_str(key, value)
             if key == "files":
                 value = normalize_path(str(value))
             document.setdefault(key, []).append(value)
@@ -429,7 +504,10 @@ def run(
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
-@papis.cli.bool_flag("--auto", help="Try to gather metadata from different sources.")
+@papis.cli.bool_flag(
+    "--auto",
+    help="Automatically select importers and downloaders based on document metadata."
+)
 @papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
     help="Apply automatic doctor fixes to newly added documents.",
@@ -553,7 +631,8 @@ def cli(
 
         ctx.data.update(document)
         if to_set:
-            run_set(ctx.data, to_set, known_key_types)
+            run_set(ctx.data, to_set, known_key_types,
+                    document_folder=document.get_main_folder())
 
         if to_append and success:
             success = run_append(ctx.data, to_append, known_key_types, batch)
