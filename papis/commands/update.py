@@ -451,7 +451,7 @@ def run(
     "to_set",
     help="Set the key to the given value.",
     multiple=True,
-    type=(str, papis.cli.FormatPatternParamType()),
+    type=(papis.cli.KeyParamType(), papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-d",
@@ -459,7 +459,7 @@ def run(
     "to_drop",
     help="Drop a key from the document.",
     multiple=True,
-    type=str,
+    type=papis.cli.KeyParamType(),
 )
 @click.option(
     "-p",
@@ -467,7 +467,7 @@ def run(
     "to_append",
     help="Append a value to a document key.",
     multiple=True,
-    type=(str, papis.cli.FormatPatternParamType()),
+    type=(papis.cli.KeyParamType(), papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-r",
@@ -475,7 +475,7 @@ def run(
     "to_remove",
     help="Remove an item from a list.",
     multiple=True,
-    type=(str, papis.cli.FormatPatternParamType()),
+    type=(papis.cli.KeyParamType(), papis.cli.FormatPatternParamType()),
 )
 @click.option(
     "-n",
@@ -483,7 +483,7 @@ def run(
     "to_rename",
     help="Rename an item in a list.",
     multiple=True,
-    type=(str,
+    type=(papis.cli.KeyParamType(),
           papis.cli.FormatPatternParamType(),
           papis.cli.FormatPatternParamType()),
 )
