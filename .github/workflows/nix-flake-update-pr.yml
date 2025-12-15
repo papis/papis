@@ -24,7 +24,7 @@ jobs:
       - name: run tests with nix
         uses: ./.github/actions/nix-test
       - name: create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: update-nix-flake
           title: "Chore: Update nix flake inputs"
