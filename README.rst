@@ -211,7 +211,7 @@ extend Papis' features or integrate it with other software.
      - `Julian Hauser <https://github.com/jghauser>`__
 
    * - `papis-emacs <https://github.com/papis/papis.el>`__
-     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `Jean-Alexandre Barszcz <https://jabarsz.cz/en/home>`__
 
    * - `papis-zotero <https://github.com/papis/papis-zotero>`__
      - `Alex Fikl <https://github.com/alexfikl>`__
