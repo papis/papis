@@ -137,6 +137,10 @@ General settings
     non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
+.. papis-config:: completion-help-format
+
+    Format for the tip displayed next to document completions in the command line upon pressing Tab. Not all shells support this.
+
 .. papis-config:: sort-field
     :type: str
 
