@@ -7,7 +7,6 @@ import click
 from click.shell_completion import CompletionItem
 
 import papis.config
-
 from papis.format import format
 
 if TYPE_CHECKING:

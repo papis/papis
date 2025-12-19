@@ -61,6 +61,7 @@ settings: dict[str, Any] = {
     "info-allow-unicode": True,
     "unique-document-keys": ["doi", "isbn", "isbn10", "eprint", "url", "doc_url"],
     "document-description-format": _f("{doc[title]} - {doc[author]}"),
+    "completion-format": _f("{doc[title]} - {doc[author]}"),
     "completion-help-format": _f("{doc[title]} - {doc[author]}"),
     "sort-field": None,
     "sort-reverse": False,
