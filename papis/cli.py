@@ -8,6 +8,8 @@ from click.shell_completion import CompletionItem
 
 import papis.config
 
+from papis.format import format
+
 if TYPE_CHECKING:
     from papis.document import Document
 
@@ -75,12 +77,29 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
+def query_shell_complete(ctx: click.Context,
+                         param: click.Parameter,
+                         incomplete: str) -> list[CompletionItem]:
+
+    docs = handle_doc_folder_or_query(incomplete, None)
+    help_fmt = papis.config.getformatpattern("completion-help-format")
+
+    return [
+        CompletionItem(
+            doc.get_main_folder_name(),
+            help=format(help_fmt, doc)
+        )
+        for doc in docs
+    ]
+
+
 def query_argument(**attrs: Any) -> DecoratorCallable:
     """Adds a ``query`` argument as a :func:`click.argument` decorator."""
     return click.argument(
         "query",
         default=lambda: papis.config.getstring("default-query-string"),
         type=str,
+        shell_complete=query_shell_complete,
         **attrs)
 
 
