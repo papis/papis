@@ -108,7 +108,7 @@ def parse_option(
             section = default_section
             key = option
         else:
-            section = parts[0] if parts[0] else None
+            section = parts[0] or None
             key = parts[1]
     else:
         raise ValueError(f"Unsupported option format: '{option}'")

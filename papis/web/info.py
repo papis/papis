@@ -8,6 +8,7 @@ import dominate.util as tu
 import papis.web.ace
 import papis.web.html as wh
 import papis.web.paths as wp
+import pathlib
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -23,8 +24,7 @@ def widget(doc: Document, libname: str) -> None:
                                                          editor_name,
                                                          yaml_input_id)
 
-    with open(doc.get_info_file(), encoding="utf-8") as f:
-        yaml_content = f.read()
+    yaml_content = pathlib.Path(doc.get_info_file()).read_text(encoding="utf-8")
 
     with wh.flex("center"):
         with t.form(method="POST",

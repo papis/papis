@@ -8,6 +8,7 @@ import pytest
 
 import papis.api
 import papis.document
+import pathlib
 
 if TYPE_CHECKING:
     from papis.testing import TemporaryConfiguration
@@ -378,13 +379,9 @@ def test_html_tags_check_jats(tmp_config: TemporaryConfiguration,
                               basename: str) -> None:
     from papis.commands.doctor import html_tags_check
 
-    with open(os.path.join(DOCTOR_RESOURCES, f"{basename}.xml"),
-              encoding="utf-8") as f:
-        abstract = f.read()
+    abstract = pathlib.Path(os.path.join(DOCTOR_RESOURCES, f"{basename}.xml")).read_text(encoding="utf-8")
 
-    with open(os.path.join(DOCTOR_RESOURCES, f"{basename}_out.txt"),
-              encoding="utf-8") as f:
-        expected = f.read()
+    expected = pathlib.Path(os.path.join(DOCTOR_RESOURCES, f"{basename}_out.txt")).read_text(encoding="utf-8")
 
     doc = papis.document.from_data({"abstract": abstract})
 

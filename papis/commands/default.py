@@ -217,6 +217,6 @@ def run(ctx: click.Context,
 
         logger.debug("Setting '%s' to '%s' (section '%s').",
                      key, value,
-                     section if section else papis.config.GENERAL_SETTINGS_NAME)
+                     section or papis.config.GENERAL_SETTINGS_NAME)
 
         papis.config.set(key, value, section=section)

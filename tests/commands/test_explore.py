@@ -4,6 +4,7 @@ import re
 import tempfile
 
 from papis.testing import PapisRunner, TemporaryLibrary
+import pathlib
 
 
 def test_explore_cli(tmp_library: TemporaryLibrary) -> None:
@@ -33,8 +34,7 @@ def test_explore_bibtex_cli(tmp_library: TemporaryLibrary) -> None:
         ["lib", "krishnamurti", "export", "--format", "bibtex", "--out", path])
     assert result.exit_code == 0
 
-    with open(path, encoding="utf-8") as fd:
-        exported_bibtex = fd.read()
+    exported_bibtex = pathlib.Path(path).read_text(encoding="utf-8")
 
     assert exported_bibtex == (
         "@article{Freedom_from_th_J_Kri_2009,\n"
@@ -57,8 +57,7 @@ def test_explore_yaml_cli(tmp_library: TemporaryLibrary) -> None:
         ["lib", "popper", "export", "--format", "yaml", "--out", path])
     assert result.exit_code == 0
 
-    with open(path, encoding="utf-8") as fd:
-        exported_yaml = fd.read()
+    exported_yaml = pathlib.Path(path).read_text(encoding="utf-8")
 
     assert re.match(
         r"author: K. Popper\n"
@@ -82,7 +81,6 @@ def test_explore_citations_and_json_cli(tmp_library: TemporaryLibrary) -> None:
         ["citations", "krishnamurti", "export", "--format", "json", "--out", path])
     assert result.exit_code == 0
 
-    with open(path, encoding="utf-8") as fd:
-        exported_json = fd.read()
+    exported_json = pathlib.Path(path).read_text(encoding="utf-8")
 
     assert exported_json == "[]"

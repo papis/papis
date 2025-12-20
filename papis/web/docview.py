@@ -164,8 +164,7 @@ def html(libname: str, doc: Document) -> t.html_tag:
                             if fpath.endswith("epub"):
                                 papis.web.epubjs.widget(unquoted_file_path)
 
-                            elif (fpath.endswith("png")
-                                  or fpath.endswith("jpg")):
+                            elif (fpath.endswith(("png", "jpg"))):
                                 with t.div():
                                     t.img(src=unquoted_file_path)
 

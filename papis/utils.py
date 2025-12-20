@@ -316,7 +316,7 @@ def locate_document(
     for d in documents:
         for key in comparing_keys:
             if key in document and key in d:
-                if re.match(document[key], d[key], re.I):
+                if re.match(document[key], d[key], re.IGNORECASE):
                     return d
 
     return None

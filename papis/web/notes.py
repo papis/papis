@@ -9,6 +9,7 @@ import dominate.util as tu
 import papis.web.ace
 import papis.web.html as wh
 import papis.web.paths as wp
+import pathlib
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -31,8 +32,7 @@ def widget(libname: str, doc: Document) -> None:
     if has_notes(doc):
         filepath = notes_path(doc)
         if os.path.exists(filepath):
-            with open(filepath, encoding="utf-8") as fd:
-                notes_content = fd.read()
+            notes_content = pathlib.Path(filepath).read_text(encoding="utf-8")
 
     with wh.flex("center"):
         with t.form(method="POST",
