@@ -351,9 +351,8 @@ def run(paths: list[str],
             title=f"This{dup_text}document will be added to your library",
             lexer_name="yaml")
 
-    if confirm:
-        if not ask_confirm("Do you want to add the new document?"):
-            return
+    if confirm and not ask_confirm("Do you want to add the new document?"):
+        return
 
     from papis.document import move as move_doc
 
