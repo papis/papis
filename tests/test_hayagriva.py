@@ -37,5 +37,5 @@ def test_parent_editors(author: str,
 
     doc, = db.query_dict({"author": author})
     result = to_hayagriva(doc)
-    assert "parent" in result.keys()
+    assert "parent" in result
     assert len(result["parent"]["editor"]) == editor_count

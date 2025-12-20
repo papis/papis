@@ -58,7 +58,6 @@ def header(pretitle: str) -> None:
 
 
 def main_html_document(pretitle: str) -> t.html_tag:
-    with dominate.document(title=None) as result:
-        with result.head:
-            header(pretitle)
+    with dominate.document(title=None) as result, result.head:
+        header(pretitle)
     return result

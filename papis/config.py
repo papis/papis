@@ -241,10 +241,7 @@ def get_config_home() -> str:
     # NOTE: this environment variable is added mainly for testing purposes, so
     # we don't have to monkeypatch platformdirs in an awkward way
     home = os.environ.get("PAPIS_CONFIG_DIR")
-    if home is None:
-        home = platformdirs.user_config_dir()
-    else:
-        home = os.path.dirname(home)
+    home = platformdirs.user_config_dir() if home is None else os.path.dirname(home)
 
     return home
 

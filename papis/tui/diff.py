@@ -187,7 +187,7 @@ def diffdict(dicta: dict[str, Any],
     ]
 
     keys = [k for k in sorted(set(dicta) | set(dictb))
-            if not dicta.get(k) == dictb.get(k) and dictb.get(k)]
+            if dicta.get(k) != dictb.get(k) and dictb.get(k)]
 
     texta = "\n".join(
         "{k}: {v}".format(k=k, v=dicta.get(k, "")) for k in sorted(keys)

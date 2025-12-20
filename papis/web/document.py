@@ -74,24 +74,22 @@ def render(libname: str,
     doc_link = wp.doc_server_path(libname, doc)
 
     with t.tr() as result:
-        with t.td():
-
-            with t.div(cls="ms-2 me-auto"):
-                with t.div(cls="fw-bold"):
-                    with t.a(href=doc_link):
-                        wh.icon("arrow-right")
-                    t.span(doc["title"])
-                t.span(doc["author"])
+        with t.td(), t.div(cls="ms-2 me-auto"):
+            with t.div(cls="fw-bold"):
+                with t.a(href=doc_link):
+                    wh.icon("arrow-right")
+                t.span(doc["title"])
+            t.span(doc["author"])
+            t.br()
+            if "journal" in doc:
+                wh.icon("book-open")
+                t.span(doc["journal"])
                 t.br()
-                if "journal" in doc:
-                    wh.icon("book-open")
-                    t.span(doc["journal"])
-                    t.br()
 
-                if "files" in doc:
-                    _doc_files_icons(files=doc.get_files(),
-                                     libname=libname,
-                                     libfolder=libfolder)
+            if "files" in doc:
+                _doc_files_icons(files=doc.get_files(),
+                                 libname=libname,
+                                 libfolder=libfolder)
         with t.td():
             if "tags" in doc:
                 papis.web.tags.tags_list_div(doc["tags"], libname)

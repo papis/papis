@@ -66,7 +66,7 @@ def main(mode: Mode) -> None:
     """
     Return a version compatible with either Python modules or MSI packages.
     """
-    cmd = "git describe --tags --no-dirty".split()
+    cmd = ["git", "describe", "--tags", "--no-dirty"]
     try:
         description = subprocess.run(cmd, capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError:

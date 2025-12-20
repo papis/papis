@@ -681,10 +681,9 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
 
         value = doc[key]
         fix_action = None
-        if key == "issue":
-            if is_number_like(value):
-                msg = f"Document key 'issue' looks like a 'number': '{value}'"
-                fix_action = issue_to_number_fixer
+        if key == "issue" and is_number_like(value):
+            msg = f"Document key 'issue' looks like a 'number': '{value}'"
+            fix_action = issue_to_number_fixer
 
         if fix_action is None:
             continue

@@ -226,7 +226,7 @@ def cli(query: str,
                 raise DocumentFolderNotFound(describe(document))
 
             outdir = out or doc_main_folder_name
-            if not len(documents) == 1:
+            if len(documents) != 1:
                 outdir = os.path.join(out, doc_main_folder_name)
 
             logger.info("Exporting document '%s' to '%s'.", describe(document), outdir)

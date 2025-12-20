@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+import contextlib
 
 if TYPE_CHECKING:
     from papis.document import Document, DocumentLike, KeyConversionPair
@@ -428,10 +429,8 @@ def create_reference(doc: DocumentLike, *,
 
     # otherwise, try to generate one somehow
     if ref_format is None:
-        try:
+        with contextlib.suppress(ValueError):
             ref_format = papis.config.getformatpattern("ref-format")
-        except ValueError:
-            pass
 
     if ref_format:
         ref = papis.format.format(ref_format, doc, default="")

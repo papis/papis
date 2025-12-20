@@ -26,18 +26,17 @@ def widget(doc: Document, libname: str) -> None:
     with open(doc.get_info_file(), encoding="utf-8") as f:
         yaml_content = f.read()
 
-    with wh.flex("center"):
-        with t.form(method="POST",
-                    onsubmit=f"{onsubmit_name}()",
-                    cls="p-3",
-                    action=wp.update_info(libname, doc)):
-            t.textarea(type="text",
-                       id=yaml_input_id,
-                       style="display: none;",
-                       name="value",
-                       value=yaml_content)
-            with t.button(cls="btn btn-success", type="submit"):
-                wh.icon_span("check", "overwrite info.yaml")
+    with wh.flex("center"), t.form(method="POST",
+                onsubmit=f"{onsubmit_name}()",
+                cls="p-3",
+                action=wp.update_info(libname, doc)):
+        t.textarea(type="text",
+                   id=yaml_input_id,
+                   style="display: none;",
+                   name="value",
+                   value=yaml_content)
+        with t.button(cls="btn btn-success", type="submit"):
+            wh.icon_span("check", "overwrite info.yaml")
 
     t.p(yaml_content,
         id=yaml_id,

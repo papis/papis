@@ -225,7 +225,7 @@ def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     #       https://github.com/JabRef/jabref/issues/7019
     #       https://journals.aps.org/pra/articleid
     if "pages" not in new_data:
-        article_number = data.get("article-number", None)
+        article_number = data.get("article-number")
         if article_number:
             # FIXME: add nicer DOI parsing (probably in `python-doi`)
             # determine from DOI if the journal in question is an APS journal.
@@ -308,10 +308,7 @@ def get_data(
             logger.error("Error retrieving data from Crossref: incorrect message.")
             return []
         message = results["message"]
-        if "items" in message:
-            docs = message["items"]
-        else:
-            docs = [message]
+        docs = message.get("items", [message])
     else:
         logger.error("Error retrieving data from Crossref: incorrect message.")
         return []
