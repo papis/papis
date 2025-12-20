@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+import operator
 
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
@@ -153,7 +154,7 @@ def _get_crossref_key_conversion() -> list[KeyConversionPair]:
             ],
         }]),
         KeyConversionPair("container-title", [
-            {"key": "journal", "action": lambda x: x[0]}]),
+            {"key": "journal", "action": operator.itemgetter(0)}]),
         KeyConversionPair("issue", [EmptyKeyConversion]),
         # "issued": {"key": "",},
         KeyConversionPair("language", [EmptyKeyConversion]),

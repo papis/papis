@@ -75,8 +75,7 @@ class ColoramaFormatter(logging.Formatter):
                 f"{record.levelname}"
                 f"{c.Style.RESET_ALL}")
 
-        if record.name.startswith("papis."):
-            record.name = record.name[6:]
+        record.name = record.name.removeprefix("papis.")
 
         if record.exc_info and not self.full_tb:
             exc_text = self.formatException(record.exc_info)

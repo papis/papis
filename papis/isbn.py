@@ -60,7 +60,7 @@ def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
             {"key": "isbn-13", "action": None},
         ]),
         KeyConversionPair("language", [
-            {"key": "language", "action": lambda x: x if x else "en"}
+            {"key": "language", "action": lambda x: x or "en"}
         ])
         ]
 

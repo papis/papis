@@ -8,6 +8,7 @@ import pytest
 
 from papis.document import Document
 from papis.testing import PapisRunner, TemporaryLibrary
+import pathlib
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
@@ -242,8 +243,7 @@ def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
     )
 
     bibfile = os.path.join(tmp_library.tmpdir, "test-add.bib")
-    with open(bibfile, "w", encoding="utf-8") as f:
-        f.write(bibtex_string)
+    pathlib.Path(bibfile).write_text(bibtex_string, encoding="utf-8")
 
     import papis.tui.utils
     import papis.utils

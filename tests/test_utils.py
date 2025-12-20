@@ -6,6 +6,7 @@ import tempfile
 from typing import TYPE_CHECKING
 
 import pytest
+import pathlib
 
 if TYPE_CHECKING:
     from papis.testing import TemporaryConfiguration
@@ -42,8 +43,7 @@ def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
         wait=True
     )
 
-    with open(filename, encoding="utf-8") as fd:
-        content = fd.read()
+    content = pathlib.Path(filename).read_text(encoding="utf-8")
 
     assert content == "Sume cuntent"
     os.unlink(filename)

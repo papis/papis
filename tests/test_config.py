@@ -7,6 +7,7 @@ import sys
 import pytest
 
 from papis.testing import TemporaryConfiguration
+import pathlib
 
 
 def test_default_opener(tmp_config: TemporaryConfiguration) -> None:
@@ -158,12 +159,11 @@ def test_merge_configuration_from_path(tmp_config: TemporaryConfiguration) -> No
     assert tmp_config.configdir is not None
     configpath = os.path.join(tmp_config.configdir, "config_extra")
 
-    with open(configpath, "w", encoding="utf-8") as configfile:
-        configfile.write("""
+    pathlib.Path(configpath).write_text("""
 [settings]
 some-nice-setting = 42
 some-other-setting = mandragora
-        """)
+        """, encoding="utf-8")
 
     import papis.config
     import papis.exceptions

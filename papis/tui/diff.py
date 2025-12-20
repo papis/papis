@@ -49,8 +49,7 @@ def prompt(text: str | FormattedText,
 
     action_texts = []
     for a in actions:
-        action_texts.append(("", a.name))
-        action_texts.append(("fg:ansiyellow", "[" + a.key + "] "))
+        action_texts.extend((("", a.name), ("fg:ansiyellow", "[" + a.key + "] ")))
 
     root_container = HSplit([
         Window(

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, TypedDict
 
 import papis.config
 import papis.logging
+from collections import UserDict
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -283,7 +284,7 @@ def split_authors_name(authors: str | list[str],
 
     author_list = []
     for subauthors in authors:
-        sep = separator if separator else guess_authors_separator(subauthors)
+        sep = separator or guess_authors_separator(subauthors)
         author_list.extend([
             split_author_name(author)
             for author in re.split(fr"\s*{sep}\s+", subauthors)
@@ -292,7 +293,7 @@ def split_authors_name(authors: str | list[str],
     return author_list
 
 
-class DocHtmlEscaped(dict[str, Any]):
+class DocHtmlEscaped(UserDict[str, Any]):
     """Small helper class to escape HTML elements in a document.
 
     >>> DocHtmlEscaped(from_data({"title": '> >< int & "" "'}))['title']
@@ -311,7 +312,7 @@ class DocHtmlEscaped(dict[str, Any]):
             .replace('"', "&quot;"))
 
 
-class Document(dict[str, Any]):
+class Document(UserDict[str, Any]):
     """An abstract document in a ``papis`` library.
 
     This class inherits from a standard :class:`dict` and implements some

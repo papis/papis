@@ -361,7 +361,7 @@ def get_document_unique_folder(
 
 
 def is_remote_file(uri: str) -> bool:
-    return uri.startswith("http://") or uri.startswith("https://")
+    return uri.startswith(("http://", "https://"))
 
 
 def download_remote_files(in_document_paths: Iterable[str]) -> list[str | None]:

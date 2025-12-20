@@ -218,7 +218,7 @@ def remove_module_docstring(app: Sphinx,
     # we can show the module members in the `Developer API Reference` section
     # without the tutorial / examples parts.
     if what == "module" and ".commands." in name and options.get("members"):
-        del lines[:]
+        lines.clear()
 
 
 def process_autodoc_missing_reference(

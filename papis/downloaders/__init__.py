@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.logging
 from papis.importer import Context, Importer, cache
+import pathlib
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -217,8 +218,7 @@ class Downloader(Importer):
                     filename = _make_unique_file(
                         os.path.join(tempfile.gettempdir(), self.document_filename)
                     )
-                    with open(filename, mode="wb") as f:
-                        f.write(rawdata)
+                    pathlib.Path(filename).write_bytes(rawdata)
                 else:
                     extension = self.get_document_extension()
                     if extension:
@@ -336,8 +336,7 @@ class Downloader(Importer):
 
         if self.document_filename is not None:
             _, ext = os.path.splitext(self.document_filename)
-            if ext.startswith("."):
-                ext = ext[1:]
+            ext = ext.removeprefix(".")
 
             self.document_extension = ext
 
@@ -559,8 +558,7 @@ def download_document(
         root, _ = os.path.splitext(os.path.basename(filename))
         outfile = os.path.join(tempfile.gettempdir(), f"{root}{ext}")
 
-        with open(outfile, mode="wb") as f:
-            f.write(response.content)
+        pathlib.Path(outfile).write_bytes(response.content)
     else:
         with tempfile.NamedTemporaryFile(
                 mode="wb+",

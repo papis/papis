@@ -610,9 +610,7 @@ def cli_filter_cited(ctx: click.Context, _files: list[str]) -> None:
     for f in _files:
         with open(f, encoding="utf-8") as fd:
             text = fd.read()
-            for doc in ctx.obj["documents"]:
-                if re.search(doc["ref"], text):
-                    found.append(doc)
+            found.extend(doc for doc in ctx.obj["documents"] if re.search(doc["ref"], text))
 
     logger.info("Found %d cited documents.", len(found))
     ctx.obj["documents"] = found
@@ -640,9 +638,7 @@ def cli_iscited(ctx: click.Context, _files: list[str]) -> None:
     for f in _files:
         with open(f, encoding="utf-8") as fd:
             text = fd.read()
-            for doc in ctx.obj["documents"]:
-                if not re.search(doc["ref"], text):
-                    unfound.append(doc)
+            unfound.extend(doc for doc in ctx.obj["documents"] if not re.search(doc["ref"], text))
 
     logger.info("Found %s documents with no citations.", len(unfound))
 

@@ -16,6 +16,7 @@ import click
 import papis.cli
 import papis.config
 import papis.logging
+from itertools import starmap
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -96,7 +97,7 @@ except ImportError:
                 max_num_fields=self.max_num_fields,
                 separator=self.separator)
 
-            self.list = [MiniFieldStorage(key, value) for key, value in query]
+            self.list = list(starmap(MiniFieldStorage, query))
 
         def getvalue(self, name: str) -> str:
             result = [fs for fs in self.list if fs.name == name]

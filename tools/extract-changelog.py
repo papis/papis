@@ -8,8 +8,7 @@ def main(filename: pathlib.Path, *, outfile: pathlib.Path | None = None) -> int:
         print(f"ERROR: Filename does not exist: '{filename}'")
         return 1
 
-    with open(filename, encoding="utf-8") as inf:
-        contents = inf.read()
+    contents = pathlib.Path(filename).read_text(encoding="utf-8")
 
     result = contents.split("\n# ")
     if not result:

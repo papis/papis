@@ -232,7 +232,7 @@ _ARXIVID_REGEX = re.compile(
     r"(\"|')?"
     fr"(?P<arxivid>[^{_ARXIVID_FORBIDDEB_CHARACTERS}]+)"
     r'("|\'|\))?',
-    re.I
+    re.IGNORECASE
 )
 
 
@@ -249,7 +249,7 @@ def find_arxivid_in_text(text: str) -> str | None:
     """
     for match in _ARXIVID_REGEX.finditer(text):
         aid = match.group("arxivid")
-        aid = aid[:-4] if aid.endswith(".pdf") else aid
+        aid = aid.removesuffix(".pdf")
         return aid
 
     return None

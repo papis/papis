@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+import pathlib
 
 if TYPE_CHECKING:
     from citeproc.source import Date, Reference
@@ -26,8 +27,7 @@ def get_styles_folder() -> str:
 
 
 def _download_style(name: str) -> None:
-    if name.endswith(".csl"):
-        name = name[:-4]
+    name = name.removesuffix(".csl")
 
     styles_folder = get_styles_folder()
     style_path = os.path.join(styles_folder, f"{name}.csl")
@@ -48,8 +48,7 @@ def _download_style(name: str) -> None:
     if not os.path.exists(styles_folder):
         os.mkdir(styles_folder)
 
-    with open(style_path, mode="wb") as fout:
-        fout.write(response.content)
+    pathlib.Path(style_path).write_bytes(response.content)
 
     logger.info("Style '%s' downloaded to '%s'.", name, style_path)
 
@@ -141,8 +140,7 @@ def to_csl(doc: Document) -> Reference:
 
 def normalize_style_path(name: str) -> str:
     name = os.path.basename(name)
-    if name.endswith(".csl"):
-        name = name[:-4]
+    name = name.removesuffix(".csl")
 
     from citeproc import STYLES_PATH
 

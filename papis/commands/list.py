@@ -58,6 +58,7 @@ import click
 import papis.cli
 import papis.config
 import papis.logging
+import pathlib
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -190,8 +191,7 @@ def list_documents(documents: Sequence[Document],
                 logger.error("Template file '%s' not found.", template)
                 return []
 
-            with open(template, encoding="utf-8") as fd:
-                show_format = fd.read()
+            show_format = pathlib.Path(template).read_text(encoding="utf-8")
 
         from papis.document import describe
         from papis.format import format

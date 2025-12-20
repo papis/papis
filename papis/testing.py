@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 import click
 import click.testing
 import pytest
+import pathlib
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
@@ -566,8 +567,7 @@ class ResourceCache:
             response = self.session.get(
                 url, params=params, headers=headers, cookies=cookies)
 
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write(response.content.decode())
+            pathlib.Path(filename).write_text(response.content.decode(), encoding="utf-8")
 
         with open(filename, encoding="utf-8") as f:
             return f.read().encode()

@@ -639,7 +639,7 @@ BIBLATEX_KEY_CONVERT_NUMBER_REGEX = re.compile(
     # letter-hyphen-number, e.g. A-1, Suppl-A-3
     r"|[A-Za-z]+\s*[-–]\s*\d+"  # noqa: RUF001
     r")$",
-    re.I
+    re.IGNORECASE
 )
 
 
@@ -832,7 +832,7 @@ def key_type_check(doc: Document) -> list[Error]:
 
 
 # NOTE: https://www.w3schools.com/html/html_symbols.asp
-HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});", re.I)
+HTML_CODES_REGEX = re.compile(r"&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-fA-F]{1,6});", re.IGNORECASE)
 HTML_CODES_CHECK_NAME = "html-codes"
 
 
