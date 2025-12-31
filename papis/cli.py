@@ -76,7 +76,7 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
-def query_shell_complete(ctx: click.Context,
+def _query_shell_complete(ctx: click.Context,
                          param: click.Parameter,
                          incomplete: str) -> list[CompletionItem]:
 
@@ -99,7 +99,7 @@ def query_argument(**attrs: Any) -> DecoratorCallable:
         "query",
         default=lambda: papis.config.getstring("default-query-string"),
         type=str,
-        shell_complete=query_shell_complete,
+        shell_complete=_query_shell_complete,
         **attrs)
 
 
