@@ -81,11 +81,12 @@ def query_shell_complete(ctx: click.Context,
                          incomplete: str) -> list[CompletionItem]:
 
     docs = handle_doc_folder_or_query(incomplete, None)
+    fmt = papis.config.getformatpattern("completion-format")
     help_fmt = papis.config.getformatpattern("completion-help-format")
 
     return [
         CompletionItem(
-            doc.get_main_folder_name(),
+            format(fmt, doc),
             help=format(help_fmt, doc)
         )
         for doc in docs
