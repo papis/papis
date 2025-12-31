@@ -139,11 +139,13 @@ General settings
 
 .. papis-config:: completion-format
 
-    Format for document autocompletion. It is triggered by pressing Tab when entering a search query in the command line, e.g. `papis addto ein<TAB>`.
+    Format for document autocompletion. It is triggered by pressing Tab when
+    entering a search query in the command line, e.g. `papis addto ein<TAB>`.
 
 .. papis-config:: completion-help-format
 
-    Format for the tip displayed next to document completions in the command line upon pressing Tab. Not all shells support this.
+    Format for the tip displayed next to document completions in the command line
+    upon pressing Tab. Not all shells support this.
 
 .. papis-config:: sort-field
     :type: str
