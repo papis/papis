@@ -76,6 +76,8 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
+# NOTE: default completion format (`doc.ref`) is not guaranteed to be unique
+# TODO: prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
 def _query_shell_complete(ctx: click.Context,
                           param: click.Parameter,
                           incomplete: str) -> list[CompletionItem]:
