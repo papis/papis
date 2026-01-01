@@ -80,7 +80,11 @@ def _query_shell_complete(ctx: click.Context,
                           param: click.Parameter,
                           incomplete: str) -> list[CompletionItem]:
 
-    docs = handle_doc_folder_or_query(incomplete, None)
+    docs = handle_doc_folder_or_query(
+        # return all documents on empty query
+        incomplete if incomplete else papis.config.getstring("default-query-string"),
+        None
+    )
     fmt = papis.config.getformatpattern("completion-format")
     help_fmt = papis.config.getformatpattern("completion-help-format")
 
