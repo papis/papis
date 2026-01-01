@@ -77,8 +77,8 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
 
 
 def _query_shell_complete(ctx: click.Context,
-                         param: click.Parameter,
-                         incomplete: str) -> list[CompletionItem]:
+                          param: click.Parameter,
+                          incomplete: str) -> list[CompletionItem]:
 
     docs = handle_doc_folder_or_query(incomplete, None)
     fmt = papis.config.getformatpattern("completion-format")
