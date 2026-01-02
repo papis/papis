@@ -255,7 +255,7 @@ def test_register_default_settings(tmp_config: TemporaryConfiguration) -> None:
 
     assert papis.config.get("hubhub") == 42
     assert papis.config.get("info-name") is not None
-    assert not papis.config.get("default-library") == "mag"
+    assert papis.config.get("default-library") != "mag"
     assert (
         papis.config.get_default_settings()["settings"]["default-library"]
         == "mag")

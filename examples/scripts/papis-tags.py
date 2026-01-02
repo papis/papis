@@ -108,11 +108,10 @@ def main(query: str, confirm: bool) -> None:
         if folder is None:
             continue
 
-        if confirm:
-            if not confirm_dialog(
-                    f"Open folder for '{papis.document.describe(doc)}'?"
-                    ):
-                continue
+        if confirm and not confirm_dialog(
+                f"Open folder for '{papis.document.describe(doc)}'?"
+                ):
+            continue
 
         papis.api.open_dir(folder, wait=False)
 

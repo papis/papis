@@ -288,6 +288,7 @@ select = [
     "PL",  # pylint
     "Q",   # flake8-quotes
     "RUF", # ruff
+    "SIM", # flake8-simplify
     "TC",  # flake8-type-checking
     "UP",  # pyupgrade
     "W",   # pycodestyle
@@ -308,6 +309,8 @@ ignore = [
     "PLR2004", # magic-value-comparison
     "PLR5501", # collapsible-else-if
     "PLW0603", # global-statement
+    "SIM102",  # collapsible-if
+    "SIM117",  # multiple-with-statements
 ]
 task-tags = ["spell"]
 

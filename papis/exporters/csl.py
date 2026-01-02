@@ -79,10 +79,8 @@ def _parse_date(doc: Document) -> Date | None:
             try:
                 date["month"] = BibTeX.MONTHS.index(month[:3]) + 1
             except ValueError:
-                try:
+                with suppress(ValueError):
                     date["month"] = int(month)
-                except ValueError:
-                    pass
 
     return Date(**date)
 
