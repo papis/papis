@@ -25,7 +25,7 @@ class _PythonStringFormatter(StringFormatter):
             try:
                 if "." in format_spec:
                     start, end = format_spec.split(".")
-                    start = start if start else "0"
+                    start = start or "0"
                 else:
                     start, end = "0", format_spec
 

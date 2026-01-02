@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.database
 from papis.testing import PapisRunner, TemporaryLibrary, create_random_file
+from itertools import starmap
 
 if TYPE_CHECKING:
     import pytest
@@ -79,7 +80,7 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
         return outfile.startswith(normalize_path(infile))
 
     assert (
-        all(eq(a, b) for a, b in zip(files, inputfiles, strict=True))), (
+        all(starmap(eq, zip(files, inputfiles, strict=True)))), (
         list(zip(files, inputfiles, strict=True)))
 
 

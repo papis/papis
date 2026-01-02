@@ -4,6 +4,7 @@ from functools import cache
 from typing import Any
 
 import papis.logging
+import operator
 
 logger = papis.logging.get_logger(__name__)
 
@@ -90,7 +91,7 @@ def _get_zenodo_key_conversion() -> list[papis.document.KeyConversionPair]:
                      lambda e: e["person_or_org"]["type"] == "organizational", x)},
             ],
         ),
-        KeyConversionPair("license", [{"key": "license", "action": lambda x: x["id"]}]),
+        KeyConversionPair("license", [{"key": "license", "action": operator.itemgetter("id")}]),
         KeyConversionPair("notes", [{"key": "note", "action": get_text_from_html}]),
         KeyConversionPair("publisher", [{"key": "publisher", "action": None}]),
         KeyConversionPair("title", [{"key": "title", "action": None}]),
@@ -113,13 +114,13 @@ def _get_zenodo_key_conversion() -> list[papis.document.KeyConversionPair]:
             [{"key": "pubstate", "action": get_text_from_html}]),
         KeyConversionPair(
             "resource_type",
-            [{"key": "type", "action": lambda x: x["type"]}]
+            [{"key": "type", "action": operator.itemgetter("type")}]
         ),
         KeyConversionPair("version", [{"key": "version", "action": None}]),
         # extra fields
         KeyConversionPair("keywords", [{"key": "tags", "action": None}]),
         KeyConversionPair("revision", [{"key": "revision", "action": None}]),
-        KeyConversionPair("links", [{"key": "url", "action": lambda x: x["self"]}]),
+        KeyConversionPair("links", [{"key": "url", "action": operator.itemgetter("self")}]),
         KeyConversionPair("method", [{"key": "method", "action": get_text_from_html}]),
     ]
 

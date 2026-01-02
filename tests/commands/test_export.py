@@ -5,6 +5,7 @@ import tempfile
 
 import papis.database
 from papis.testing import PapisRunner, TemporaryLibrary
+import pathlib
 
 
 def test_export_run(tmp_library: TemporaryLibrary) -> None:
@@ -137,8 +138,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile, encoding="utf-8") as fd:
-        single_text = fd.read()
+    single_text = pathlib.Path(outfile).read_text(encoding="utf-8")
 
     single_data = papis.bibtex.bibtex_to_dict(single_text)
     assert len(single_data) == 1
@@ -150,8 +150,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     assert result.exit_code == 0
     assert os.path.exists(outfile)
 
-    with open(outfile, encoding="utf-8") as fd:
-        appended_text = fd.read()
+    appended_text = pathlib.Path(outfile).read_text(encoding="utf-8")
 
     appended_data = papis.bibtex.bibtex_to_dict(appended_text)
     assert len(appended_data) == len(data)

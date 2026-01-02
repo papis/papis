@@ -194,7 +194,7 @@ def get_range(range_str: str) -> list[int]:
     range_regex = re.compile(r"(\d+)-?(\d+)?")
     try:
         return list(chain.from_iterable(
-            range(int(p[0]), int(p[1] if p[1] else p[0]) + 1)
+            range(int(p[0]), int(p[1] or p[0]) + 1)
             for p in range_regex.findall(range_str)))
     except ValueError:
         return []

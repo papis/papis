@@ -277,24 +277,30 @@ line-length = 88
 
 [tool.ruff.lint]
 select = [
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "E",   # pycodestyle
-    "F",   # pyflakes
-    "G",   # flake8-logging-format
-    "I",   # flake8-isort
-    "N",   # pep8-naming
-    "PGH", # pygrep-hooks
-    "PL",  # pylint
-    "Q",   # flake8-quotes
-    "RUF", # ruff
-    "TC",  # flake8-type-checking
-    "UP",  # pyupgrade
-    "W",   # pycodestyle
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "FURB", # refurb 
+    "G",    # flake8-logging-format
+    "I",    # flake8-isort
+    "N",    # pep8-naming
+    "PERF", # perflint
+    "PGH",  # pygrep-hooks
+    "PIE",  # flake8-pie
+    "PL",   # pylint
+    "Q",    # flake8-quotes
+    "RUF",  # ruff
+    "TC",   # flake8-type-checking
+    "UP",   # pyupgrade
+    "W",    # pycodestyle
 ]
 ignore = [
     # https://docs.astral.sh/ruff/rules/#rules
+    "FURB101", # read-whole-file
+    "FURB152", # math-constant
     "N818",    # error-suffix-on-exception-name
+    "PERF203", # try-except-in-loop
     "PLC0415", # import-outside-top-level
     "PLC1901", # compare-to-empty-string
     "PLR0904", # too-many-public-methods

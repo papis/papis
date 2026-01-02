@@ -216,7 +216,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
             .replace("[", "\\[")
             .replace("]", "\\]")
         )
-        return re.compile(r".*" + re.sub(r"\s+", ".*", cleaned_search), re.I)
+        return re.compile(r".*" + re.sub(r"\s+", ".*", cleaned_search), re.IGNORECASE)
 
     def update(self, *args: Any) -> None:
         """Update the state"""
