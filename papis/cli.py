@@ -82,20 +82,26 @@ def _query_shell_complete(ctx: click.Context,
                           param: click.Parameter,
                           incomplete: str) -> list[CompletionItem]:
 
-    docs = handle_doc_folder_or_query(
-        # return all documents on empty query
-        incomplete if incomplete else papis.config.getstring("default-query-string"),
-        None
-    )
     fmt = papis.config.getformatpattern("completion-format")
     help_fmt = papis.config.getformatpattern("completion-help-format")
+    prefix_only = papis.config.getboolean("prefix-only-completions")
 
+    comps_and_helps = map(
+        lambda doc: (format(fmt, doc), format(help_fmt, doc)),
+        handle_doc_folder_or_query(
+            # return all documents on empty query
+            incomplete if incomplete else papis.config.getstring("default-query-string"),
+            None
+        )
+    )
     return [
         CompletionItem(
-            format(fmt, doc),
-            help=format(help_fmt, doc)
+            comp,
+            help=help
         )
-        for doc in docs
+        for comp, help in comps_and_helps
+        # if prefix_only, only include those completions that start with the query
+        if not prefix_only or comp.startswith(incomplete)
     ]
 
 

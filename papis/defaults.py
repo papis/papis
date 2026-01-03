@@ -61,8 +61,6 @@ settings: dict[str, Any] = {
     "info-allow-unicode": True,
     "unique-document-keys": ["doi", "isbn", "isbn10", "eprint", "url", "doc_url"],
     "document-description-format": _f("{doc[title]} - {doc[author]}"),
-    "completion-format": _f("{doc[ref]}"),
-    "completion-help-format": _f("{doc[title]} - {doc[author]}"),
     "sort-field": None,
     "sort-reverse": False,
     "formatter": "python",
@@ -74,6 +72,11 @@ settings: dict[str, Any] = {
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
     ),
+
+    # shell completions
+    "prefix-only-completions": False,
+    "completion-format": _f("{doc[ref]}"),
+    "completion-help-format": _f("{doc[title]} - {doc[author]}"),
 
     # tools
     "opentool": get_default_opener(),
