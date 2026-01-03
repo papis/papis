@@ -683,7 +683,8 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
         fix_action = None
         if key == "issue":
             if is_number_like(value):
-                msg = f"Document key 'issue' looks like a 'number': '{value}'"
+                msg = (f"Document key 'issue' looks like a 'number'"
+                       f" (see BibLaTeX manual §2.3.11): '{value}'")
                 fix_action = issue_to_number_fixer
 
         if fix_action is None:
