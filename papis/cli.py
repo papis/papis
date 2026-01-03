@@ -86,8 +86,8 @@ def _query_shell_complete(ctx: click.Context,
     help_fmt = papis.config.getformatpattern("completion-help-format")
     prefix_only = papis.config.getboolean("prefix-only-completions")
 
-    comps_and_helps = map(
-        lambda doc: (format(fmt, doc), format(help_fmt, doc)),
+    comps_and_helps = (
+        (format(fmt, doc), format(help_fmt, doc)) for doc in
         handle_doc_folder_or_query(
             # return all documents on empty query
             incomplete if incomplete else papis.config.getstring("default-query-string"),
