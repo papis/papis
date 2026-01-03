@@ -7,6 +7,7 @@ import click
 from click.shell_completion import CompletionItem
 
 import papis.config
+from papis.format import format
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -75,12 +76,44 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
+# NOTE: default completion format (`doc.ref`) is not guaranteed to be unique
+# TODO: prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
+def _query_shell_complete(ctx: click.Context,
+                          param: click.Parameter,
+                          incomplete: str) -> list[CompletionItem]:
+
+    fmt = papis.config.getformatpattern("completion-format")
+    help_fmt = papis.config.getformatpattern("completion-help-format")
+    prefix_only = papis.config.getboolean("prefix-only-completions")
+
+    comps_and_helps = (
+        (format(fmt, doc), format(help_fmt, doc)) for doc in
+        handle_doc_folder_or_query(
+            # return all documents on empty query
+            incomplete if incomplete
+            else papis.config.getstring("default-query-string"),
+            None
+        )
+    )
+    return [
+        CompletionItem(
+            comp,
+            help=help
+        )
+        for comp, help in comps_and_helps
+        # if prefix_only, only include those completions
+        # that start with the query
+        if not prefix_only or comp.startswith(incomplete)
+    ]
+
+
 def query_argument(**attrs: Any) -> DecoratorCallable:
     """Adds a ``query`` argument as a :func:`click.argument` decorator."""
     return click.argument(
         "query",
         default=lambda: papis.config.getstring("default-query-string"),
         type=str,
+        shell_complete=_query_shell_complete,
         **attrs)
 
 

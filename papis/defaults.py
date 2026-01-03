@@ -50,7 +50,7 @@ settings: dict[str, Any] = {
     "default-library": "papers",
     "format-doc-name": "doc",
     "match-format": _f(
-        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"),
+        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}{doc[ref]}"),
     "header-format": _f(
         "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
@@ -72,6 +72,11 @@ settings: dict[str, Any] = {
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
     ),
+
+    # shell completions
+    "prefix-only-completions": False,
+    "completion-format": _f("{doc[ref]}"),
+    "completion-help-format": _f("{doc[title]} - {doc[author]}"),
 
     # tools
     "opentool": get_default_opener(),

@@ -137,6 +137,21 @@ General settings
     non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
+.. papis-config:: completion-format
+
+    Format for document autocompletion. It is triggered by pressing Tab when
+    entering a search query in the command line, e.g. `papis addto ein<TAB>`.
+
+.. papis-config:: completion-help-format
+
+    Format for the tip displayed next to document completions in the command line
+    upon pressing Tab. Not all shells support this.
+
+.. papis-config:: prefix-only-completions
+    :type: bool
+
+    Whether to only suggest completions that start with the inserted query. Setting this to true will only suggest e.g. `einstein1905` when the query is `ein` but neither `wittgenstein1921` nor `goethe1780` with the title *Ein Gleiches*. This can be useful if your shell trims the query to the longest common prefix, like zsh.
+
 .. papis-config:: sort-field
     :type: str
 
