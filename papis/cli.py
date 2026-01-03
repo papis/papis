@@ -90,7 +90,8 @@ def _query_shell_complete(ctx: click.Context,
         (format(fmt, doc), format(help_fmt, doc)) for doc in
         handle_doc_folder_or_query(
             # return all documents on empty query
-            incomplete if incomplete else papis.config.getstring("default-query-string"),
+            incomplete if incomplete
+            else papis.config.getstring("default-query-string"),
             None
         )
     )
@@ -100,7 +101,8 @@ def _query_shell_complete(ctx: click.Context,
             help=help
         )
         for comp, help in comps_and_helps
-        # if prefix_only, only include those completions that start with the query
+        # if prefix_only, only include those completions
+        # that start with the query
         if not prefix_only or comp.startswith(incomplete)
     ]
 
