@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 import click
 from click.shell_completion import CompletionItem
-
-import logging
 
 import papis.config
 from papis.format import format
