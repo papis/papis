@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
@@ -77,6 +78,13 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
+def _clean_completions(s: str) -> str:
+    """Remove certain characters that are treated as completion breaks.
+    See http://tiswww.case.edu/php/chet/bash/FAQ, E13 for the colon.
+    The comma causes the same problem in fish for a reason."""
+    return re.sub(r"[:,]", "", s)
+
+
 # NOTE: default completion format (`doc.ref`) is not guaranteed to be unique
 # TODO: prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
 def _query_shell_complete(ctx: click.Context,
@@ -97,7 +105,10 @@ def _query_shell_complete(ctx: click.Context,
     # when completions requested for an unnamed library
     with papis.logging.quiet("papis.config", level=logging.ERROR):
         comps_and_helps = (
-            (format(fmt, doc), format(help_fmt, doc)) for doc in
+            (
+                _clean_completions(format(fmt, doc)),
+                _clean_completions(format(help_fmt, doc))
+            ) for doc in
             handle_doc_folder_or_query(
                 # return all documents on empty query
                 query,
