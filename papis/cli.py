@@ -90,6 +90,7 @@ def _clean_completions(s: str) -> str:
 def _query_shell_complete(ctx: click.Context,
                           param: click.Parameter,
                           incomplete: str) -> list[CompletionItem]:
+    """Return completion items that match a given incomplete document query."""
 
     fmt = papis.config.getformatpattern("completion-format")
     help_fmt = papis.config.getformatpattern("completion-help-format")
