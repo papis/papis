@@ -63,7 +63,7 @@ def get_exported_variables(ctx: dict[str, Any] | None = None) -> dict[str, str]:
 @papis.cli.query_argument()
 @click.argument("flags", nargs=-1)
 @click.pass_context
-def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
+def external_cli(ctx: click.core.Context, query: str, flags: list[str]) -> None:
     """Actual papis command to call the external command"""
     from papis.commands import CommandPlugin
 
@@ -75,7 +75,7 @@ def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
     if not path:
         raise FileNotFoundError(f"Path for script '{script.command_name}' not given")
 
-    cmd = [path, *flags]
+    cmd = [path, query, *flags]
     logger.debug("Calling external command '%s'.", cmd)
 
     params = ctx.parent.params if ctx.parent else {}
