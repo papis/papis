@@ -9,6 +9,7 @@ from typing import Any
 
 import click
 
+import papis.cli
 import papis.config
 import papis.logging
 
@@ -59,6 +60,7 @@ def get_exported_variables(ctx: dict[str, Any] | None = None) -> dict[str, str]:
         "help_option_names": [],
         }
     )
+@papis.cli.query_argument()
 @click.argument("flags", nargs=-1)
 @click.pass_context
 def external_cli(ctx: click.core.Context, flags: list[str]) -> None:
