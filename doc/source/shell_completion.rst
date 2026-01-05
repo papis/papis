@@ -54,3 +54,14 @@ Alternatively, the completion can be generated on-the-fly by running (see more i
 where ``<shell>`` is one of the shells supported by ``click``. Note that older
 versions of ``click`` used ``source_<shell>`` instead for the values of
 ``_PAPIS_COMPLETE``.
+
+
+====================
+Document completions
+====================
+
+Commands that expect a document query (``edit``, ``addto``, etc.) support document completions.
+
+Normally, all documents that match the incomplete query via ``match-pattern`` are returned, for the shell to filter them. if the shell expects completions already filtered to those that have the incomplete string as a prefix, ``prefix-only-completions`` can be used.
+
+For example, ``zsh`` replaces the incomplete string with the longest common prefix of the suggested completions, which is not guaranteed to be longer or equal then the incomplete string. to prevent losing the incomplete string, enable ``prefix-only-completions``.
