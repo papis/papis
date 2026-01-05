@@ -86,13 +86,21 @@ def _query_shell_complete(ctx: click.Context,
     help_fmt = papis.config.getformatpattern("completion-help-format")
     prefix_only = papis.config.getboolean("prefix-only-completions")
 
+    # TODO: suppress logging of "Setting path {} as the main library folder"
+    # when completions requested for an unnamed library
+    lib = ctx.parent.params.get("lib") if ctx.parent else None
+    query = (
+        incomplete if incomplete
+        else papis.config.getstring("default-query-string")
+    )
+
     comps_and_helps = (
         (format(fmt, doc), format(help_fmt, doc)) for doc in
         handle_doc_folder_or_query(
             # return all documents on empty query
-            incomplete if incomplete
-            else papis.config.getstring("default-query-string"),
-            None
+            query,
+            None,
+            library_name=lib
         )
     )
     return [
@@ -179,9 +187,10 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 
 def handle_doc_folder_or_query(
-        query: str,
-        doc_folder: str | tuple[str, ...] | None,
-        ) -> list[Document]:
+    query: str,
+    doc_folder: str | tuple[str, ...] | None,
+    library_name: str | None = None
+) -> list[Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -191,6 +200,7 @@ def handle_doc_folder_or_query(
     :param query: a database query string.
     :param doc_folder: existing document folder (see
         :func:`papis.document.from_folder`).
+    :param library_name: library database to query.
     """
     if doc_folder:
         from papis.document import from_folder
@@ -202,8 +212,12 @@ def handle_doc_folder_or_query(
 
     from papis.database import get_database
 
-    db = get_database()
-    return db.query(query)
+    try:
+        db = get_database(library_name)
+        return db.query(query)
+    except RuntimeError:
+        # nonexistent library name
+        return []
 
 
 def handle_doc_folder_query_sort(
