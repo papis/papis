@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any
 import click
 from click.shell_completion import CompletionItem
 
+import logging
+
 import papis.config
 from papis.format import format
 
@@ -86,23 +88,24 @@ def _query_shell_complete(ctx: click.Context,
     help_fmt = papis.config.getformatpattern("completion-help-format")
     prefix_only = papis.config.getboolean("prefix-only-completions")
 
-    # TODO: suppress logging of "Setting path {} as the main library folder"
-    # when completions requested for an unnamed library
     lib = ctx.parent.params.get("lib") if ctx.parent else None
     query = (
         incomplete if incomplete
         else papis.config.getstring("default-query-string")
     )
 
-    comps_and_helps = (
-        (format(fmt, doc), format(help_fmt, doc)) for doc in
-        handle_doc_folder_or_query(
-            # return all documents on empty query
-            query,
-            None,
-            library_name=lib
+    # suppress logging of "Setting path {} as the main library folder"
+    # when completions requested for an unnamed library
+    with papis.logging.quiet("papis.config", level=logging.ERROR):
+        comps_and_helps = (
+            (format(fmt, doc), format(help_fmt, doc)) for doc in
+            handle_doc_folder_or_query(
+                # return all documents on empty query
+                query,
+                None,
+                library_name=lib
+            )
         )
-    )
     return [
         CompletionItem(
             comp,
