@@ -23,6 +23,19 @@ jobs:
     - uses: actions/checkout@v6
     - uses: crate-ci/typos@master
 
+  sphinxlint:
+    name: Linting (sphinx)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.14'
+    - run: |
+        python -m pip install --upgrade sphinx-lint
+        make sphinxlint
+      shell: bash
+
   build:
     name: Unittest ${{ matrix.python-version }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
