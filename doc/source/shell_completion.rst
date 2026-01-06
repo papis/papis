@@ -68,6 +68,6 @@ expects completions already filtered to those that have the incomplete string as
 a prefix, :confval:`prefix-only-completions` can be used.
 
 For example, ``zsh`` replaces the incomplete string with the longest common
-prefix of the suggested completions, which is not guaranteed to be longer or
-equal then the incomplete string. To prevent losing the incomplete string,
+prefix of the suggested completions, which is not guaranteed to be longer than
+or equal to the incomplete string. To prevent losing the incomplete string,
 enable :confval:`prefix-only-completions`.
