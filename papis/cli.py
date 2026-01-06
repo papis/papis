@@ -79,18 +79,29 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
 
 
 def _clean_completions(s: str) -> str:
-    """Remove certain characters that are treated as completion breaks.
-    See http://tiswww.case.edu/php/chet/bash/FAQ, E13 for the colon.
-    The comma causes the same problem in fish for a reason."""
+    """Remove certain characters that are treated as completion breaks."""
+
+    # NOTE: See http://tiswww.case.edu/php/chet/bash/FAQ, E13 for the colon.
+    # NOTE: The comma causes the same problem in fish for a reason.
     return re.sub(r"[:,]", "", s)
 
 
-# NOTE: default completion format (`doc.ref`) is not guaranteed to be unique
-# TODO: prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
 def _query_shell_complete(ctx: click.Context,
                           param: click.Parameter,
                           incomplete: str) -> list[CompletionItem]:
     """Return completion items that match a given incomplete document query."""
+
+    # NOTE: some known quirks of the current completion setup:
+    # - we select a query based on `completion-format`, which need not be unique
+    #   so the picker can still open after the selection.
+    # - the query is searched in the database using `match-format`, but only
+    #   `completion-format` is sent to the shell.
+    # - see other discussion in https://github.com/papis/papis/pull/1112
+
+    # TODO:
+    # - prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
+    # - allow selecting based on the document folder (need to allow access to it
+    #   in the formatting)
 
     fmt = papis.config.getformatpattern("completion-format")
     help_fmt = papis.config.getformatpattern("completion-help-format")
@@ -99,32 +110,26 @@ def _query_shell_complete(ctx: click.Context,
     lib = ctx.parent.params.get("lib") if ctx.parent else None
     query = (
         incomplete if incomplete
+        # return all documents on empty query
         else papis.config.getstring("default-query-string")
     )
 
-    # suppress logging of "Setting path {} as the main library folder"
-    # when completions requested for an unnamed library
-    with papis.logging.quiet("papis.config", level=logging.ERROR):
+    # NOTE: suppress all logging to avoid spamming the screen during completion
+    with papis.logging.quiet("papis", level=logging.ERROR):
         comps_and_helps = (
             (
                 _clean_completions(format(fmt, doc)),
                 _clean_completions(format(help_fmt, doc))
-            ) for doc in
-            handle_doc_folder_or_query(
-                # return all documents on empty query
-                query,
-                None,
-                library_name=lib
-            )
+            ) for doc in handle_doc_folder_or_query(query, None, library_name=lib)
         )
+
     return [
         CompletionItem(
             comp,
             help=help
         )
         for comp, help in comps_and_helps
-        # if prefix_only, only include those completions
-        # that start with the query
+        # if prefix_only, only include matches that start with the query string
         if not prefix_only or comp.startswith(incomplete)
     ]
 

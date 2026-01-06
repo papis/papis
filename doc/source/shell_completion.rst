@@ -60,14 +60,22 @@ Document completions
 --------------------
 
 Commands that expect a document query (``edit``, ``addto``, etc.) support
-document completions.
+document completions. These are mainly controlled by the :confval:`completion-format`
+configuration setting and can be be triggered on e.g.
 
-Normally, all documents that match the incomplete query via
-:confval:`match-format` are returned, for the shell to filter them. If the shell
-expects completions already filtered to those that have the incomplete string as
-a prefix, :confval:`prefix-only-completions` can be used.
+.. code:: bash
 
-For example, ``zsh`` replaces the incomplete string with the longest common
-prefix of the suggested completions, which is not guaranteed to be longer than
-or equal to the incomplete string. To prevent losing the incomplete string,
+   papis edit ein<TAB>
+
+Normally, all documents that match the *incomplete* query via :confval:`match-format`
+are returned and the user can filter them further using the shell's capabilities.
+
+To force the results to only include matches that have the *incomplete* query as a
+prefix, use :confval:`prefix-only-completions`. For example, ``zsh`` automatically
+replaces the *incomplete* string with the longest common prefix of the suggested
+completions, which can break your workflow. To prevent losing the incomplete string,
 enable :confval:`prefix-only-completions`.
+
+Note that the document completion only sets the value of
+:confval:`completion-format` for the selected document as the query. This can
+still bring up the Papis picker if the selection is not sufficiently unique.

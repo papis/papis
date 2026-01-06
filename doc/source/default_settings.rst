@@ -139,8 +139,11 @@ General settings
 
 .. papis-config:: completion-format
 
-    Format for document autocompletion. It is triggered by pressing Tab when
-    entering a search query in the command line, e.g. `papis addto ein<TAB>`.
+    Format for document autocompletion. It is used to construct the completion
+    value that is given to the shell when pressing Tab after entering a
+    search query in the command-line. For example, writing ``papis addto ein<TAB>``
+    will query the database for the ``ein`` string, but the completion will
+    be constructed using ``completion-format`` from the matching documents.
 
 .. papis-config:: completion-help-format
 
