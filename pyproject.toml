@@ -96,6 +96,7 @@ develop = ["papis[lint,typing,test]"]
 # Style enforcement
 lint = [
     "ruff",
+    "sphinx-lint",
 ]
 # Test suite
 test = [
