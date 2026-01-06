@@ -97,7 +97,7 @@ manager should be used instead. It also has a corresponding fixture called
 
 .. warning::
 
-   If the user also has a `~/.config/papis/config.py`, this is always read and
+   If the user also has a ``~/.config/papis/config.py``, this is always read and
    inserted into the Papis global scope using :func:`eval`. This cannot be handled
    in a clean fashion by ``TemporaryConfiguration``, so a new ``pytest`` flag
    was introduced to point to an empty configuration before the tests are loaded.

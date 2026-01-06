@@ -20,4 +20,5 @@ Here are some problems that users have come across often:
     papis cache reset
 
 For responses to other frequently asked questions, check out our
-`GitHub issues labeled with faq <https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=label:faq>`__.
+`GitHub issues labeled with "faq"
+<https://github.com/papis/papis/issues?utf8=%E2%9C%93&q=label:faq>`__.
