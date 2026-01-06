@@ -41,7 +41,7 @@ intersphinx_mapping = {
     # NOTE: docs on main seem to be broken at the moment (2023-06-04)
     "beautifulsoup4": ("https://www.crummy.com/software/BeautifulSoup/bs4/doc/", None),
     "bibtexparser": ("https://bibtexparser.readthedocs.io/en/v1.4.0", None),
-    "click": ("https://click.palletsprojects.com/en/latest", None),
+    "click": ("https://click.palletsprojects.com/en/stable", None),
     "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/master", None),
     "pyparsing": ("https://pyparsing-docs.readthedocs.io/en/latest", None),
     "pytest": ("https://docs.pytest.org/en/latest", None),
@@ -75,6 +75,11 @@ nitpick_ignore_regex = [
     ["py:class", ".*TextElement"],
     # NOTE: this is a private pytest class that does not seem to be documented
     ["py:class", ".*SubRequest"]
+]
+
+linkcheck_ignore = [
+    # guix seems to forbid requests to check the links (returns 403 Forbidden)
+    r"https://guix\.gnu\.org/.*",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
