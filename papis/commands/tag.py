@@ -58,60 +58,64 @@ Command-line interface
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import click
 
 import papis.cli
 import papis.logging
+from papis.commands.update import _OrderedCommand
+
+if TYPE_CHECKING:
+    from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
 
 
-@click.command("tag")
+@click.command("tag", cls=_OrderedCommand)
 @click.help_option("--help", "-h")
 @papis.cli.git_option()
 @papis.cli.bool_flag(
-    "-d",
-    "--drop",
+    "-d", "--drop",
     help="Drop all tags.",
     default=False,
 )
 @click.option(
-    "-p",
-    "--add",
-    "--append",
-    "to_add",
+    "-p", "--add", "--append", "to_append",
     help="Add a tag.",
     multiple=True,
-    type=str,
+    type=papis.cli.FormatPatternParamType(),
 )
 @click.option(
-    "-r",
-    "--remove",
-    "to_remove",
+    "-r", "--remove", "to_remove",
     help="Remove a tag.",
     multiple=True,
-    type=str,
+    type=papis.cli.FormatPatternParamType(),
 )
 @click.option(
-    "-n",
-    "--rename",
-    "to_rename",
+    "-n", "--rename", "to_rename",
     help="Rename a tag (<OLD-TAG NEW-TAG>).",
     multiple=True,
-    type=(str, str),
+    type=(papis.cli.FormatPatternParamType(), papis.cli.FormatPatternParamType()),
+)
+@papis.cli.bool_flag(
+    "-b",
+    "--batch",
+    help="Do not prompt, and skip documents containing errors."
 )
 @papis.cli.doc_folder_option()
 @papis.cli.all_option()
 @papis.cli.sort_option()
 @papis.cli.query_argument()
+@click.pass_context
 def cli(
+    ctx: click.Context,
     git: bool,
     drop: bool,
-    to_add: list[str],
-    to_remove: list[str],
-    to_rename: list[tuple[str, str]],
+    to_append: list[AnyString],
+    to_remove: list[AnyString],
+    to_rename: list[tuple[AnyString, AnyString]],
+    batch: bool,
     sort_field: str | None,
     sort_reverse: bool,
     query: str,
@@ -122,74 +126,68 @@ def cli(
     Change a document's tags.
     """
 
-    # if do_tag:
+    # retrieve documents
     documents = papis.cli.handle_doc_folder_query_all_sort(
         query, doc_folder, sort_field, sort_reverse, _all
     )
-
     if not documents:
         from papis.strings import no_documents_retrieved_message
         logger.warning(no_documents_retrieved_message)
         return
 
-    from papis.commands.update import run, run_append, run_drop, run_remove, run_rename
+    # retrieve user provided operations
+    from papis.commands.update import (
+        OperationError,
+        _apply_operations,
+        _process_command_line_operations,
+    )
 
+    operations = _process_command_line_operations(
+        ctx.obj["param"],
+        to_set=(),
+        to_reset=(),
+        to_drop=("tags",) if drop else (),
+        to_append=(("tags", value) for value in to_append),
+        to_remove=(("tags", value) for value in to_remove),
+        to_rename=(("tags", from_value, to_value) for from_value, to_value in to_rename)
+    )
+
+    from papis.document import describe
     key_types: dict[str, type] = {"tags": list}
 
-    from papis.importer import Context
-
-    success = True
-    processed_documents: list[Any] = []
+    processed_documents = []
     for document in documents:
         tags = document.get("tags", [])
         if not isinstance(tags, list):
-            processed_documents.clear()
-            logger.error(
-                "The document with papis_id '%s' contains tags that aren't "
-                "defined as a list of items. As `papis tag` only supports "
-                "lists, tagging has been aborted and no documents have been "
-                "changed. You can use `papis doctor --checks key-type --fix` to "
-                "convert all your tags to use lists.",
-                document["papis_id"],
-            )
-            break
+            logger.info("[%s] Document tags are not a list: %s. You can use "
+                        "'papis doctor --checks key-type --fix' to automatically "
+                        "convert all tags to lists.",
+                        describe(document), type(tags))
+            if batch:
+                logger.error("'papis tag' only supports list tags. Skipping...")
+                continue
+            else:
+                logger.error("'papis tag' only supports list tags. Aborting...")
+                ctx.exit(1)
 
-        ctx = Context()
+        try:
+            new_data = _apply_operations(
+                document, operations,
+                key_types=key_types,
+                continue_on_error=batch)
+        except OperationError:
+            if batch:
+                logger.error("[%s] Failed to apply changes to document. Continuing...",
+                             describe(document))
+                continue
+            else:
+                logger.error("[%s] Failed to apply changes to document. Aborting...",
+                             describe(document))
+                ctx.exit(1)
 
-        ctx.data.update(document)
-        if drop and success:
-            run_drop(ctx.data, ["tags"])
+        processed_documents.append((document, new_data))
 
-        if to_add and success:
-            to_add_tuples = [("tags", tag) for tag in to_add]
-            success = run_append(ctx.data, to_add_tuples, key_types, False)
-
-        if to_remove and success:
-            to_remove_tuples = [("tags", tag) for tag in to_remove]
-            success, _ = run_remove(ctx.data, to_remove_tuples, False)
-
-        if to_rename:
-            to_rename_tuples = [
-                ("tags", old_tag, new_tag) for old_tag, new_tag in to_rename
-            ]
-            success = run_rename(ctx.data, to_rename_tuples, key_types, False)
-
-        if success:
-            from papis.document import describe
-            logger.info("Processing tags in '%s.'", describe(document))
-
-            processed_documents.append((document, ctx.data))
-
-        if not success:
-            processed_documents.clear()
-            logger.error(
-                "Papis has encountered an unexpected error while processing "
-                "document '%s'. Tagging has been aborted and no documents have "
-                "been changed. Please report this bug at "
-                "https://github.com/papis/papis.",
-                document["papis_id"],
-            )
-            break
+    from papis.commands.update import run
 
     for document, data in processed_documents:
-        run(document, data=data, git=git, auto_doctor=False)
+        run(document, data=data, git=git, auto_doctor=False, overwrite=True)
