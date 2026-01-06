@@ -166,8 +166,9 @@ Reviews and blog posts
 - `Blog post
   <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__
   about getting a paper's references with ``papis explore``.
-- `Blog post <https://nicolasshu.com/zotero_and_papis.html>`__ about using Papis
-  with Zotero and Syncthing.
+- `Blog post
+  <https://web.archive.org/web/20250428103318/https://nicolasshu.com/zotero_and_papis.html>`__
+  about using Papis with Zotero and Syncthing.
 - GNU/Linux Switzerland `wrote about Papis
   <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__
   *(in German)*.

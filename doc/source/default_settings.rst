@@ -546,7 +546,7 @@ Browse options
     supports the following special values:
 
     * ``"doi"``: construct a URL from the DOI as ``https://dx.doi.org/<DOI>``.
-    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch/isbn/<ISBN>``.
+    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch.org/isbn/<ISBN>``.
     * ``"ads"``: construct a URL for the Astrophysics Data System as
       ``https://ui.adsabs.harvard.edu/abs/<DOI>``.
     * ``"auto"``: automatically pick between ``url``, ``doi`` and ``isbn``
@@ -1111,7 +1111,7 @@ of the document, as described by the :confval:`match-format` setting.
 
     The Papis format pattern corresponding to this setting is given the additional
     variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
-    `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
+    `documentation <https://github.com/tartley/colorama/blob/master/README.rst>`__.
     to see which colors are available. For instance, if you want the title in
     red, you would put in your :confval:`fzf-header-format`:
 

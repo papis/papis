@@ -12,7 +12,7 @@ logger = papis.logging.get_logger(__name__)
 
 
 class Jinja2Formatter(Formatter):
-    """Construct a string using `Jinja2 <https://palletsprojects.com/p/jinja/>`__
+    """Construct a string using `Jinja2 <https://palletsprojects.com/projects/jinja>`__
     templates.
 
     This formatter is named ``"jinja2"`` and can be set using the
@@ -26,7 +26,7 @@ class Jinja2Formatter(Formatter):
         "{{ doc.year }} - {{ doc.author_list[0].family }} - {{ doc.title }}"
 
     This formatter supports the whole range of Jinja2 control structures and
-    `filters <https://jinja.palletsprojects.com/en/3.1.x/templates/#filters>`__
+    `filters <https://jinja.palletsprojects.com/en/stable/templates/#filters>`__
     so more advanced string processing is possible. For example, we can titlecase
     the title using:
 
