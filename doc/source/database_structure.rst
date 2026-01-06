@@ -96,8 +96,8 @@ For illustration, here are some examples:
 
       papis open 'author : albert year : 05 licht'
 
-    This is not to be mixed with the restriction that the key `year` matches
-    `'05 licht'`, which will not match any year, i.e.:
+    This is not to be mixed with the restriction that the key ``year`` matches
+    ``'05 licht'``, which will not match any year, i.e.:
 
     .. code::
 

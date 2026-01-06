@@ -6,7 +6,8 @@ Plugin architecture
 General architecture
 --------------------
 
-Papis uses `entry points <https://packaging.python.org/en/latest/specifications/entry-points/>`__
+Papis uses `entry points
+<https://packaging.python.org/en/latest/specifications/entry-points/>`__
 and `importlib.metadata <https://docs.python.org/3/library/importlib.metadata.html>`__
 for general plugin management. However, other modules are not expected to
 interact with it and instead use the helper wrappers given by ``papis.plugin``.
@@ -15,7 +16,8 @@ The different plugins in Papis (e.g. ``papis.command``, ``papis.exporter`` etc.)
 define a namespace for themselves and load various objects that have been declared as
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points/>`__
 (plugins) in the package
-`metadata <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/>`__.
+`metadata
+<https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/>`__.
 
 For example, the ``yaml`` exporter in ``papis.yaml`` is defined (loosely) as:
 

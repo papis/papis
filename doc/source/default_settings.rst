@@ -973,7 +973,9 @@ Styling
 ^^^^^^^
 
 For styling the individual components, see the extensive documentation available
-`here <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html>`__.
+here_.
+
+.. _here: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/styling.html
 
 .. papis-config:: status_line_format
     :section: tui
@@ -1026,8 +1028,9 @@ For styling the individual components, see the extensive documentation available
 Key bindings
 ^^^^^^^^^^^^
 
-For information about keybindings, see the corresponding
-`documentation <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html>`__.
+For information about keybindings, see the corresponding documentation_.
+
+.. _documentation: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/key_bindings.html
 
 .. papis-config:: move_down_key
     :section: tui

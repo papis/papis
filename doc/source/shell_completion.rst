@@ -2,7 +2,8 @@ Shell completion
 ================
 
 Papis has shell completion for ``bash``, ``fish`` and ``zsh`` through the
-`click framework <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__
+`click framework
+<https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__
 that comes with it when installed through ``pip``. To control the directory
 in which the completions get installed, use the environment variables:
 
@@ -26,7 +27,8 @@ each shell are given below.
 * ``fish``: the completion script is installed in
   ``$PREFIX/share/fish/vendor_completions.d``, which should be sourced
   automatically (see the
-  `fish docs <https://fishshell.com/docs/current/completions.html#where-to-put-completions>`__
+  `fish docs
+  <https://fishshell.com/docs/current/completions.html#where-to-put-completions>`__
   for more details). It can also be sourced manually using (or added to your
   ``config.fish``):
 
@@ -45,7 +47,8 @@ each shell are given below.
         source $PREFIX/share/zsh/site-functions/_papis
 
 Alternatively, the completion can be generated on-the-fly by running (see more in the
-`click docs <https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__):
+`click docs
+<https://click.palletsprojects.com/en/latest/shell-completion/#shell-completion>`__):
 
 .. code:: bash
 

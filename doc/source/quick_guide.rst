@@ -177,9 +177,9 @@ functionality for this:
 
 We called ``papis edit`` with the ``--notes`` flag, which tells Papis that we
 want to edit the note file (or create one if it doesn't yet exist). We need to
-specify ``--notes`` because ``papis edit`` will otherwise open the :doc:`info.yaml <info_file>` where Papis stores the document's metadata. The command ends
-with the query "newton", which we use to select the document in which we're
-interested.
+specify ``--notes`` because ``papis edit`` will otherwise open the :doc:`info.yaml
+<info_file>` where Papis stores the document's metadata. The command ends with the
+query "newton", which we use to select the document in which we're interested.
 
 Tagging the documents
 ---------------------
