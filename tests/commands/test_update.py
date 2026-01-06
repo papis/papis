@@ -289,6 +289,7 @@ def test_update_remove_from_missing_key_cli(
 
     result = cli_runner.invoke(
         cli, [
+            "--batch",
             "--remove", "missingkey", "value",
             "--remove", "tags", "tag1",
             "krishnamurti"
@@ -385,8 +386,7 @@ def test_update_rename_general_cli(
 
     db = papis.database.get()
     (doc,) = db.query_dict({"author": "Krishnamurti"})
-    assert "tag_renamed1" in doc["tags"]
-    assert 2345 in doc["tags"]
+    assert doc["tags"] == ["tag_renamed1", 2345]
 
 
 def test_update_rename_missing_value_cli(
