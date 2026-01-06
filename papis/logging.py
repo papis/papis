@@ -97,12 +97,12 @@ def _disable_color(color: str = "auto") -> bool:
 
 
 @contextmanager
-def quiet(name: str) -> Iterator[None]:
+def quiet(name: str, level: int = logging.WARNING) -> Iterator[None]:
     """Temporarily sets the logging in the given module to ``WARNING``."""
     logger = logging.getLogger(name)
 
     previous_level = logger.level
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(level)
 
     try:
         yield None

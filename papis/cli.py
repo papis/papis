@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+import re
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
@@ -7,6 +9,7 @@ import click
 from click.shell_completion import CompletionItem
 
 import papis.config
+from papis.format import format
 
 if TYPE_CHECKING:
     from papis.document import Document
@@ -75,12 +78,69 @@ def bool_flag(*args: Any, **kwargs: Any) -> DecoratorCallable:
         **kwargs)
 
 
+def _clean_completions(s: str) -> str:
+    """Remove certain characters that are treated as completion breaks."""
+
+    # NOTE: See http://tiswww.case.edu/php/chet/bash/FAQ, E13 for the colon.
+    # NOTE: The comma causes the same problem in fish for a reason.
+    return re.sub(r"[:,]", "", s)
+
+
+def _query_shell_complete(ctx: click.Context,
+                          param: click.Parameter,
+                          incomplete: str) -> list[CompletionItem]:
+    """Return completion items that match a given incomplete document query."""
+
+    # NOTE: some known quirks of the current completion setup:
+    # - we select a query based on `completion-format`, which need not be unique
+    #   so the picker can still open after the selection.
+    # - the query is searched in the database using `match-format`, but only
+    #   `completion-format` is sent to the shell.
+    # - see other discussion in https://github.com/papis/papis/pull/1112
+
+    # TODO:
+    # - prevent a completion for A from matching B when fmt(A) is infix of fmt(B)
+    # - allow selecting based on the document folder (need to allow access to it
+    #   in the formatting)
+
+    fmt = papis.config.getformatpattern("completion-format")
+    help_fmt = papis.config.getformatpattern("completion-help-format")
+    prefix_only = papis.config.getboolean("prefix-only-completions")
+
+    lib = ctx.parent.params.get("lib") if ctx.parent else None
+    query = (
+        incomplete if incomplete
+        # return all documents on empty query
+        else papis.config.getstring("default-query-string")
+    )
+
+    # NOTE: suppress all logging to avoid spamming the screen during completion
+    with papis.logging.quiet("papis", level=logging.ERROR):
+        comps_and_helps = (
+            (
+                _clean_completions(format(fmt, doc)),
+                _clean_completions(format(help_fmt, doc))
+            ) for doc in handle_doc_folder_or_query(query, None, library_name=lib)
+        )
+
+    return [
+        CompletionItem(
+            comp,
+            help=help
+        )
+        for comp, help in comps_and_helps
+        # if prefix_only, only include matches that start with the query string
+        if not prefix_only or comp.startswith(incomplete)
+    ]
+
+
 def query_argument(**attrs: Any) -> DecoratorCallable:
     """Adds a ``query`` argument as a :func:`click.argument` decorator."""
     return click.argument(
         "query",
         default=lambda: papis.config.getstring("default-query-string"),
         type=str,
+        shell_complete=_query_shell_complete,
         **attrs)
 
 
@@ -146,9 +206,10 @@ def git_option(**attrs: Any) -> DecoratorCallable:
 
 
 def handle_doc_folder_or_query(
-        query: str,
-        doc_folder: str | tuple[str, ...] | None,
-        ) -> list[Document]:
+    query: str,
+    doc_folder: str | tuple[str, ...] | None,
+    library_name: str | None = None
+) -> list[Document]:
     """Query database for documents.
 
     This handles the :func:`query_option` and :func:`doc_folder_option`
@@ -158,6 +219,7 @@ def handle_doc_folder_or_query(
     :param query: a database query string.
     :param doc_folder: existing document folder (see
         :func:`papis.document.from_folder`).
+    :param library_name: library database to query.
     """
     if doc_folder:
         from papis.document import from_folder
@@ -169,8 +231,12 @@ def handle_doc_folder_or_query(
 
     from papis.database import get_database
 
-    db = get_database()
-    return db.query(query)
+    try:
+        db = get_database(library_name)
+        return db.query(query)
+    except RuntimeError:
+        # nonexistent library name
+        return []
 
 
 def handle_doc_folder_query_sort(
