@@ -309,6 +309,7 @@ ignore = [
     "PLR2004", # magic-value-comparison
     "PLR5501", # collapsible-else-if
     "PLW0603", # global-statement
+    "RUF067",  # non-empty-init-module
 ]
 task-tags = ["spell"]
 
