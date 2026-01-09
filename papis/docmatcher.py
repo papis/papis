@@ -259,9 +259,9 @@ def parse_query(query_string: str) -> list[ParseResult]:
     papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
 
     papis_value = pyparsing.QuotedString(
-        quoteChar='"', escChar="\\", escQuote="\\"
+        quote_char='"', esc_char="\\", esc_quote="\\"
     ) ^ pyparsing.QuotedString(
-        quoteChar="'", escChar="\\", escQuote="\\"
+        quote_char="'", esc_char="\\", esc_quote="\\"
     ) ^ papis_value_word
 
     equal = (
@@ -277,7 +277,7 @@ def parse_query(query_string: str) -> list[ParseResult]:
             ) + papis_value
         )
     )
-    parsed = papis_query.parseString(query_string)
+    parsed = papis_query.parse_string(query_string)
     logger.debug("Parsed query: '%s'.", parsed)
 
     # convert pyparsing results to our format
