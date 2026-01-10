@@ -364,6 +364,69 @@ def test_update_drop_missing_key_cli(
     assert result.exit_code == 0
 
 
+def test_update_reset_cli(tmp_library: TemporaryLibrary) -> None:
+    import papis.config
+    papis.config.set("ref-format", "test-{doc[author]}-{doc[year]}")
+    papis.config.set("add-file-name", "test - {doc[year]} - {doc[author]}")
+    papis.config.set("multiple-authors-format", "{au[given]} {au[family]} Jr.")
+
+    from papis.commands.update import cli
+
+    db = papis.database.get()
+    cli_runner = PapisRunner()
+
+    (doc,) = db.query_dict({"author": "Scott"})
+    assert doc["ref"] == "scott2008that"
+
+    folder = doc.get_main_folder()
+    orig_filename, = doc.get_files()
+    _, ext = os.path.splitext(orig_filename)
+    assert os.path.exists(orig_filename)
+    assert folder is not None
+
+    # check invalid key reset
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "missingkey", "scott"])
+    assert result.exit_code == 0
+
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "booktitle", "scott"])
+    assert result.exit_code == 0
+
+    # check refs get reset
+    expected_ref = "test_Scott_Michael_2008"
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "ref", "scott"])
+    assert result.exit_code == 0
+
+    (doc,) = db.query_dict({"author": "Scott"})
+    assert doc["ref"] == expected_ref
+
+    # check files get reset
+    expected_filename = f"test-2008-scott-michael{ext}"
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "files", "scott"])
+    assert result.exit_code == 0
+
+    (doc,) = db.query_dict({"author": "Scott"})
+    assert doc["files"] == [expected_filename]
+    assert os.path.exists(os.path.join(folder, expected_filename))
+    assert not os.path.exists(orig_filename)
+
+    # check author gets reset
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "author", "scott"])
+    assert result.exit_code == 0
+
+    (doc,) = db.query_dict({"author": "Scott"})
+    assert doc["author"] == "Michael Scott Jr."
+
+
 def test_update_rename_general_cli(
     tmp_library: TemporaryLibrary,
 ) -> None:
