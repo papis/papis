@@ -48,6 +48,35 @@
               };
             };
 
+            sphinx-lint = final.buildPythonPackage rec {
+              pname = "sphinx-lint";
+              version = "1.0.2";
+              pyproject = true;
+              build-system = [
+                final.hatchling
+                final.hatch-vcs
+              ];
+
+              dependencies = [
+                final.polib
+                final.regex
+              ];
+
+              src = final.fetchPypi {
+                inherit version;
+                pname = "sphinx_lint";
+                sha256 = "sha256-Tn/BL0T3ULAAbqrSN9fbmx2KupKt2pyDiviRZUs3HTU=";
+              };
+
+              doCheck = false;
+
+              meta = with pkgs.lib; {
+                homepage = "https://github.com/sphinx-contrib/sphinx-lint";
+                description = "Linter for Sphinx documentation";
+                license = licenses.psfl;
+              };
+            };
+
             papis =
               let
                 # Returns an attribute set that can be passed to `buildPythonPackage`.

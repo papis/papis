@@ -137,6 +137,28 @@ General settings
     non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
+.. papis-config:: completion-format
+
+    Format for document autocompletion. It is used to construct the completion
+    value that is given to the shell when pressing Tab after entering a
+    search query in the command-line. For example, writing ``papis addto ein<TAB>``
+    will query the database for the ``ein`` string, but the completion will
+    be constructed using ``completion-format`` from the matching documents.
+
+.. papis-config:: completion-help-format
+
+    Format for the tip displayed next to document completions in the command line
+    upon pressing Tab. Not all shells support this.
+
+.. papis-config:: prefix-only-completions
+    :type: bool
+
+    Whether to only suggest completions that start with the inserted query.
+    Setting this to true will only suggest e.g. `einstein1905` when the query is
+    `ein` but neither `wittgenstein1921` nor `goethe1780` with the title *Ein
+    Gleiches*. This can be useful if your shell trims the query to the longest
+    common prefix, like zsh.
+
 .. papis-config:: sort-field
     :type: str
 
@@ -524,7 +546,7 @@ Browse options
     supports the following special values:
 
     * ``"doi"``: construct a URL from the DOI as ``https://dx.doi.org/<DOI>``.
-    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch/isbn/<ISBN>``.
+    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch.org/isbn/<ISBN>``.
     * ``"ads"``: construct a URL for the Astrophysics Data System as
       ``https://ui.adsabs.harvard.edu/abs/<DOI>``.
     * ``"auto"``: automatically pick between ``url``, ``doi`` and ``isbn``
@@ -951,7 +973,9 @@ Styling
 ^^^^^^^
 
 For styling the individual components, see the extensive documentation available
-`here <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html>`__.
+here_.
+
+.. _here: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/styling.html
 
 .. papis-config:: status_line_format
     :section: tui
@@ -1004,8 +1028,9 @@ For styling the individual components, see the extensive documentation available
 Key bindings
 ^^^^^^^^^^^^
 
-For information about keybindings, see the corresponding
-`documentation <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html>`__.
+For information about keybindings, see the corresponding documentation_.
+
+.. _documentation: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/key_bindings.html
 
 .. papis-config:: move_down_key
     :section: tui
@@ -1086,7 +1111,7 @@ of the document, as described by the :confval:`match-format` setting.
 
     The Papis format pattern corresponding to this setting is given the additional
     variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
-    `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
+    `documentation <https://github.com/tartley/colorama/blob/master/README.rst>`__.
     to see which colors are available. For instance, if you want the title in
     red, you would put in your :confval:`fzf-header-format`:
 

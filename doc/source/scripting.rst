@@ -87,7 +87,7 @@ paper to the email, which you can rename to be more descriptive with
 Example: Define Papis mode in i3wm
 ----------------------------------
 
-This is an example of using Papis with the window manager `i3`:
+This is an example of using Papis with the window manager ``i3``:
 
 ::
 
@@ -118,7 +118,8 @@ This is an example of using Papis with the window manager `i3`:
 Useful links
 ------------
 
-- `Get paper references with papis <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__:
+- `Get paper references with papis
+  <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__:
 
     .. code:: sh
 
