@@ -3,12 +3,12 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
+import pytest
+
 import papis.database
 from papis.testing import PapisRunner, ResourceCache, TemporaryLibrary
 
 if TYPE_CHECKING:
-    import pytest
-
     from papis.document import Document, DocumentLike
 
 
@@ -22,10 +22,21 @@ def _get_resource_file(filename: str) -> str:
     return filepath
 
 
-def update_doc_from_data_interactively(
+def _update_doc_from_data_interactively(
     document: Document, data: DocumentLike, data_name: str
 ) -> None:
     document.update(data)
+
+
+def _sha256sum(path: str, chunksize: int = 8192) -> str:
+    import hashlib
+
+    hash = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(chunksize), b""):
+            hash.update(chunk)
+
+    return hash.hexdigest()
 
 
 def test_update_run(tmp_library: TemporaryLibrary) -> None:
@@ -316,7 +327,7 @@ def test_update_remove_from_missing_key_cli(
     db = papis.database.get()
     cli_runner = PapisRunner()
 
-    # cehck --remove missing key and then --remove existing key
+    # check --remove missing key and then --remove existing key
     result = cli_runner.invoke(
         cli, [
             # NOTE: --batch makes it ignore the missingkey and pass through
@@ -340,7 +351,7 @@ def test_update_remove_from_str_cli(
     db = papis.database.get()
     cli_runner = PapisRunner()
 
-    # chec --remove from unsupported key type
+    # check --remove from unsupported key type
     result = cli_runner.invoke(
         cli,
         ["--remove", "title", "known", "krishnamurti"],
@@ -448,6 +459,40 @@ def test_update_reset_cli(tmp_library: TemporaryLibrary) -> None:
     assert doc["author"] == "Michael Scott Jr."
 
 
+@pytest.mark.library_setup(filetype="pdf")
+def test_update_reset_many_files_cli(tmp_library: TemporaryLibrary) -> None:
+    import papis.config
+    from papis.commands.addto import run as addto
+
+    db = papis.database.get()
+    papis.config.set("add-file-name", "{doc[author]}-{doc[title]}")
+
+    (doc,) = db.query_dict({"author": "scott"})
+
+    # NOTE: the files in this document will now be
+    #  0:some-randomly-generated-thing.ext
+    #  1:add-file-name.pdf
+    #  2:add-file-name-a.pdf
+    #  3:add-file-name-b.pdf
+    # Therefore, when trying to rename them, the files would overlap if done naively
+    addto(doc, [tmp_library.create_random_file("pdf") for _ in range(3)])
+    checksums = [_sha256sum(filename) for filename in doc.get_files()]
+
+    from papis.commands.update import cli
+
+    cli_runner = PapisRunner()
+
+    # check --reset for many files to make sure that they are not overwritten
+    result = cli_runner.invoke(
+        cli,
+        ["--reset", "files", "scott"])
+    assert result.exit_code == 0
+
+    (doc,) = db.query_dict({"author": "scott"})
+    assert len(doc["files"]) == 4
+    assert [_sha256sum(filename) for filename in doc.get_files()] == checksums
+
+
 def test_update_rename_general_cli(
     tmp_library: TemporaryLibrary,
 ) -> None:
@@ -528,7 +573,7 @@ def test_update_yaml_cli(
         m.setattr(
             papis.utils,
             "update_doc_from_data_interactively",
-            update_doc_from_data_interactively,
+            _update_doc_from_data_interactively,
         )
 
         result = cli_runner.invoke(cli, ["--from", "yaml", filename, "krishnamurti"])
@@ -559,7 +604,7 @@ def test_update_bibtex_cli(
         m.setattr(
             papis.utils,
             "update_doc_from_data_interactively",
-            update_doc_from_data_interactively,
+            _update_doc_from_data_interactively,
         )
 
         result = cli_runner.invoke(cli, ["--from", "bibtex", filename, "krishnamurti"])
