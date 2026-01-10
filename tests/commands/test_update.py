@@ -114,9 +114,49 @@ def test_update_set_force_str_cli(tmp_library: TemporaryLibrary) -> None:
     )
     assert result.exit_code == 0
 
-    db = papis.database.get()
     (doc,) = db.query_dict({"author": "Krishnamurti"})
     assert doc["title"] == "1234"
+
+
+def test_update_set_list_item(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.update import cli
+
+    db = papis.database.get()
+    cli_runner = PapisRunner()
+
+    # check --set valid list item
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "tags", "1:4321", "krishnamurti"],
+    )
+    assert result.exit_code == 0
+
+    (doc,) = db.query_dict({"author": "Krishnamurti"})
+    assert doc["tags"] == ["tag1", 4321]
+
+    # check --set out of bounds
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "tags", "7:4321", "krishnamurti"],
+    )
+    assert result.exit_code == 1
+
+    (doc,) = db.query_dict({"author": "Krishnamurti"})
+    assert doc["tags"] == ["tag1", 4321]
+
+    # check --set non-list key
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "funkykey", "['funkyvalue']",
+         "--set", "funkykey", "0:othervalue",
+         "krishnamurti"],
+    )
+    assert result.exit_code == 0
+
+    # NOTE: we do not expect that "funkykey" is a list, so we treat the --set
+    # as a normal set instead and overwrite the list with a string
+    (doc,) = db.query_dict({"author": "Krishnamurti"})
+    assert doc["funkykey"] == "0:othervalue"
 
 
 def test_update_append_general_cli(tmp_library: TemporaryLibrary) -> None:
