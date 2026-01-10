@@ -125,6 +125,7 @@ PAPIS_TEST_DOCUMENTS = [
     {
         "address": "Scranton, PA, USA",
         "author": "Scott, Michael",
+        "author_list": [{"family": "Scott", "given": "Michael"}],
         "booktitle": "Humor in the Workplace",
         "editor_list": [{"family": "Halpert", "given": "Jim"},
                         {"family": "Beesly", "given": "Pam"}],
