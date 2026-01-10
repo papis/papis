@@ -42,13 +42,17 @@ def create_random_file(filetype: str | None = None,
     if filetype is None:
         filetype = random.choice(["pdf", "epub", "djvu"])
 
+    import uuid
+    text = uuid.uuid4().hex
+
     # NOTE: these are chosen to match using 'filetype.guess' and are not valid
     # files otherwise
     filetype = filetype.lower()
     if filetype == "pdf":
-        buf = b"%PDF-1.5%\n"
+        buf = f"%PDF-1.5\n% nonce={text}".encode()
         suffix = ".pdf" if suffix is None else suffix
     elif filetype == "epub":
+        # FIXME: add some randomness to generated file
         buf = bytes(
             [0x50, 0x4B, 0x3, 0x4]
             + [0x00 for i in range(26)]
@@ -59,13 +63,14 @@ def create_random_file(filetype: str | None = None,
             )
         suffix = ".epub" if suffix is None else suffix
     elif filetype == "djvu":
+        # FIXME: add some randomness to generated file
         buf = bytes([
             0x41, 0x54, 0x26, 0x54, 0x46, 0x4F, 0x52, 0x4D,
             0x00, 0x00, 0x00, 0x00,
             0x44, 0x4A, 0x56, 0x4D])
         suffix = ".djvu" if suffix is None else suffix
     elif filetype == "text":
-        buf = b"papis-test-file-contents"
+        buf = f"papis-test-file-contents-{text}".encode()
     else:
         raise ValueError(f"Unknown file type: '{filetype}'")
 
@@ -153,7 +158,7 @@ PAPIS_TEST_DOCUMENTS = [
 ]
 
 
-def populate_library(libdir: str) -> None:
+def populate_library(libdir: str, filetype: str | None = None) -> None:
     """Add temporary documents with random files into the folder *libdir*.
 
     :arg libdir: an existing empty library directory.
@@ -171,7 +176,7 @@ def populate_library(libdir: str) -> None:
         num_test_files = int(str(doc_data.pop("_test_files")))
         if num_test_files:
             doc_data["files"] = [
-                os.path.basename(create_random_file(dir=folder_path))
+                os.path.basename(create_random_file(filetype, dir=folder_path))
                 for _ in range(num_test_files)
                 ]
 
@@ -430,7 +435,8 @@ class TemporaryLibrary(TemporaryConfiguration):
     def __init__(self,
                  settings: dict[str, Any] | None = None,
                  use_git: bool = False,
-                 populate: bool = True) -> None:
+                 populate: bool = True,
+                 filetype: str | None = None) -> None:
         super().__init__(settings=settings)
 
         #: If *True*, a git repository is created in the library directory.
@@ -438,6 +444,9 @@ class TemporaryLibrary(TemporaryConfiguration):
         #: If *True*, the library is prepopulated with a set of documents that
         #: contain random files and keys, which can be used for testing.
         self.populate = populate
+        #: The file type that should be generated for the documents in the library.
+        #: If *None*, each document gets a random choice between the supported values.
+        self.filetype = filetype
 
     def __enter__(self) -> TemporaryLibrary:
         super().__enter__()
@@ -452,7 +461,7 @@ class TemporaryLibrary(TemporaryConfiguration):
 
         # populate library
         if self.populate:
-            populate_library(self.libdir)
+            populate_library(self.libdir, filetype=self.filetype)
 
         if self.use_git:
             from papis.utils import run
