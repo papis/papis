@@ -3,6 +3,10 @@
 ## Dependency Changes
 
 - Minimum required Python version bumped to 3.10.
+- Added support for Python 3.14. Previous versions would fail on this version
+  due to some less orthodox use of the `multiprocessing` module. In older versions,
+  the issue in question can be worked around by exporting `PAPIS_NP=0` or using
+  `papis --np 0`, which essentially ignores `multiprocessing`.
 - The [stevedore](https://docs.openstack.org/stevedore/latest/) library is no
   longer used for plugin management (switched to `importlib.metadata`).
 - The [citeproc-py](https://github.com/citeproc-py/citeproc-py) library is now
@@ -69,6 +73,18 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1039](https://github.com/papis/papis/pull/1039)).
 - Update USENIX downloader to bypass cloudflare if possible
   ([#1045](https://github.com/papis/papis/pull/1045)).
+- Add a `papis doctor` check that renames BibLaTeX keys (`biblatex-key-convert`)
+  ([#1049](https://github.com/papis/papis/pull/1049)).
+- Add a `papis doctor` check to clean up strings (`string-cleaner`)
+  ([#1053](https://github.com/papis/papis/pull/1053)).
+- Make more imports local or lazy to improve startup times
+  ([#1054](https://github.com/papis/papis/pull/1054)).
+- Add a [lingbuzz](https://lingbuzz.net/) downloader
+  ([#1100](https://github.com/papis/papis/pull/1100)).
+- Add a `--batch` flag to `papis bibtex import`
+  ([#1105](https://github.com/papis/papis/pull/1105)).
+- Add shell completions for queries, e.g. `papis edit ein<TAB>`
+  ([#1112](https://github.com/papis/papis/pull/1112)).
 
 ## Bug Fixes
 
@@ -82,6 +98,10 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1034](https://github.com/papis/papis/pull/1034)).
 - Fix crash in `typst` exporter for unknown document parent types
   ([#1035](https://github.com/papis/papis/pull/1035)).
+- Allow the "-" (minus) in file names and other strings
+  ([#1048](https://github.com/papis/papis/pull/1048)).
+- Fix `papis git` command with click 8.3.0
+  ([#1077](https://github.com/papis/papis/pull/1077)).
 
 # VERSION 0.14.1 (March 1, 2025)
 
