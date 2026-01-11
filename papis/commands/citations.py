@@ -105,11 +105,10 @@ def cli(query: str,
                     logger.error("Failed to fetch citations for document: '%s'",
                                  describe(document), exc_info=exc)
 
-        if update_from_database:
-            if has_citations_p:
-                logger.info("[%d/%d] Updating citations from library for '%s'.",
-                            i + 1, len(documents), describe(document))
-                update_and_save_citations_from_database_from_doc(document)
+        if update_from_database and has_citations_p:
+            logger.info("[%d/%d] Updating citations from library for '%s'.",
+                        i + 1, len(documents), describe(document))
+            update_and_save_citations_from_database_from_doc(document)
         if fetch_cited_by:
             if (has_cited_by_p and force) or not has_cited_by_p:
                 logger.info(

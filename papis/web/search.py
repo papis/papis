@@ -43,10 +43,9 @@ def _jquery_table(libname: str,
     with t.table(border="1",
                  style="width: '100%'",
                  cls="display", id="pub_table") as result:
-        with t.thead(style="display:none"):
-            with t.tr(style="text-align: right;"):
-                t.th("info")
-                t.th("data")
+        with t.thead(style="display:none"), t.tr(style="text-align: right;"):
+            t.th("info")
+            t.th("data")
         with t.tbody():
             for doc in documents:
                 papis.web.document.render(libname=libname,
@@ -64,47 +63,45 @@ def html(pretitle: str,
     """
     Page for querying the Papis database and present the results.
     """
-    with papis.web.header.main_html_document(pretitle) as result:
-        with result.body:
-            papis.web.navbar.navbar(libname=libname)
-            with wh.container():
-                with t.h1("Papis library: "):
-                    t.code(libname)
-                    _clear_cache(libname)
-                with t.h3():
-                    with t.form(method="GET",
-                                action=wp.query_path(libname)):
-                        t.input_(cls="form-control",
-                                 type="text",
-                                 name="q",
-                                 value=(""
-                                        if query == QUERY_PLACEHOLDER
-                                        else query),
-                                 placeholder=query)
-                # Add a couple of friendlier messages
-                if not documents:
-                    if query == QUERY_PLACEHOLDER:
-                        with wh.alert(t.h4, "success"):
-                            wh.icon_span("search", "Place your query")
-                    else:
-                        with wh.alert(t.h4, "warning"):
-                            wh.icon_span("database",
-                                         "Ups! I didn't find for '{}'", query)
+    with papis.web.header.main_html_document(pretitle) as result, result.body:
+        papis.web.navbar.navbar(libname=libname)
+        with wh.container():
+            with t.h1("Papis library: "):
+                t.code(libname)
+                _clear_cache(libname)
+            with t.h3(), t.form(method="GET",
+                        action=wp.query_path(libname)):
+                t.input_(cls="form-control",
+                         type="text",
+                         name="q",
+                         value=(""
+                                if query == QUERY_PLACEHOLDER
+                                else query),
+                         placeholder=query)
+            # Add a couple of friendlier messages
+            if not documents:
+                if query == QUERY_PLACEHOLDER:
+                    with wh.alert(t.h4, "success"):
+                        wh.icon_span("search", "Place your query")
                 else:
-                    if papis.config.getboolean("serve-enable-timeline"):
-                        if (len(documents)
-                            < (papis.config.getint("serve-timeline-max")
-                               or 500)):
-                            papis.web.timeline.widget(documents,
-                                                      libname,
-                                                      "main-index-timeline")
-                        else:
-                            with wh.alert(t.p, "warning"):
-                                wh.icon_span("warning",
-                                             "Too many documents ({}) for "
-                                             "a timeline to be useful",
-                                             len(documents))
-                    _jquery_table(libname=libname,
-                                  libfolder=libfolder,
-                                  documents=documents)
+                    with wh.alert(t.h4, "warning"):
+                        wh.icon_span("database",
+                                     "Ups! I didn't find for '{}'", query)
+            else:
+                if papis.config.getboolean("serve-enable-timeline"):
+                    if (len(documents)
+                        < (papis.config.getint("serve-timeline-max")
+                           or 500)):
+                        papis.web.timeline.widget(documents,
+                                                  libname,
+                                                  "main-index-timeline")
+                    else:
+                        with wh.alert(t.p, "warning"):
+                            wh.icon_span("warning",
+                                         "Too many documents ({}) for "
+                                         "a timeline to be useful",
+                                         len(documents))
+                _jquery_table(libname=libname,
+                              libfolder=libfolder,
+                              documents=documents)
     return result

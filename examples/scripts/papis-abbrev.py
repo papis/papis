@@ -175,10 +175,7 @@ def run(query: str, all_: bool = True) -> int:
         search=query
     )
 
-    if all_:
-        picked_documents = documents
-    else:
-        picked_documents = list(papis.api.pick_doc(documents))
+    picked_documents = documents if all_ else list(papis.api.pick_doc(documents))
 
     for doc in picked_documents:
         if "journal" not in doc:
