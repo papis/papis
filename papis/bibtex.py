@@ -288,7 +288,7 @@ bibtex_ignore_keys = (
 
 #: A regex for acceptable characters to use in a reference string. These are
 #: used by :func:`ref_cleanup` to remove any undesired characters.
-ref_allowed_characters = r"([^a-zA-Z0-9._]+|(?<!\\)[._])"
+ref_allowed_characters = r"([^a-zA-Z0-9._:]+|(?<!\\)[._:])"
 
 #: A list of fields that should not be escaped. In general, these will be
 #: escaped by the BibTeX engine and should not be modified
@@ -397,7 +397,10 @@ def ref_cleanup(ref: str,
                           separator=ref_word_separator,
                           regex_pattern=ref_allowed_characters)
 
-    return str(ref).strip()
+    # FIXME: we generally allow escaping these characters using `\:`, but slugify
+    # seems to kindly replace the `\` by a `_` and leave the `:` alone in this case.
+    # Can we convince it to not do that?
+    return str(ref).strip().replace("_:", ":").replace("__", "_").replace("_.", ".")
 
 
 def create_reference(doc: DocumentLike, *,
