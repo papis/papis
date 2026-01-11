@@ -422,16 +422,9 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import (
-        STRING_CLEANER_INITIALS_DOTS_REGEX,
-        STRING_CLEANER_INITIALS_SPACE_REGEX,
-    )
+    from papis.commands.doctor import _dotify_initials as dotify  # noqa: PLC2701
 
-    def dotify(text: str) -> str:
-        text = STRING_CLEANER_INITIALS_SPACE_REGEX.sub(r"\1.", text)
-        text = STRING_CLEANER_INITIALS_DOTS_REGEX.sub(r" ", text)
-        return text
-
+    # basic ASCII
     assert dotify("F") == "F."
     assert dotify("F.") == "F."
     assert dotify("A B") == "A. B."
@@ -440,6 +433,37 @@ def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None
     assert dotify("J.R.R") == "J. R. R."
     assert dotify("A. B.C") == "A. B. C."
     assert dotify("J.R.R. Tolkien") == "J. R. R. Tolkien"
+    assert dotify("j.R.R. Tolkien") == "J. R. R. Tolkien"
+
+    # accented Latin characters
+    assert dotify("É Dupont") == "É. Dupont"
+    assert dotify("Ö Schmidt") == "Ö. Schmidt"
+    assert dotify("Á.É. Kovács") == "Á. É. Kovács"
+    assert dotify("J.Ø. Hansen") == "J. Ø. Hansen"
+    assert dotify("Ñ Rodríguez") == "Ñ. Rodríguez"
+
+    # cyrillic initials
+    assert dotify("А.С. Пушкин") == "А. С. Пушкин"  # noqa: RUF001
+    assert dotify("Л Толстой") == "Л. Толстой"
+    assert dotify("Ф.М. Достоевский") == "Ф. М. Достоевский"  # noqa: RUF001
+
+    # greek initials
+    assert dotify("Α.Β. Γεωργίου") == "Α. Β. Γεωργίου"  # noqa: RUF001
+
+    # mixed scripts (transliterated contexts)
+    assert dotify("É.A. Müller") == "É. A. Müller"
+    assert dotify("Ç Yılmaz") == "Ç. Yılmaz"  # noqa: RUF001
+    assert dotify("Ł.Ś. Kowalski") == "Ł. Ś. Kowalski"
+
+    # mixed case
+    assert dotify("j.R.r. Tolkien") == "J. R. R. Tolkien"
+    assert dotify("é.A. Müller") == "É. A. Müller"
+    assert dotify("a.ö. Björk-Hansen") == "A. Ö. Björk-Hansen"
+
+    # dashes
+    assert dotify("J-P Sartre") == "J.-P. Sartre"  # Jean-Paul
+    assert dotify("J.-P. Sartre") == "J.-P. Sartre"
+    assert dotify("J-C Van Damme") == "J.-C. Van Damme"  # Jean-Claude
 
 
 def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
@@ -525,6 +549,17 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     assert doc["author"] == orig_value
     assert doc["author_list"][0]["given"] == "F."
     assert doc["author_list"][2]["given"] == "A. R."
+
+    # check author with no space + multiple names
+    doc["author"] = "Schmidt, Johannes F.K."
+    doc["author_list"] = [{"family": "Schmidt", "given": "Johannes F.K."}]
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author_list"][0]["given"] == "Johannes F. K."
 
 
 def test_string_cleaner_missing_author(tmp_config: TemporaryConfiguration) -> None:
