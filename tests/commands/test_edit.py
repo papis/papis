@@ -73,7 +73,7 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
             == get_mock_script("ls"))
 
     # check --notes
-    notes_name = papis.config.getstring("notes-name")
+    notes_name = papis.config.getformatpattern("notes-name")
     assert notes_name
 
     result = cli_runner.invoke(
@@ -88,5 +88,5 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
     folder = doc.get_main_folder()
     assert folder is not None
 
-    expected_notes_path = os.path.join(folder, notes_name)
+    expected_notes_path = os.path.join(folder, str(notes_name))
     assert os.path.exists(expected_notes_path)

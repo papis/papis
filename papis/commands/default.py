@@ -86,7 +86,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
     help="Pick library to use.")
 @click.option(
     "-s", "--set", "set_list",
-    type=(str, str),
+    type=(papis.cli.KeyParamType(), papis.cli.ValueParamType()),
     multiple=True,
     help="Set key value, e.g., "
          "'--set info-name information.yaml --set opentool evince'.")
@@ -108,7 +108,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @click.option(
     "--np",
     help="Use number of processors for multicore functionalities in Papis.",
-    type=str,
+    type=int,
     default=None)
 @click.pass_context
 def run(ctx: click.Context,

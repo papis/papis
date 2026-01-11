@@ -746,13 +746,7 @@ def get_key_type_check_keys() -> dict[str, type]:
     return processed_keys
 
 
-def key_type_check(doc: Document) -> list[Error]:
-    """
-    Check document keys have expected types.
-
-    :returns: a :class:`list` of errors, one for each key does not have the
-        expected type (if it exists).
-    """
+def get_key_type_check_separator() -> str | None:
     from papis.defaults import NOT_SET
 
     # NOTE: the separator can be quoted so that it can force whitespace
@@ -766,7 +760,19 @@ def key_type_check(doc: Document) -> list[Error]:
 
     separator = separator.strip("'").strip('"') if separator else None
 
+    return separator
+
+
+def key_type_check(doc: Document) -> list[Error]:
+    """
+    Check document keys have expected types.
+
+    :returns: a :class:`list` of errors, one for each key does not have the
+        expected type (if it exists).
+    """
+
     from papis.document import describe
+    separator = get_key_type_check_separator()
 
     def make_fixer(key: str, cls: type) -> FixFn:
         def fixer_convert_list() -> None:
