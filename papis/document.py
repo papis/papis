@@ -166,6 +166,7 @@ def author_list_to_author(
 
     if separator is None:
         separator = papis.config.getstring("multiple-authors-separator")
+        separator = separator.strip("'").strip('"')
 
     if multiple_authors_format is None:
         multiple_authors_format = (
