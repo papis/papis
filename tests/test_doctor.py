@@ -525,3 +525,23 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     assert doc["author"] == orig_value
     assert doc["author_list"][0]["given"] == "F."
     assert doc["author_list"][2]["given"] == "A. R."
+
+
+def test_string_cleaner_missing_author(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import string_cleaner_check
+
+    doc = papis.document.from_data({
+        "author": "Caravaggio and M Merisi da Caravaggio",
+        "author_list": [
+            {"family": "Caravaggio"},
+            {"given": "M", "family": "Merisi da Caravaggio"},
+        ],
+        "title": "Narcissus at the Source",
+        })
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author_list"][1]["given"] == "M."
