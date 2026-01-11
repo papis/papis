@@ -11,6 +11,9 @@ characters.
 
 Normally, ``papis update`` will abort on encountering an error. If you want to
 skip errors and apply as many changes as possible, use the ``--batch`` flag.
+With this in mind, the command is mostly meant to be used to apply sweeping changes
+to a larger number of documents. If you just want to update a single document,
+``papis edit`` might be more appropriate.
 
 Examples
 ^^^^^^^^
@@ -33,8 +36,9 @@ Examples
         papis update --all --set journal "Mass and Energy" "journal:'Energy and Mass'"
 
 
-  The ``--all`` flag means that the tag is applied to all documents that match the
-  query, rather than allowing you to pick one individual document to update.
+  The ``--all`` flag means that the operation is applied to all documents that
+  match the query, rather than allowing you to pick one individual document to
+  update.
 
 - Update a document automatically and interactively (searching by DOI in
   Crossref or in other sources...):
@@ -50,7 +54,9 @@ Examples
         papis update --from bibtex libraryfile.bib
 
   Papis will try to look for documents in your library that match these
-  entries and will ask you for each entry whether you want to update it.
+  entries and will ask you for each entry whether you want to update it. If
+  you are working with BibTeX file, the ``papis bibtex`` command may be more
+  flexible.
 
 - Add the ", Albert" to the author string of a documents matching 'Einstein':
 
@@ -60,7 +66,19 @@ Examples
 
   The ``papis update`` command tries to format input strings using the configured
   formatter. Here, it is used to get the existing author "Albert" and then add
-  the string ", Einstein" to end up with "Einstein, Albert"
+  the string ", Einstein" to end up with "Einstein, Albert".
+
+- Reset keys to their default values using:
+
+    .. code:: sh
+
+        papis update --reset ref Einstein
+
+  This will reset the reference to the format described by :confval:`ref-format`.
+  Most keys do not support this, as they do not have any well-defined default.
+  Other supported keys are: "author" (gets updated from ``author_list`` and
+  :confval:`multiple-authors-format`), "notes" (using :confval:`notes-name`),
+  "files" (using :confval:`add-file-name`).
 
 - The above can also be achieved with the ``--append`` option:
 
@@ -68,7 +86,9 @@ Examples
 
         papis update --append author ", Albert" Einstein
 
-    This appends ", Albert" to the existing author string.
+  This appends ", Albert" to the existing author string. Be careful when using
+  ``--append`` to modify string keys, as the same prefix can be added multiple
+  times. This is not the case with lists (below), where we try to skip duplicates.
 
 - You can also append an item to a list:
 
@@ -76,15 +96,26 @@ Examples
 
         papis update --append tags physics
 
-    This adds the tag 'physics' to the existing list of tags. If the list
-    doesn't yet exist, it will be created. All duplicate items will be removed
-    from the list.
+    This adds the tag "physics" to the existing list of tags. If the list
+    doesn't yet exist, it will be created. The new tag will only be appended to
+    the list if it does not already exist.
 
     As you might have guessed, the ``--append`` flag needs to know the type of
     the key it is appending to. It does this by looking at the
     :confval:`doctor-key-type-keys` (and :confval:`doctor-key-type-keys-extend`)
-    configuration options. If the key you are appending to is not in that list,
-    the command will fail.
+    configuration options. If the key does not exist in the document nor in that
+    list of key types, then the command will fail (we don't know what you meant).
+
+- You can instead use ``--set``` to isert a value into a list at a given position:
+
+    .. code:: sh
+
+        papis update --set files 0:some-new-file.pdf Einstein
+
+  This special syntax for ``--set`` also only works with keys that are known to
+  be lists (as before, based on :confval:`doctor-key-type-keys`). If the key is
+  not a list, then the value is treated as a string. This might be unexpected,
+  so make sure you are using it for list keys only.
 
 - To remove an item from a list, use ``--remove``:
 
@@ -92,7 +123,7 @@ Examples
 
         papis update --remove tags physics
 
-    If the tag "physics" is in the list of tags, this command removes it.
+  If the tag "physics" is in the list of tags, this command removes it.
 
 - To remove a key-value pair entirely, use ``--drop``:
 
@@ -100,29 +131,27 @@ Examples
 
         papis update --drop tags
 
-    This removes all tags.
+  This removes all tags.
 
 - There is also a convenience option ``--rename`` if you want to rename
-  a list item. It's equivalent to doing ``--remove`` and ``--append`` sequentially:
+  a list item. It's equivalent to doing ``--remove`` and ``--append``, but as
+  an "atomic" operation:
 
     .. code:: sh
 
         papis update --rename tags physics philosophy
 
-  This renames the tag 'physics' to 'philosophy'. Note that this option being a
-  combination of ``--remove`` and ``--append``, it will append the desired values
-  even if the value to be removed didn't exist. Thus, the above command will add
-  the tag "philosophy" even if the tag "physics" didn't exist before the
-  operation.
+  This renames the tag "physics" to "philosophy". Note that, if the original
+  tag doesn't exist, we will not add it to the list.
 
-- As an advanced feature, ``papis update`` also supports the parsing of python
+- As an advanced feature, ``papis update`` also supports the parsing of Python
   expressions (such as lists or dictionaries). This can be used as follows:
 
     .. code:: sh
 
         papis update --set author_list "[{'family': 'Einstein', 'given': 'Albert'}]"
 
-  Because the above string is a valid python expression, ``author_list`` is
+  Because the above string is a valid Python expression, ``author_list`` is
   updated to a set that contains a dictionary.
 
 
