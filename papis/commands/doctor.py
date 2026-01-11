@@ -1043,7 +1043,7 @@ def string_cleaner_check(doc: Document) -> list[Error]:
         # be left alone)
         return any(pattern.search(author["given"])
                    for author in doc["author_list"]
-                   if author["given"] and author["family"])
+                   if author.get("given") and author.get("family"))
 
     def make_author_initials_fixer(pattern: re.Pattern[str], sub: str) -> FixFn:
         def fixer() -> None:
@@ -1052,7 +1052,8 @@ def string_cleaner_check(doc: Document) -> list[Error]:
                 return
 
             for author in author_list:
-                author.update({"given": pattern.sub(sub, author["given"])})
+                if author.get("given") and author.get("family"):
+                    author.update({"given": pattern.sub(sub, author["given"])})
 
             doc["author_list"] = author_list
             doc["author"] = author_list_to_author(doc)
