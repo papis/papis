@@ -1097,7 +1097,7 @@ def string_cleaner_check(doc: Document) -> list[Error]:
             results.append(
                 make_error(doc, STRING_CLEANER_CHECK_NAME,
                            msg=("Key 'author' contains initials that are not "
-                                "followed by a dot"),
+                                "followed by a dot+space"),
                            fix_action=make_author_initials_fixer(
                                STRING_CLEANER_INITIALS_DOTS_REGEX, r" "),
                            payload=key))
