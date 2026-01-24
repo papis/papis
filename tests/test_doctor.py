@@ -525,3 +525,14 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     assert doc["author"] == orig_value
     assert doc["author_list"][0]["given"] == "F."
     assert doc["author_list"][2]["given"] == "A. R."
+
+    # check author with no space + multiple names
+    doc["author"] = "Schmidt, Johannes F.K."
+    doc["author_list"] = [{"family": "Schmidt", "given": "Johannes F.K."}]
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author_list"][0]["given"] == "Johannes F. K."
