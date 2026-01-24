@@ -21,16 +21,15 @@ def widget(unquoted_file_path: str) -> None:
     file_path = urllib.parse.quote(unquoted_file_path, safe="")
     viewer_path = (f"/static/{VIEWER_PATH}?file={file_path}")
 
-    with wh.flex("center"):
-        with t.div(cls="btn-group", role="group"):
-            with t.a(href=viewer_path,
-                     cls="btn btn-outline-success",
-                     target="_blank"):
-                wh.icon_span("square-arrow-up-right", "Open in new window")
-            with t.a(href=unquoted_file_path,
-                     cls="btn btn-outline-success",
-                     target="_blank"):
-                wh.icon_span("download", "Download")
+    with wh.flex("center"), t.div(cls="btn-group", role="group"):
+        with t.a(href=viewer_path,
+                 cls="btn btn-outline-success",
+                 target="_blank"):
+            wh.icon_span("square-arrow-up-right", "Open in new window")
+        with t.a(href=unquoted_file_path,
+                 cls="btn btn-outline-success",
+                 target="_blank"):
+            wh.icon_span("download", "Download")
 
     if detect_pdfjs():
         t.iframe(src=viewer_path,

@@ -77,7 +77,7 @@ def test_cache(tmp_config: TemporaryConfiguration) -> None:
     importer = SimpleImporter()
     importer.fetch()
     assert importer.ctx
-    assert not importer.ctx.data["time"] == data["time"]
+    assert importer.ctx.data["time"] != data["time"]
 
     importer = SimpleImporter.match("uri")
     importer.fetch()

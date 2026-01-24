@@ -26,17 +26,16 @@ def render(doc: Document,
            ads_fmt: str) -> None:
 
     with t.form(action=fetch_path(libname, doc),
-                method="POST"):
-        with t.div(cls="btn-group", role="group"):
-            with t.button(cls="btn btn-success",
-                          type="submit"):
-                wh.icon_span("cloud-bolt", "Fetch citations")
-            if "doi" in doc:
-                quoted_doi = urllib.parse.quote(doc["doi"], safe="")
-                with t.a(cls="btn btn-primary",
-                         target="_blank",
-                         href=ads_fmt.format(doi=quoted_doi)):
-                    wh.icon_span("globe", "ads")
+                method="POST"), t.div(cls="btn-group", role="group"):
+        with t.button(cls="btn btn-success",
+                      type="submit"):
+            wh.icon_span("cloud-bolt", "Fetch citations")
+        if "doi" in doc:
+            quoted_doi = urllib.parse.quote(doc["doi"], safe="")
+            with t.a(cls="btn btn-primary",
+                     target="_blank",
+                     href=ads_fmt.format(doi=quoted_doi)):
+                wh.icon_span("globe", "ads")
 
     if checker(doc):
         from papis.document import from_data
@@ -45,10 +44,9 @@ def render(doc: Document,
         if papis.config.getboolean("serve-enable-timeline"):
             papis.web.timeline.widget(citations, libname, timeline_id)
 
-        with t.ol(cls="list-group"):
-            with t.li(cls="list-group-item"):
-                for cit in citations:
-                    papis.web.document.render(libname, libfolder, from_data(cit))
+        with t.ol(cls="list-group"), t.li(cls="list-group-item"):
+            for cit in citations:
+                papis.web.document.render(libname, libfolder, from_data(cit))
     else:
         if "doi" in doc:
             quoted_doi = urllib.parse.quote(doc["doi"], safe="")

@@ -34,18 +34,17 @@ def widget(libname: str, doc: Document) -> None:
             with open(filepath, encoding="utf-8") as fd:
                 notes_content = fd.read()
 
-    with wh.flex("center"):
-        with t.form(method="POST",
-                    cls="p-3",
-                    onsubmit=f"{onsubmit_name}()",
-                    action=wp.update_notes(libname, doc)):
-            t.textarea(type="text",
-                       id=notes_input_id,
-                       style="display: none;",
-                       name="value",
-                       value=notes_content)
-            with t.button(cls="btn btn-success", type="submit"):
-                wh.icon_span("check", "update notes")
+    with wh.flex("center"), t.form(method="POST",
+                cls="p-3",
+                onsubmit=f"{onsubmit_name}()",
+                action=wp.update_notes(libname, doc)):
+        t.textarea(type="text",
+                   id=notes_input_id,
+                   style="display: none;",
+                   name="value",
+                   value=notes_content)
+        with t.button(cls="btn btn-success", type="submit"):
+            wh.icon_span("check", "update notes")
 
     t.p(notes_content,
         id=notes_id,

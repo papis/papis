@@ -92,9 +92,8 @@ def run(keys: Sequence[str],
                 result.append({"doc": document, "key": key, "msg": "Missing key"})
             elif not document[key] and document[key] is not False:
                 result.append({"doc": document, "key": key, "msg": "Empty key"})
-            elif key == "files":
-                if not check_files(document):
-                    result.append({"doc": document, "key": key, "msg": "Missing files"})
+            elif key == "files" and not check_files(document):
+                result.append({"doc": document, "key": key, "msg": "Missing files"})
 
     return result
 
@@ -122,7 +121,7 @@ def cli(query: str, keys: list[str]) -> None:
             )
         )
 
-    if not len(troubled_docs) == 0:
+    if len(troubled_docs) != 0:
         logger.error("Errors were detected, please fix the info files")
     else:
         logger.info("No errors detected")
