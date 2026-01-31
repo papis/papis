@@ -586,10 +586,14 @@ def _apply_operations(
     if key_types is None:
         key_types = {}
 
-    from papis.document import describe
-    new_data = dict(document)
+    # NOTE: we need to make a deepcopy here, since the document can have nested
+    # lists and dictionaries and we do not want to worry about it when applying
+    from copy import deepcopy
+    new_data = deepcopy(dict(document))
 
+    from papis.document import describe
     folder = document.get_main_folder()
+
     if not folder:
         from papis.exceptions import DocumentFolderNotFound
         raise DocumentFolderNotFound(describe(document))
