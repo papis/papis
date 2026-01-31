@@ -55,7 +55,7 @@ Examples
 
   Papis will try to look for documents in your library that match these
   entries and will ask you for each entry whether you want to update it. If
-  you are working with BibTeX file, the ``papis bibtex`` command may be more
+  you are working with BibTeX files, the ``papis bibtex`` command may be more
   flexible.
 
 - Add the ", Albert" to the author string of a documents matching 'Einstein':
@@ -74,19 +74,20 @@ Examples
 
         papis update --reset ref Einstein
 
-  This will reset the reference to the format described by :confval:`ref-format`.
-  Most keys do not support this, as they do not have any well-defined default.
+  This will reset the value to the default value defined for the key. In the
+  above case the "ref" is set to the format described by :confval:`ref-format`.
   Other supported keys are: "author" (gets updated from ``author_list`` and
   :confval:`multiple-authors-format`), "notes" (using :confval:`notes-name`),
-  "files" (using :confval:`add-file-name`).
+  and "files" (using :confval:`add-file-name`). Other keys do not support this
+  as they do not have any well-defined default.
 
-- The above can also be achieved with the ``--append`` option:
+- The ``--append`` option can be used to append a string to an existing key:
 
     .. code:: sh
 
         papis update --append author ", Albert" Einstein
 
-  This appends ", Albert" to the existing author string. Be careful when using
+  This appends ", Albert" to the existing author value. Be careful when using
   ``--append`` to modify string keys, as the same prefix can be added multiple
   times. This is not the case with lists (below), where we try to skip duplicates.
 
@@ -98,24 +99,27 @@ Examples
 
     This adds the tag "physics" to the existing list of tags. If the list
     doesn't yet exist, it will be created. The new tag will only be appended to
-    the list if it does not already exist.
+    the list if the tag does not already exist.
 
-    As you might have guessed, the ``--append`` flag needs to know the type of
-    the key it is appending to. It does this by looking at the
-    :confval:`doctor-key-type-keys` (and :confval:`doctor-key-type-keys-extend`)
-    configuration options. If the key does not exist in the document nor in that
-    list of key types, then the command will fail (we don't know what you meant).
+    The ``--append`` flag needs to know the type of the key it is appending to.
+    If the key exists in the document, then the value set in the document
+    determines the type. If the key doesn't exist in the document, the command
+    looks at the list of types defined in the :confval:`doctor-key-type-keys`
+    (and :confval:`doctor-key-type-keys-extend`) configuration option. If the
+    type cannot be determined in either of these two ways, the command will
+    fail.
 
-- You can instead use ``--set``` to isert a value into a list at a given position:
+- You can use ``--set``` to set a value into a list at a given position:
 
     .. code:: sh
 
         papis update --set files 0:some-new-file.pdf Einstein
 
-  This special syntax for ``--set`` also only works with keys that are known to
-  be lists (as before, based on :confval:`doctor-key-type-keys`). If the key is
-  not a list, then the value is treated as a string. This might be unexpected,
-  so make sure you are using it for list keys only.
+  This special syntax for ``--set`` only works with keys that are known to be
+  lists (as before, based on :confval:`doctor-key-type-keys` and
+  :confval:`doctor-key-type-keys-extend`). If the key is not a list, then the
+  value is treated as a string. This might be unexpected, so make sure you are
+  using it for list keys only.
 
 - To remove an item from a list, use ``--remove``:
 
@@ -135,14 +139,14 @@ Examples
 
 - There is also a convenience option ``--rename`` if you want to rename
   a list item. It's equivalent to doing ``--remove`` and ``--append``, but as
-  an "atomic" operation:
+  a single operation:
 
     .. code:: sh
 
         papis update --rename tags physics philosophy
 
-  This renames the tag "physics" to "philosophy". Note that, if the original
-  tag doesn't exist, we will not add it to the list.
+  This renames the tag "physics" to "philosophy". Note that the new tag will
+  not be added to the list if the original tag doesn't exist.
 
 - As an advanced feature, ``papis update`` also supports the parsing of Python
   expressions (such as lists or dictionaries). This can be used as follows:
@@ -819,7 +823,7 @@ class _OrderedCommand(click.Command):
 )
 @click.option(
     "--reset", "to_reset",
-    help="Reset keys to their default values (e.g. 'ref' is set to 'ref-format').",
+    help="Reset keys to their default values.",
     multiple=True,
     type=papis.cli.KeyParamType(),
 )
