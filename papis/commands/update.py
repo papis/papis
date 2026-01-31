@@ -87,9 +87,10 @@ Examples
 
         papis update --append author ", Albert" Einstein
 
-  This appends ", Albert" to the existing author value. Be careful when using
-  ``--append`` to modify string keys, as the same prefix can be added multiple
-  times. This is not the case with lists (below), where we try to skip duplicates.
+  This appends ", Albert" to the existing author value. Note that it will be
+  appended to the existing value only if it does not already end with that
+  exact string (case-sensitive). This avoids appending duplicates by mistake, as
+  in the case of lists (below).
 
 - You can also append an item to a list:
 
@@ -99,7 +100,7 @@ Examples
 
     This adds the tag "physics" to the existing list of tags. If the list
     doesn't yet exist, it will be created. The new tag will only be appended to
-    the list if the tag does not already exist.
+    the list if the tag does not already exist (as an exact case-sensitive match).
 
     The ``--append`` flag needs to know the type of the key it is appending to.
     If the key exists in the document, then the value set in the document
@@ -426,7 +427,8 @@ def _apply_append_operation(
 
     if issubclass(key_type, str):
         doc_value = data.get(key, "")
-        value = f"{doc_value}{value}"
+        if not doc_value.endswith(value):
+            value = f"{doc_value}{value}"
     elif issubclass(key_type, list):
         doc_value = data.get(key, [])
 
