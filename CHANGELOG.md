@@ -1,4 +1,4 @@
-# VERSION NEXT (TDB)
+# VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes
 
@@ -18,7 +18,7 @@
 
 ### Major: Improved formatter support ([#711](https://github.com/papis/papis/pull/711))
 
-Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-formatter)
+Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#confval-formatter)
 that act on certain configuration settings that can depend on the current
 document. Until now, when changing from one formatter to another, all settings
 needed to be rewritten (including default ones, since they used the `python`
@@ -85,6 +85,8 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1105](https://github.com/papis/papis/pull/1105)).
 - Add shell completions for queries, e.g. `papis edit ein<TAB>`
   ([#1112](https://github.com/papis/papis/pull/1112)).
+- Allow colons in the `ref-format`
+  ([#1135](https://github.com/papis/papis/pull/1135)).
 
 ## Bug Fixes
 
@@ -102,6 +104,8 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1048](https://github.com/papis/papis/pull/1048)).
 - Fix `papis git` command with click 8.3.0
   ([#1077](https://github.com/papis/papis/pull/1077)).
+- Allow missing author name in the doctor `string-cleaner` check
+  ([#1133](https://github.com/papis/papis/pull/1133)).
 
 # VERSION 0.14.1 (March 1, 2025)
 
