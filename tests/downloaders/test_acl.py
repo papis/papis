@@ -35,6 +35,7 @@ def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
         assert ACLAnthologyDownloader.match(url) is None
 
 
+@pytest.mark.skip(reason="aclanthology.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ACL_URLS)
 def test_acl_fetch(
     tmp_config: TemporaryConfiguration,

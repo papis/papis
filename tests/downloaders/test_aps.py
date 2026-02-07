@@ -18,6 +18,7 @@ APS_URLS = (
     )
 
 
+@pytest.mark.skip(reason="aclanthology.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", APS_URLS)
 def test_aps_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,

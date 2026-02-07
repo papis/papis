@@ -50,9 +50,13 @@
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 14px;
         line-height: 20px;
-        color: #333333;
+        color: #252525;
         /*background-color: #ffffff;*/
         box-sizing: unset;
+    }
+
+    .legacy-b2-wrap .activities a.article-title {
+        color: #004ba4 !important;
     }
 
     .legacy-b2-wrap .row {
@@ -60,7 +64,7 @@
         display: inherit;
     }
 </style>
-    <link rel="stylesheet" href="/css/01fda25-0daed72.css" media="screen">
+    <link rel="stylesheet" href="/css/01fda25-05d946e.css" media="screen">
 
 <!--[if lt IE 9]>
     <link rel="stylesheet" href="/assets/css/ie8.css" media="screen">
@@ -71,13 +75,13 @@
 <![endif]-->
 
     <style media="screen">html, body { height: 100%; }</style>
-                <link rel="stylesheet" href="https://cdn.peerj.com/460bca1/webpack/313.add50856.css"><link rel="stylesheet" href="https://cdn.peerj.com/460bca1/webpack/peerj-app.765a44b5.css">
+                <link rel="stylesheet" href="https://cdn.peerj.com/25d9971/webpack/326.3d9afb0f.css"><link rel="stylesheet" href="https://cdn.peerj.com/25d9971/webpack/peerj-app.49d59ef3.css">
     
 
-    <link rel="stylesheet" href="/css/a0c1a2c-9eb2d9a.css" media="screen">
+    <link rel="stylesheet" href="/css/a0c1a2c-78a93c7.css" media="screen">
 
-    <link rel="stylesheet" href="/css/be477b9-1aea71d.css" media="screen">
-        <link rel="stylesheet" href="/css/3e4ba6d-8ea718c.css" media="print">
+    <link rel="stylesheet" href="/css/be477b9-dfad01f.css" media="screen">
+            <link rel="stylesheet" href="/css/3e4ba6d-1604405.css" media="print">
     <script src="/js/f67db00-8264f27.js"></script>
 <script src="/assets/js/mixpanel.js" defer></script>
 
@@ -194,26 +198,9 @@
 
 
     <script>(function(p,u,s,h,x){p.pushpad=p.pushpad||function(){(p.pushpad.q=p.pushpad.q||[]).push(arguments)};h=u.getElementsByTagName('head')[0];x=u.createElement('script');x.async=1;x.src=s;h.appendChild(x);})(window,document,'https://pushpad.xyz/pushpad.js');
-pushpad('init', 5977, {hostname: 'peerj.com'});
-</script>
-
-    <!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '237989854235235');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->    
+            pushpad('init', 5977, {hostname: 'peerj.com'});
+    </script>
+    
     <link rel="search" type="application/opensearchdescription+xml" href="https://peerj.com/articles/osd.xml" title="PeerJ">
 
             <script>
@@ -278,7 +265,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         };
     </script>
     
-    <script src="/js/8548491-6e0bf01.js"></script>        
+    <script src="/js/8548491-475c575.js"></script>        
 <link rel="apple-touch-icon" sizes="57x57" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-57x57.png">
 <link rel="apple-touch-icon" sizes="60x60" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-60x60.png">
 <link rel="apple-touch-icon" sizes="72x72" href="https://d2pdyyx74uypu5.cloudfront.net/images/favicon/peerj/apple-icon-72x72.png">
@@ -316,6 +303,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         data-controllerVars=""
         data-headerVars='null'
         data-symfony-route="publication"
+        data-fixed-width="1440px"
 >
 
 
@@ -332,7 +320,8 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         <div id="nav-pad"></div>
 
         
-        <div class="container">
+        <div id="MainContent"
+             class="container">
 
             <noscript class="js-disabled-warning">
                 <div class="alert alert-danger">
@@ -348,7 +337,11 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         <div class="span1 article-sidebar">
             <div class="article-sidebar-left">
                 <div class="sidebar-box sidebar-box--journal">
-                    <a href="/" class="sidebar-box--journal-mask"></a>
+                    <a
+                            href="/"
+                            class="sidebar-box--journal-mask"
+                            aria-label="link to journal landing page"
+                    ></a>
                     <img src="https://d2pdyyx74uypu5.cloudfront.net/images/article/logos/article-logo-peerj.png">
                 </div>
 
@@ -356,27 +349,27 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
                     <div class="text-center"><span id="tweet-count-container"></span> <img src="/assets/images/landing-pages/social/twitter-x.svg"></div>
                 </div>
 
-                <a href="#related-research" class="sidebar-box sidebar-box--related text-center">
+                <a aria-label="Link to related research" href="#related-research" class="sidebar-box sidebar-box--related text-center">
                     Related research
                     <i class="icon-angle-down"></i>
                 </a>
 
                 <!-- mobile only -->
                 <div class="item-leftside-actions">
-                     <div class="sidebar-box sidebar-box--action js-download-modal-trigger">Download</div>
+                    <div class="sidebar-box sidebar-box--action js-download-modal-trigger">Download</div>
 
-
-                     
+                                                                                
+                    
   
                         
 
 <div class="sidebar-box sidebar-box--social visible-desktop">
     <div class="sidebar-box--social-title">Share</div>
     <div class="d-flex">
-        <a class="pj-socialism bs-soc" href="https://bsky.app/intent/compose?text&#x3D;PeerJ&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3EReef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3Ehttps&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3E&#x25;40peerj.bsky.social" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Bluesky</a>
-        <a class="pj-socialism fb-soc" href="http://www.facebook.com/sharer/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;q&#x25;5B0&#x25;5D&#x3D;PeerJ&amp;q&#x25;5B1&#x25;5D&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&amp;hashtag&#x3D;&#x25;23peerj" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
-        <a class="pj-socialism x-soc" href="http://x.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">X</a>
-        <a class="pj-socialism em-soc" href="/cdn-cgi/l/email-protection#b48be7c1d6ded1d7c09297cc87f08fe6d1d8d1c2d5dac09297cc86818f8684c6d1c7d1d5c6d7dc9297cc86818f8684c4d5c4d1c69297cc86818f8684ddda9297cc86818f8684e4d1d1c6fe9297cc86818f8684f8ddd2d19297cc86818f86849297cc86818f86829297cc86818f8684f1dac2ddc6dbdad9d1dac092d5d9c48ff6dbd0cd9297cc87f08fe6d1d1d29297cc86818f8684d2ddc7dc9297cc86818f8684d7dbd9d9c1daddc0ddd1c79297cc86818f8684d5c6d19297cc86818f8684c7c4dbdbdfd1d09297cc86818f8684d6cd9297cc86818f8684c7d7c1d6d59297cc86818f8684c7c1c6c2d1cdc79297cc86818f8684d5dad09297cc86818f8684d9d5cd9297cc86818f8684c0d5dfd19297cc86818f8684dcdbc1c6c79297cc86818f8684c0db9297cc86818f8684c6d1d7dbc2d1c69297cc86818f8684dcc0c0c4c79297cc86818f87f59297cc86818f86f29297cc86818f86f2c4d1d1c6de9ad7dbd99297cc86818f86f2d5c6c0ddd7d8d1c79297cc86818f86f2808c8c829297cc86818f86f2" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a> 
+        <a aria-label="Share on Bluesky" class="pj-socialism bs-soc" href="https://bsky.app/intent/compose?text&#x3D;PeerJ&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3EReef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3Ehttps&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3E&#x25;40peerj.bsky.social" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Bluesky</a>
+        <a aria-label="Share on Facebook" class="pj-socialism fb-soc" href="http://www.facebook.com/sharer/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;q&#x25;5B0&#x25;5D&#x3D;PeerJ&amp;q&#x25;5B1&#x25;5D&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&amp;hashtag&#x3D;&#x25;23peerj" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
+        <a aria-label="Share on X (Twitter)" class="pj-socialism x-soc" href="http://x.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">X</a>
+        <a aria-label="Share via Email" class="pj-socialism em-soc" href="/cdn-cgi/l/email-protection#5d620e283f37383e297b7e256e19660f3831382b3c33297b7e256f68666f6d2f382e383c2f3e357b7e256f68666f6d2d3c2d382f7b7e256f68666f6d34337b7e256f68666f6d0d38382f177b3c302d661f3239247b7e256e19660f38383b7b7e256f68666f6d3b342e357b7e256f68666f6d3e3230302833342934382e7b7e256f68666f6d3c2f387b7e256f68666f6d2e2d32323638397b7e256f68666f6d3f247b7e256f68666f6d2e3e283f3c7b7e256f68666f6d2e282f2b38242e7b7e256f68666f6d3c33397b7e256f68666f6d303c247b7e256f68666f6d293c36387b7e256f68666f6d3532282f2e7b7e256f68666f6d29327b7e256f68666f6d2f383e322b382f7b7e256f68666f6d3529292d2e7b7e256f68666e1c7b7e256f68666f1b7b7e256f68666f1b2d38382f37733e32307b7e256f68666f1b3c2f29343e31382e7b7e256f68666f1b6965656b7b7e256f68666f1b" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
     </div>
 </div>
 
@@ -391,7 +384,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
             <a href="http://www.facebook.com/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
         </li>
         <li>
-            <a href="/cdn-cgi/l/email-protection#b48be7c1d6ded1d7c09297cc87f08fe6d1d8d1c2d5dac09297cc86818f8684c6d1c7d1d5c6d7dc9297cc86818f8684c4d5c4d1c69297cc86818f8684ddda9297cc86818f8684e4d1d1c6fe9297cc86818f8684f8ddd2d19297cc86818f86849297cc86818f86829297cc86818f8684f1dac2ddc6dbdad9d1dac092d5d9c48ff6dbd0cd9297cc87f08fe6d1d1d29297cc86818f8684d2ddc7dc9297cc86818f8684d7dbd9d9c1daddc0ddd1c79297cc86818f8684d5c6d19297cc86818f8684c7c4dbdbdfd1d09297cc86818f8684d6cd9297cc86818f8684c7d7c1d6d59297cc86818f8684c7c1c6c2d1cdc79297cc86818f8684d5dad09297cc86818f8684d9d5cd9297cc86818f8684c0d5dfd19297cc86818f8684dcdbc1c6c79297cc86818f8684c0db9297cc86818f8684c6d1d7dbc2d1c69297cc86818f8684dcc0c0c4c79297cc86818f87f59297cc86818f86f29297cc86818f86f2c4d1d1c6de9ad7dbd99297cc86818f86f2d5c6c0ddd7d8d1c79297cc86818f86f2808c8c829297cc86818f86f2" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
+            <a href="/cdn-cgi/l/email-protection#330c6046515956504715104b00770861565f5645525d4715104b0106080103415640565241505b15104b0106080103435243564115104b01060801035a5d15104b0106080103635656417915525e4308715c574a15104b0077086156565515104b0106080103555a405b15104b0106080103505c5e5e465d5a475a564015104b010608010352415615104b010608010340435c5c58565715104b0106080103514a15104b0106080103405046515215104b010608010340464145564a4015104b0106080103525d5715104b01060801035e524a15104b01060801034752585615104b01060801035b5c46414015104b0106080103475c15104b01060801034156505c45564115104b01060801035b4747434015104b010608007215104b010608017515104b010608017543565641591d505c5e15104b01060801755241475a505f564015104b0106080175070b0b0515104b0106080175" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
         </li>
     </ul>
 </div>
@@ -429,20 +422,21 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
 </div>
 
             <div id="article-main-container" data-group="" data-groupId="" data-groupName="">
-                
+                                
+
                 <style>
-                .editorial-article-notice {
-                    color: #686868;
-                    font-size: 15px;
-                    padding: 12px 18px 11px;
-                }
+                    .editorial-article-notice {
+                        color: #686868;
+                        font-size: 15px;
+                        padding: 12px 18px 11px;
+                    }
                 </style>
 
                 
                 <div class="article-section-breadcrumb">
                                             <span class="icon-angle-left"></span>
                         <span>
-                            <a href="/sections/aquatic-biology/latest/">
+                            <a aria-label="Aquatic Biology, section link." href="/sections/aquatic-biology/latest/">
                                 <span class="article-section-breadcrumb-name">Aquatic Biology</span>
                             </a>
                         </span>
@@ -456,7 +450,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
                 <!-- Main article -->
                 <article itemscope="itemscope" itemtype="http://schema.org/ScholarlyArticle"><header class="article-meta front"><h1 class="article-title" itemprop="name headline">Reef fish communities are spooked by scuba surveys and may take hours to recover</h1>
 <div class="article-authors">
-<span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-1" data-jats-contrib-type="author" data-jats-corresp="yes" itemprop="author"><a href="author-1" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Michael J.</span> <span class="surname" itemprop="familyName">Emslie</span></span></a><a class="corresp" href="/cdn-cgi/l/email-protection#cda0e3a8a0bea1a4a88daca4a0bee3aaa2bbe3acb8" target="_blank" title="email the corresponding author" data-toggle="tooltip" itemprop="email"><i class="icon-envelope">​</i></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-2" data-jats-contrib-type="author" itemprop="author"><a href="author-2" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Alistair J.</span> <span class="surname" itemprop="familyName">Cheal</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-3" data-jats-contrib-type="author" itemprop="author"><a href="author-3" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">M. Aaron</span> <span class="surname" itemprop="familyName">MacNeil</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-2" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-2">2</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-4" data-jats-contrib-type="author" itemprop="author"><a href="author-4" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Ian R.</span> <span class="surname" itemprop="familyName">Miller</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-5" data-jats-contrib-type="author" itemprop="author"><a href="author-5" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Hugh P.A.</span> <span class="surname" itemprop="familyName">Sweatman</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>
+<span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-1" data-jats-contrib-type="author" data-jats-corresp="yes" itemprop="author"><a href="author-1" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Michael J.</span> <span class="surname" itemprop="familyName">Emslie</span></span></a><a class="corresp" href="/cdn-cgi/l/email-protection#7f12511a120c13161a3f1e16120c51181009511e0a" target="_blank" title="email the corresponding author" data-toggle="tooltip" itemprop="email"><i class="icon-envelope">​</i></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-2" data-jats-contrib-type="author" itemprop="author"><a href="author-2" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Alistair J.</span> <span class="surname" itemprop="familyName">Cheal</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-3" data-jats-contrib-type="author" itemprop="author"><a href="author-3" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">M. Aaron</span> <span class="surname" itemprop="familyName">MacNeil</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-2" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-2">2</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-4" data-jats-contrib-type="author" itemprop="author"><a href="author-4" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Ian R.</span> <span class="surname" itemprop="familyName">Miller</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>, <span class="contrib" itemscope="itemscope" itemtype="http://schema.org/Person" id="author-5" data-jats-contrib-type="author" itemprop="author"><a href="author-5" rel="author" itemprop="url"><span class="name" itemprop="name"><span class="given-names" itemprop="givenName">Hugh P.A.</span> <span class="surname" itemprop="familyName">Sweatman</span></span></a><sup class="contrib-xref-group"><a class="aff xref" href="#aff-1" itemprop="affiliation" itemscope="itemscope" itemtype="http://schema.org/Organization" itemref="aff-1">1</a></sup></span>
 </div>
 <div id="article-information">
 <div class="article-notes">
@@ -1248,9 +1242,9 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
 
             <!-- annotations -->
             <ul class="nav nav-tabs annotation-tabs-nav">
-                <li class="active"><a href="#questions" data-toggle="tab"><i class="icon-comments"></i> Questions
+                <li class="active"><a href="#questions" aria-label="Questions" data-toggle="tab"><i class="icon-comments"></i> Questions
                         <span class="annotation-counter annotation-counter-questioning"></span></a></li>
-                <li><a href="#links" data-toggle="tab"><i class="icon-link"></i> Links
+                <li><a href="#links" aria-label="Links" data-toggle="tab"><i class="icon-link"></i> Links
                         <span class="annotation-counter annotation-counter-linking"></span></a></li>
             </ul>
 
@@ -1310,23 +1304,21 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
 
         <!-- Right sidebar -->
         <div class="span3 offset1 article-sidebar">
-                <div id="article-sidebar-main-content" class="mt-4" data-todo-href="/todos/24129/">
+            <div id="article-sidebar-main-content" class="mt-4"
+     data-todo-href="/todos/24129/">
                     <div class="dimensions-stats-container visible-desktop">
-            <span class="__dimensions_badge_embed__" data-doi="10.7717/peerj.4886" data-hide-zero-citations="true" data-legend="always" data-style="small_circle"></span>
+            <span class="__dimensions_badge_embed__" data-doi="10.7717/peerj.4886" data-hide-zero-citations="true"
+                  data-legend="always" data-style="small_circle"></span>
         </div>
     
     
-        <div class="row-fluid item-action-buttons article-sidebar-item visible-desktop">
-            <div class="span12">
+    <div class="row-fluid item-action-buttons article-sidebar-item visible-desktop">
+        <div class="span12">
 
-                
-                                                                <div data-clone="#expertrxiv-related" data-source="/expertrxiv/related?subjectIds=2,16,24&amp;subjects=Animal%20Behavior,%20Ecology,%20Marine%20Biology"></div>
-                    
-                                
-                                                                                                                        <div class="article-ctas">
-                    <div id="download-modal-trigger" class="js-download-modal-trigger btn btn-article btn-download btn-success mb-3  ">
+                                                                                                                            <div class="article-ctas">
+                <div id="download-modal-trigger" class="js-download-modal-trigger btn btn-article btn-download btn-success mb-3  ">
     Download
-</div>                    <!--<div class="content-cta-intro-text">Want alerts from articles like this?</div>-->
+</div>                <!--<div class="content-cta-intro-text">Want alerts from articles like this?</div>-->
 <div class="content-alert-link-btn content-alert-link" data-href="/content-alert/?aid=24129">
     <div class="content-alert-button-label">
         <i class="icon-envelope btn-content-alert-icon"></i>
@@ -1338,52 +1330,74 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         Just enter your email
     </div>
                 <div>
-                                
+                                    </div>
             </div>
-        </div>
-    
-    
-                
-        
-        <nav class="article-sidebar-block visible-desktop">
-        <div class="sidebar-heading">
-            <i class="icon-wrench"></i> Tools & info
-        </div>
-        <ul class="nav nav-list article-item-metrics-counts" data-src="/articles/4886/counter/">
-                            <li>
-                    <a href="/articles/4886/reviews/"
-                       rel="version-history">Peer Review information</a>
-                </li>
             
-                            
-                                                        <li><a href="/articles/4886/citations/" data-toggle="modal" data-target="#citing-modal">See citing articles <span class="metric-counter citation-item-count">66</span></a></li>
-                            
             
-            <li><a href="#questions">Ask questions
-                    <span class="metric-counter annotation-counter-questioning"></span></a></li>
+                                    
+                        
+                        <nav class="article-sidebar-block visible-desktop">
+                <div class="sidebar-heading">
+                    <i class="icon-wrench"></i> Tools & info
+                </div>
+                <ul class="nav nav-list article-item-metrics-counts" data-src="/articles/4886/counter/">
+                                            <li>
+                            <a href="/articles/4886/reviews/"
+                               rel="version-history">Peer
+                                Review information</a>
+                        </li>
+                    
+                                            
+                                                                                <li><a href="/articles/4886/citations/" data-toggle="modal" data-target="#citing-modal">See citing
+                                    articles <span class="metric-counter citation-item-count">73</span></a>
+                            </li>
+                                            
+                    
+                    <li><a href="#questions">Ask questions
+                            <span class="metric-counter annotation-counter-questioning"></span></a></li>
 
-            <li><a href="#links">Add links
-                    <span class="metric-counter annotation-counter-linking"></span></a></li>
+                    <li><a href="#links">Add links
+                            <span class="metric-counter annotation-counter-linking"></span></a></li>
 
-                            <li class="article-item-metrics-count"><a data-toggle="modal" href="#metricsModal">Visitors <span class="metric-counter" data-count="visitors">&nbsp;</span> <span class="pull-right metric-counter-details-cta">click for details</span></a></li>
-    <li class="article-item-metrics-count"><a data-toggle="modal" href="#metricsModal">Views <span class="metric-counter" data-count="views-html">&nbsp;</span></a></li>
-    <li class="article-item-metrics-count"><a data-toggle="modal" href="#metricsModal">Downloads <span class="metric-counter" data-count="views-pdf">&nbsp;</span></a></li>
+                                            <li class="article-item-metrics-count"><a data-toggle="modal" style="min-height: 24px !important;" href="#metricsModal">Visitors <span class="metric-counter" data-count="visitors">&nbsp;</span> <span class="pull-right metric-counter-details-cta">click for details</span></a></li>
+    <li class="article-item-metrics-count"><a data-toggle="modal" style="min-height: 24px !important;" href="#metricsModal">Views <span class="metric-counter" data-count="views-html">&nbsp;</span></a></li>
+    <li class="article-item-metrics-count"><a data-toggle="modal" style="min-height: 24px !important;" href="#metricsModal">Downloads <span class="metric-counter" data-count="views-pdf">&nbsp;</span></a></li>
 
-                            <li><a id="item-flag-button" data-toggle="modal" href="#flagModal">Report problem with article</a></li>
-                    </ul>
-    </nav>
+                                            <li><a id="item-flag-button" data-toggle="modal" href="#flagModal">Report problem with
+                                article</a></li>
+                                    </ul>
+            </nav>
 
-        <span class="visible-desktop"></span>
+                        <span class="visible-desktop"></span>
 
-    <div id="related-research-sidebar visible-desktop"></div>
+            <div id="related-research-sidebar visible-desktop"></div>
 
+        </div>
+                <nav class="article-sidebar-block follow visible-desktop">
+                            <div class="sidebar-heading">
+                    <i class="icon-list-ul"></i> Outline
+                </div>
+                        <div class="article-navigation"></div>
+                            
+                                                
+                                                                                                                                                                                                                                                                            
+            <div id="top-return" class="top-return">
+                <i class="icon-arrow-up"></i> Return to top
+            </div>
+        </nav>
+
+                <div class="subjects-navigation visible-desktop"></div>
+
+                            <div id="article-identifiers visible-desktop">
+                <span class="article-meta-name">PubMed</span>
+                <a href="https://www.ncbi.nlm.nih.gov/pubmed/29844998"
+                   id="article-identifier-pmid" target="_blank">29844998</a>
+            </div>
+            </div>
 </div>
-<nav class="article-sidebar-block follow visible-desktop">
-            <div class="sidebar-heading">
-            <i class="icon-list-ul"></i> Outline
-        </div>
-        <div class="article-navigation"></div>
-            
+
+    <nav class="article-sidebar-block follow">
+        
                             
                         <div class="mt-5">
             <div id="peerj-vue-user-impact-widget"
@@ -1397,19 +1411,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
                  data-query="{&quot;journal&quot;:&quot;peerj&quot;,&quot;key&quot;:&quot;4886&quot;,&quot;relatedAuthors&quot;:1,&quot;randomize&quot;:1}"
             ></div>
         </div>
-        
-    <div id="top-return" class="top-return">
-        <i class="icon-arrow-up"></i> Return to top
-    </div>    
-</nav>
-
-<div class="subjects-navigation visible-desktop"></div>
-
-    <div id="article-identifiers visible-desktop">
-        <span class="article-meta-name">PubMed</span>
-        <a href="https://www.ncbi.nlm.nih.gov/pubmed/29844998"
-           id="article-identifier-pmid" target="_blank">29844998</a>
-    </div>
+    </nav>
         </div>
     </div>
 
@@ -1525,7 +1527,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
                             <div>
                                 <textarea id="moderation_flag_detail" name="moderation_flag[detail]" required="required" maxlength="500" class="span4" placeholder="Enter any details about this issue. Kept confidential with PeerJ staff." rows="5" data-counter-target="#flag-counter"></textarea>
                                 
-                                <div style="margin:10px 0 0 0; color:#777777; float: left; display: block"><span id="flag-counter" class="label">500</span> characters remaining</div>
+                                <div style="margin:10px 0 0 0; color:#717171; float: left; display: block"><span id="flag-counter" class="label">500</span> characters remaining</div>
                             </div>
                          </div>
                         
@@ -1671,16 +1673,16 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
     
                         <ul class="unstyled">
     <li>
-        <a class="pj-socialism bs-soc" href="https://bsky.app/intent/compose?text&#x3D;PeerJ&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3EReef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3Ehttps&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3E&#x25;40peerj.bsky.social" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Bluesky</a>
+        <a aria-label="Share on Bluesky" class="pj-socialism bs-soc" href="https://bsky.app/intent/compose?text&#x3D;PeerJ&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3EReef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3Ehttps&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&#x25;3Cbr&#x25;3E&#x25;3Cbr&#x25;3E&#x25;40peerj.bsky.social" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Bluesky</a>
     </li>
     <li>
-        <a class="pj-socialism fb-soc" href="http://www.facebook.com/sharer/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;q&#x25;5B0&#x25;5D&#x3D;PeerJ&amp;q&#x25;5B1&#x25;5D&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&amp;hashtag&#x3D;&#x25;23peerj" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
+        <a aria-label="Share on Facebook" class="pj-socialism fb-soc" href="http://www.facebook.com/sharer/sharer.php?u&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;q&#x25;5B0&#x25;5D&#x3D;PeerJ&amp;q&#x25;5B1&#x25;5D&#x3D;Reef&#x25;20fish&#x25;20communities&#x25;20are&#x25;20spooked&#x25;20by&#x25;20scuba&#x25;20surveys&#x25;20and&#x25;20may&#x25;20take&#x25;20hours&#x25;20to&#x25;20recover&amp;hashtag&#x3D;&#x25;23peerj" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Facebook</a>
     </li>
     <li>
-        <a class="pj-socialism x-soc" href="http://x.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">X</a>
+        <a aria-label="Share on X" class="pj-socialism x-soc" href="http://x.com/share?url&#x3D;https&#x25;3A&#x25;2F&#x25;2Fpeerj.com&#x25;2Farticles&#x25;2F4886&#x25;2F&amp;via&#x3D;PeerJLife&amp;text&#x3D;Diver&#x25;20disturbance&#x25;20of&#x25;20reef&#x25;20fishes&amp;related&#x3D;" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">X</a>
     </li>
     <li>
-        <a class="pj-socialism em-soc" href="/cdn-cgi/l/email-protection#6a55391f08000f091e4c4912592e51380f060f1c0b041e4c4912585f51585a180f190f0b1809024c4912585f51585a1a0b1a0f184c4912585f51585a03044c4912585f51585a3a0f0f18204c4912585f51585a26030c0f4c4912585f51585a4c4912585f51585c4c4912585f51585a2f041c03180504070f041e4c0b071a5128050e134c4912592e51380f0f0c4c4912585f51585a0c0319024c4912585f51585a090507071f04031e030f194c4912585f51585a0b180f4c4912585f51585a191a0505010f0e4c4912585f51585a08134c4912585f51585a19091f080b4c4912585f51585a191f181c0f13194c4912585f51585a0b040e4c4912585f51585a070b134c4912585f51585a1e0b010f4c4912585f51585a02051f18194c4912585f51585a1e054c4912585f51585a180f09051c0f184c4912585f51585a021e1e1a194c4912585f51592b4c4912585f51582c4c4912585f51582c1a0f0f1800440905074c4912585f51582c0b181e0309060f194c4912585f51582c5e52525c4c4912585f51582c" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
+        <a aria-label="Share via Email" class="pj-socialism em-soc" href="/cdn-cgi/l/email-protection#19264a6c7b737c7a6d3f3a612a5d224b7c757c6f78776d3f3a612b2c222b296b7c6a7c786b7a713f3a612b2c222b296978697c6b3f3a612b2c222b2970773f3a612b2c222b29497c7c6b533f787469225b767d603f3a612a5d224b7c7c7f3f3a612b2c222b297f706a713f3a612b2c222b297a7674746c77706d707c6a3f3a612b2c222b29786b7c3f3a612b2c222b296a697676727c7d3f3a612b2c222b297b603f3a612b2c222b296a7a6c7b783f3a612b2c222b296a6c6b6f7c606a3f3a612b2c222b2978777d3f3a612b2c222b297478603f3a612b2c222b296d78727c3f3a612b2c222b2971766c6b6a3f3a612b2c222b296d763f3a612b2c222b296b7c7a766f7c6b3f3a612b2c222b29716d6d696a3f3a612b2c222a583f3a612b2c222b5f3f3a612b2c222b5f697c7c6b73377a76743f3a612b2c222b5f786b6d707a757c6a3f3a612b2c222b5f2d21212f3f3a612b2c222b5f" target="_blank" onclick="window.open(this.href, 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Email</a>
     </li>
 </ul>                
                 <h3 style="margin-bottom:10px;margin-top:10px">Metrics</h3>
@@ -1749,7 +1751,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
      data-recaptchaKey="6LcklyQUAAAAAGWmGpOk76ha4H0b229a5GSVahJr"
 >
 </div>
-            <header id="header-skeleton" class="px-sm text-left shadow-sm v-sheet theme--light v-toolbar v-toolbar--flat v-app-bar v-app-bar--fixed" data-booted="true" style="height: 75px; margin-top: 0px; transform: translateY(0px); left: 0px; right: 0px; background: #fff; color: #FFF"><div class="v-toolbar__content" style="height: 75px;"><button type="button" class="v-app-bar__nav-icon v-btn v-btn--icon v-btn--round theme--light v-size--default"><span class="v-btn__content"><i aria-hidden="true" aria-haspopup="true" aria-expanded="false" class="v-icon notranslate mdi mdi-view-dashboard theme--light" style="color: #FFF"></i><span class="v-tooltip"></span></span></button>
+            <header id="header-skeleton" class="px-sm text-left shadow-sm v-sheet theme--light v-toolbar v-toolbar--flat v-app-bar v-app-bar--fixed" data-booted="true" style="height: 75px; margin-top: 0px; transform: translateY(0px); left: 0px; right: 0px; background: #fff; color: #FFF"><div class="v-toolbar__content" style="height: 75px;"><button type="button" class="v-app-bar__nav-icon v-btn v-btn--icon v-btn--round theme--light v-size--default" aria-label="Search"><span class="v-btn__content"><i aria-hidden="true" aria-haspopup="true" aria-expanded="false" class="v-icon notranslate mdi mdi-view-dashboard theme--light" style="color: #FFF"></i><span class="v-tooltip"></span></span></button>
 
             <div class="d-flex"><div>   </div></div></div></header>
 
@@ -1764,7 +1766,7 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
                 <div class="span12">
                        <div class="item-metrics-counts-top-nav article-item-metrics-counts">
                                                                                                         <span class="article-item-metrics-count visible-all">
-                                        <span data-count="citations">66</span>
+                                        <span data-count="citations">73</span>
                                         <span class="article-item-metrics-label">Citations</span>
                                     </span>
                                 
@@ -1789,75 +1791,76 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
 
 <div id="alerts" class="legacy-b2-wrap" data-async-alerts="/alerts/"></div>
 
-            <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/js/8d39319-582a9a0.js"></script>
-        <script src="https://cdn.peerj.com/460bca1/webpack/runtime.0a2a9f46.js"></script><script src="https://cdn.peerj.com/460bca1/webpack/182.01a3a7e0.js"></script><script src="https://cdn.peerj.com/460bca1/webpack/313.36d8d068.js"></script><script src="https://cdn.peerj.com/460bca1/webpack/peerj-app.e7279d7a.js"></script>
+                <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/js/8d39319-582a9a0.js"></script>
+            <script src="/js/05779bd-a411a7a.js"></script>
+        <script src="https://cdn.peerj.com/25d9971/webpack/runtime.76b73d8d.js"></script><script src="https://cdn.peerj.com/25d9971/webpack/198.0671974e.js"></script><script src="https://cdn.peerj.com/25d9971/webpack/326.86a01050.js"></script><script src="https://cdn.peerj.com/25d9971/webpack/peerj-app.6121802d.js"></script>
 
 
     <script src="/js/5d3c493-193ec0b.js"></script>
 
-    <script src="/js/c1dacd9-99843f6.js"></script>
+    <script src="/js/c1dacd9-0a89c61.js"></script>
         <!--[if gt IE 8]><!-->
-        <script src="/assets/js/highlight/highlight.pack.js"></script>
+    <script src="/assets/js/highlight/highlight.pack.js"></script>
 
-                <script>
-            (function(){
+        <script>
+        (function(){
 
-                function initTweets(){
-                    //Get count
-                    var tweetCountUrl = '/articles/4886/tweet-count/';
-                    $.get(tweetCountUrl, function(response){
-                        if(response.count){
-                            $('#tweet-count-container').html('View ' + response.count + ' post' + (response.count > 1 ? 's' : ''));
-                            $('#btn-view-tweets').fadeIn(200);
-                        }
-                    });
+            function initTweets(){
+                //Get count
+                var tweetCountUrl = '/articles/4886/tweet-count/';
+                $.get(tweetCountUrl, function(response){
+                    if(response.count){
+                        $('#tweet-count-container').html('View ' + response.count + ' post' + (response.count > 1 ? 's' : ''));
+                        $('#btn-view-tweets').fadeIn(200);
+                    }
+                });
 
-                    //Get first page
-                    $('.tweet-items').html('Loading...');
-                    var tweetsPageUrl = '/articles/4886/tweets/';
-                    $.get(tweetsPageUrl, function(response){
-                        if(response.html){
-                            $('.tweet-items').html(response.html);
-                            $("html, body").animate({scrollTop: 0}, 500);
-                        }
-                    });
+                //Get first page
+                $('.tweet-items').html('Loading...');
+                var tweetsPageUrl = '/articles/4886/tweets/';
+                $.get(tweetsPageUrl, function(response){
+                    if(response.html){
+                        $('.tweet-items').html(response.html);
+                        $("html, body").animate({scrollTop: 0}, 500);
+                    }
+                });
+            }
+
+            setTimeout(initTweets, 2500);
+
+        })();
+    </script>
+
+        
+    <script>
+        $(function () {
+            // syntax highlighting for code blocks
+            $("pre > code").each(function() {
+                var node = $(this);
+
+                var language;
+
+                // JATS >=1.1
+                language = node.data('jats-language');
+
+                if (!language) {
+                    // JATS <1.1
+                    language = node.data('jats-preformat-type');
+
+                    // ignore default 'code' type
+                    if (language === 'code') {
+                        language = null;
+                    }
                 }
 
-                setTimeout(initTweets, 2500);
+                if (language) {
+                    node.addClass('language-' + language);
+                }
 
-            })();
-        </script>
-
-                
-        <script>
-            $(function () {
-                // syntax highlighting for code blocks
-                $("pre > code").each(function() {
-                    var node = $(this);
-
-                    var language;
-
-                    // JATS >=1.1
-                    language = node.data('jats-language');
-
-                    if (!language) {
-                        // JATS <1.1
-                        language = node.data('jats-preformat-type');
-
-                        // ignore default 'code' type
-                        if (language === 'code') {
-                            language = null;
-                        }
-                    }
-
-                    if (language) {
-                        node.addClass('language-' + language);
-                    }
-
-                    hljs.highlightBlock(this);
-                });
+                hljs.highlightBlock(this);
             });
-        </script>
+        });
+    </script>
     <!--<![endif]-->
 
     <script>
@@ -1886,10 +1889,31 @@ src="https://www.facebook.com/tr?id=237989854235235&ev=PageView&noscript=1"
         },
         "HTML-CSS": {
             linebreaks: { automatic: true },
-            scale: 90
+            scale: 90,
+            styles: {
+              ".MathJax:focus": {
+                outline: "2px solid #4285f4",
+                outlineOffset: "2px"
+              }
+            }
         },
         menuSettings: {
             zoom: "Click"
+        },
+        tex2jax: {
+            skipTags: ["nobr"],
+        },
+        menuSettings: {
+            explorer: true
+        },
+        explorer: {
+            walker: 'syntactic',
+            highlight: 'hover',
+            background: 'blue',
+            foreground: 'black',
+            speech: true,
+            subtitle: true,
+            ruleset: 'mathspeak'
         }
     });
 
