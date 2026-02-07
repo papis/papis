@@ -1,25 +1,25 @@
 {
-  "title": "Adverb order with still",
+  "abstract": "We present arguments for a scopal approach to adverb order, one which relies on the semantic content of adverbs. Focusing on the adverb 'still', we claim that such a view has an advantage over views in which adverb order is determined by a linear ordering within the clause (as in Cinque 1999), since it can explain both (i) why some restrictions on adverb order persist across clause boundaries, and (ii) why certain bad adverb orders are rescued by semantic manipulations.",
+  "author": "Schoenfeld, Aviv and Bar-Lev, Moshe E. and Katzir, Roni",
   "author_list": [
     {
-      "given": "Aviv",
-      "family": "Schoenfeld"
+      "family": "Schoenfeld",
+      "given": "Aviv"
     },
     {
-      "given": "Moshe E.",
-      "family": "Bar-Lev"
+      "family": "Bar-Lev",
+      "given": "Moshe E."
     },
     {
-      "given": "Roni",
-      "family": "Katzir"
+      "family": "Katzir",
+      "given": "Roni"
     }
   ],
-  "author": "Schoenfeld, Aviv and Bar-Lev, Moshe E. and Katzir, Roni",
-  "month": 8,
-  "year": 2024,
-  "abstract": "We present arguments for a scopal approach to adverb order, one which relies on the semantic content of adverbs. Focusing on the adverb 'still', we claim that such a view has an advantage over views in which adverb order is determined by a linear ordering within the clause (as in Cinque 1999), since it can explain both (i) why some restrictions on adverb order persist across clause boundaries, and (ii) why certain bad adverb orders are rescued by semantic manipulations.",
-  "note": "Published in: NELS 54: Proceedings of the Fifty-Fourth Annual Meeting of the North East Lingusitic Society",
   "keywords": "adverbs, cartography, aspect, semantics, syntax",
+  "month": 8,
+  "note": "Published in: NELS 54: Proceedings of the Fifty-Fourth Annual Meeting of the North East Lingusitic Society",
+  "title": "Adverb order with still",
   "type": "unpublished",
-  "url": "https://lingbuzz.net/lingbuzz/008324"
+  "url": "https://lingbuzz.net/lingbuzz/008324",
+  "year": 2024
 }

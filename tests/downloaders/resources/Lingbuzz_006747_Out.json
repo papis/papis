@@ -1,18 +1,18 @@
 {
-  "title": "SVO \u2013 Attractors in the declarative-to-procedural shift in grammar evolution",
+  "abstract": "[CHANGE: This is the layout of the published version]\n•\tThe theory of grammar-changes as a result of Darwinian cognitive evolution correctly models directions and outcomes of grammar changes.\n•\tThe unidirectional changes of grammars trade in 'cheap' procedural routines for 'costly' declarative content.\n•\tSOV and SVO languages are systems in a rather stable equilibrium. Most changes involve \"free word order languages\" (= Type 3) that change to OV or VO in the course of constraining the linking directionality of lexical phrasal heads. \n•\t[S[VO]] is a point of no return in diachronic grammar development.\n•\t[S[VO]] is a diachronically more recent clause structure than SOV or Type 3.",
+  "author": "Haider, Hubert",
   "author_list": [
     {
-      "given": "Hubert",
-      "family": "Haider"
+      "family": "Haider",
+      "given": "Hubert"
     }
   ],
-  "author": "Haider, Hubert",
+  "doi": "10.1556/2062.2023.00642",
+  "keywords": "diachronic syntax, diachronic linguistics, language change, grammar change, typology, word order typology, universal grammar, evolution of language, morphology, syntax, diachrony; sov to svo, type-3 to svo. germanic, romance, chinese, attractor, procedural memory, declarative memory",
   "month": 11,
-  "year": 2025,
-  "abstract": "[CHANGE: This is the layout of the published version]\n\u2022\tThe theory of grammar-changes as a result of Darwinian cognitive evolution correctly models directions and outcomes of grammar changes.\n\u2022\tThe unidirectional changes of grammars trade in 'cheap' procedural routines for 'costly' declarative content.\n\u2022\tSOV and SVO languages are systems in a rather stable equilibrium. Most changes involve \"free word order languages\" (= Type 3) that change to OV or VO in the course of constraining the linking directionality of lexical phrasal heads. \n\u2022\t[S[VO]] is a point of no return in diachronic grammar development.\n\u2022\t[S[VO]] is a diachronically more recent clause structure than SOV or Type 3.",
   "note": "Published in: 2023. Acta Linguistica Academica 70: 195-218 (online June 6, 2023) https://doi.org/10.1556/2062.2023.00642",
-  "keywords": "diachronic syntax, diachronic linguistics, language change, grammar change, typology, word order typology, universal grammar, evolution of language, morphology, syntax, diachrony; sov to svo, type-3 to svo. germanic, romance, chinese.",
+  "title": "SVO – Attractors in the declarative-to-procedural shift in grammar evolution",
   "type": "unpublished",
   "url": "https://ling.auf.net/lingbuzz/006747",
-  "doi": "10.1556/2062.2023.00642"
+  "year": 2025
 }
