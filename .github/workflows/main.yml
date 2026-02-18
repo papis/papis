@@ -71,7 +71,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        database: ["whoosh"]
+        database: ["whoosh", "sqlite"]
       fail-fast: false
 
     steps:
