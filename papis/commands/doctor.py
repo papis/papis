@@ -975,10 +975,26 @@ STRING_CLEANER_CHECK_NAME = "string-cleaner"
 STRING_CLEANER_WHITESPACE_REGEX = re.compile(r"\s{2,}")
 # NOTE: matches all text with "abstract" at the start
 STRING_CLEANER_ABSTRACT_REGEX = re.compile(r"^\W*abstract\W*", re.IGNORECASE)
-# NOTE: matches all text that is a single uppercase letter not followed by a dot
-STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b([A-Z])(?!\.)\b")
+# NOTE: matches all text that is a single letter not followed by a dot
+STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b(\w)(?!\.)\b")
 # NOTE: matches all text that is a letter followed by dot and another letter
-STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b[A-Z]\.)(?=[A-Z])")
+STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b\w\.)(?=\w)")
+# NOTE: matches all text that is a single letter followed by a dot
+STRING_CLEANER_INITIALS_UPPER_REGEX = re.compile(r"\b(\w)\.")
+
+
+def _dotify_initials(text: str) -> str:
+    # add dots
+    text = STRING_CLEANER_INITIALS_SPACE_REGEX.sub(r"\1.", text)
+    # add spaces
+    text = STRING_CLEANER_INITIALS_DOTS_REGEX.sub(" ", text)
+    # uppercase
+    text = STRING_CLEANER_INITIALS_UPPER_REGEX.sub(
+        lambda m: f"{m.group(1).upper()}.",
+        text,
+    )
+
+    return text
 
 
 def string_cleaner_check(doc: Document) -> list[Error]:
@@ -991,7 +1007,10 @@ def string_cleaner_check(doc: Document) -> list[Error]:
 
     * Double spacing or any repeated whitespace.
     * Unexpected new line characters.
-    * Weirdly formatted names, e.g. "J R R Tolkien" should be "J. R. R. Tolkien".
+    * Non-standard initial formatting, e.g. "J R R Tolkien" should be
+      "J. R. R. Tolkien". This is the formatting recommended in the
+      `APA style <https://apastyle.apa.org/style-grammar-guidelines/references/elements-list-entry>`_,
+      but many other (mostly Western) styles use it as well.
 
     :returns: a :class:`list` of errors, one for each string-based key that has
         unexpected formatting.
@@ -1046,21 +1065,18 @@ def string_cleaner_check(doc: Document) -> list[Error]:
                    for author in doc["author_list"]
                    if author.get("given") and author.get("family"))
 
-    def make_author_initials_fixer(pattern: re.Pattern[str], sub: str) -> FixFn:
-        def fixer() -> None:
-            author_list = doc.get("author_list")
-            if author_list is None:
-                return
+    def author_initials_fixer() -> None:
+        author_list = doc.get("author_list")
+        if author_list is None:
+            return
 
-            for author in author_list:
-                if author.get("given") and author.get("family"):
-                    author.update({"given": pattern.sub(sub, author["given"])})
+        for author in author_list:
+            if author.get("given") and author.get("family"):
+                author.update({"given": _dotify_initials(author["given"])})
 
-            doc["author_list"] = author_list
-            doc["author"] = author_list_to_author(doc)
-            logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
-
-        return fixer
+        doc["author_list"] = author_list
+        doc["author"] = author_list_to_author(doc)
+        logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
 
     key_types = get_key_type_check_keys()
     results = []
@@ -1084,22 +1100,13 @@ def string_cleaner_check(doc: Document) -> list[Error]:
                            fix_action=remove_abstract_fixer,
                            payload=key))
 
-        if has_author_initials(key, value, STRING_CLEANER_INITIALS_SPACE_REGEX):
+        if (has_author_initials(key, value, STRING_CLEANER_INITIALS_SPACE_REGEX)
+            or has_author_initials(key, value, STRING_CLEANER_INITIALS_DOTS_REGEX)):
             results.append(
                 make_error(doc, STRING_CLEANER_CHECK_NAME,
                            msg=("Key 'author' contains initials that are not "
-                                "separated by whitespace"),
-                           fix_action=make_author_initials_fixer(
-                               STRING_CLEANER_INITIALS_SPACE_REGEX, r"\1."),
-                           payload=key))
-
-        if has_author_initials(key, value, STRING_CLEANER_INITIALS_DOTS_REGEX):
-            results.append(
-                make_error(doc, STRING_CLEANER_CHECK_NAME,
-                           msg=("Key 'author' contains initials that are not "
-                                "followed by a dot"),
-                           fix_action=make_author_initials_fixer(
-                               STRING_CLEANER_INITIALS_DOTS_REGEX, r" "),
+                                "followed by a dot+space (e.g. 'J R R' or 'J.R.R.')"),
+                           fix_action=author_initials_fixer,
                            payload=key))
 
         if has_extra_newlines(key, value):
