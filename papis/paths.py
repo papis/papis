@@ -158,12 +158,12 @@ def get_document_file_name(
         base_name_limit: int = 150) -> str:
     """Generate a file name based on *orig_path* for the document *doc*.
 
-    This function will generate a file name for the given file *path* (that
+    This function will generate a file name for the given file *orig_path* (that
     does not necessarily exist) based on the document data. If the document
     data does not provide the necessary keys for *file_name_format*, then the
     original path will be preserved.
 
-    If resulting path will have the same extension as *orig_path* and will be
+    The resulting path will have the same extension as *orig_path* and will be
     modified by :func:`normalize_path`. The extension is determined using
     :func:`~papis.filetype.get_document_extension`.
 
@@ -173,7 +173,7 @@ def get_document_file_name(
         from the document data (see :func:`papis.format.format`). This value
         defaults to :confval:`add-file-name` if not provided.
     :param base_name_limit: a maximum character length of the file name. This
-        is important on operating systems of filesystems that do not support
+        is important on operating systems or filesystems that do not support
         long file names.
     :returns: a new path based on the document data and the *orig_path*.
     """
