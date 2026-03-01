@@ -70,7 +70,6 @@ dependencies = [
     "dominate>=2.8",
     "filetype>=1.0.1",
     "habanero>=0.6",
-    "isbnlib>=3.9.1",
     "lxml>=4.3.5",
     "platformdirs>=4.0.0",
     "prompt_toolkit>=3.0.5",
@@ -79,11 +78,6 @@ dependencies = [
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
-
-    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
-    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
-    #   https://github.com/xlcnd/isbnlib/pull/145
-    "setuptools",
 ]
 
 [project.urls]
@@ -126,7 +120,13 @@ optional = [
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "citeproc-py>=0.6",
+    "isbnlib>=3.9.1",
     "markdownify>=1.0.0",
+
+    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
+    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
+    #   https://github.com/xlcnd/isbnlib/pull/145
+    "setuptools<82.0.0",
 ]
 # Custom Sphinx directives for Papis docs
 "papis.sphinx_ext" = [
