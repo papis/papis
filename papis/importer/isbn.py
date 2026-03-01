@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import papis.logging
 from papis.importer import Importer
+
+logger = papis.logging.get_logger(__name__)
 
 
 class ISBNImporter(Importer):
@@ -11,7 +14,11 @@ class ISBNImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> ISBNImporter | None:
-        from isbnlib import notisbn
+        try:
+            from isbnlib import notisbn
+        except ImportError:
+            logger.error("%s requires the 'isbnlib' library.", cls.__name__)
+            return None
 
         if notisbn(uri):
             return None
