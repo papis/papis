@@ -239,6 +239,7 @@ settings: dict[str, Any] = {
     "database-backend": "papis",
     "use-cache": True,
     "cache-dir": None,
+
     "whoosh-schema-fields": ["doi"],
     "whoosh-schema-prototype":
     "{\n"
@@ -247,6 +248,8 @@ settings: dict[str, Any] = {
     '"year": TEXT(stored=True),\n'
     '"tags": TEXT(stored=True),\n'
     "}",
+
+    "sqlite-schema-fields": ["author", "title", "year", "ref", "doi"],
 
     # fzf options
     "fzf-binary": "fzf",
