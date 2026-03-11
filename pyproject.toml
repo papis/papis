@@ -349,6 +349,11 @@ module = [
 ]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# NOTE: sphinx > 9.0.0 requires Python >= 3.12 for type checking, so we ignore it
+module = ["sphinx.*"]
+follow_imports = "skip"
+
 [tool.typos.default]
 extend-ignore-re = [
     "(?Rm)^.*#\\s*spell:\\s*disable$"
