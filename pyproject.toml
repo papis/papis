@@ -370,6 +370,7 @@ extend-exclude = [
 [tool.typos.default.extend-words]
 # NOTE: in docs
 formater = "formater"
+rela = "rela"
 # NOTE: these appear in some queries and urls
 ACI = "ACI"
 ein = "ein"
