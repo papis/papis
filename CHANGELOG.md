@@ -1,3 +1,32 @@
+# VERSION NEXT (TBD)
+
+# Features
+
+## Major: SQLite database backend ([#1007](https://github.com/papis/papis/pull/1007))
+
+Papis added a new database backend based on the built-in `sqlite3` database as an
+alternative to the `papis` backend (based on `pickle`) and the `whoosh` backend.
+
+This new backend works similarly to the `whoosh` backend. To use it, you need to
+1. Set `database-backend = sqlite` in your configuration file (globally or per-library).
+2. Tinker with [sqlite](https://papis.readthedocs.io/en/latest/configuration.html#confval-sqlite-schema-fields) to add more fields you'd like to query.
+
+From preliminary testing, this backend seems to be quite fast, both for searching
+and caching. A quick benchmark on a library with about 2000 documents (and a query
+that returns about 15), the default `papis` backend gives
+```
+> hyperfine --warmup 3 -- 'papis list --all QUERY'
+Benchmark 1: papis list --all QUERY
+  Time (mean ± σ):     322.8 ms ±  20.8 ms    [User: 290.3 ms, System: 31.0 ms]
+  Range (min … max):   308.5 ms … 379.1 ms    10 runs
+```
+and the `sqlite` backend gives
+```
+Benchmark 1: papis list --all QUERY
+  Time (mean ± σ):      97.4 ms ±  11.4 ms    [User: 81.1 ms, System: 15.3 ms]
+  Range (min … max):    79.7 ms … 115.2 ms    27 runs
+```
+
 # VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes

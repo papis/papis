@@ -952,6 +952,12 @@ Databases
     for more information. The resulting string is passed to :func:`eval`, so
     care should be taken when modifying it.
 
+.. papis-config:: sqlite-schema-fields
+
+    A list with the fields that should be included in the SQLite database. In
+    general, these are the fields that can then be searched for by name, using
+    e.g. ``author:Einstein``.
+
 Terminal user interface (picker)
 --------------------------------
 

@@ -249,7 +249,18 @@ settings: dict[str, Any] = {
     '"tags": TEXT(stored=True),\n'
     "}",
 
-    "sqlite-schema-fields": ["author", "title", "year", "ref", "doi", "url", "tags"],
+    "sqlite-schema-fields": [
+        "author",
+        "doi",
+        "journal",
+        "ref",
+        "tags",
+        "title",
+        "type",
+        "year",
+        # NOTE: this is mainly here for a 'test_rename_no_matching_documents'
+        "url",
+    ],
 
     # fzf options
     "fzf-binary": "fzf",
