@@ -22,6 +22,8 @@
         python = pkgs.python3.override {
           packageOverrides = final: prev: {
 
+            inherit (pkgs) sphinx-lint;
+
             types-pygments = final.buildPythonPackage rec {
               pname = "types-Pygments";
               version = "2.19.0.20250305";
@@ -45,35 +47,6 @@
                 homepage = "https://github.com/python/typeshed";
                 description = "Typing stubs for Pygments";
                 license = licenses.asl20;
-              };
-            };
-
-            sphinx-lint = final.buildPythonPackage rec {
-              pname = "sphinx-lint";
-              version = "1.0.2";
-              pyproject = true;
-              build-system = [
-                final.hatchling
-                final.hatch-vcs
-              ];
-
-              dependencies = [
-                final.polib
-                final.regex
-              ];
-
-              src = final.fetchPypi {
-                inherit version;
-                pname = "sphinx_lint";
-                sha256 = "sha256-Tn/BL0T3ULAAbqrSN9fbmx2KupKt2pyDiviRZUs3HTU=";
-              };
-
-              doCheck = false;
-
-              meta = with pkgs.lib; {
-                homepage = "https://github.com/sphinx-contrib/sphinx-lint";
-                description = "Linter for Sphinx documentation";
-                license = licenses.psfl;
               };
             };
 
