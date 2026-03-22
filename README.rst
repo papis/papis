@@ -253,6 +253,17 @@ Thanks
 We thank `Irteza Rehman <https://www.irtezarehman.com/>`__ for generously creating
 our beautiful logo.
 
+Funding
+-------
+
+This project is funded through `NGI0 Commons Fund <https://nlnet.nl/commonsfund>`__,
+a fund established by `NLnet <https://nlnet.nl>`__ with financial support from the
+European Commission's `Next Generation Internet <https://ngi.eu>`__ program. Learn
+more at the `NLnet project page <https://nlnet.nl/project/Papis>`__.
+
+|nlnet_logo|
+|nlnet_ngi0|
+
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
    :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
 .. |RTD| image:: https://readthedocs.org/projects/papis/badge/?version=latest
@@ -269,3 +280,8 @@ our beautiful logo.
 .. |bibtex_export| image:: https://papis.github.io/images/bibtex_export.gif
 .. |add| image:: https://papis.github.io/images/add.gif
 .. |web_app| image:: https://papis.github.io/images/web_app.jpg
+
+.. |nlnet_logo| image:: https://nlnet.nl/logo/banner.png
+   :width: 20%
+.. |nlnet_ngi0| image:: https://nlnet.nl/image/logos/NGI0_tag.svg
+   :width: 20%
