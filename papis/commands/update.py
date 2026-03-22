@@ -110,7 +110,7 @@ Examples
     type cannot be determined in either of these two ways, the command will
     fail.
 
-- You can use ``--set``` to set a value into a list at a given position:
+- You can use ``--set`` to set a value into a list at a given position:
 
     .. code:: sh
 
@@ -157,7 +157,7 @@ Examples
         papis update --set author_list "[{'family': 'Einstein', 'given': 'Albert'}]"
 
   Because the above string is a valid Python expression, ``author_list`` is
-  updated to a set that contains a dictionary.
+  updated to a list that contains a dictionary.
 
 
 Command-line interface
