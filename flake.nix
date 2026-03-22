@@ -133,10 +133,10 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      "$container_cmd" build -t papisdev .
-                    '';
+                  # bash
+                  ''
+                    "$container_cmd" build -t papisdev .
+                  '';
               };
 
               # convenience command to run containerised tests
@@ -145,10 +145,10 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
-                    '';
+                  # bash
+                  ''
+                    "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
+                  '';
               };
 
               # convenience command to enter a container with a populated test library
@@ -157,17 +157,17 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      populateLibPy=$(cat << END
-                      import papis.testing
-                      papis.testing.populate_library('/root/Documents/papers')
-                      END
-                      )
-                      entryCmd="python -c \"$populateLibPy\"; bash"
+                  # bash
+                  ''
+                    populateLibPy=$(cat << END
+                    import papis.testing
+                    papis.testing.populate_library('/root/Documents/papers')
+                    END
+                    )
+                    entryCmd="python -c \"$populateLibPy\"; bash"
 
-                      "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
-                    '';
+                    "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
+                  '';
               };
             in
             # Create a devShell like normal.
