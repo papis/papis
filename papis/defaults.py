@@ -261,6 +261,7 @@ settings: dict[str, Any] = {
         # NOTE: this is mainly here for a 'test_rename_no_matching_documents'
         "url",
     ],
+    "sqlite-schema-fields-extend": [],
 
     # fzf options
     "fzf-binary": "fzf",
