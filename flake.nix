@@ -22,6 +22,8 @@
         python = pkgs.python3.override {
           packageOverrides = final: prev: {
 
+            inherit (pkgs) sphinx-lint;
+
             types-pygments = final.buildPythonPackage rec {
               pname = "types-Pygments";
               version = "2.19.0.20250305";
@@ -45,35 +47,6 @@
                 homepage = "https://github.com/python/typeshed";
                 description = "Typing stubs for Pygments";
                 license = licenses.asl20;
-              };
-            };
-
-            sphinx-lint = final.buildPythonPackage rec {
-              pname = "sphinx-lint";
-              version = "1.0.2";
-              pyproject = true;
-              build-system = [
-                final.hatchling
-                final.hatch-vcs
-              ];
-
-              dependencies = [
-                final.polib
-                final.regex
-              ];
-
-              src = final.fetchPypi {
-                inherit version;
-                pname = "sphinx_lint";
-                sha256 = "sha256-Tn/BL0T3ULAAbqrSN9fbmx2KupKt2pyDiviRZUs3HTU=";
-              };
-
-              doCheck = false;
-
-              meta = with pkgs.lib; {
-                homepage = "https://github.com/sphinx-contrib/sphinx-lint";
-                description = "Linter for Sphinx documentation";
-                license = licenses.psfl;
               };
             };
 
@@ -160,10 +133,10 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      "$container_cmd" build -t papisdev .
-                    '';
+                  # bash
+                  ''
+                    "$container_cmd" build -t papisdev .
+                  '';
               };
 
               # convenience command to run containerised tests
@@ -172,10 +145,10 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
-                    '';
+                  # bash
+                  ''
+                    "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
+                  '';
               };
 
               # convenience command to enter a container with a populated test library
@@ -184,17 +157,17 @@
                 text =
                   check-container-cmd
                   +
-                    # bash
-                    ''
-                      populateLibPy=$(cat << END
-                      import papis.testing
-                      papis.testing.populate_library('/root/Documents/papers')
-                      END
-                      )
-                      entryCmd="python -c \"$populateLibPy\"; bash"
+                  # bash
+                  ''
+                    populateLibPy=$(cat << END
+                    import papis.testing
+                    papis.testing.populate_library('/root/Documents/papers')
+                    END
+                    )
+                    entryCmd="python -c \"$populateLibPy\"; bash"
 
-                      "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
-                    '';
+                    "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev bash -c "$entryCmd"
+                  '';
               };
             in
             # Create a devShell like normal.
