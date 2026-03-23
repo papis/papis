@@ -958,6 +958,10 @@ Databases
     general, these are the fields that can then be searched for by name, using
     e.g. ``author:Einstein``.
 
+.. papis-config:: sqlite-schema-fields-extend
+
+   Append fields to the default :confval:`sqlite-schema-fields`.
+
 Terminal user interface (picker)
 --------------------------------
 

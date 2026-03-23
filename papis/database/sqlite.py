@@ -32,6 +32,32 @@ SQLITE_RESERVED_COLUMNS = frozenset({"id", "papis_id", "doc_folder", "doc"})
 SAFE_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
+def _get_sqlite_fields(dbfile: str) -> list[str]:
+    # NOTE: https://www.sqlite.org/pragma.html#pragma_table_xinfo
+    # NOTE: creating a temporary connection to check fields
+
+    conn = sqlite3.connect(dbfile, isolation_level=None)
+    db_fields = [
+        field[0] for field in
+        conn.execute(
+            f"SELECT name FROM pragma_table_xinfo('{SQLITE_TABLE_NAME}') "
+            "WHERE hidden = 2"
+        ).fetchall()
+    ]
+    conn.close()
+
+    return db_fields
+
+
+def _get_sqlite_schema_fields() -> list[str]:
+    fields = [
+        *papis.config.getlist("sqlite-schema-fields"),
+        *papis.config.getlist("sqlite-schema-fields-extend")
+    ]
+
+    return sorted(set(fields))
+
+
 def _make_sqlite_schema(table: str, columns: Sequence[str]) -> str:
     # NOTE: some design choices here:
     # - Storing the whole document in the `doc` field as JSON so that we don't have
@@ -192,19 +218,9 @@ class SQLiteDatabase(Database):
 
     def initialize(self) -> None:
         if os.path.exists(self.cache_file_name):
-            # NOTE: https://www.sqlite.org/pragma.html#pragma_table_xinfo
-            # NOTE: creating a temporary connection to check fields
-            conn = sqlite3.connect(self.cache_file_name, isolation_level=None)
-            db_fields = {
-                field[0] for field in
-                conn.execute(
-                    f"SELECT name FROM pragma_table_xinfo('{SQLITE_TABLE_NAME}') "
-                    "WHERE hidden = 2"
-                ).fetchall()}
-            conn.close()
-
-            user_fields = set(papis.config.getlist("sqlite-schema-fields"))
-            changed = db_fields != user_fields
+            changed = (
+                set(_get_sqlite_fields(self.get_cache_path()))
+                != set(_get_sqlite_schema_fields()))
         else:
             changed = True
 
@@ -328,8 +344,7 @@ class SQLiteDatabase(Database):
             # NOTE: everything already exists, so we can just skip it
             return
 
-        field_names = sorted(set(papis.config.getlist("sqlite-schema-fields")))
-        schema = _make_sqlite_schema(SQLITE_TABLE_NAME, field_names)
+        schema = _make_sqlite_schema(SQLITE_TABLE_NAME, _get_sqlite_schema_fields())
 
         conn = self.connection
         conn.executescript(schema)
