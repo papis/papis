@@ -104,5 +104,5 @@ rules:
   tasks:
     - Break tasks into 1-2 hour chunks with clear dependencies.
     - Every task must include verification (cargo fmt, cargo clippy, cargo test).
-    - Assume jj workflow; do not require git branches/commits.
+    - Assume jj workflow; After each verification, once the verification steps pass, the task is considered complete and can be committed (jj commit) before moving to the next task.
     - Keep code changes inside rust/ for MVP (python/ is reference-only).
