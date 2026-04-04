@@ -1,0 +1,108 @@
+schema: spec-driven
+
+context: |
+  Project: Rust rewrite of an existing research-article manager CLI (Papis-like).
+  Repo layout:
+  - python/ = existing reference implementation (do not modify for MVP unless explicitly required)
+  - rust/ = all new Rust source + Rust-specific config for the rewrite
+
+  User + environment:
+  - User is a Rust beginner: prefer simple, explicit, beginner-friendly Rust.
+  - OS: macOS.
+  - Workflow uses Jujutsu (jj). Avoid git-centric instructions.
+
+  Rust project (already initialized):
+  - Package/binary name: papis-rs
+  - Rust identifier in code: papis_rs
+  - Edition: 2024
+  - Keep Rust work self-contained in rust/:
+    - Use rust/rust-toolchain.toml (stable + rustfmt + clippy)
+    - Use rust/.cargo/config.toml to keep target dir under rust/target
+
+  MVP goal (first minimal working demo):
+  - A single-user, single-library CLI.
+  - Persist all metadata in SQLite (SQLite is the source of truth).
+  - Import metadata from .bib (BibTeX) files.
+  - Store PDF files by copying them into a library-managed storage directory and recording the stored relative path in SQLite.
+  - Minimal CLI surface (Papis-like, but small): init, import-bib, add-pdf, list, show.
+
+  Data location rule (important):
+  - Only source/build artifacts live in the repo (rust/).
+  - The actual library data (SQLite DB + stored PDFs) lives in a user-chosen directory outside the repo,
+    passed explicitly via CLI (e.g. --library /path/to/library).
+
+  Library storage model (MVP):
+  - Library root contains:
+    - papis.sqlite3
+    - storage/
+  - SQLite path: <library>/papis.sqlite3
+  - PDF destination: <library>/storage/<entry_id>/main.pdf
+  - Store file paths in SQLite as relative-to-library (portable).
+
+  Minimal CLI contract (MVP shape; keep stable during MVP):
+  - papis-rs init --library <path>
+  - papis-rs import-bib --library <path> <file.bib>
+  - papis-rs add-pdf --library <path> <entry_ref> <file.pdf>
+  - papis-rs list --library <path>
+  - papis-rs show --library <path> <entry_ref>
+  Where <entry_ref> is either entry_id (UUID) or bibtex_key (define which in design; pick the simplest).
+
+  SQLite approach:
+  - Rust crate: rusqlite
+  - Prefer rusqlite feature "bundled" for macOS MVP simplicity (avoid system linking issues).
+  - Use lightweight migrations (versioned schema; no complex framework required).
+
+  Minimal schema shape (guidance; keep it small):
+  - entries:
+    - entry_id (UUID TEXT PRIMARY KEY)
+    - bibtex_key (TEXT, UNIQUE or uniqueness enforced at import)
+    - title (TEXT)
+    - year (INTEGER nullable)
+    - authors_json (TEXT JSON)
+    - raw_bibtex (TEXT)
+    - created_at (TEXT or INTEGER)
+  - files:
+    - file_id (UUID TEXT PRIMARY KEY)
+    - entry_id (TEXT FK)
+    - role (TEXT, e.g. "main")
+    - stored_relpath (TEXT)
+    - source_path (TEXT)
+    - sha256 (TEXT)
+    - mime (TEXT)
+
+  Rust stack preferences (MVP):
+  - CLI: clap (derive)
+  - Errors: anyhow (app) + thiserror (library-ish modules)
+  - Data: serde + serde_json; uuid
+  - Keep code structure simple: cli / db / bib / storage / model modules
+  - Verification: cargo fmt, cargo clippy, cargo test
+
+rules:
+  proposal:
+    - Keep scope strictly to MVP: SQLite + BibTeX import + PDF storage + minimal CLI.
+    - Must include Non-goals.
+    - Must explicitly state “repo code is under rust/; library data is outside repo via --library”.
+    - Must list the exact CLI commands/subcommands included in MVP.
+    - Must define “done” as: init a library, import a .bib, attach a PDF, then list and show an entry.
+
+  specs:
+    - Must include acceptance criteria for:
+      - SQLite persistence (data survives restart; idempotent init)
+      - BibTeX import (parses multiple entries; handles invalid bib; defines duplicate bibtex_key behavior)
+      - PDF storage (copies file, stores relative path, rejects missing/invalid PDFs)
+    - Must cover error cases: invalid bibtex, missing pdf, duplicate bibtex keys, sqlite locked/unwritable library path.
+
+  design:
+    - Prefer simplest design that can work end-to-end; avoid over-engineering.
+    - Must specify:
+      - how --library is resolved and validated
+      - migration/versioning approach
+      - entry identity strategy (UUID generation; how bibtex_key maps to entry_id)
+      - how stored_relpath is computed and used
+    - Keep a simple crate/module layout; no plugin system.
+
+  tasks:
+    - Break tasks into 1-2 hour chunks with clear dependencies.
+    - Every task must include verification (cargo fmt, cargo clippy, cargo test).
+    - Assume jj workflow; do not require git branches/commits.
+    - Keep code changes inside rust/ for MVP (python/ is reference-only).
