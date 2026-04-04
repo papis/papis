@@ -7,9 +7,8 @@ context: |
   - rust/ = all new Rust source + Rust-specific config for the rewrite
 
   User + environment:
-  - User is a Rust beginner: prefer simple, explicit, beginner-friendly Rust.
   - OS: macOS.
-  - Workflow uses Jujutsu (jj). Avoid git-centric instructions.
+  - Rust implementation style, verification, and Jujutsu workflow guidance live in .github/agents/rust-development.agent.md.
 
   Rust project (already initialized):
   - Package/binary name: papis-rs
@@ -70,12 +69,8 @@ context: |
     - sha256 (TEXT)
     - mime (TEXT)
 
-  Rust stack preferences (MVP):
-  - CLI: clap (derive)
-  - Errors: anyhow (app) + thiserror (library-ish modules)
-  - Data: serde + serde_json; uuid
-  - Keep code structure simple: cli / db / bib / storage / model modules
-  - Verification: cargo fmt, cargo clippy, cargo test
+  MVP module layout guidance:
+  - Keep the Rust crate layout small and direct: cli / db / bib / storage / model modules.
 
 rules:
   proposal:
@@ -93,7 +88,6 @@ rules:
     - Must cover error cases: invalid bibtex, missing pdf, duplicate bibtex keys, sqlite locked/unwritable library path.
 
   design:
-    - Prefer simplest design that can work end-to-end; avoid over-engineering.
     - Must specify:
       - how --library is resolved and validated
       - migration/versioning approach
@@ -103,6 +97,5 @@ rules:
 
   tasks:
     - Break tasks into 1-2 hour chunks with clear dependencies.
-    - Every task must include verification (cargo fmt, cargo clippy, cargo test).
-    - Assume jj workflow; After each verification, once the verification steps pass, the task is considered complete and can be committed (jj commit) before moving to the next task.
+    - Every task must include a concrete verification step aligned with the Rust Development agent's workflow.
     - Keep code changes inside rust/ for MVP (python/ is reference-only).
