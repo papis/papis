@@ -16,12 +16,28 @@ class BibTeXImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> BibTeXImporter | None:
-        # FIXME: this should not do a full download + parse just to check if this
-        # might be a BibTeX file
-        importer = BibTeXImporter(uri=uri)
-        importer.fetch()
+        from papis.downloaders import download_document
+        from papis.paths import is_remote_file
 
-        return importer if importer.ctx else None
+        # NOTE: we have no particular way of knowing if a remote file is a BibTeX
+        # file, so we just download it and try to parse it.
+        if is_remote_file(uri):
+            filename = download_document(uri, expected_document_extension="bib")
+            if filename is None:
+                return None
+        else:
+            filename = uri
+
+        from papis.bibtex import bibtex_to_dict
+
+        # FIXME: we should give the result to the importer if it worked, so that
+        # we don't parse it twice. Not a big speed win in most cases, but still..
+        try:
+            result = bibtex_to_dict(filename)
+        except Exception:
+            return None
+
+        return BibTeXImporter(filename) if result else None
 
     def fetch_data(self) -> None:
         self.logger.info("Reading input file or string: '%s'.", self.uri)
