@@ -262,7 +262,7 @@ string with a separator. You can quickly transform your tags into a list using
 
 ```sh
 papis \
-    --set doctor-key-type-keys '["tags:list"]' \
+    --set document-field-types '["tags:list"]' \
     --set doctor-key-type-separator ' ' \
     doctor --fix --all --explain -t key-type QUERY
 ```
