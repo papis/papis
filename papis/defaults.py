@@ -38,6 +38,8 @@ settings: dict[str, Any] = {
     "doctor-keys-exist-keys": NOT_SET,
     "doctor-key-type-check-keys": NOT_SET,
     "doctor-key-type-check-separator": NOT_SET,
+    "doctor-key-type-keys": NOT_SET,
+    "doctor-key-type-keys-extend": NOT_SET,
 
     # general settings
     "local-config-file": ".papis.config",
@@ -72,6 +74,26 @@ settings: dict[str, Any] = {
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
     ),
+    "document-field-types": [
+        "abstract:str",
+        "author:str",
+        "author_list:list",
+        "doi:str",
+        "files:list",
+        "isbn:str",
+        "journal:str",
+        "month:int",
+        "note:str",
+        "notes:str",
+        "publisher:str",
+        "ref:str",
+        "shorttitle:str",
+        "tags:list",
+        "title:str",
+        "type:str",
+        "year:int",
+    ],
+    "document-field-types-extend": [],
 
     # shell completions
     "prefix-only-completions": False,
@@ -137,26 +159,6 @@ settings: dict[str, Any] = {
     "doctor-html-codes-keys-extend": [],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys-extend": [],
-    "doctor-key-type-keys": [
-        "abstract:str",
-        "author:str",
-        "author_list:list",
-        "doi:str",
-        "files:list",
-        "isbn:str",
-        "journal:str",
-        "month:int",
-        "note:str",
-        "notes:str",
-        "publisher:str",
-        "ref:str",
-        "shorttitle:str",
-        "tags:list",
-        "title:str",
-        "type:str",
-        "year:int",
-    ],
-    "doctor-key-type-keys-extend": [],
     "doctor-key-type-separator": None,
 
     # open
