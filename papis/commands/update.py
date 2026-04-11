@@ -82,7 +82,7 @@ Examples
 
     As you might have guessed, the ``--append`` flag needs to know the type of
     the key it is appending to. It does this by looking at the
-    :confval:`doctor-key-type-keys` (and :confval:`doctor-key-type-keys-extend`)
+    :confval:`document-field-types` (and :confval:`document-field-types-extend`)
     configuration options. If the key you are appending to is not in that list,
     the command will fail.
 
@@ -240,8 +240,8 @@ def run_append(
             logger.error(
                 "We cannot append to key '%s', because we do not know the "
                 "intended type. Please use `papis update --set` instead or "
-                "add the key type to the `doctor-key-type-keys` configuration "
-                "setting (or `doctor-key-type-keys-extend`)",
+                "add the key type to the `document-field-types` configuration "
+                "setting (or `document-field-types-extend`)",
                 key,
             )
             if not batch:
@@ -543,8 +543,8 @@ def cli(
         logger.warning(no_documents_retrieved_message)
         return
 
-    from papis.commands.doctor import get_key_type_check_keys
-    known_key_types = get_key_type_check_keys()
+    from papis.document import get_document_field_types
+    known_key_types = get_document_field_types()
 
     success = True
     processed_documents = []

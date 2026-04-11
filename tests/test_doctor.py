@@ -230,26 +230,26 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
         })
 
     # check: invalid setting parsing
-    papis.config.set("doctor-key-type-keys", ["year = WithoutColon"])
+    papis.config.set("document-field-types", ["year = WithoutColon"])
     errors = key_type_check(doc)
     assert not errors
 
-    papis.config.set("doctor-key-type-keys", ["year:NotBuiltin"])
+    papis.config.set("document-field-types", ["year:NotBuiltin"])
     errors = key_type_check(doc)
     assert not errors
 
     # check: incorrect type
-    papis.config.set("doctor-key-type-keys", ["year:int"])
+    papis.config.set("document-field-types", ["year:int"])
     error, = key_type_check(doc)
     assert error.payload == "year"
 
     # check: correct type
-    papis.config.set("doctor-key-type-keys", ["  author_list :    list"])
+    papis.config.set("document-field-types", ["  author_list :    list"])
     errors = key_type_check(doc)
     assert not errors
 
     # check: fix int
-    papis.config.set("doctor-key-type-keys", ["year:int"])
+    papis.config.set("document-field-types", ["year:int"])
     error, = key_type_check(doc)
     assert error.payload == "year"
     assert error.fix_action is not None
@@ -258,14 +258,14 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
 
     # check: fix list
     papis.config.set("doctor-key-type-separator", " ")
-    papis.config.set("doctor-key-type-keys", ["projects:list"])
+    papis.config.set("document-field-types", ["projects:list"])
     error, = key_type_check(doc)
     assert error.payload == "projects"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["projects"] == ["test-key-project"]
 
-    papis.config.set("doctor-key-type-keys", ["tags:list"])
+    papis.config.set("document-field-types", ["tags:list"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
@@ -280,8 +280,8 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
-    papis.config.set("doctor-key-type-keys", [])
-    papis.config.set("doctor-key-type-keys-extend", ["tags:str"])
+    papis.config.set("document-field-types", [])
+    papis.config.set("document-field-types-extend", ["tags:str"])
     error, = key_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None

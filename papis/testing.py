@@ -197,8 +197,8 @@ def generate_random_bibtex_entry(bibtype: str | None = None) -> str:
     if bibtype not in bibtex_type_required_keys:
         raise ValueError(f"unknown BibTeX entry type: '{bibtype}'")
 
-    from papis.commands.doctor import get_key_type_check_keys
-    key_types = get_key_type_check_keys()
+    from papis.document import get_document_field_types
+    key_types = get_document_field_types()
 
     import string
 

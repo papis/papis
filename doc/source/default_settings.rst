@@ -184,7 +184,7 @@ General settings
     based on the Python formatter. These will need to all be specified explicitly
     if another formatter is chosen.
 
-    **Note** The older (misspelled) version ``"formater"`` is deprecated.
+    **Note**: The older (misspelled) version ``"formater"`` is deprecated.
 
 .. papis-config:: doc-paths-lowercase
     :type: bool
@@ -233,6 +233,28 @@ General settings
     The format of a library when shown in a picker, e.g. when using
     ``papis --pick-lib export --all``. The format takes a dictionary named
     ``library`` with the keys *name*, *dir*, and *paths*.
+
+.. papis-config:: document-field-types
+
+   A list of strings ``key:type`` items defining expected types for document
+   keys. The type should be a builtin Python type. For example, this can be
+   ``["year:int", "tags:list"]`` to check that the year is an integer and the
+   tags are given as a list in a document. These values are used in the ``papis
+   doctor`` check ``key-type``, in the ``papis update`` command, etc.
+
+   **Note**: This configuration option was previously available as
+   ``doctor-key-type-keys`` and ``doctor-key-type-check-keys``. Both of
+   these are deprecated (starting with Papis 0.16) and will be removed.
+
+.. papis-config:: document-field-types-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of keys that extend the default ones from :confval:`document-field-types`.
+    This list extends instead of overwriting the given keys.
+
+    **Note**: This configuration option was previously available as
+    ``doctor-key-type-keys-extend``. This version is deprecated (starting with
+    Papis 0.16) and will be removed.
 
 .. papis-config:: csl-style
 
@@ -668,21 +690,6 @@ Doctor options
 
     A list of keys that extend the default ones from
     :confval:`doctor-html-tags-keys`. This list extends instead of overwriting
-    the given keys.
-
-.. papis-config:: doctor-key-type-keys
-
-   A list of strings ``key:type`` used by the ``key-type`` check. This
-   check will show an error if the key does not have the corresponding type. The
-   type should be a builtin Python type. For example, this can be
-   ``["year:int", "tags:list"]`` to check that the year is an integer and the
-   tags are given as a list in a document.
-
-.. papis-config:: doctor-key-type-keys-extend
-    :type: :class:`~typing.List` [:class:`str`]
-
-    A list of keys that extend the default ones from
-    :confval:`doctor-key-type-keys`. This list extends instead of overwriting
     the given keys.
 
 .. papis-config:: doctor-key-type-separator
