@@ -32,9 +32,9 @@ implemented
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :confval:`doctor-html-tags-keys`.
 * ``key-type``: checks the type of keys provided by
-  :confval:`doctor-key-type-keys`, e.g. year should be an ``int``.
-  Lists can be automatically fixed (by splitting or joining) using the
-  :confval:`doctor-key-type-separator` setting.
+  :confval:`document-field-types` (and :confval:`document-field-types-extend`), e.g.
+  year should be an ``int``. Lists can be automatically fixed (by splitting or
+  joining) using the :confval:`doctor-key-type-separator` setting.
 * ``keys-missing``: checks that the keys provided by
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
@@ -702,49 +702,13 @@ KEY_TYPE_CHECK_NAME = "key-type"
 
 
 def get_key_type_check_keys() -> dict[str, type]:
-    """
-    Check the ``doctor-key-type-keys`` configuration entry for correctness.
+    from warnings import warn
+    warn("'papis.commands.doctor.get_key_type_check_keys' is deprecated and will "
+         "be removed in Papis v0.17. Use 'papis.document.get_document_field_types' "
+         "instead.", DeprecationWarning, stacklevel=2)
 
-    The :confval:`doctor-key-type-keys` configuration entry
-    defines a mapping of keys and their expected types. If the desired type is
-    a list, the :confval:`doctor-key-type-separator` setting
-    can be used to split an existing string (and, similarly, if the desired type
-    is a string, it can be used to join a list of items).
-
-    :returns: A dictionary mapping key names to types.
-    """
-    import builtins
-
-    from papis.defaults import NOT_SET
-
-    keys = papis.config.get("key-type-check-keys", section="doctor")
-    if keys is NOT_SET:
-        keys = papis.config.getlist("key-type-keys", section="doctor")
-    else:
-        keys = papis.config.getlist("key-type-check-keys", section="doctor")
-        logger.warning("The configuration option 'doctor-key-type-check-keys' "
-                       "is deprecated and will be removed in the next version. "
-                       "Use 'doctor-key-type-keys' instead.")
-
-    keys.extend(papis.config.getlist("key-type-keys-extend", section="doctor"))
-    processed_keys: dict[str, type] = {}
-    for value in keys:
-        if ":" not in value:
-            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
-                         value)
-            continue
-        key, cls_name = value.split(":")
-        key, cls_name = key.strip(), cls_name.strip()
-
-        cls = getattr(builtins, cls_name, None)
-        if not isinstance(cls, type):
-            logger.error(
-                "Invalid type for key '%s': '%s'. Only builtin types are supported",
-                key, cls_name)
-            continue
-        processed_keys[key] = cls
-
-    return processed_keys
+    from papis.document import get_document_field_types
+    return get_document_field_types()
 
 
 def key_type_check(doc: Document) -> list[Error]:
@@ -816,8 +780,10 @@ def key_type_check(doc: Document) -> list[Error]:
         else:
             return fixer_convert_any
 
+    from papis.document import get_document_field_types
+
     results = []
-    for key, cls in get_key_type_check_keys().items():
+    for key, cls in get_document_field_types().items():
         doc_value = doc.get(key)
 
         if doc_value is not None and not isinstance(doc_value, cls):
@@ -1002,7 +968,7 @@ def string_cleaner_check(doc: Document) -> list[Error]:
     Check string keys in the document for various errors.
 
     This check goes through all the keys of the document that are known to be
-    keys, according to :confval:`doctor-key-type-keys`, and fixes any obvious
+    keys, according to :confval:`document-field-types`, and fixes any obvious
     errors. For example (not exhaustive):
 
     * Double spacing or any repeated whitespace.
@@ -1078,7 +1044,9 @@ def string_cleaner_check(doc: Document) -> list[Error]:
         doc["author"] = author_list_to_author(doc)
         logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
 
-    key_types = get_key_type_check_keys()
+    from papis.document import get_document_field_types
+
+    key_types = get_document_field_types()
     results = []
 
     for key, value in doc.items():

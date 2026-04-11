@@ -292,6 +292,64 @@ def split_authors_name(authors: str | list[str],
     return author_list
 
 
+def get_document_field_types() -> dict[str, type]:
+    from papis.defaults import NOT_SET
+
+    # handle deprecated configuration options
+    keys = papis.config.get("key-type-check-keys", section="doctor")
+    if keys is NOT_SET:
+        keys = papis.config.get("key-type-keys", section="doctor")
+        if keys is NOT_SET:
+            keys = papis.config.getlist("document-field-types")
+        else:
+            logger.warning("The configuration option 'doctor-key-type-keys' is "
+                           "deprecated and will be removed in Papis v0.17. "
+                           "Use 'document-field-types' instead (with the same format).")
+            keys = papis.config.getlist("key-type-keys", section="doctor")
+    else:
+        logger.warning("The configuration option 'doctor-key-type-check-keys' "
+                       "is deprecated and will be removed in Papis v0.16. "
+                       "Use 'document-field-types' instead (with the same format).")
+        keys = papis.config.getlist("key-type-check-keys", section="doctor")
+
+    if keys is None:
+        keys = []
+
+    extra_keys = papis.config.get("key-type-keys-extend", section="doctor")
+    if extra_keys is NOT_SET:
+        extra_keys = papis.config.getlist("document-field-types-extend")
+    else:
+        logger.warning("The configuration option 'doctor-key-type-keys-extend' is "
+                       "deprecated and will be removed in Papis v0.17. Use "
+                       "'document-field-types-extend' instead (with the same format).")
+        extra_keys = papis.config.getlist("key-type-keys-extend", section="doctor")
+
+    keys.extend(extra_keys)
+
+    # parse configuration options
+    import builtins
+
+    result: dict[str, type] = {}
+    for value in keys:
+        if ":" not in value:
+            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
+                         value)
+            continue
+        key, cls_name = value.split(":", maxsplit=1)
+        key, cls_name = key.strip(), cls_name.strip()
+
+        cls = getattr(builtins, cls_name, None)
+        if not isinstance(cls, type):
+            logger.error(
+                "Invalid type for key '%s': '%s'. Only builtin types are supported",
+                key, cls_name)
+            continue
+
+        result[key] = cls
+
+    return result
+
+
 class DocHtmlEscaped(dict[str, Any]):
     """Small helper class to escape HTML elements in a document.
 
