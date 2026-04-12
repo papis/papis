@@ -115,13 +115,13 @@ def get_regex_from_search(search: str) -> re.Pattern[str]:
 _QUERY_GRAMMAR = r"""\
 start: or_expr?
 
-or_expr: and_expr (OR and_expr)*
+?or_expr: and_expr (_OR and_expr)*
+?and_expr: not_expr (_AND? not_expr)*
 
-and_expr: not_expr (AND? not_expr)*
+?not_expr: not_op | item
+not_op: _NOT not_expr
 
-not_expr: NOT not_expr | item
-
-?item: pair | term | "(" or_expr ")"
+?item: pair | term | _LPAR or_expr _RPAR
 
 term: ESCAPED_STRING | WORD
 
@@ -129,9 +129,11 @@ pair: key ":" value
 key: WORD
 value: ESCAPED_STRING | WORD
 
-OR: "OR"i
-AND: "AND"i
-NOT: "NOT"i
+_OR: "OR"i
+_AND: "AND"i
+_NOT: "NOT"i
+_LPAR: "("
+_RPAR: ")"
 
 WORD: /[\w\-._\/\[\]{}*+?@#$%=!~]+/u
 ESCAPED_STRING: /"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/
@@ -200,24 +202,14 @@ class QueryTransformer(Transformer[Any, QueryItem]):
             return And([])
         return children[0]
 
-    def or_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
-        children = [c for c in children if isinstance(c, QueryItem)]
-        if len(children) == 1:
-            return children[0]
-
+    def or_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
         return Or(children)
 
-    def and_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
-        children = [c for c in children if isinstance(c, QueryItem)]
-        if len(children) == 1:
-            return children[0]
-
+    def and_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
         return And(children)
 
-    def not_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
-        if len(children) == 2:
-            return Not(children[1])
-        return children[0]
+    def not_op(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        return Not(children[0])
 
     def term(self, children: Sequence[Token]) -> Term:  # noqa: PLR6301
         term = str(children[0])
