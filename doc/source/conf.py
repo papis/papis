@@ -43,7 +43,7 @@ intersphinx_mapping = {
     "bibtexparser": ("https://bibtexparser.readthedocs.io/en/v1.4.0", None),
     "click": ("https://click.palletsprojects.com/en/stable", None),
     "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/master", None),
-    "pyparsing": ("https://pyparsing-docs.readthedocs.io/en/latest", None),
+    "lark": ("https://lark-parser.readthedocs.io/en/stable/", None),
     "pytest": ("https://docs.pytest.org/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://requests.readthedocs.io/en/latest", None),
