@@ -69,9 +69,10 @@ def test_docmatcher(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
-    from papis.docmatcher import Pair, Term, parse_query
+    from papis.docmatcher import And, Pair, Term, parse_query
 
     rs = parse_query("hello   author : einstein")
+    assert isinstance(rs, And)
     assert len(rs.children) == 2
 
     child = rs.children[0]
@@ -84,22 +85,17 @@ def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
     assert child.query == "einstein"
 
     rs = parse_query("doi : 123.123/124_123")
-    assert len(rs.children) == 1
+    assert isinstance(rs, Pair)
+    assert rs.key == "doi"
+    assert rs.query == "123.123/124_123"
 
-    child = rs.children[0]
-    assert isinstance(child, Pair)
-    assert child.key == "doi"
-    assert child.query == "123.123/124_123"
-
-    rs = parse_query("doi : 123.123/124_123(80)12")
-    assert len(rs.children) == 1
-
-    child = rs.children[0]
-    assert isinstance(child, Pair)
-    assert child.key == "doi"
-    assert child.query == "123.123/124_123(80)12"
+    rs = parse_query('doi : "123.123/124_123(80)12"')
+    assert isinstance(rs, Pair)
+    assert rs.key == "doi"
+    assert rs.query == '"123.123/124_123(80)12"'
 
     rs = parse_query('tt : asfd   author : "Albert einstein"')
+    assert isinstance(rs, And)
     assert len(rs.children) == 2
 
     child = rs.children[0]
@@ -114,10 +110,11 @@ def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_parse_query_unicode(tmp_config: TemporaryConfiguration) -> None:
-    from papis.docmatcher import Pair, Term, parse_query
+    from papis.docmatcher import And, Pair, Term, parse_query
 
     # Test Unicode in Terms
     rs = parse_query("πρέπεις 123")
+    assert isinstance(rs, And)
     assert len(rs.children) == 2
     assert isinstance(rs.children[0], Term)
     assert rs.children[0].query == "πρέπεις"
@@ -126,20 +123,42 @@ def test_parse_query_unicode(tmp_config: TemporaryConfiguration) -> None:
 
     # Test Unicode in Keys and Values
     rs = parse_query("συγγραφέας : 'Αλβέρτος Αϊνστάιν'")
-    assert len(rs.children) == 1
-    child = rs.children[0]
-    assert isinstance(child, Pair)
-    assert child.key == "συγγραφέας"
-    assert child.query == "'Αλβέρτος Αϊνστάιν'"
+    assert isinstance(rs, Pair)
+    assert rs.key == "συγγραφέας"
+    assert rs.query == "'Αλβέρτος Αϊνστάιν'"
 
     # Test Unicode in Quoted Terms
     rs = parse_query('"你好世界" tags : "中文"')
+    assert isinstance(rs, And)
     assert len(rs.children) == 2
     assert isinstance(rs.children[0], Term)
     assert rs.children[0].query == '"你好世界"'
     assert isinstance(rs.children[1], Pair)
     assert rs.children[1].key == "tags"
     assert rs.children[1].query == '"中文"'
+
+
+def test_complex_query(tmp_config: TemporaryConfiguration) -> None:
+    from papis.docmatcher import And, Not, Or, Pair, Term, parse_query
+
+    # Test OR with AND
+    rs = parse_query("author:einstein OR (title:physics AND year:1905)")
+    assert isinstance(rs, Or)
+    assert len(rs.children) == 2
+    assert isinstance(rs.children[0], Pair)
+    assert isinstance(rs.children[1], And)
+
+    # Test NOT
+    rs = parse_query("NOT author:newton")
+    assert isinstance(rs, Not)
+    assert isinstance(rs.child, Pair)
+
+    # Test implicit AND with NOT
+    rs = parse_query("physics NOT author:einstein")
+    assert isinstance(rs, And)
+    assert len(rs.children) == 2
+    assert isinstance(rs.children[0], Term)
+    assert isinstance(rs.children[1], Not)
 
 
 def test_docmatcher_config_format(tmp_config: TemporaryConfiguration) -> None:
