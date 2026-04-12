@@ -236,8 +236,8 @@ General settings
 
 .. papis-config:: document-field-types
 
-   A list of strings ``key:type`` items defining expected types for document
-   keys. The type should be a builtin Python type. For example, this can be
+   A list of ``key:type`` strings defining expected types for document
+   fields. The type should be a builtin Python type. For example, this can be
    ``["year:int", "tags:list"]`` to check that the year is an integer and the
    tags are given as a list in a document. These values are used in the ``papis
    doctor`` check ``key-type``, in the ``papis update`` command, etc.
@@ -249,8 +249,8 @@ General settings
 .. papis-config:: document-field-types-extend
     :type: :class:`~typing.List` [:class:`str`]
 
-    A list of keys that extend the default ones from :confval:`document-field-types`.
-    This list extends instead of overwriting the given keys.
+    A list of ``key:type`` strings that extend the default ones from :confval:`document-field-types`.
+    By setting these, you can extend the defaults rather than overwriting them.
 
     **Note**: This configuration option was previously available as
     ``doctor-key-type-keys-extend``. This version is deprecated (starting with
