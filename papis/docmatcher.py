@@ -41,7 +41,7 @@ class DocumentMatcher:
     #: Initial search string used for the matcher.
     search: str
     #: The query resulting from :func:`parse_query`.
-    query: QueryResult
+    query: QueryItem
     #: A format that is used to match a document against.
     match_format: FormatPattern
 
@@ -113,16 +113,27 @@ def get_regex_from_search(search: str) -> re.Pattern[str]:
 
 
 _QUERY_GRAMMAR = r"""\
-start: item*
+start: or_expr?
 
-?item: pair | term
+or_expr: and_expr (OR and_expr)*
+
+and_expr: not_expr (AND? not_expr)*
+
+not_expr: NOT not_expr | item
+
+?item: pair | term | "(" or_expr ")"
 
 term: ESCAPED_STRING | WORD
-pair: key ":" value
 
+pair: key ":" value
 key: WORD
 value: ESCAPED_STRING | WORD
-WORD: /[\w\-._\/()\[\]{}*+?]+/u
+
+OR: "OR"i
+AND: "AND"i
+NOT: "NOT"i
+
+WORD: /[\w\-._\/\[\]{}*+?@#$%=!~]+/u
 ESCAPED_STRING: /"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/
 
 %import common.WS
@@ -137,11 +148,27 @@ class QueryItem(ABC):
 
 
 @dataclass
-class QueryResult(QueryItem):
+class And(QueryItem):
     children: Sequence[QueryItem]
 
     def match(self, doc: Document, match_format: FormatPattern) -> bool:
         return all(child.match(doc, match_format) for child in self.children)
+
+
+@dataclass
+class Or(QueryItem):
+    children: Sequence[QueryItem]
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return any(child.match(doc, match_format) for child in self.children)
+
+
+@dataclass
+class Not(QueryItem):
+    child: QueryItem
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return not self.child.match(doc, match_format)
 
 
 @dataclass
@@ -167,9 +194,30 @@ class Pair(QueryItem):
         return self.pattern.match(str(value)) is not None
 
 
-class QueryTransformer(Transformer[Any, QueryResult]):
-    def start(self, children: list[QueryItem]) -> QueryResult:  # noqa: PLR6301
-        return QueryResult(children)
+class QueryTransformer(Transformer[Any, QueryItem]):
+    def start(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        if not children:
+            return And([])
+        return children[0]
+
+    def or_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
+        children = [c for c in children if isinstance(c, QueryItem)]
+        if len(children) == 1:
+            return children[0]
+
+        return Or(children)
+
+    def and_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
+        children = [c for c in children if isinstance(c, QueryItem)]
+        if len(children) == 1:
+            return children[0]
+
+        return And(children)
+
+    def not_expr(self, children: list[Any]) -> QueryItem:  # noqa: PLR6301
+        if len(children) == 2:
+            return Not(children[1])
+        return children[0]
 
     def term(self, children: Sequence[Token]) -> Term:  # noqa: PLR6301
         term = str(children[0])
@@ -186,8 +234,8 @@ class QueryTransformer(Transformer[Any, QueryResult]):
         return str(children[0])
 
 
-def parse_query(query_string: str) -> QueryResult:
-    """Parse a query string to a structured query language.
+def parse_query(query_string: str) -> QueryItem:
+    r"""Parse a query string to a structured query language.
 
     The query language implemented by this function supports strings of the form::
 
@@ -201,13 +249,13 @@ def parse_query(query_string: str) -> QueryResult:
     characters.
 
         >>> parse_query('hello author : einstein')
-        QueryResult(children=[Term(query='hello', ...), Pair(key='author', query='einstein', ...)])
+        And(children=[Term(query='hello', ...), Pair(key='author', query='einstein', ...)])
         >>> parse_query('')
-        QueryResult(children=[])
-        >>> parse_query('"hello world" tags : \\\'hello :\\\'')
-        QueryResult(children=[Term(query='"hello world"', ...), Pair(key='tags', query="'hello :'", ...)])
+        And(children=[])
+        >>> parse_query('"hello world" tags : \'hello :\'')
+        And(children=[Term(query='"hello world"', ...), Pair(key='tags', query="'hello :'", ...)])
         >>> parse_query('hello')
-        QueryResult(children=[Term(query='hello', ...)])
+        Term(query='hello', ...)
 
     :param query_string: a search string to parse into a structured format.
     :returns: a parsing result for the query string.
