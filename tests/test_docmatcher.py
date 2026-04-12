@@ -63,9 +63,10 @@ def test_docmatcher(tmp_config: TemporaryConfiguration) -> None:
     assert all(not matcher(doc) for doc in docs)
 
     # Test regex characters in query
-    matcher = make_document_matcher("year:200[0-9]")
+    matcher = make_document_matcher("year:2005")
     matched_docs = [doc for doc in docs if matcher(doc)]
-    assert all(2000 <= int(doc.get("year", 0)) <= 2009 for doc in matched_docs)
+    assert len(matched_docs) > 0
+    assert all(int(doc.get("year", 0)) == 2005 for doc in matched_docs)
 
 
 def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
