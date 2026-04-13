@@ -1,8 +1,13 @@
 # VERSION NEXT (TBD)
 
-# Features
+## Dependency Changes
 
-## Major: SQLite database backend ([#1007](https://github.com/papis/papis/pull/1007))
+* Switched from `pyparsing` to [Lark](https://lark-parser.readthedocs.io) for
+  query parsing.
+
+## Features
+
+### Major: SQLite database backend ([#1007](https://github.com/papis/papis/pull/1007))
 
 Papis added a new database backend based on the built-in `sqlite3` database as an
 alternative to the `papis` backend (based on `pickle`) and the `whoosh` backend.
@@ -26,6 +31,29 @@ Benchmark 1: papis list --all QUERY
   Time (mean ± σ):      97.4 ms ±  11.4 ms    [User: 81.1 ms, System: 15.3 ms]
   Range (min … max):    79.7 ms … 115.2 ms    27 runs
 ```
+
+### Major: Improve query syntax ([#1165](https://github.com/papis/papis/pull/1165))
+
+Historically, the query sytanx when using `database-backend = papis` has been
+limited to using strings and key-value pairs. The new version gets it closer to
+that of the other backends, by adding support for `AND`, `OR` and `NOT` boolean
+operators, as well as grouping using parentheses. This allows constructing
+complex queries into your libraries.
+
+It generally looks as expected:
+```bash
+# find documents with either one of the two authors
+papis open 'author:einstein OR author:bohr'
+# find papers referencing physics, but not Einstein
+papis open 'physics NOT author:einstein'
+# find Einstein's paper from some years
+papis open 'author:einstein AND (year:1905 OR year:1915)'
+# use regex to match the beginning of a title
+papis open 'title:^Quantum'
+```
+
+Note that this new query syntax still uses the `match-format` configuration setting
+for free-form terms in the query (i.e. ones not using a `key:value` format).
 
 # VERSION v0.15.0 (February 8th, 2026)
 

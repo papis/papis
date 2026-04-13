@@ -46,7 +46,7 @@ libraries, switching to the ``sqlite`` backend should work a lot better.
 Using the databases
 -------------------
 
-These database files are stored by default in :func:`~papis.utils.get_cache_home`
+By default, these database files are stored in :func:`~papis.utils.get_cache_home`
 (on Linux, this will be something like ``~/.cache/papis``). You can
 put the files next to your library by using :confval:`cache-dir`::
 
@@ -65,8 +65,8 @@ query is provided to match "all" the documents. The value differs per backend:
 - ``sqlite`` backend: ``default-query-string = *``
 
 Note that most ``papis`` commands will update the cache if they modify the document. For
-example, the ``edit`` command will let you edit your document's metadata and after you
-are done editing it will update the information for the given document in the cache.
+example, the ``edit`` command will let you edit your document's metadata and, after you
+are done editing, it will update the information for the given document in the cache.
 
 .. note::
 
@@ -76,7 +76,7 @@ are done editing it will update the information for the given document in the ca
 If you go directly to the document and edit the info file without passing through
 the ``papis edit`` command, the cache will not be updated and therefore Papis will
 not know of these changes, although they will be there. In such cases you will have
-to *clear the cache*.
+to *clear the cache* manually.
 
 Clearing the cache
 ^^^^^^^^^^^^^^^^^^
@@ -126,18 +126,16 @@ In general, the query syntax is formed of multiple ``[key:]"value"`` matches, wh
 
 * the key is optional (searches all keys in this case)
 * and the value can be any string (with optional quotes required to include spaces).
+* the terms in the search query can be optionally separated by keywords such as
+  ``AND`` (default), ``OR`` or ``NOT`` to construct complex queries.
+* the terms can also contain regex characters to extend the matching.
 
 .. note::
 
-    Only the ``AND`` filter is implemented in this simple query language.
-    Other filters such as ``OR`` or ``NOT`` are not supported. If you need
-    this, consider using the `Whoosh backend`_ or the `SQLite backend`_.
-
-.. warning::
-
-    The query syntax does not support Unicode strings. If it encounters a
-    Unicode codepoint, it will convert it to the closest looking ASCII letter
-    and search for that instead. This can have some surprising results.
+   Free-form terms in the query, i.e. ones that are not prefixed by a key
+   name like ``author:einstein``, are only matched against the values in
+   :confval:`match-format`. For example, if you want to search for ``Springer``,
+   you need to include ``{doc[publisher]}`` in the format pattern.
 
 For illustration, here are some examples:
 
@@ -161,6 +159,36 @@ This is not to be mixed with the restriction that the key ``year`` matches
 .. code::
 
     papis open 'author : albert year : "05 licht"'
+
+- Find documents by either 'einstein' or 'bohr':
+
+.. code::
+
+    papis open 'author:einstein OR author:bohr'
+
+- Find documents about 'physics' that are not by 'einstein':
+
+.. code::
+
+    papis open 'physics NOT author:einstein'
+
+- Use parentheses to group complex logic:
+
+.. code::
+
+    papis open 'author:einstein AND (year:1905 OR year:1915)'
+
+- Use regex character classes to match a range of years:
+
+.. code::
+
+    papis open 'year:20[0-1][0-9]'
+
+- Use regex anchors to match the beginning of a title:
+
+.. code::
+
+    papis open 'title:^Quantum'
 
 Whoosh backend
 --------------
