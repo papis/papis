@@ -219,8 +219,8 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
         assert not errors
 
 
-def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import key_type_check
+def test_field_type_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import field_type_check
 
     doc = papis.document.from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
@@ -231,50 +231,50 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
 
     # check: invalid setting parsing
     papis.config.set("document-field-types", ["year = WithoutColon"])
-    errors = key_type_check(doc)
+    errors = field_type_check(doc)
     assert not errors
 
     papis.config.set("document-field-types", ["year:NotBuiltin"])
-    errors = key_type_check(doc)
+    errors = field_type_check(doc)
     assert not errors
 
     # check: incorrect type
     papis.config.set("document-field-types", ["year:int"])
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "year"
 
     # check: correct type
     papis.config.set("document-field-types", ["  author_list :    list"])
-    errors = key_type_check(doc)
+    errors = field_type_check(doc)
     assert not errors
 
     # check: fix int
     papis.config.set("document-field-types", ["year:int"])
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "year"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["year"] == 2023
 
     # check: fix list
-    papis.config.set("doctor-key-type-separator", " ")
+    papis.config.set("doctor-field-type-separator", " ")
     papis.config.set("document-field-types", ["projects:list"])
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "projects"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["projects"] == ["test-key-project"]
 
     papis.config.set("document-field-types", ["tags:list"])
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
-    papis.config.set("doctor-key-type-separator", ",")
+    papis.config.set("doctor-field-type-separator", ",")
     doc["tags"] = "test-key-tag-1,test-key-tag-2    ,  test-key-tag-3"
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()
@@ -282,7 +282,7 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
 
     papis.config.set("document-field-types", [])
     papis.config.set("document-field-types-extend", ["tags:str"])
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()

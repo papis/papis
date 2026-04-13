@@ -169,7 +169,7 @@ def try_parsing_str(key: str, value: str) -> str:
 def run_set(
     document: DocumentLike,
     to_set: Sequence[tuple[str, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
 ) -> None:
     """
     Processes a list of ``to_set`` tuples and applies the resulting changes to the
@@ -185,7 +185,7 @@ def run_set(
         value = format(vformat, document, default=str(vformat))
         value = try_parsing_str(key, value)
 
-        if isinstance(value, int) and key_types.get(key) is str:
+        if isinstance(value, int) and field_types.get(key) is str:
             value = str(value)
         if key == "notes" and isinstance(value, str):
             # TODO: handle renames/deletions of files on disk
@@ -216,7 +216,7 @@ def run_set(
 def run_append(
     document: DocumentLike,
     to_append: Sequence[tuple[str, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -232,7 +232,7 @@ def run_append(
 
     success = True
     processed_lists = set()
-    supported_keys = key_types.keys() | document
+    supported_keys = field_types.keys() | document
     for orig_key, orig_value in to_append:
         key, vformat = process_format_pattern_pair(orig_key, orig_value)
 
@@ -250,7 +250,7 @@ def run_append(
 
         value = format(vformat, document, default=str(vformat))
         type_doc = type(document.get(key))
-        type_conf = key_types.get(key)
+        type_conf = field_types.get(key)
         if type_doc is str or (type_doc is type(None) and type_conf is str):
             document[key] = document.setdefault(key, "") + value
         elif type_doc is list or (type_doc is type(None) and type_conf is list):
@@ -266,7 +266,7 @@ def run_append(
                 key,
                 type(document[key]).__name__
                 if document.get(key)
-                else key_types[key].__name__,
+                else field_types[key].__name__,
             )
             if not batch:
                 success = False
@@ -351,7 +351,7 @@ def run_rename(
     document: DocumentLike,
     to_rename: Sequence[
         tuple[str, AnyString, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -367,7 +367,7 @@ def run_rename(
 
     success, any_removed = run_remove(document, to_remove, batch)
     if success and any_removed:
-        success = run_append(document, to_append, key_types, batch)
+        success = run_append(document, to_append, field_types, batch)
     return success
 
 
@@ -544,7 +544,7 @@ def cli(
         return
 
     from papis.document import get_document_field_types
-    known_key_types = get_document_field_types()
+    known_field_types = get_document_field_types()
 
     success = True
     processed_documents = []
@@ -553,10 +553,10 @@ def cli(
 
         ctx.data.update(document)
         if to_set:
-            run_set(ctx.data, to_set, known_key_types)
+            run_set(ctx.data, to_set, known_field_types)
 
         if to_append and success:
-            success = run_append(ctx.data, to_append, known_key_types, batch)
+            success = run_append(ctx.data, to_append, known_field_types, batch)
 
         if to_remove and success:
             success, _ = run_remove(ctx.data, to_remove, batch)
@@ -565,7 +565,7 @@ def cli(
             run_drop(ctx.data, to_drop)
 
         if to_rename:
-            success = run_rename(ctx.data, to_rename, known_key_types, batch)
+            success = run_rename(ctx.data, to_rename, known_field_types, batch)
 
         if success:
             from papis.document import describe

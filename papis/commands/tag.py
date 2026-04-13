@@ -134,7 +134,7 @@ def cli(
 
     from papis.commands.update import run, run_append, run_drop, run_remove, run_rename
 
-    key_types: dict[str, type] = {"tags": list}
+    field_types: dict[str, type] = {"tags": list}
 
     from papis.importer import Context
 
@@ -148,7 +148,7 @@ def cli(
                 "The document with papis_id '%s' contains tags that aren't "
                 "defined as a list of items. As `papis tag` only supports "
                 "lists, tagging has been aborted and no documents have been "
-                "changed. You can use `papis doctor --checks key-type --fix` to "
+                "changed. You can use `papis doctor --checks field-type --fix` to "
                 "convert all your tags to use lists.",
                 document["papis_id"],
             )
@@ -162,7 +162,7 @@ def cli(
 
         if to_add and success:
             to_add_tuples = [("tags", tag) for tag in to_add]
-            success = run_append(ctx.data, to_add_tuples, key_types, False)
+            success = run_append(ctx.data, to_add_tuples, field_types, False)
 
         if to_remove and success:
             to_remove_tuples = [("tags", tag) for tag in to_remove]
@@ -172,7 +172,7 @@ def cli(
             to_rename_tuples = [
                 ("tags", old_tag, new_tag) for old_tag, new_tag in to_rename
             ]
-            success = run_rename(ctx.data, to_rename_tuples, key_types, False)
+            success = run_rename(ctx.data, to_rename_tuples, field_types, False)
 
         if success:
             from papis.document import describe

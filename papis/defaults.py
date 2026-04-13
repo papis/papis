@@ -40,6 +40,7 @@ settings: dict[str, Any] = {
     "doctor-key-type-check-separator": NOT_SET,
     "doctor-key-type-keys": NOT_SET,
     "doctor-key-type-keys-extend": NOT_SET,
+    "doctor-key-type-separator": NOT_SET,
 
     # general settings
     "local-config-file": ".papis.config",
@@ -159,7 +160,7 @@ settings: dict[str, Any] = {
     "doctor-html-codes-keys-extend": [],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys-extend": [],
-    "doctor-key-type-separator": None,
+    "doctor-field-type-separator": None,
 
     # open
     "open-mark": False,
