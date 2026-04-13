@@ -63,10 +63,10 @@ def test_docmatcher(tmp_config: TemporaryConfiguration) -> None:
     assert all(not matcher(doc) for doc in docs)
 
     # Test regex characters in query
-    matcher = make_document_matcher("year:2005")
+    matcher = make_document_matcher("year:200[0-9]")
     matched_docs = [doc for doc in docs if matcher(doc)]
     assert len(matched_docs) > 0
-    assert all(int(doc.get("year", 0)) == 2005 for doc in matched_docs)
+    assert all(2000 <= int(doc.get("year", 0)) <= 2009 for doc in matched_docs)
 
 
 def test_parse_query(tmp_config: TemporaryConfiguration) -> None:
@@ -184,3 +184,40 @@ def test_docmatcher_config_format(tmp_config: TemporaryConfiguration) -> None:
     # Case 3: Pass explicit format to make_document_matcher
     matcher = make_document_matcher("HiddenValue", match_format="{doc[title]}")
     assert not matcher(doc)
+
+
+def test_regex_patterns(tmp_config: TemporaryConfiguration) -> None:
+    from papis.docmatcher import make_document_matcher
+    docs = get_docs()
+
+    # Character class (no quotes)
+    matcher = make_document_matcher("year:200[0-9]")
+    matched_docs = [doc for doc in docs if matcher(doc)]
+    assert len(matched_docs) > 0
+    assert all(2000 <= int(doc.get("year", 0)) <= 2009 for doc in matched_docs)
+
+    # Wildcard and pipe (no quotes)
+    matcher = make_document_matcher("title:Col.*r|Absorp")
+    matched_docs = [doc for doc in docs if matcher(doc)]
+    assert len(matched_docs) > 0
+    assert any("Color" in doc.get("title", "") for doc in matched_docs)
+    assert any("Absorption" in doc.get("title", "") for doc in matched_docs)
+
+    # Regex with anchors (quoted)
+    # Match title ending in 'Principles'
+    matcher = make_document_matcher("title:principles$")
+    matched_docs = [doc for doc in docs if matcher(doc)]
+    assert len(matched_docs) > 0
+    assert all(doc.get("title", "").strip().lower().endswith("principles")
+               for doc in matched_docs)
+
+    # Quoted regex with space and wildcard
+    matcher = make_document_matcher('author:"Iwata.*Ohno"')
+    matched_docs = [doc for doc in docs if matcher(doc)]
+    assert len(matched_docs) > 0
+
+    # Backslash escaping literal character
+    matcher = make_document_matcher(r"title:f\-center")
+    matched_docs = [doc for doc in docs if matcher(doc)]
+    assert len(matched_docs) > 0
+    assert all("f-center" in doc.get("title", "").lower() for doc in matched_docs)

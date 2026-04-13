@@ -99,16 +99,16 @@ def get_regex_from_search(search: str) -> re.Pattern[str]:
 
         >>> get_regex_from_search(' ein 192     photon').pattern
         '.*ein.*192.*photon.*'
-        >>> get_regex_from_search('{1234}').pattern
-        '.*\\{1234\\}.*'
+        >>> get_regex_from_search('200[0-9]').pattern
+        '.*200[0-9].*'
 
     :param search: a valid search string.
-    :returns: a regular expression representing the search string, which is
-        properly escaped and allows for multiple spaces.
+    :returns: a regular expression representing the search string, allowing for
+        regex characters and multiple spaces.
     """
     search = search.strip("'").strip('"')
     return re.compile(
-        ".*{}.*".format(".*".join(map(re.escape, search.split()))),
+        ".*{}.*".format(".*".join(search.split())),
         re.IGNORECASE)
 
 
@@ -135,7 +135,7 @@ _NOT: "NOT"i
 _LPAR: "("
 _RPAR: ")"
 
-WORD: /[\w\-._\/\[\]{}*+?@#$%=!~]+/u
+WORD: /[\w\-._\/\\\[\]{}*+?@#$%=!~^|]+/u
 ESCAPED_STRING: /"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/
 
 %import common.WS
