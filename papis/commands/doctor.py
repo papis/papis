@@ -31,10 +31,10 @@ implemented
   provided by :confval:`doctor-html-codes-keys`.
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :confval:`doctor-html-tags-keys`.
-* ``key-type``: checks the type of keys provided by
-  :confval:`document-field-types` (and :confval:`document-field-types-extend`), e.g.
-  year should be an ``int``. Lists can be automatically fixed (by splitting or
-  joining) using the :confval:`doctor-key-type-separator` setting.
+* ``field-type``: checks the type of fields provided by :confval:`document-field-types`
+  (and :confval:`document-field-types-extend`), e.g. year should be an ``int``.
+  Lists can be automatically fixed (by splitting or joining) using the
+  :confval:`doctor-field-type-separator` setting.
 * ``keys-missing``: checks that the keys provided by
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
@@ -698,7 +698,7 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
     return results
 
 
-KEY_TYPE_CHECK_NAME = "key-type"
+FIELD_TYPE_CHECK_NAME = "field-type"
 
 
 def get_key_type_check_keys() -> dict[str, type]:
@@ -711,7 +711,7 @@ def get_key_type_check_keys() -> dict[str, type]:
     return get_document_field_types()
 
 
-def key_type_check(doc: Document) -> list[Error]:
+def field_type_check(doc: Document) -> list[Error]:
     """
     Check document keys have expected types.
 
@@ -724,10 +724,16 @@ def key_type_check(doc: Document) -> list[Error]:
     separator = papis.config.get("key-type-check-separator", section="doctor")
     if separator is NOT_SET:
         separator = papis.config.get("key-type-separator", section="doctor")
+        if separator is NOT_SET:
+            separator = papis.config.get("field-type-separator", section="doctor")
+        else:
+            logger.warning("The configuration option 'doctor-key-type-separator' "
+                           "is deprecated and will be removed in Papis 0.17. "
+                           "Use 'doctor-field-type-separator' instead.")
     else:
         logger.warning("The configuration option 'doctor-key-type-check-separator' "
-                       "is deprecated and will be removed in the next version. "
-                       "Use 'doctor-key-type-separator' instead.")
+                       "is deprecated and will be removed in Papis 0.17. "
+                       "Use 'doctor-field-type-separator' instead.")
 
     separator = separator.strip("'").strip('"') if separator else None
 
@@ -788,7 +794,7 @@ def key_type_check(doc: Document) -> list[Error]:
 
         if doc_value is not None and not isinstance(doc_value, cls):
             results.append(
-                make_error(doc, KEY_TYPE_CHECK_NAME,
+                make_error(doc, FIELD_TYPE_CHECK_NAME,
                            msg=(f"Key '{key}' should be of type '{cls.__name__}' "
                                 f"but got '{type(doc_value).__name__}': "
                                 f"{doc_value!r}"),
@@ -1046,11 +1052,11 @@ def string_cleaner_check(doc: Document) -> list[Error]:
 
     from papis.document import get_document_field_types
 
-    key_types = get_document_field_types()
+    field_types = get_document_field_types()
     results = []
 
     for key, value in doc.items():
-        if key_types.get(key) is not str:
+        if field_types.get(key) is not str:
             continue
 
         if not isinstance(value, str):
@@ -1106,11 +1112,12 @@ register_check(BIBLATEX_KEY_CONVERT_CHECK_NAME, biblatex_key_convert_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
-register_check(KEY_TYPE_CHECK_NAME, key_type_check)
+register_check(FIELD_TYPE_CHECK_NAME, field_type_check)
 register_check(STRING_CLEANER_CHECK_NAME, string_cleaner_check)
 
 DEPRECATED_CHECK_NAMES = {
     "keys-exist": "keys-missing",
+    "key-type": "field-type",
 }
 
 

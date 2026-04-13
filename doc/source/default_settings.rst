@@ -240,7 +240,7 @@ General settings
    fields. The type should be a builtin Python type. For example, this can be
    ``["year:int", "tags:list"]`` to check that the year is an integer and the
    tags are given as a list in a document. These values are used in the ``papis
-   doctor`` check ``key-type``, in the ``papis update`` command, etc.
+   doctor`` check ``field-type``, in the ``papis update`` command, etc.
 
    **Note**: This configuration option was previously available as
    ``doctor-key-type-keys`` and ``doctor-key-type-check-keys``. Both of
@@ -692,10 +692,10 @@ Doctor options
     :confval:`doctor-html-tags-keys`. This list extends instead of overwriting
     the given keys.
 
-.. papis-config:: doctor-key-type-separator
+.. papis-config:: doctor-field-type-separator
     :type: str
 
-    A separator used by the ``key-type`` check fixer. When converting from
+    A separator used by the ``field-type`` check fixer. When converting from
     :class:`str` to :class:`list`, it is used to split the string into a list,
     and when converting from :class:`list` to :class:`str`, it is used to join
     list items. The split will ignore additional whitespace around the separator

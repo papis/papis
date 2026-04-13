@@ -263,8 +263,8 @@ string with a separator. You can quickly transform your tags into a list using
 ```sh
 papis \
     --set document-field-types '["tags:list"]' \
-    --set doctor-key-type-separator ' ' \
-    doctor --fix --all --explain -t key-type QUERY
+    --set doctor-field-type-separator ' ' \
+    doctor --fix --all --explain -t field-type QUERY
 ```
 
 where you may need to change the separator to match your choice.
@@ -310,7 +310,7 @@ engine to output well-formatted entries for each document type.
 
 Other smaller noteworthy changes:
 
-- `key-type`: added fixers that automatically convert some types
+- `field-type`: added fixers that automatically convert some types
   ([#652](https://github.com/papis/papis/pull/652)
   [#656](https://github.com/papis/papis/pull/656)).
 - `keys-exist`: added fixers for `author` and `author_list`

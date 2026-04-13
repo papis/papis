@@ -198,7 +198,7 @@ def generate_random_bibtex_entry(bibtype: str | None = None) -> str:
         raise ValueError(f"unknown BibTeX entry type: '{bibtype}'")
 
     from papis.document import get_document_field_types
-    key_types = get_document_field_types()
+    field_types = get_document_field_types()
 
     import string
 
@@ -209,20 +209,20 @@ def generate_random_bibtex_entry(bibtype: str | None = None) -> str:
         return "".join(random.choices(string.ascii_lowercase, k=size)).capitalize()
 
     def generate_value(key: str) -> Any:
-        key_type = key_types.get(key, str)
+        cls = field_types.get(key, str)
 
-        if key_type is str:
+        if cls is str:
             if key == "author":
                 return " and ".join(f"{generate_word()} {generate_word()}"
                                     for _ in range(random.randint(1, 5)))
             else:
                 return " ".join(generate_word() for _ in range(random.randint(1, 15)))
-        elif key_type is int:
+        elif cls is int:
             return random.randint(1870, 2025)
-        elif key_type is list:
+        elif cls is list:
             return [generate_word() for _ in range(random.randint(2, 10))]
         else:
-            raise TypeError(f"unsupported key type: {key_type}")
+            raise TypeError(f"unsupported key type: {cls}")
 
     data = {
         "type": bibtype,
