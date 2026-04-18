@@ -148,14 +148,14 @@ def cli(query: str,
         return
 
     from papis.format import format
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     from papis.tui.utils import confirm
 
     renames = []
     for document in documents:
         current_name = document.get_main_folder_name()
         new_name = format(folder_name, document)
-        new_name = normalize_path(new_name)
+        new_name = normalize_path_part(new_name)
 
         if not batch and not confirm(f"Rename '{current_name}' to '{new_name}'?"):
             continue

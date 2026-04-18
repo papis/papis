@@ -177,7 +177,7 @@ def run_set(
     the VALUE in the document.
     """
     from papis.format import format
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     from papis.strings import process_format_pattern_pair
 
     for orig_key, orig_value in to_set:
@@ -189,7 +189,7 @@ def run_set(
             value = str(value)
         if key == "notes" and isinstance(value, str):
             # TODO: handle renames/deletions of files on disk
-            document[key] = normalize_path(value)
+            document[key] = normalize_path_part(value)
             logger.warning(
                 "Document note renamed in the info.yaml file. This does not "
                 "rename any files on disk."
@@ -199,7 +199,7 @@ def run_set(
             document[key] = []
             for file in value:
                 if isinstance(file, str):
-                    document[key].append(normalize_path(file))
+                    document[key].append(normalize_path_part(file))
                 else:
                     document[key].append(value)
             logger.warning(
@@ -227,7 +227,7 @@ def run_append(
     :returns: A boolean indicating whether the update was successful.
     """
     from papis.format import format
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     from papis.strings import process_format_pattern_pair
 
     success = True
@@ -256,7 +256,7 @@ def run_append(
         elif type_doc is list or (type_doc is type(None) and type_conf is list):
             value = try_parsing_str(key, value)
             if key == "files":
-                value = normalize_path(str(value))
+                value = normalize_path_part(str(value))
             document.setdefault(key, []).append(value)
             processed_lists.add(key)
         else:

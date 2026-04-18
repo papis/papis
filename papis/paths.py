@@ -60,14 +60,35 @@ def unique_suffixes(chars: str | None = None, skip: int = 0) -> Iterator[str]:
     yield from islice(ids(), max(skip, 0), None)
 
 
-def normalize_path(path: str, *,
-                   lowercase: bool | None = None,
-                   extra_chars: str | None = None,
-                   separator: str | None = None) -> str:
+def normalize_path(
+        path: str, *,
+        lowercase: bool | None = None,
+        extra_chars: str | None = None,
+        separator: str | None = None) -> str:
+    from warnings import warn
+    warn("'papis.paths.normalize_path' is deprecated and will be removed in Papis "
+         "0.17. Prefer 'papis.paths.normalize_path_part' instead.",
+         DeprecationWarning, stacklevel=2)
+
+    return normalize_path_part(
+        path,
+        lowercase=lowercase,
+        extra_chars=extra_chars,
+        separator=separator
+    )
+
+
+def normalize_path_part(
+        path: str, *,
+        lowercase: bool | None = None,
+        extra_chars: str | None = None,
+        separator: str | None = None) -> str:
     """Clean a path to only contain visible ASCII characters.
 
     This function will create ASCII strings that can be safely used as file names
-    or printed to consoles that do not necessarily support full unicode.
+    or printed to consoles that do not necessarily support full unicode. This is
+    mainly meant to be used to normalize document directory names and document
+    files in Papis and should not be used with a full path.
 
     :arg lowercase: if *True*, the resulting string will always be lowercased
         (defaults to :confval:`doc-paths-lowercase`).
@@ -164,7 +185,7 @@ def get_document_file_name(
     original path will be preserved.
 
     If resulting path will have the same extension as *orig_path* and will be
-    modified by :func:`normalize_path`. The extension is determined using
+    modified by :func:`normalize_path_part`. The extension is determined using
     :func:`~papis.filetype.get_document_extension`.
 
     :param orig_path: an input file path
@@ -196,9 +217,9 @@ def get_document_file_name(
     file_name_base = format(file_name_format, doc, default="")
 
     # ensure the file name is valid and within limits
-    file_name_base = normalize_path(file_name_base)
+    file_name_base = normalize_path_part(file_name_base)
     if not file_name_base:
-        file_name_base = normalize_path(orig_path.name)
+        file_name_base = normalize_path_part(orig_path.name)
 
     if len(file_name_base) > base_name_limit:
         logger.warning(
@@ -290,7 +311,7 @@ def get_document_folder(
                 components.clear()
                 break
             else:
-                components.append(normalize_path(tmp_component))
+                components.append(normalize_path_part(tmp_component))
 
             tmp_path = os.path.dirname(tmp_path)
 
