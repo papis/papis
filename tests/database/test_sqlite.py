@@ -119,13 +119,13 @@ def test_query_token_search(tmp_library: TemporaryLibrary) -> None:
     assert len(docs) == 1
     assert docs[0]["author"] == "J. Krishnamurti"
 
-    docs = db.query("Krish")
-    assert len(docs) == 1
-    assert docs[0]["author"] == "J. Krishnamurti"
-
     docs = db.query('"open society"')
     assert len(docs) == 1
     assert docs[0]["author"] == "K. Popper"
+
+    # NOTE: non-prefixed substrings do not match
+    docs = db.query("Krish")
+    assert len(docs) == 0
 
 
 @pytest.mark.library_setup(settings={"database-backend": "sqlite"})
