@@ -247,6 +247,13 @@ To perform search queries, the ``sqlite`` backend uses the `Full Text Search (FT
 <https://sqlite.org/fts5.html>`__ functionality. This allows using ``AND`` and ``OR``
 and various groupings of queries, as expected.
 
+.. warning::
+
+   FTS5 has very limited support for regular expressions and substring matching.
+   The only supported cases are: a prefix wildcard (e.g. "einst*" to match
+   any strings starting with "einst") and a initial token "^" (to match the first
+   word in a string).
+
 For illustration, here are some examples:
 
 - Find papers where the title contains "einstein" (searches all indexed fields):
@@ -254,6 +261,13 @@ For illustration, here are some examples:
 .. code:: bash
 
     papis open 'einstein'
+
+- Find papers that contain the prefix "einst" (note that FTS will not find
+  "einstein" if given just "einst", but requires the wildcard "*" to match it):
+
+.. code::
+
+    papis open 'einst*'
 
 - Find papers where the author field contains "einstein" and the year field
   contains "1905":
