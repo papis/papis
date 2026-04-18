@@ -207,23 +207,21 @@ extend Papis' features or integrate it with other software.
 
    * - `papis-rofi <https://github.com/papis/papis-rofi/>`__
      - `Etn40ff <https://github.com/Etn40ff>`__
-
    * - `papis-dmenu <https://github.com/papis/papis-dmenu>`__
      - you?
+   * - `papis-tui <https://github.com/supersambo/papis-tui>`__
+     - `Stephan Schlögl <https://github.com/supersambo>`__
 
    * - `papis-vim <https://github.com/papis/papis-vim>`__
      - you?
-
    * - `papis.nvim <https://github.com/jghauser/papis.nvim>`__
      - `Julian Hauser <https://github.com/jghauser>`__
-
    * - `papis-emacs <https://github.com/papis/papis.el>`__
      - `Alejandro Gallo <https://alejandrogallo.github.io/>`__,
        `Jean-Alexandre Barszcz <https://jabarsz.cz/en/home>`__
 
    * - `papis-zotero <https://github.com/papis/papis-zotero>`__
      - `Alex Fikl <https://github.com/alexfikl>`__
-
    * - `papis-libgen <https://github.com/papis/papis-zotero>`__
      - you?
 
