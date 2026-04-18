@@ -197,14 +197,13 @@ General settings
 
     By default document paths in Papis libraries can contain only a limited set
     of characters. This is mainly to exclude characters that are invalid for
-    file paths on any operating system or possibly unprintable. Allowed
-    characters are:
+    file paths on any operating system or possibly unprintable. Currently, the
+    following character sets are hardcoded:
 
-    * latin letters (a to z)
-    * arabic digits (0 to 9)
-    * dots (for file extensions)
-    * directory separators (usually ``/`` on UNIX-like systems and ``\\``
-      on Windows)
+    * lowercase ASCII letters (a to z),
+    * uppercase ASCII letters (A to Z) if :confval:`doc-paths-lowercase` is *False*,
+    * digits (0 to 9),
+    * dots (for file extensions).
 
     This setting allows to append additional characters to this set. It expects
     a string containing all additional valid characters. A possible value would
