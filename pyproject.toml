@@ -213,10 +213,11 @@ yaml = "papis.explorers.yaml:cli"
 
 [project.entry-points."papis.exporter"]
 bibtex = "papis.exporters.bibtex:exporter"
+csl = "papis.exporters.csl:exporter"
+csv = "papis.exporters.csv:exporter"
 json = "papis.exporters.json:exporter"
 typst = "papis.exporters.typst:exporter"
 yaml = "papis.exporters.yaml:exporter"
-csl = "papis.exporters.csl:exporter"
 
 [project.entry-points."papis.format"]
 jinja2 = "papis.format.jinja:Jinja2Formatter"
