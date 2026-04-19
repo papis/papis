@@ -11,7 +11,7 @@ class ISBNImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> ISBNImporter | None:
-        from papis.isbn import notisbn # type: ignore
+        from papis.isbn import notisbn  # type: ignore
 
         if notisbn(uri):
             return None
