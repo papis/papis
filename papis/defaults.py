@@ -125,6 +125,12 @@ settings: dict[str, Any] = {
     "csl-style": "harvard1",
     "csl-formatter": "plain",
 
+    # csv
+    "exporter-csv-keys": [],
+    "exporter-csv-keys-extend": [],
+    "exporter-csv-delimiter": ",",
+    "exporter-csv-dialect": "excel",
+
     # add
     "ref-format": _f("{doc[title]:.15} {doc[author]:.6} {doc[year]}"),
     "add-folder-name": _f(""),
