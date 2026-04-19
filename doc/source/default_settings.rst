@@ -270,6 +270,29 @@ General settings
    and are just used to add style to the resulting citation (e.g. marking titles
    as italic).
 
+.. papis-config:: exporter-csv-keys
+
+   A list of keys that should be exported to CSV. By default, this exports all the
+   BibTeX supported keys from :data:`papis.bibtex.bibtex_keys`. Note that any
+   list keys will be concatenated using a semicolon.
+
+.. papis-config:: exporter-csv-keys-extend
+
+   A list of keys that extend the default :confval:`exporter-csv-keys`. For example,
+   the default BibTeX keys do not include the ``ref``, so this can be added here
+   as a simple extension.
+
+.. papis-config:: exporter-csv-delimiter
+
+   The delimiter used by the CSV exporter. By default this is a comma, but it
+   can be set to other delimiters supported by the Python :mod:`csv` module.
+   Setting it to a "\t" (TAB) will result in a tab-separated file (TSV).
+
+.. papis-config:: exporter-csv-dialect
+
+   The dialect used by the :mod:`csv` module to export the file. In general, this
+   should not be changed unless working with a specific parser.
+
 Tools options
 -------------
 
