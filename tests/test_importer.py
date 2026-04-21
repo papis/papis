@@ -134,11 +134,13 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     importers = get_matching_importers_by_uri("this_is_not_an_uri")
     assert len(importers) == 0
 
+    from papis.downloaders import WebImporter
     from papis.importer.arxiv import ArxivImporter
 
     importers = get_matching_importers_by_uri("https://arxiv.org/abs/1110.3658")
-    assert len(importers) == 1
+    assert len(importers) == 2
     assert isinstance(importers[0], ArxivImporter)
+    assert isinstance(importers[1], WebImporter)
 
     from papis.downloaders.fallback import FallbackDownloader
     from papis.downloaders.usenix import USENIXDownloader
@@ -146,9 +148,10 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     importers = get_matching_importers_by_uri(
         "https://www.usenix.org/conference/nsdi22/presentation/goyal",
         include_downloaders=True)
-    assert len(importers) == 2
-    assert isinstance(importers[0], FallbackDownloader)
-    assert isinstance(importers[1], USENIXDownloader)
+    assert len(importers) == 3
+    assert isinstance(importers[0], WebImporter)
+    assert isinstance(importers[1], FallbackDownloader)
+    assert isinstance(importers[2], USENIXDownloader)
 
 
 def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
