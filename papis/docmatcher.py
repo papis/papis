@@ -1,121 +1,34 @@
 from __future__ import annotations
 
 import re
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, NamedTuple, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
+
+from lark import Token, Transformer
 
 import papis.config
 import papis.logging
+from papis.format import format
 from papis.strings import AnyString, FormatPattern
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Sequence
 
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
-class ParseResult(NamedTuple):
-    """Result from parsing a search string using :func:`parse_query`.
-
-    For example, a search string such as ``"author:einstein"`` will result in:
-
-    .. code:: python
-
-        r = ParseResult(search="einstein", pattern=<...>, doc_key="author")
-    """
-
-    #: A search string that was matched for this result.
-    search: str
-    #: A regex pattern constructed from the :attr:`search` using
-    #: :func:`get_regex_from_search`.
-    pattern: re.Pattern[str]
-    #: A document key that was matched for this result, if any.
-    doc_key: str | None
-
-    def __repr__(self) -> str:
-        doc_key = f"{self.doc_key!r}, " if self.doc_key is not None else ""
-        return f"[{doc_key}{self.search!r}]"
-
-
 class MatcherCallable(Protocol):
-    """A callable :class:`typing.Protocol` used to match a document for a given search.
-
-    .. automethod:: __call__
-    """
-
     def __call__(self,
                  document: Document,
                  search: re.Pattern[str],
                  match_format: AnyString | None = None,
                  doc_key: str | None = None,
                  ) -> Any:
-        """Match a document's keys to a given search pattern.
-
-        The matcher can decide whether the *match_format* or the *doc_key* take
-        priority when matching against the given pattern in *search*. If
-        possible, *doc_key* should be given priority as the more specific
-        choice.
-
-        :param search: a regex pattern to match the query against
-            (see :attr:`ParseResult.pattern`).
-        :param match_format: a format pattern (see :func:`papis.format.format`)
-            to match against.
-        :param doc_key: a specific key in the document to match against.
-        :returns: *None* if the match fails and anything else otherwise.
-        """
-
-
-# NOTE: this is deprecated because it doesn't work well with multiprocessing in
-# Python 3.14. In particular, it does not pickle properly when used with the
-# 'forkserver' backend on Linux and friends.
-class DocMatcher:
-    search: ClassVar[str] = ""
-    parsed_search: ClassVar[list[ParseResult] | None] = None
-    matcher: ClassVar[MatcherCallable | None] = None
-    match_format: ClassVar[FormatPattern] = FormatPattern(None, "")
-
-    @classmethod
-    def return_if_match(
-            cls,
-            doc: Document) -> Document | None:
-        match = None
-        if cls.parsed_search is None or cls.matcher is None:
-            return match
-
-        for p in cls.parsed_search:
-            match = (
-                doc if cls.matcher(doc, p.pattern, cls.match_format, p.doc_key)
-                else None)
-
-            if not match:
-                break
-
-        return match
-
-    @classmethod
-    def set_search(cls, search: str) -> None:
-        cls.search = search
-
-    @classmethod
-    def set_matcher(cls, matcher: MatcherCallable) -> None:
-        cls.matcher = matcher
-
-    @classmethod
-    def parse(cls, search: str | None = None) -> list[ParseResult]:
-        warn("'DocMatcher' is deprecated and will be removed in Papis v0.16. Use "
-             "'make_document_matcher' instead.",
-             DeprecationWarning, stacklevel=2)
-
-        if search is None:
-            search = cls.search
-
-        cls.match_format = papis.config.getformatpattern("match-format")
-        cls.parsed_search = parse_query(search)
-
-        return cls.parsed_search
+        pass
 
 
 @dataclass(frozen=True)
@@ -128,50 +41,36 @@ class DocumentMatcher:
     #: Initial search string used for the matcher.
     search: str
     #: The query resulting from :func:`parse_query`.
-    query: list[ParseResult]
+    query: QueryItem
     #: A format that is used to match a document against.
     match_format: FormatPattern
-    #: A callable used to match a document to the :attr:`query` using the
-    #: :attr:`match_format`.
-    matcher: MatcherCallable
 
-    def __call__(self, doc: Document) -> Document | None:
-        """Use the stored :attr:`query` to match the document.
+    # deprecated
+    matcher: MatcherCallable | None
 
-        """
-        match = None
-        for p in self.query:
-            match = (
-                doc
-                if self.matcher(doc, p.pattern, self.match_format, p.doc_key)
-                else None)
-
-            # NOTE: exit if a pattern did not match the document => means the
-            # document does not fully match the search query
-            if not match:
-                break
-
-        return match
+    def __call__(self, doc: Document) -> bool:
+        """Use the stored :attr:`query` to match the document."""
+        return self.query.match(doc, self.match_format)
 
 
 def make_document_matcher(
         search: str, *,
         matcher: MatcherCallable | None = None,
         match_format: AnyString | None = None,
-    ) -> Callable[[Document], Document | None]:
+    ) -> Callable[[Document], bool]:
     """Create a callable that can be used to match documents against the given
     *search* query.
 
         >>> from papis.document import from_data
         >>> doc = from_data({'title': 'einstein'})
         >>> matcher = make_document_matcher('einste')
-        >>> matcher(doc) is not None
+        >>> matcher(doc)
         True
         >>> matcher = make_document_matcher('heisenberg')
-        >>> matcher(doc) is not None
+        >>> matcher(doc)
         False
         >>> matcher = make_document_matcher('title : ein')
-        >>> matcher(doc) is not None
+        >>> matcher(doc)
         True
 
     :param matcher: a callable used to match the documents. This defaults to
@@ -179,9 +78,9 @@ def make_document_matcher(
     :param match_format: a format used to match against the query. This defaults
         to :confval:`match-format`.
     """
-    if matcher is None:
-        from papis.database.cache import match_document
-        matcher = match_document
+    if matcher is not None:
+        warn("Passing 'matcher' to 'make_document_matcher' is deprecated and "
+             "will be removed in Papis 0.17.", DeprecationWarning, stacklevel=2)
 
     if match_format is None:
         match_format = papis.config.getformatpattern("match-format")
@@ -191,7 +90,7 @@ def make_document_matcher(
 
     query = parse_query(search)
     return DocumentMatcher(
-        search=search, query=query, match_format=match_format, matcher=matcher
+        search=search, query=query, match_format=match_format, matcher=None
     )
 
 
@@ -200,100 +99,168 @@ def get_regex_from_search(search: str) -> re.Pattern[str]:
 
         >>> get_regex_from_search(' ein 192     photon').pattern
         '.*ein.*192.*photon.*'
-        >>> get_regex_from_search('{1234}').pattern
-        '.*\\{1234\\}.*'
+        >>> get_regex_from_search('200[0-9]').pattern
+        '.*200[0-9].*'
 
     :param search: a valid search string.
-    :returns: a regular expression representing the search string, which is
-        properly escaped and allows for multiple spaces.
+    :returns: a regular expression representing the search string, allowing for
+        regex characters and multiple spaces.
     """
+    search = search.strip("'").strip('"')
     return re.compile(
-        ".*{}.*".format(".*".join(map(re.escape, search.split()))),
+        ".*{}.*".format(".*".join(search.split())),
         re.IGNORECASE)
 
 
-def parse_query(query_string: str) -> list[ParseResult]:
-    """Parse a query string using :mod:`pyparsing`.
+_QUERY_GRAMMAR = r"""\
+start: or_expr?
 
-    The query language implemented by this function for Papis supports strings
-    of the form::
+?or_expr: and_expr (_OR and_expr)*
+?and_expr: not_expr (_AND? not_expr)*
+
+?not_expr: not_op | item
+not_op: _NOT not_expr
+
+?item: pair | term | _LPAR or_expr _RPAR
+
+term: ESCAPED_STRING | WORD
+
+pair: key ":" value
+key: WORD
+value: ESCAPED_STRING | WORD
+
+_OR: "OR"i
+_AND: "AND"i
+_NOT: "NOT"i
+_LPAR: "("
+_RPAR: ")"
+
+WORD: /[\w\-._\/\\\[\]{}*+?@#$%=!~^|]+/u
+ESCAPED_STRING: /"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/
+
+%import common.WS
+%ignore WS
+"""
+
+
+class QueryItem(ABC):
+    @abstractmethod
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        pass
+
+
+@dataclass
+class And(QueryItem):
+    children: Sequence[QueryItem]
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return all(child.match(doc, match_format) for child in self.children)
+
+
+@dataclass
+class Or(QueryItem):
+    children: Sequence[QueryItem]
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return any(child.match(doc, match_format) for child in self.children)
+
+
+@dataclass
+class Not(QueryItem):
+    child: QueryItem
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return not self.child.match(doc, match_format)
+
+
+@dataclass
+class Term(QueryItem):
+    query: str
+    pattern: re.Pattern[str]
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        return self.pattern.match(format(match_format, doc)) is not None
+
+
+@dataclass
+class Pair(QueryItem):
+    key: str
+    query: str
+    pattern: re.Pattern[str]
+
+    def match(self, doc: Document, match_format: FormatPattern) -> bool:
+        value = doc.get(self.key)
+        if value is None:
+            return False
+
+        return self.pattern.match(str(value)) is not None
+
+
+class QueryTransformer(Transformer[Any, QueryItem]):
+    def start(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        if not children:
+            return And([])
+        return children[0]
+
+    def or_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        return Or(children)
+
+    def and_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        return And(children)
+
+    def not_op(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+        return Not(children[0])
+
+    def term(self, children: Sequence[Token]) -> Term:  # noqa: PLR6301
+        term = str(children[0])
+        return Term(term, get_regex_from_search(term))
+
+    def pair(self, children: Sequence[str]) -> Pair:  # noqa: PLR6301
+        key, value = children
+        return Pair(key, value, get_regex_from_search(value))
+
+    def key(self, children: Sequence[Token]) -> str:  # noqa: PLR6301
+        return str(children[0])
+
+    def value(self, children: Sequence[Token]) -> str:  # noqa: PLR6301
+        return str(children[0])
+
+
+def parse_query(query_string: str) -> QueryItem:
+    r"""Parse a query string to a structured query language.
+
+    The query language implemented by this function supports strings of the form::
 
         'hello author : Einstein    title: "Fancy Title: Part 1" tags'
 
-    which will result in:
+    We can see there that constructs of the form ``"key:value"``, with the
+    colon as a separator, are recognized and parsed to document keys with the
+    value. They can be escaped by enclosing them in additional quotes.
+    Otherwise, each individual word in the search query will give result in a
+    separate item. Each search term can contain additional :mod:`re` regex
+    characters.
 
-    .. code:: python
-
-        results = [
-            ParseResult(search="hello", pattern=<...>, doc_key=None),
-            ParseResult(search="Einstein", pattern=<...>, doc_key="author"),
-            ParseResult(search="Fancy Title: Part 1", pattern=<...>, doc_key="title"),
-            ParseResult(search="tags", pattern=<...>, doc_key=None),
-        ]
-
-    We can see there that constructs of the form ``"key:value"`` with the colon
-    as a separator are recognized and parsed to document keys with the color.
-    They can be escaped by enclosing them in quotes. Otherwise, each individual
-    word in the search query will give another :class:`ParseResult`. Each
-    search term can contain additional regex characters.
-
-        >>> print(parse_query('hello author : einstein'))
-        [['hello'], ['author', 'einstein']]
-        >>> print(parse_query(''))
-        []
-        >>> print(\
-            parse_query(\
-                '"hello world whatever :" tags : \\\'hello ::::\\\''))
-        [['hello world whatever :'], ['tags', 'hello ::::']]
-        >>> print(parse_query('hello'))
-        [['hello']]
+        >>> parse_query('hello author : einstein')
+        And(children=[Term(query='hello', ...), Pair(key='author', query='einstein', ...)])
+        >>> parse_query('')
+        And(children=[])
+        >>> parse_query('"hello world" tags : \'hello :\'')
+        And(children=[Term(query='"hello world"', ...), Pair(key='tags', query="'hello :'", ...)])
+        >>> parse_query('hello')
+        Term(query='hello', ...)
 
     :param query_string: a search string to parse into a structured format.
-    :returns: a list of parsing results for each token in the query string.
-    """
+    :returns: a parsing result for the query string.
+    """  # noqa: E501
 
-    import pyparsing
     logger.debug("Parsing query: '%s'.", query_string)
 
-    papis_key_word = pyparsing.Word(pyparsing.alphanums + "-._/")
-    papis_value_word = pyparsing.Word(pyparsing.alphanums + "-._/()")
+    import lark
 
-    papis_value = pyparsing.QuotedString(
-        quote_char='"', esc_char="\\", esc_quote="\\"
-    ) ^ pyparsing.QuotedString(
-        quote_char="'", esc_char="\\", esc_quote="\\"
-    ) ^ papis_value_word
+    parser = lark.Lark(_QUERY_GRAMMAR, parser="lalr")
+    tree = parser.parse(query_string)
+    query = QueryTransformer().transform(tree)
 
-    equal = (
-        pyparsing.ZeroOrMore(pyparsing.Literal(" "))
-        + pyparsing.Literal(":")
-        + pyparsing.ZeroOrMore(pyparsing.Literal(" "))
-    )
+    logger.debug("Parsed query:\n%s", tree.pretty())
 
-    papis_query = pyparsing.ZeroOrMore(
-        pyparsing.Group(
-            pyparsing.ZeroOrMore(
-                papis_key_word + equal
-            ) + papis_value
-        )
-    )
-    parsed = papis_query.parse_string(query_string)
-    logger.debug("Parsed query: '%s'.", parsed)
-
-    # convert pyparsing results to our format
-    results = []
-    for result in parsed:
-        n = len(result)
-        if n == 1:
-            search = result[0]
-            doc_key = None
-        elif n == 3:
-            search = result[2]
-            doc_key = result[0]
-        else:
-            continue
-
-        pattern = get_regex_from_search(search)
-        results.append(ParseResult(search=search, pattern=pattern, doc_key=doc_key))
-
-    return results
+    return query

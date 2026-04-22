@@ -36,7 +36,7 @@ def filter_documents(documents: list[Document],
     """
     from papis.docmatcher import make_document_matcher
 
-    match = make_document_matcher(search, matcher=match_document)
+    match = make_document_matcher(search)
     logger.debug("Filtering %d docs (search '%s').", len(documents), search)
 
     import sys
@@ -46,14 +46,14 @@ def filter_documents(documents: list[Document],
 
     # FIXME: find a better solution for this that works for both OSes
     if sys.platform == "win32":
-        filtered_docs = [
-            d for d in (match(d) for d in documents)
-            if d is not None]
+        filtered_docs = [d for d in documents if match(d)]
     else:
         from papis.utils import parmap
 
         result = parmap(match, documents)
-        filtered_docs = [d for d in result if d is not None]
+        filtered_docs = [
+            d for matched, d in zip(result, documents, strict=True) if matched
+        ]
 
     t_delta = 1000 * (time.time() - t_start)
     logger.debug("Finished querying in %.2fms (%d docs).", t_delta, len(filtered_docs))
@@ -66,19 +66,11 @@ def match_document(
         search: re.Pattern[str],
         match_format: AnyString | None = None,
         doc_key: str | None = None) -> re.Match[str] | None:
-    """Match a document's keys to a given search pattern.
+    from warnings import warn
 
-    See :class:`~papis.docmatcher.MatcherCallable`.
+    warn("'match_document' is deprecated and will be removed in Papis 0.17.",
+         DeprecationWarning, stacklevel=2)
 
-    >>> from papis.docmatcher import get_regex_from_search as regex
-    >>> document = papis.document.from_data({'author': 'einstein'})
-    >>> match_document(document, regex('e in'), '{doc[author]}') is None
-    False
-    >>> match_document(document, regex('ee in'), '{doc[author]}') is None
-    True
-    >>> match_document(document, regex('einstein'), '{doc[title]}') is None
-    True
-    """
     if doc_key is not None:
         match_string = str(document[doc_key])
     else:
