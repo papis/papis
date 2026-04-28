@@ -15,8 +15,7 @@ from papis.utils import get_session
 
 logger = papis.logging.get_logger(__name__)
 
-#: A list of services supported by :mod:`isbnlib`. Note that not all versions
-#: have support for all of these versions.
+# A list of supported services
 ISBN_SERVICE_NAMES = ("goob", "openl", "wiki")
 
 
@@ -28,7 +27,7 @@ def strip_isbnlike(isbn_like: str) -> str:
     return "".join(c for c in isbn_like.upper() if c in "0123456789X")
 
 
-def notisbn_fallback(isbn: str | None) -> bool:
+def notisbn(isbn: str | None) -> bool:
     """
     This method invalidates ISBN-like strings that do not conform to the
     ISBN format. For this it verifies the length of the relevant symbols
@@ -58,7 +57,7 @@ def notisbn_fallback(isbn: str | None) -> bool:
     return sum((1 + 2 * (i % 2)) * int(isbn[i]) for i in range(13)) % 10 != 0
 
 
-def json_request(url: str, params: dict | None = None) -> Any | None:
+def json_request(url: str, params: dict[str, str] | None = None) -> Any | None:
     with get_session() as session:
         response = session.get(url, params=params)
     if not response.ok:
@@ -89,7 +88,7 @@ def googlebooks_isbn_search(query: str) -> str | None:
     return None
 
 
-def isbn_from_words_fallback(query: str) -> str | None:
+def isbn_from_words(query: str) -> str | None:
     search_url = "http://www.google.com/search"
     params = {"q": f"ISBN {query}"}
 
@@ -107,7 +106,7 @@ def isbn_from_words_fallback(query: str) -> str | None:
     )
     potential_isbns = regex.findall(response.text)
     for i in potential_isbns:
-        if not notisbn_fallback(i):
+        if not notisbn(i):
             isbn = googlebooks_isbn_search(i)
             if isbn is not None:
                 break
@@ -209,8 +208,8 @@ def meta_wiki(isbn: str) -> dict[str, Any] | None:
     return meta
 
 
-def meta_fallback(isbn: str | None, service: str) -> dict[str, Any] | None:
-    if not isbn or notisbn_fallback(isbn):
+def meta(isbn: str | None, service: str) -> dict[str, Any] | None:
+    if not isbn or notisbn(isbn):
         return None
     if service == "goob":
         return meta_goob(isbn)
@@ -220,12 +219,6 @@ def meta_fallback(isbn: str | None, service: str) -> dict[str, Any] | None:
         return meta_wiki(isbn)
     else:
         return None
-
-
-try:
-    from isbnlib import notisbn
-except ImportError:
-    notisbn = notisbn_fallback
 
 
 def get_data(query: str = "",
@@ -247,19 +240,9 @@ def get_data(query: str = "",
     else:
         raise ValueError("must provide either 'isbn_like' or 'query'")
 
-    try:
-        from isbnlib import ISBNLibException, isbn_from_words, meta
-
-        try:
-            if not isbn:
-                isbn = isbn_from_words(query)
-            data = meta(isbn, service=service)
-        except ISBNLibException:
-            return []
-    except ImportError:
-        if not isbn:
-            isbn = isbn_from_words_fallback(query)
-        data = meta_fallback(isbn, service=service)
+    if not isbn:
+        isbn = isbn_from_words(query)
+    data = meta(isbn, service=service)
 
     if isinstance(data, dict):
         return [data_to_papis(data)]
@@ -270,7 +253,7 @@ def get_data(query: str = "",
 
 def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:
     """
-    Convert data from isbnlib into Papis formatted data.
+    Convert data from isbnlib format into Papis formatted data.
 
     :param data: Dictionary with data
     :returns: Dictionary with Papis key names

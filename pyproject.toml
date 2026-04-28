@@ -70,7 +70,6 @@ dependencies = [
     "dominate>=2.8",
     "filetype>=1.0.1",
     "habanero>=0.6",
-    "isbnlib>=3.9.1",
     "lxml>=4.3.5",
     "platformdirs>=4.0.0",
     "prompt_toolkit>=3.0.5",

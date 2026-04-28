@@ -4,14 +4,14 @@ from papis.importer import Importer
 
 
 class ISBNImporter(Importer):
-    """Importer for ISBN identifiers through ``isbnlib``."""
+    """Importer for ISBN identifiers."""
 
     def __init__(self, uri: str) -> None:
         super().__init__(name="isbn", uri=uri)
 
     @classmethod
     def match(cls, uri: str) -> ISBNImporter | None:
-        from papis.isbn import notisbn  # type: ignore
+        from papis.isbn import notisbn
 
         if notisbn(uri):
             return None
