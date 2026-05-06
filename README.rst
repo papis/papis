@@ -238,7 +238,7 @@ Papis isn't the only fish in the pond. You might also be interested in:
 - `bibman <https://codeberg.org/KMIJPH/bibman>`__ (open source)
 - `bibiman <https://codeberg.org/lukeflo/bibiman>`__ (open source)
 - `cobib <https://github.com/mrossinek/cobib>`__ (open source)
-- `jabref <https://www.jabref.org/>`__ (open source)
+- `JabRef <https://www.jabref.org/>`__ (open source)
 - `Mendeley <https://www.mendeley.com/>`__ (proprietary)
 - `pubs <https://github.com/pubs/pubs/>`__ (open source)
 - `Xapers <https://finestructure.net/xapers/>`__ (open source)
