@@ -1353,10 +1353,11 @@ def cli(query: str,
         check_name = check
         new_check_name = DEPRECATED_CHECK_NAMES.get(check)
         if new_check_name is not None:
-            check_name = new_check_name
             logger.warning("Check '%s' is deprecated and has been replace by "
                            "'%s'. Please use this in the future.",
                            check_name, new_check_name)
+
+            check_name = new_check_name
 
         new_checks.append(check_name)
     checks = new_checks
