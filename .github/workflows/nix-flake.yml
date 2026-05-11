@@ -37,7 +37,8 @@ jobs:
           purge-primary-key: never
       - name: check installed nix version
         run: which nix; nix build --version
-      - run: nix flake check
+      - name: check nix flake
+        run: nix flake check
       - name: install papis from nix flake into profile.
         # this also persists the papis package as gcroot, so it is not garbage
         # collected and is persisted in the cache
