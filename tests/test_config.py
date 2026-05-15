@@ -197,8 +197,9 @@ def test_set_lib_from_path(tmp_config: TemporaryConfiguration) -> None:
 
     assert tmp_config.libdir is not None
 
+    # NOTE: this libdir is that of the default library
     papis.config.set_lib_from_name(tmp_config.libdir)
-    assert papis.config.get_lib_name() == tmp_config.libdir
+    assert tmp_config.libdir in papis.config.get_lib_dirs()
 
 
 def test_set_lib_from_real_lib(tmp_config: TemporaryConfiguration) -> None:
@@ -214,6 +215,21 @@ def test_set_lib_from_real_lib(tmp_config: TemporaryConfiguration) -> None:
 
     papis.config.set_lib_from_name(libname)
     assert papis.config.get_lib_name() == libname
+
+
+def test_get_lib_from_name_matches_existing_lib(
+        tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+
+    assert tmp_config.libdir is not None
+
+    libname = "mylib"
+    papis.config.set("dir",
+                     papis.config.escape_interp(tmp_config.libdir),
+                     section=libname)
+
+    lib = papis.config.get_lib_from_name(tmp_config.libdir)
+    assert lib.name == libname
 
 
 def test_reset_configuration(tmp_config: TemporaryConfiguration) -> None:
