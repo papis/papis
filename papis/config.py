@@ -653,7 +653,7 @@ def set_lib_from_name(libname: str) -> None:
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname: str) -> Library:
+def get_lib_from_name(libname_or_path: str) -> Library:
     """Get a library object from a name.
 
     :param libname: the name of a library in the configuration file or a path
@@ -665,22 +665,33 @@ def get_lib_from_name(libname: str) -> Library:
 
     from papis.library import Library, from_paths
 
-    if libname not in libs:
-        if os.path.isdir(libname):
-            logger.warning("Setting path '%s' as the main library folder.", libname)
+    if libname_or_path not in libs:
+        path = os.path.abspath(os.path.expanduser(libname_or_path))
 
-            lib = from_paths([libname])
+        # first check if this path corresponds to an existing library
+        for libname in libs:
+            lib = get_lib_from_name(libname)
+            if path in lib.paths:
+                return lib
+
+        if os.path.isdir(path):
+            logger.warning("Setting path '%s' as the main library folder.",
+                           libname_or_path)
+
             # NOTE: can't use set(...) here due to cyclic dependencies
-            config[lib.name] = {"dirs": str([escape_interp(libname)])}
+            lib = from_paths([path])
+            config[lib.name] = {"dirs": str([escape_interp(path)])}
         else:
             raise InvalidLibraryError(
-                f"Library '{libname}' does not seem to exist. ",
+                f"Library '{libname_or_path}' does not seem to exist. ",
                 "To add a library simply write the following "
                 f"in your configuration file located at '{get_config_file()}'\n\n"
-                f"\t[{libname}]\n"
-                f"\tdir = path/to/your/{libname}/folder"
+                f"\t[{libname_or_path}]\n"
+                f"\tdir = path/to/your/{libname_or_path}/folder"
                 )
     else:
+        libname = libname_or_path
+
         if libname in default_settings and libname not in config:
             config[libname] = default_settings[libname]
 
