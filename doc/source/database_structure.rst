@@ -128,7 +128,8 @@ In general, the query syntax is formed of multiple ``[key:]"value"`` matches, wh
 * and the value can be any string (with optional quotes required to include spaces).
 * the terms in the search query can be optionally separated by keywords such as
   ``AND`` (default), ``OR`` or ``NOT`` to construct complex queries.
-* the terms can also contain regex characters to extend the matching.
+* the terms can also contain regex characters to extend the matching. If those
+  characters should be part of the query (e.g. parentheses), they should be escaped.
 
 .. note::
 

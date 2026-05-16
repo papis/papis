@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from functools import cache
 from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 
@@ -15,6 +16,8 @@ from papis.strings import AnyString, FormatPattern
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
+    from lark import Lark
 
     from papis.document import Document
 
@@ -73,8 +76,7 @@ def make_document_matcher(
         >>> matcher(doc)
         True
 
-    :param matcher: a callable used to match the documents. This defaults to
-        :func:`~papis.database.cache.match_document`.
+    :param matcher: (deprecated).
     :param match_format: a format used to match against the query. This defaults
         to :confval:`match-format`.
     """
@@ -98,18 +100,27 @@ def get_regex_from_search(search: str) -> re.Pattern[str]:
     r"""Creates a default regex from a search string.
 
         >>> get_regex_from_search(' ein 192     photon').pattern
-        '.*ein.*192.*photon.*'
+        '.*(?:ein).*(?:192).*(?:photon).*'
         >>> get_regex_from_search('200[0-9]').pattern
-        '.*200[0-9].*'
+        '.*(?:200[0-9]).*'
 
     :param search: a valid search string.
     :returns: a regular expression representing the search string, allowing for
         regex characters and multiple spaces.
     """
     search = search.strip("'").strip('"')
-    return re.compile(
-        ".*{}.*".format(".*".join(search.split())),
-        re.IGNORECASE)
+
+    # NOTE: the added (?:...) groups are meant to avoid confusing queries. For
+    # example, "a|b" would become ".*a|b.*", which would force b to be at the
+    # beginning of the search string. This transforms it to ".*(?:a|b).*", which
+    # works as expected.
+
+    try:
+        return re.compile(
+            ".*{}.*".format(".*".join(f"(?:{expr})" for expr in search.split())),
+            re.IGNORECASE)
+    except re.error:
+        return re.compile(re.escape(search), re.IGNORECASE)
 
 
 _QUERY_GRAMMAR = r"""\
@@ -226,6 +237,13 @@ class QueryTransformer(Transformer[Any, QueryItem]):
         return str(children[0])
 
 
+@cache
+def _get_cached_parser() -> Lark:
+    import lark
+
+    return lark.Lark(_QUERY_GRAMMAR, parser="lalr")
+
+
 def parse_query(query_string: str) -> QueryItem:
     r"""Parse a query string to a structured query language.
 
@@ -255,9 +273,7 @@ def parse_query(query_string: str) -> QueryItem:
 
     logger.debug("Parsing query: '%s'.", query_string)
 
-    import lark
-
-    parser = lark.Lark(_QUERY_GRAMMAR, parser="lalr")
+    parser = _get_cached_parser()
     tree = parser.parse(query_string)
     query = QueryTransformer().transform(tree)
 
