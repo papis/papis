@@ -34,11 +34,11 @@ Benchmark 1: papis list --all QUERY
 
 ### Major: Improve query syntax ([#1165](https://github.com/papis/papis/pull/1165))
 
-Historically, the query sytanx when using `database-backend = papis` has been
+Historically, the query syntax when using `database-backend = papis` has been
 limited to using strings and key-value pairs. The new version gets it closer to
 that of the other backends, by adding support for `AND`, `OR` and `NOT` boolean
 operators, as well as grouping using parentheses. This allows constructing
-complex queries into your libraries.
+complex queries for searching your libraries.
 
 It generally looks as expected:
 ```bash
