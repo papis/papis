@@ -10,23 +10,31 @@ from click.shell_completion import CompletionItem
 
 import papis.config
 from papis.format import format
+from papis.strings import FormatPattern
 
 if TYPE_CHECKING:
     from papis.document import Document
 
+    # NOTE: these were introduced in click 8.4.0. We cannot use them directly
+    # in the class definitions because they're evaluated eagerly there.
+    FormatPatternParamTypeBase = click.ParamType[str | FormatPattern]  # type: ignore[type-arg]
+    LibraryParamTypeBase = click.ParamType[str]  # type: ignore[type-arg]
+else:
+    FormatPatternParamTypeBase = click.ParamType
+    LibraryParamTypeBase = click.ParamType
+
 DecoratorCallable = Callable[..., Any]
 
 
-class FormatPatternParamType(click.ParamType):
+class FormatPatternParamType(FormatPatternParamTypeBase):
     #: Name of the parameter type (shown in the command-line).
     name: str = "pattern"
 
     def convert(self,  # noqa: PLR6301
                 value: Any,
                 param: click.Parameter | None,
-                ctx: click.Context | None) -> Any:
+                ctx: click.Context | None) -> str | FormatPattern:
         """See :meth:`click.ParamType.convert`."""
-        from papis.strings import FormatPattern
 
         # NOTE: this is required to handle default values which have a formatter
         # already set and we do not want to remove it
@@ -39,7 +47,7 @@ class FormatPatternParamType(click.ParamType):
         return "FORMATPATTERN"
 
 
-class LibraryParamType(click.ParamType):
+class LibraryParamType(LibraryParamTypeBase):
     name: str = "library"
 
     def shell_complete(self,  # noqa: PLR6301
