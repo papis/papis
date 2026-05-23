@@ -56,14 +56,15 @@ def _doc_files_icons(files: list[str],
                      libname: str,
                      libfolder: str) -> t.html_tag:
     with t.div() as result:
-        for _f in files:
+        for f in files:
             with t.a():
                 t.attr(data_bs_toggle="tooltip")
                 t.attr(data_bs_placement="bottom")
                 t.attr(style="font-size: 1.5em")
-                t.attr(title=os.path.basename(_f))
-                t.attr(href=wp.file_server_path(_f, libfolder, libname))
-                wh.file_icon(_f)
+                t.attr(title=os.path.basename(f))
+                t.attr(href=wp.file_server_path(f, libfolder, libname))
+                wh.file_icon(f)
+
     return result
 
 

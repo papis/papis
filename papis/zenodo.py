@@ -44,14 +44,7 @@ def _get_text_from_html(html: str) -> str:
         )
         return html
 
-    options = {}
-    if hasattr(markdownify.MarkdownConverter.Options, "escape_misc"):
-        # NOTE: markdownify 0.13 introduced some more escaping that we do not
-        # want for now, so we turn it off!
-        # NOTE: this is set to False by default in 0.14
-        options["escape_misc"] = False
-
-    return str(markdownify.markdownify(html, **options))
+    return str(markdownify.markdownify(html))
 
 
 def get_text_from_html(html: str) -> str:

@@ -102,7 +102,7 @@ class AliasedGroup(click.Group):
     """A :class:`click.Group` that accepts command aliases.
 
     This group command is taken from
-    `here <https://click.palletsprojects.com/en/5.x/advanced/#command-aliases>`__
+    `here <https://click.palletsprojects.com/en/stable/extending-click/#command-aliases>`__
     and is to be used for groups with aliases. In this case, aliases are
     defined as prefixes of the command. For example, for a command named ``remove``,
     ``rem`` is also accepted as long as it is unique.

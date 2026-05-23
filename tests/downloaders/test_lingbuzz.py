@@ -6,52 +6,51 @@ from typing import TYPE_CHECKING
 import pytest
 
 from papis.downloaders import get_downloader_by_name
-from papis.downloaders.acl import ACLAnthologyDownloader
+from papis.downloaders.lingbuzz import LingbuzzDownloader
 
 if TYPE_CHECKING:
     from papis.testing import ResourceCache, TemporaryConfiguration
 
-ACL_URLS = (
-    "https://aclanthology.org/N04-1001",
-    "https://aclanthology.org/2021.naacl-main.208",
+LB_URLS = (
+    "https://ling.auf.net/lingbuzz/006747",
+    "https://lingbuzz.net/lingbuzz/008324",
 )
 
 
-def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
+def test_lingbuzz_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
-        "https://aclanthology.org",
-        "https://aclanthology.org/bogus/link/10.1007",
-        *ACL_URLS)
+        "https://lingbuzz.net/000002",
+        "https://ling.auf.net/lingbuzz/2",
+        *LB_URLS)
 
     invalid_urls = (
-        "https://aclanthology.co.uk/article/123",
-        "https://abs.org/article/123",
+        "https://lingbuzz.co.uk/000002",
+        "https://arxiv.org/abs/1000.00001",
     )
 
     for url in valid_urls:
-        assert isinstance(ACLAnthologyDownloader.match(url), ACLAnthologyDownloader)
+        assert isinstance(LingbuzzDownloader.match(url), LingbuzzDownloader)
 
     for url in invalid_urls:
-        assert ACLAnthologyDownloader.match(url) is None
+        assert LingbuzzDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="aclanthology.org disallows web scrapers (cloudflare)")
-@pytest.mark.parametrize("url", ACL_URLS)
-def test_acl_fetch(
+@pytest.mark.parametrize("url", LB_URLS)
+def test_lingbuzz_fetch(
     tmp_config: TemporaryConfiguration,
     resource_cache: ResourceCache,
     monkeypatch: pytest.MonkeyPatch,
     url: str,
 ) -> None:
-    cls_ = get_downloader_by_name("acl")
-    assert cls_ is ACLAnthologyDownloader
+    cls_ = get_downloader_by_name("lingbuzz")
+    assert cls_ is LingbuzzDownloader
 
     down = cls_.match(url)
     assert down is not None
 
     uid = os.path.basename(url)
-    infile = f"ACL_{uid}.html"
-    outfile = f"ACL_{uid}_Out.json"
+    infile = f"Lingbuzz_{uid}.html"
+    outfile = f"Lingbuzz_{uid}_Out.json"
 
     monkeypatch.setattr(
         down, "_get_body", lambda: resource_cache.get_remote_resource(infile, url)

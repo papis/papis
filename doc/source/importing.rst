@@ -19,5 +19,6 @@ You can also take a look at the
 `zotero2papis <https://github.com/nicolasshu/zotero2papis>`__ project
 in order to see a different workflow
 and different implementation of a converter script.
-`This <https://nicolasshu.com/zotero_and_papis.html>`__ blogpost
-explains the workflow using Papis with Zotero and SyncThing.
+`This
+<https://web.archive.org/web/20250428103318/https://nicolasshu.com/zotero_and_papis.html>`__
+blogpost explains the workflow using Papis with Zotero and SyncThing.

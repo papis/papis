@@ -79,9 +79,10 @@ def test_get(tmp_config: TemporaryConfiguration) -> None:
     assert papis.config.getint("test_getint", section=section) == 42
     assert isinstance(papis.config.getint("test_getint", section=section), int)
 
-    papis.config.set("test_getfloat", "3.14")
-    assert papis.config.getfloat("test_getfloat") == 3.14
-    assert papis.config.getfloat("test_getfloat", section=section) == 3.14
+    # NOTE: float(str(x)) == x is always true, so we can check strict equality
+    papis.config.set("test_getfloat", str(3.14))
+    assert papis.config.getfloat("test_getfloat") == 3.14  # noqa: RUF069
+    assert papis.config.getfloat("test_getfloat", section=section) == 3.14  # noqa: RUF069
     assert isinstance(papis.config.getfloat("test_getfloat", section=section), float)
 
     papis.config.set("test_getbool", "True")
@@ -112,10 +113,11 @@ def test_get_types(tmp_config: TemporaryConfiguration) -> None:
         _ = papis.config.getint("int_config")
 
     # getfloat
-    papis.config.set("float_config", "3.1415")
+    # NOTE: float(str(x)) == x is always true, so we can check strict equality
+    papis.config.set("float_config", str(3.1415))
     val_float = papis.config.getfloat("float_config")
     assert isinstance(val_float, float)
-    assert val_float == 3.1415
+    assert val_float == 3.1415  # noqa: RUF069
 
     papis.config.set("float_config", "not1")
     with pytest.raises(ValueError,
@@ -195,8 +197,9 @@ def test_set_lib_from_path(tmp_config: TemporaryConfiguration) -> None:
 
     assert tmp_config.libdir is not None
 
+    # NOTE: this libdir is that of the default library
     papis.config.set_lib_from_name(tmp_config.libdir)
-    assert papis.config.get_lib_name() == tmp_config.libdir
+    assert tmp_config.libdir in papis.config.get_lib_dirs()
 
 
 def test_set_lib_from_real_lib(tmp_config: TemporaryConfiguration) -> None:
@@ -212,6 +215,21 @@ def test_set_lib_from_real_lib(tmp_config: TemporaryConfiguration) -> None:
 
     papis.config.set_lib_from_name(libname)
     assert papis.config.get_lib_name() == libname
+
+
+def test_get_lib_from_name_matches_existing_lib(
+        tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+
+    assert tmp_config.libdir is not None
+
+    libname = "mylib"
+    papis.config.set("dir",
+                     papis.config.escape_interp(tmp_config.libdir),
+                     section=libname)
+
+    lib = papis.config.get_lib_from_name(tmp_config.libdir)
+    assert lib.name == libname
 
 
 def test_reset_configuration(tmp_config: TemporaryConfiguration) -> None:
@@ -283,12 +301,16 @@ def test_get_list(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("super-key-list", "[asdf,2,3,4]")
     assert papis.config.get("super-key-list") == "[asdf,2,3,4]"
 
-    with pytest.raises(SyntaxError, match="must be a valid Python object"):
+    from papis.exceptions import UnexpectedSettingTypeError
+
+    with pytest.raises(UnexpectedSettingTypeError,
+                       match="must be a valid Python object"):
         papis.config.getlist("super-key-list")
 
     papis.config.set("super-key-list", "2")
     assert papis.config.get("super-key-list") == "2"
     assert papis.config.getint("super-key-list") == 2
 
-    with pytest.raises(SyntaxError, match="must be a valid Python list"):
+    with pytest.raises(UnexpectedSettingTypeError,
+                       match="must be a valid Python list"):
         papis.config.getlist("super-key-list")

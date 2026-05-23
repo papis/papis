@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import papis.logging
 from papis.importer import Importer
+
+logger = papis.logging.get_logger(__name__)
 
 
 class ISBNImporter(Importer):

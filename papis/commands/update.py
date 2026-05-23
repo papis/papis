@@ -82,7 +82,7 @@ Examples
 
     As you might have guessed, the ``--append`` flag needs to know the type of
     the key it is appending to. It does this by looking at the
-    :confval:`doctor-key-type-keys` (and :confval:`doctor-key-type-keys-extend`)
+    :confval:`document-field-types` (and :confval:`document-field-types-extend`)
     configuration options. If the key you are appending to is not in that list,
     the command will fail.
 
@@ -169,7 +169,7 @@ def try_parsing_str(key: str, value: str) -> str:
 def run_set(
     document: DocumentLike,
     to_set: Sequence[tuple[str, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
 ) -> None:
     """
     Processes a list of ``to_set`` tuples and applies the resulting changes to the
@@ -177,7 +177,7 @@ def run_set(
     the VALUE in the document.
     """
     from papis.format import format
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     from papis.strings import process_format_pattern_pair
 
     for orig_key, orig_value in to_set:
@@ -185,11 +185,11 @@ def run_set(
         value = format(vformat, document, default=str(vformat))
         value = try_parsing_str(key, value)
 
-        if isinstance(value, int) and key_types.get(key) is str:
+        if isinstance(value, int) and field_types.get(key) is str:
             value = str(value)
         if key == "notes" and isinstance(value, str):
             # TODO: handle renames/deletions of files on disk
-            document[key] = normalize_path(value)
+            document[key] = normalize_path_part(value)
             logger.warning(
                 "Document note renamed in the info.yaml file. This does not "
                 "rename any files on disk."
@@ -199,7 +199,7 @@ def run_set(
             document[key] = []
             for file in value:
                 if isinstance(file, str):
-                    document[key].append(normalize_path(file))
+                    document[key].append(normalize_path_part(file))
                 else:
                     document[key].append(value)
             logger.warning(
@@ -216,7 +216,7 @@ def run_set(
 def run_append(
     document: DocumentLike,
     to_append: Sequence[tuple[str, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -227,12 +227,12 @@ def run_append(
     :returns: A boolean indicating whether the update was successful.
     """
     from papis.format import format
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     from papis.strings import process_format_pattern_pair
 
     success = True
     processed_lists = set()
-    supported_keys = key_types.keys() | document
+    supported_keys = field_types.keys() | document
     for orig_key, orig_value in to_append:
         key, vformat = process_format_pattern_pair(orig_key, orig_value)
 
@@ -240,8 +240,8 @@ def run_append(
             logger.error(
                 "We cannot append to key '%s', because we do not know the "
                 "intended type. Please use `papis update --set` instead or "
-                "add the key type to the `doctor-key-type-keys` configuration "
-                "setting (or `doctor-key-type-keys-extend`)",
+                "add the key type to the `document-field-types` configuration "
+                "setting (or `document-field-types-extend`)",
                 key,
             )
             if not batch:
@@ -250,13 +250,13 @@ def run_append(
 
         value = format(vformat, document, default=str(vformat))
         type_doc = type(document.get(key))
-        type_conf = key_types.get(key)
+        type_conf = field_types.get(key)
         if type_doc is str or (type_doc is type(None) and type_conf is str):
             document[key] = document.setdefault(key, "") + value
         elif type_doc is list or (type_doc is type(None) and type_conf is list):
             value = try_parsing_str(key, value)
             if key == "files":
-                value = normalize_path(str(value))
+                value = normalize_path_part(str(value))
             document.setdefault(key, []).append(value)
             processed_lists.add(key)
         else:
@@ -266,7 +266,7 @@ def run_append(
                 key,
                 type(document[key]).__name__
                 if document.get(key)
-                else key_types[key].__name__,
+                else field_types[key].__name__,
             )
             if not batch:
                 success = False
@@ -282,17 +282,20 @@ def run_remove(
     document: DocumentLike,
     to_remove: Sequence[tuple[str, AnyString]],
     batch: bool
-) -> bool:
+) -> tuple[bool, bool]:
     """
     Processes a list of ``to_remove`` tuples and applies the resulting changes
     to the input document. Each tuple is (KEY, VALUE) and results in removing
     the VALUE from the KEY item.
 
-    :returns: A boolean indicating whether the update was successful.
+    :returns: A tuple of (success, any_removed) where success indicates whether
+        the operation completed without errors, and any_removed indicates whether
+        any items were actually removed.
     """
     from papis.strings import process_format_pattern_pair
 
     success = True
+    any_removed = False
     for orig_key, orig_value in to_remove:
         key, value = process_format_pattern_pair(orig_key, orig_value)
 
@@ -300,9 +303,11 @@ def run_remove(
             if isinstance(document.get(key), list):
                 try:
                     document[key].remove(value)
+                    any_removed = True
                 except ValueError:
                     try:
                         document[key].remove(int(str(value)))
+                        any_removed = True
                     except ValueError:
                         pass  # do nothing if there is nothing to remove
             else:
@@ -323,7 +328,7 @@ def run_remove(
                 value,
             )
 
-    return success
+    return success, any_removed
 
 
 def run_drop(document: DocumentLike, to_remove: Sequence[str]) -> None:
@@ -346,7 +351,7 @@ def run_rename(
     document: DocumentLike,
     to_rename: Sequence[
         tuple[str, AnyString, AnyString]],
-    key_types: dict[str, type],
+    field_types: dict[str, type],
     batch: bool,
 ) -> bool:
     """
@@ -357,11 +362,12 @@ def run_rename(
 
     :returns: A boolean indicating whether the update was successful.
     """
-    to_remove = [x[:2] for x in to_rename]
-    to_append = [x[::2] for x in to_rename]
-    success = run_remove(document, to_remove, batch)
-    if success:
-        success = run_append(document, to_append, key_types, batch)
+    to_remove = [(x[0], x[1]) for x in to_rename]
+    to_append = [(x[0], x[2]) for x in to_rename]
+
+    success, any_removed = run_remove(document, to_remove, batch)
+    if success and any_removed:
+        success = run_append(document, to_append, field_types, batch)
     return success
 
 
@@ -537,8 +543,8 @@ def cli(
         logger.warning(no_documents_retrieved_message)
         return
 
-    from papis.commands.doctor import get_key_type_check_keys
-    known_key_types = get_key_type_check_keys()
+    from papis.document import get_document_field_types
+    known_field_types = get_document_field_types()
 
     success = True
     processed_documents = []
@@ -547,23 +553,23 @@ def cli(
 
         ctx.data.update(document)
         if to_set:
-            run_set(ctx.data, to_set, known_key_types)
+            run_set(ctx.data, to_set, known_field_types)
 
         if to_append and success:
-            success = run_append(ctx.data, to_append, known_key_types, batch)
+            success = run_append(ctx.data, to_append, known_field_types, batch)
 
         if to_remove and success:
-            success = run_remove(ctx.data, to_remove, batch)
+            success, _ = run_remove(ctx.data, to_remove, batch)
 
         if to_drop and success:
             run_drop(ctx.data, to_drop)
 
         if to_rename:
-            success = run_rename(ctx.data, to_rename, known_key_types, batch)
+            success = run_rename(ctx.data, to_rename, known_field_types, batch)
 
         if success:
             from papis.document import describe
-            logger.info("Updating %s.", describe(document))
+            logger.info("Processing '%s.'", describe(document))
 
             # get metadata from importers and merge them all together
             if from_importer:

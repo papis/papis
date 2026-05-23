@@ -52,7 +52,7 @@ def test_folder_name_flag(tmp_library: TemporaryLibrary,
     assert os.path.exists(old_folder_name)
 
     with monkeypatch.context() as m:
-        m.setattr(papis.tui.utils, "confirm", lambda *args, **kwargs: True)
+        m.setattr("papis.tui.utils.confirm", lambda *args, **kwargs: True)
 
         # Check that the document will be renamed according to the default pattern
         result = runner.invoke(
@@ -113,7 +113,7 @@ def test_rename_no_matching_documents(tmp_library: TemporaryLibrary,
         runner = PapisRunner()
         result = runner.invoke(
             cli,
-            ["--all", "--batch", "url:https://youtu.be/dQw4w9WgXcQ"])
+            ["--all", "--batch", 'url:"https://youtu.be/dQw4w9WgXcQ"'])
         assert result.exit_code == 0
 
         warning, = caplog.records

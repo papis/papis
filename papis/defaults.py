@@ -38,6 +38,9 @@ settings: dict[str, Any] = {
     "doctor-keys-exist-keys": NOT_SET,
     "doctor-key-type-check-keys": NOT_SET,
     "doctor-key-type-check-separator": NOT_SET,
+    "doctor-key-type-keys": NOT_SET,
+    "doctor-key-type-keys-extend": NOT_SET,
+    "doctor-key-type-separator": NOT_SET,
 
     # general settings
     "local-config-file": ".papis.config",
@@ -50,7 +53,7 @@ settings: dict[str, Any] = {
     "default-library": "papers",
     "format-doc-name": "doc",
     "match-format": _f(
-        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}"),
+        "{doc[tags]}{doc.subfolder}{doc[title]}{doc[author]}{doc[year]}{doc[ref]}"),
     "header-format": _f(
         "<ansired>{doc.html_escape[title]}</ansired>\n"
         " <ansigreen>{doc.html_escape[author]}</ansigreen>\n"
@@ -72,6 +75,31 @@ settings: dict[str, Any] = {
         "<ansired>{library[name]}</ansired>"
         " <ansiblue>{library[paths]}</ansiblue>"
     ),
+    "document-field-types": [
+        "abstract:str",
+        "author:str",
+        "author_list:list",
+        "doi:str",
+        "files:list",
+        "isbn:str",
+        "journal:str",
+        "month:int",
+        "note:str",
+        "notes:str",
+        "publisher:str",
+        "ref:str",
+        "shorttitle:str",
+        "tags:list",
+        "title:str",
+        "type:str",
+        "year:int",
+    ],
+    "document-field-types-extend": [],
+
+    # shell completions
+    "prefix-only-completions": False,
+    "completion-format": _f("{doc[ref]}"),
+    "completion-help-format": _f("{doc[title]} - {doc[author]}"),
 
     # tools
     "opentool": get_default_opener(),
@@ -96,6 +124,12 @@ settings: dict[str, Any] = {
     # csl
     "csl-style": "harvard1",
     "csl-formatter": "plain",
+
+    # csv
+    "exporter-csv-keys": [],
+    "exporter-csv-keys-extend": [],
+    "exporter-csv-delimiter": ",",
+    "exporter-csv-dialect": "excel",
 
     # add
     "ref-format": _f("{doc[title]:.15} {doc[author]:.6} {doc[year]}"),
@@ -132,27 +166,7 @@ settings: dict[str, Any] = {
     "doctor-html-codes-keys-extend": [],
     "doctor-html-tags-keys": ["title", "author", "abstract", "journal"],
     "doctor-html-tags-keys-extend": [],
-    "doctor-key-type-keys": [
-        "abstract:str",
-        "author:str",
-        "author_list:list",
-        "doi:str",
-        "files:list",
-        "isbn:str",
-        "journal:str",
-        "month:int",
-        "note:str",
-        "notes:str",
-        "publisher:str",
-        "ref:str",
-        "shorttitle:str",
-        "tags:list",
-        "title:str",
-        "type:str",
-        "year:int",
-    ],
-    "doctor-key-type-keys-extend": [],
-    "doctor-key-type-separator": None,
+    "doctor-field-type-separator": None,
 
     # open
     "open-mark": False,
@@ -234,6 +248,7 @@ settings: dict[str, Any] = {
     "database-backend": "papis",
     "use-cache": True,
     "cache-dir": None,
+
     "whoosh-schema-fields": ["doi"],
     "whoosh-schema-prototype":
     "{\n"
@@ -242,6 +257,20 @@ settings: dict[str, Any] = {
     '"year": TEXT(stored=True),\n'
     '"tags": TEXT(stored=True),\n'
     "}",
+
+    "sqlite-schema-fields": [
+        "author",
+        "doi",
+        "journal",
+        "ref",
+        "tags",
+        "title",
+        "type",
+        "year",
+        # NOTE: this is mainly here for a 'test_rename_no_matching_documents'
+        "url",
+    ],
+    "sqlite-schema-fields-extend": [],
 
     # fzf options
     "fzf-binary": "fzf",

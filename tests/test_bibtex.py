@@ -70,9 +70,10 @@ def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
     from papis.bibtex import ref_cleanup
 
     for (r, rc) in [
+            (r"Albert Einstein ()\:1923", "Albert_Einstein:1923"),
             ("Einstein über etwas und so 1923", "Einstein_uber_etwas_und_so_1923"),
             ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),  # noqa: RUF001
-            (r"Albert_Ein\_stein\.1923.b", "Albert_Ein__stein_.1923_b"),
+            (r"Albert_Ein\_stein\.1923.b", "Albert_Ein_stein.1923_b"),
             ]:
         assert rc == ref_cleanup(r)
 

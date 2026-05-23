@@ -164,7 +164,7 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
         bibtex_explorer.callback(bibfile)
 
 
-cli.add_command(bibtex_explorer, "red")
+cli.add_command(bibtex_explorer, "read")
 
 
 @cli.command("add")
@@ -559,7 +559,7 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
 @cli.command("doctor")
 @click.help_option("-h", "--help")
 @click.option("-k", "--key",
-              help="Field to test for uniqueness, default is ref.",
+              help="Key to check exists in all documents",
               multiple=True,
               default=("doi", "url", "year", "title", "author"),
               type=str)
@@ -657,8 +657,14 @@ def cli_iscited(ctx: click.Context, _files: list[str]) -> None:
 @click.help_option("-h", "--help")
 @click.option("-o", "--out", help="Out folder to export.", default=None)
 @papis.cli.all_option()
+@papis.cli.bool_flag(
+    "-b", "--batch",
+    help="Batch mode (do not prompt or otherwise).")
 @click.pass_context
-def cli_import(ctx: click.Context, out: str | None, _all: bool) -> None:
+def cli_import(ctx: click.Context,
+               out: str | None,
+               _all: bool,
+               batch: bool) -> None:
     """
     Import documents from a BibTeX file to the current library.
 
@@ -679,34 +685,32 @@ def cli_import(ctx: click.Context, out: str | None, _all: bool) -> None:
         logger.info("Setting library to '%s'.", out)
         if not os.path.exists(out):
             os.makedirs(out)
+
         papis.config.set_lib_from_name(out)
 
     from papis.commands.add import run
     from papis.document import describe
 
-    for j, doc in enumerate(docs):
-        file_value = None
-        filepaths = []
-        for k in ("file", "FILE"):
-            logger.info(
-                "%d. {c.Fore.YELLOW}%-80.80s{c.Style.RESET_ALL}",
-                j, describe(doc))
-            if k in doc:
-                file_value = doc[k]
-                logger.info("\tKey '%s' exists", k)
-                break
+    with papis.logging.quiet("papis.commands.add"):
+        for j, doc in enumerate(docs):
+            file_value = None
+            filepaths = []
+            for k in ("file", "FILE"):
+                if k in doc:
+                    file_value = doc[k]
+                    logger.debug("\tKey '%s' exists", k)
+                    break
 
-        if not file_value:
-            logger.info(
-                "\t{c.Fore.YELLOW}No PDF files will be imported{c.Style.RESET_ALL}.")
-        else:
-            filepaths = [f for f in file_value.split(":") if os.path.exists(f)]
+            if file_value:
+                # NOTE: this matches the way Zotero adds files (i.e. colon-separated
+                # entries), but it's not an established practice probably.
+                filepaths = [f for f in file_value.split(":") if os.path.exists(f)]
 
-        if not filepaths and file_value is not None:
-            logger.info(
-                "\t{c.Fore.RED}No valid file in '%s'{c.Style.RESET_ALL}.",
-                file_value)
-        else:
-            logger.info("\tFound %d file(s).", len(filepaths))
+                if not filepaths:
+                    logger.info(
+                        "\t{c.Fore.RED}Provided files do not exist{c.Style.RESET_ALL}: "
+                        "%s.", file_value)
 
-        run(filepaths, data=doc)
+            run(filepaths, data=doc, batch=batch)
+            logger.info("%d.\t{c.Fore.YELLOW}%-80.80s{c.Style.RESET_ALL}",
+                        j, describe(doc))

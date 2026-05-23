@@ -47,12 +47,14 @@ Features
 - **Integrate with your editor** with plugins for (Neo)vim and Emacs.
 - **TUIs** make it easy to get a quick overview of your library.
 - **Use the web app** when the CLI doesn't quite cut it (for example on your tablet).
-- **Hacking** Papis is easy! Use the API to easily create your own custom python scripts.
+- **Hacking** Papis is easy! Use the API to easily create your own custom Python
+  scripts.
 
 Quick tour
 ----------
 
-Install Papis with pip (or `one of the alternatives <https://papis.readthedocs.io/en/latest/install.html>`__):
+Install Papis with pip (or `one of the alternatives
+<https://papis.readthedocs.io/en/latest/install.html>`__):
 
 .. code:: bash
 
@@ -161,14 +163,17 @@ the *in-development* version `here <https://papis.readthedocs.io/en/latest/>`__.
 Reviews and blog posts
 ----------------------
 
-- `Blog post <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__
+- `Blog post
+  <https://alejandrogallo.github.io/blog/posts/getting-paper-references-with-papis/>`__
   about getting a paper's references with ``papis explore``.
-- `Blog post <https://nicolasshu.com/zotero_and_papis.html>`__ about using Papis
-  with Zotero and Syncthing.
-- GNU/Linux Switzerland `wrote about Papis <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__
+- `Blog post
+  <https://web.archive.org/web/20250428103318/https://nicolasshu.com/zotero_and_papis.html>`__
+  about using Papis with Zotero and Syncthing.
+- GNU/Linux Switzerland `wrote about Papis
+  <https://gnulinux.ch/papis-dokumentenverwaltung-fuer-die-kommandozeile>`__
   *(in German)*.
 - The folks at OSTechNix wrote a review of `Papis
-  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager/>`__.
+  <https://www.ostechnix.com/papis-command-line-based-document-bibliography-manager>`__.
 - A `review of Papis <https://ubunlog.com/papis-administrador-documentos/>`__
   by Ubunlog *(in Spanish)*.
 
@@ -180,7 +185,7 @@ Contributions are very welcome! Take a look at
 general rules and `HACKING.md <https://github.com/papis/papis/blob/main/HACKING.md>`__
 for additional code-related information. We encourage you to also check out,
 contribute to, or even help maintain the other projects in the Papis ecosystem
-mentioned below :wink:.
+mentioned below 😉.
 
 The Papis ecosystem
 -------------------
@@ -196,26 +201,27 @@ extend Papis' features or integrate it with other software.
      - Maintained by
 
    * - `papis (core) <https://github.com/papis/papis-rofi/>`__
-     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__, `Julian Hauser <https://github.com/jghauser>`__, `Alex Fikl <https://github.com/alexfikl>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__,
+       `Julian Hauser <https://github.com/jghauser>`__,
+       `Alex Fikl <https://github.com/alexfikl>`__
 
    * - `papis-rofi <https://github.com/papis/papis-rofi/>`__
      - `Etn40ff <https://github.com/Etn40ff>`__
-
    * - `papis-dmenu <https://github.com/papis/papis-dmenu>`__
      - you?
+   * - `papis-tui <https://github.com/supersambo/papis-tui>`__
+     - `Stephan Schlögl <https://github.com/supersambo>`__
 
    * - `papis-vim <https://github.com/papis/papis-vim>`__
      - you?
-
    * - `papis.nvim <https://github.com/jghauser/papis.nvim>`__
      - `Julian Hauser <https://github.com/jghauser>`__
-
    * - `papis-emacs <https://github.com/papis/papis.el>`__
-     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__
+     - `Alejandro Gallo <https://alejandrogallo.github.io/>`__,
+       `Jean-Alexandre Barszcz <https://jabarsz.cz/en/home>`__
 
    * - `papis-zotero <https://github.com/papis/papis-zotero>`__
      - `Alex Fikl <https://github.com/alexfikl>`__
-
    * - `papis-libgen <https://github.com/papis/papis-zotero>`__
      - you?
 
@@ -232,7 +238,7 @@ Papis isn't the only fish in the pond. You might also be interested in:
 - `bibman <https://codeberg.org/KMIJPH/bibman>`__ (open source)
 - `bibiman <https://codeberg.org/lukeflo/bibiman>`__ (open source)
 - `cobib <https://github.com/mrossinek/cobib>`__ (open source)
-- `jabref <https://www.jabref.org/>`__ (open source)
+- `JabRef <https://www.jabref.org/>`__ (open source)
 - `Mendeley <https://www.mendeley.com/>`__ (proprietary)
 - `pubs <https://github.com/pubs/pubs/>`__ (open source)
 - `Xapers <https://finestructure.net/xapers/>`__ (open source)
@@ -244,6 +250,17 @@ Thanks
 
 We thank `Irteza Rehman <https://www.irtezarehman.com/>`__ for generously creating
 our beautiful logo.
+
+Funding
+-------
+
+This project is funded through `NGI0 Commons Fund <https://nlnet.nl/commonsfund>`__,
+a fund established by `NLnet <https://nlnet.nl>`__ with financial support from the
+European Commission's `Next Generation Internet <https://ngi.eu>`__ program. Learn
+more at the `NLnet project page <https://nlnet.nl/project/Papis>`__.
+
+|nlnet_logo|
+|nlnet_ngi0|
 
 .. |ghbadge| image:: https://github.com/papis/papis/workflows/CI/badge.svg
    :target: https://github.com/papis/papis/actions?query=branch%3Amain+workflow%3ACI
@@ -261,3 +278,8 @@ our beautiful logo.
 .. |bibtex_export| image:: https://papis.github.io/images/bibtex_export.gif
 .. |add| image:: https://papis.github.io/images/add.gif
 .. |web_app| image:: https://papis.github.io/images/web_app.jpg
+
+.. |nlnet_logo| image:: https://nlnet.nl/logo/banner.png
+   :width: 20%
+.. |nlnet_ngi0| image:: https://nlnet.nl/image/logos/NGI0_tag.svg
+   :width: 20%

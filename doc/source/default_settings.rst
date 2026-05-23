@@ -137,6 +137,28 @@ General settings
     non-intrusive way. Preferably, this should be a short string that allows
     easily identifying which document is being referenced.
 
+.. papis-config:: completion-format
+
+    Format for document autocompletion. It is used to construct the completion
+    value that is given to the shell when pressing Tab after entering a
+    search query in the command-line. For example, writing ``papis addto ein<TAB>``
+    will query the database for the ``ein`` string, but the completion will
+    be constructed using ``completion-format`` from the matching documents.
+
+.. papis-config:: completion-help-format
+
+    Format for the tip displayed next to document completions in the command line
+    upon pressing Tab. Not all shells support this.
+
+.. papis-config:: prefix-only-completions
+    :type: bool
+
+    Whether to only suggest completions that start with the inserted query.
+    Setting this to true will only suggest e.g. `einstein1905` when the query is
+    `ein` but neither `wittgenstein1921` nor `goethe1780` with the title *Ein
+    Gleiches*. This can be useful if your shell trims the query to the longest
+    common prefix, like zsh.
+
 .. papis-config:: sort-field
     :type: str
 
@@ -162,7 +184,7 @@ General settings
     based on the Python formatter. These will need to all be specified explicitly
     if another formatter is chosen.
 
-    **Note** The older (misspelled) version ``"formater"`` is deprecated.
+    **Note**: The older (misspelled) version ``"formater"`` is deprecated.
 
 .. papis-config:: doc-paths-lowercase
     :type: bool
@@ -175,14 +197,13 @@ General settings
 
     By default document paths in Papis libraries can contain only a limited set
     of characters. This is mainly to exclude characters that are invalid for
-    file paths on any operating system or possibly unprintable. Allowed
-    characters are:
+    file paths on any operating system or possibly unprintable. Currently, the
+    following character sets are hardcoded:
 
-    * latin letters (a to z)
-    * arabic digits (0 to 9)
-    * dots (for file extensions)
-    * directory separators (usually ``/`` on UNIX-like systems and ``\\``
-      on Windows)
+    * lowercase ASCII letters (a to z),
+    * uppercase ASCII letters (A to Z) if :confval:`doc-paths-lowercase` is *False*,
+    * digits (0 to 9),
+    * dots (for file extensions).
 
     This setting allows to append additional characters to this set. It expects
     a string containing all additional valid characters. A possible value would
@@ -212,6 +233,28 @@ General settings
     ``papis --pick-lib export --all``. The format takes a dictionary named
     ``library`` with the keys *name*, *dir*, and *paths*.
 
+.. papis-config:: document-field-types
+
+   A list of ``key:type`` strings defining expected types for document
+   fields. The type should be a builtin Python type. For example, this can be
+   ``["year:int", "tags:list"]`` to check that the year is an integer and the
+   tags are given as a list in a document. These values are used in the ``papis
+   doctor`` check ``field-type``, in the ``papis update`` command, etc.
+
+   **Note**: This configuration option was previously available as
+   ``doctor-key-type-keys`` and ``doctor-key-type-check-keys``. Both of
+   these are deprecated (starting with Papis 0.16) and will be removed.
+
+.. papis-config:: document-field-types-extend
+    :type: :class:`~typing.List` [:class:`str`]
+
+    A list of ``key:type`` strings that extend the default ones from :confval:`document-field-types`.
+    By setting these, you can extend the defaults rather than overwriting them.
+
+    **Note**: This configuration option was previously available as
+    ``doctor-key-type-keys-extend``. This version is deprecated (starting with
+    Papis 0.16) and will be removed.
+
 .. papis-config:: csl-style
 
     The CSL style name used by the CSL exporter. For a list of styles and their
@@ -226,6 +269,29 @@ General settings
    "plain", "html" and "rst". Note that these are different to the Papis formatter
    and are just used to add style to the resulting citation (e.g. marking titles
    as italic).
+
+.. papis-config:: exporter-csv-keys
+
+   A list of keys that should be exported to CSV. By default, this exports all the
+   BibTeX supported keys from :data:`papis.bibtex.bibtex_keys`. Note that any
+   list keys will be concatenated using a semicolon.
+
+.. papis-config:: exporter-csv-keys-extend
+
+   A list of keys that extend the default :confval:`exporter-csv-keys`. For example,
+   the default BibTeX keys do not include the ``ref``, so this can be added here
+   as a simple extension.
+
+.. papis-config:: exporter-csv-delimiter
+
+   The delimiter used by the CSV exporter. By default this is a comma, but it
+   can be set to other delimiters supported by the Python :mod:`csv` module.
+   Setting it to a "\t" (TAB) will result in a tab-separated file (TSV).
+
+.. papis-config:: exporter-csv-dialect
+
+   The dialect used by the :mod:`csv` module to export the file. In general, this
+   should not be changed unless working with a specific parser.
 
 Tools options
 -------------
@@ -524,7 +590,7 @@ Browse options
     supports the following special values:
 
     * ``"doi"``: construct a URL from the DOI as ``https://dx.doi.org/<DOI>``.
-    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch/isbn/<ISBN>``.
+    * ``"isbn"``: construct a URL from the ISBN as ``https://isbnsearch.org/isbn/<ISBN>``.
     * ``"ads"``: construct a URL for the Astrophysics Data System as
       ``https://ui.adsabs.harvard.edu/abs/<DOI>``.
     * ``"auto"``: automatically pick between ``url``, ``doi`` and ``isbn``
@@ -648,25 +714,10 @@ Doctor options
     :confval:`doctor-html-tags-keys`. This list extends instead of overwriting
     the given keys.
 
-.. papis-config:: doctor-key-type-keys
-
-   A list of strings ``key:type`` used by the ``key-type`` check. This
-   check will show an error if the key does not have the corresponding type. The
-   type should be a builtin Python type. For example, this can be
-   ``["year:int", "tags:list"]`` to check that the year is an integer and the
-   tags are given as a list in a document.
-
-.. papis-config:: doctor-key-type-keys-extend
-    :type: :class:`~typing.List` [:class:`str`]
-
-    A list of keys that extend the default ones from
-    :confval:`doctor-key-type-keys`. This list extends instead of overwriting
-    the given keys.
-
-.. papis-config:: doctor-key-type-separator
+.. papis-config:: doctor-field-type-separator
     :type: str
 
-    A separator used by the ``key-type`` check fixer. When converting from
+    A separator used by the ``field-type`` check fixer. When converting from
     :class:`str` to :class:`list`, it is used to split the string into a list,
     and when converting from :class:`list` to :class:`str`, it is used to join
     list items. The split will ignore additional whitespace around the separator
@@ -930,6 +981,16 @@ Databases
     for more information. The resulting string is passed to :func:`eval`, so
     care should be taken when modifying it.
 
+.. papis-config:: sqlite-schema-fields
+
+    A list with the fields that should be included in the SQLite database. In
+    general, these are the fields that can then be searched for by name, using
+    e.g. ``author:Einstein``.
+
+.. papis-config:: sqlite-schema-fields-extend
+
+   Append fields to the default :confval:`sqlite-schema-fields`.
+
 Terminal user interface (picker)
 --------------------------------
 
@@ -951,7 +1012,9 @@ Styling
 ^^^^^^^
 
 For styling the individual components, see the extensive documentation available
-`here <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html>`__.
+here_.
+
+.. _here: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/styling.html
 
 .. papis-config:: status_line_format
     :section: tui
@@ -1004,8 +1067,9 @@ For styling the individual components, see the extensive documentation available
 Key bindings
 ^^^^^^^^^^^^
 
-For information about keybindings, see the corresponding
-`documentation <https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html>`__.
+For information about keybindings, see the corresponding documentation_.
+
+.. _documentation: https://python-prompt-toolkit.readthedocs.io/en/latest/pages/advanced_topics/key_bindings.html
 
 .. papis-config:: move_down_key
     :section: tui
@@ -1086,7 +1150,7 @@ of the document, as described by the :confval:`match-format` setting.
 
     The Papis format pattern corresponding to this setting is given the additional
     variable ``c``, which is the ``colorama`` library. Refer to the ``colorama``
-    `documentation <https://github.com/tartley/colorama/blob/master/colorama/ansi.py#L49>`__.
+    `documentation <https://github.com/tartley/colorama/blob/master/README.rst>`__.
     to see which colors are available. For instance, if you want the title in
     red, you would put in your :confval:`fzf-header-format`:
 

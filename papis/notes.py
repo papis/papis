@@ -35,8 +35,8 @@ def notes_path(doc: Document) -> str:
             papis.config.getformatpattern("notes-name"), doc,
             default="notes.tex")
 
-        from papis.paths import normalize_path
-        doc["notes"] = normalize_path(notes_name)
+        from papis.paths import normalize_path_part
+        doc["notes"] = normalize_path_part(notes_name)
 
         from papis.api import save_doc
         save_doc(doc)

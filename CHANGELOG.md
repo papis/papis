@@ -1,8 +1,69 @@
-# VERSION NEXT (TDB)
+# VERSION NEXT (TBD)
+
+## Dependency Changes
+
+* Switched from `pyparsing` to [Lark](https://lark-parser.readthedocs.io) for
+  query parsing.
+
+## Features
+
+### Major: SQLite database backend ([#1007](https://github.com/papis/papis/pull/1007))
+
+Papis added a new database backend based on the built-in `sqlite3` database as an
+alternative to the `papis` backend (based on `pickle`) and the `whoosh` backend.
+
+This new backend works similarly to the `whoosh` backend. To use it, you need to
+1. Set `database-backend = sqlite` in your configuration file (globally or per-library).
+2. Tinker with [sqlite](https://papis.readthedocs.io/en/latest/configuration.html#confval-sqlite-schema-fields) to add more fields you'd like to query.
+
+From preliminary testing, this backend seems to be quite fast, both for searching
+and caching. A quick benchmark on a library with about 2000 documents (and a query
+that returns about 15), the default `papis` backend gives
+```
+> hyperfine --warmup 3 -- 'papis list --all QUERY'
+Benchmark 1: papis list --all QUERY
+  Time (mean ± σ):     322.8 ms ±  20.8 ms    [User: 290.3 ms, System: 31.0 ms]
+  Range (min … max):   308.5 ms … 379.1 ms    10 runs
+```
+and the `sqlite` backend gives
+```
+Benchmark 1: papis list --all QUERY
+  Time (mean ± σ):      97.4 ms ±  11.4 ms    [User: 81.1 ms, System: 15.3 ms]
+  Range (min … max):    79.7 ms … 115.2 ms    27 runs
+```
+
+### Major: Improve query syntax ([#1165](https://github.com/papis/papis/pull/1165))
+
+Historically, the query syntax when using `database-backend = papis` has been
+limited to using strings and key-value pairs. The new version gets it closer to
+that of the other backends, by adding support for `AND`, `OR` and `NOT` boolean
+operators, as well as grouping using parentheses. This allows constructing
+complex queries for searching your libraries.
+
+It generally looks as expected:
+```bash
+# find documents with either one of the two authors
+papis open 'author:einstein OR author:bohr'
+# find papers referencing physics, but not Einstein
+papis open 'physics NOT author:einstein'
+# find Einstein's paper from some years
+papis open 'author:einstein AND (year:1905 OR year:1915)'
+# use regex to match the beginning of a title
+papis open 'title:^Quantum'
+```
+
+Note that this new query syntax still uses the `match-format` configuration setting
+for free-form terms in the query (i.e. ones not using a `key:value` format).
+
+# VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes
 
 - Minimum required Python version bumped to 3.10.
+- Added support for Python 3.14. Previous versions would fail on this version
+  due to some less orthodox use of the `multiprocessing` module. In older versions,
+  the issue in question can be worked around by exporting `PAPIS_NP=0` or using
+  `papis --np 0`, which essentially ignores `multiprocessing`.
 - The [stevedore](https://docs.openstack.org/stevedore/latest/) library is no
   longer used for plugin management (switched to `importlib.metadata`).
 - The [citeproc-py](https://github.com/citeproc-py/citeproc-py) library is now
@@ -14,7 +75,7 @@
 
 ### Major: Improved formatter support ([#711](https://github.com/papis/papis/pull/711))
 
-Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#config-settings-formatter)
+Papis supports [formatter plugins](https://papis.readthedocs.io/en/latest/configuration.html#confval-formatter)
 that act on certain configuration settings that can depend on the current
 document. Until now, when changing from one formatter to another, all settings
 needed to be rewritten (including default ones, since they used the `python`
@@ -69,6 +130,20 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1039](https://github.com/papis/papis/pull/1039)).
 - Update USENIX downloader to bypass cloudflare if possible
   ([#1045](https://github.com/papis/papis/pull/1045)).
+- Add a `papis doctor` check that renames BibLaTeX keys (`biblatex-key-convert`)
+  ([#1049](https://github.com/papis/papis/pull/1049)).
+- Add a `papis doctor` check to clean up strings (`string-cleaner`)
+  ([#1053](https://github.com/papis/papis/pull/1053)).
+- Make more imports local or lazy to improve startup times
+  ([#1054](https://github.com/papis/papis/pull/1054)).
+- Add a [lingbuzz](https://lingbuzz.net/) downloader
+  ([#1100](https://github.com/papis/papis/pull/1100)).
+- Add a `--batch` flag to `papis bibtex import`
+  ([#1105](https://github.com/papis/papis/pull/1105)).
+- Add shell completions for queries, e.g. `papis edit ein<TAB>`
+  ([#1112](https://github.com/papis/papis/pull/1112)).
+- Allow colons in the `ref-format`
+  ([#1135](https://github.com/papis/papis/pull/1135)).
 
 ## Bug Fixes
 
@@ -82,6 +157,12 @@ papis --set csl-style harvard1 export --format csl <QUERY>
   ([#1034](https://github.com/papis/papis/pull/1034)).
 - Fix crash in `typst` exporter for unknown document parent types
   ([#1035](https://github.com/papis/papis/pull/1035)).
+- Allow the "-" (minus) in file names and other strings
+  ([#1048](https://github.com/papis/papis/pull/1048)).
+- Fix `papis git` command with click 8.3.0
+  ([#1077](https://github.com/papis/papis/pull/1077)).
+- Allow missing author name in the doctor `string-cleaner` check
+  ([#1133](https://github.com/papis/papis/pull/1133)).
 
 # VERSION 0.14.1 (March 1, 2025)
 
@@ -209,9 +290,9 @@ string with a separator. You can quickly transform your tags into a list using
 
 ```sh
 papis \
-    --set doctor-key-type-keys '["tags:list"]' \
-    --set doctor-key-type-separator ' ' \
-    doctor --fix --all --explain -t key-type QUERY
+    --set document-field-types '["tags:list"]' \
+    --set doctor-field-type-separator ' ' \
+    doctor --fix --all --explain -t field-type QUERY
 ```
 
 where you may need to change the separator to match your choice.
@@ -257,7 +338,7 @@ engine to output well-formatted entries for each document type.
 
 Other smaller noteworthy changes:
 
-- `key-type`: added fixers that automatically convert some types
+- `field-type`: added fixers that automatically convert some types
   ([#652](https://github.com/papis/papis/pull/652)
   [#656](https://github.com/papis/papis/pull/656)).
 - `keys-exist`: added fixers for `author` and `author_list`

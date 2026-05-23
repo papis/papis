@@ -51,8 +51,8 @@ class _PythonStringFormatter(StringFormatter):
         if conversion == "c":
             return str(value).capitalize()
         if conversion == "y":
-            from papis.paths import normalize_path
-            return normalize_path(str(value))
+            from papis.paths import normalize_path_part
+            return normalize_path_part(str(value))
 
         return super().convert_field(value, conversion)
 
@@ -87,7 +87,7 @@ class PythonFormatter(Formatter):
     The following special conversions are implemented: "l" for :meth:`str.lower`,
     "u" for :meth:`str.upper`, "t" for :meth:`str.title`, "c" for
     :meth:`str.capitalize`, "y" that uses ``slugify`` (through
-    :func:`papis.paths.normalize_path`). Additionally, the following
+    :func:`papis.paths.normalize_path_part`). Additionally, the following
     syntax is available to select subsets from a string:
 
     .. code:: python

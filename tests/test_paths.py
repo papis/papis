@@ -27,60 +27,62 @@ def test_unique_suffixes() -> None:
 
 
 def test_normalize_path(tmp_config: TemporaryConfiguration) -> None:
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
 
     assert (
-        normalize_path("{{] __ }}albert )(*& $ß $+_ einstein (*]")
+        normalize_path_part("{{] __ }}albert )(*& $ß $+_ einstein (*]")
         == "albert-ss-einstein"
     )
     assert (
-        normalize_path(
+        normalize_path_part(
             os.path.basename('/ashfd/df/  #$%@#$ }{_+"[ ]hello öworld--- .pdf')
         )
         == "hello-oworld-.pdf"
     )
-    assert normalize_path("масса и енергиа.pdf") == "massa-i-energia.pdf"
-    assert normalize_path("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
+    assert normalize_path_part("масса и енергиа.pdf") == "massa-i-energia.pdf"
+    assert normalize_path_part("الامير الصغير.pdf") == "lmyr-lsgyr.pdf"
 
     assert (
-        normalize_path("post-truth: a meta-analysis", extra_chars=" ", separator="")
+        normalize_path_part(
+            "post-truth: a meta-analysis", extra_chars=" ", separator="")
         == "posttruth a metaanalysis"
     )
     assert (
-        normalize_path("post-truth: a meta-analysis", extra_chars="-", separator=" ")
+        normalize_path_part(
+            "post-truth: a meta-analysis", extra_chars="-", separator=" ")
         == "post-truth a meta-analysis"
     )
 
 
 def test_normalize_path_config(tmp_config: TemporaryConfiguration) -> None:
     import papis.config
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
 
     papis.config.set("doc-paths-lowercase", "False")
     assert (
-        normalize_path("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
+        normalize_path_part("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
         == "Albert-ss-Einstein"
     )
 
     papis.config.set("doc-paths-extra-chars", "_")
     assert (
-        normalize_path("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
+        normalize_path_part("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
         == "__-Albert-ss-_-Einstein"
     )
     assert (
-        normalize_path("{{] __Albert )(*& $ß $+_ Einstein (*]")
+        normalize_path_part("{{] __Albert )(*& $ß $+_ Einstein (*]")
         == "__Albert-ss-_-Einstein"
     )
 
     papis.config.set("doc-paths-word-separator", "_")
     assert (
-        normalize_path("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
+        normalize_path_part("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
         == "___Albert_ss___Einstein"
     )
 
     papis.config.set("doc-paths-lowercase", "True")
     assert (
-        normalize_path("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
+        normalize_path_part("{{] __ }}Albert )(*& $ß $+_ Einstein (*]")
         == "___albert_ss___einstein"
     )
 
@@ -262,7 +264,7 @@ def test_rename_document_files(tmp_config: TemporaryConfiguration) -> None:
                                       file_name_format=False,
                                       allow_remote=False)
 
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
     assert new_files == [
-        normalize_path(os.path.basename(filename)) for filename in orig_files
+        normalize_path_part(os.path.basename(filename)) for filename in orig_files
         ]

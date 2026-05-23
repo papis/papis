@@ -246,14 +246,14 @@ def create_identifier(input_list: str | None = None, skip: int = 0) -> Iterator[
 
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
     warn("'papis.utils.clean_document_name' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.paths.normalize_path' instead.",
+         "Papis v0.16. Use 'papis.paths.normalize_path_part' instead.",
          DeprecationWarning, stacklevel=2)
 
     if is_path:
         doc_path = os.path.basename(doc_path)
 
-    from papis.paths import normalize_path
-    return normalize_path(doc_path)
+    from papis.paths import normalize_path_part
+    return normalize_path_part(doc_path)
 
 
 def locate_document_in_lib(document: Document,

@@ -126,7 +126,7 @@ class Database(ABC):
 
         return results[0] if results else None
 
-    def maybe_compute_id(self, doc: Document) -> None:
+    def maybe_compute_id(self, doc: Document) -> str:
         """Compute a Papis ID for the document *doc*.
 
         If the document already has an ID, then the document is skipped and the
@@ -135,8 +135,8 @@ class Database(ABC):
         """
         from papis.id import ID_KEY_NAME, compute_an_id
 
-        if ID_KEY_NAME in doc:
-            return
+        if (new_id := doc.get(ID_KEY_NAME)) is not None:
+            return str(new_id)
 
         # NOTE: `compute_an_id` adds a random seed to the ID, so this is quite
         # unlikely to become an infinite loop
@@ -147,6 +147,8 @@ class Database(ABC):
         # FIXME: Should this save the document?
         doc[ID_KEY_NAME] = new_id
         doc.save()
+
+        return new_id
 
     def get_lib(self) -> str:
         from warnings import warn

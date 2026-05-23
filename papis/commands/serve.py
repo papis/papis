@@ -471,9 +471,11 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
             return
         else:
             os.unlink(fdr.name)
+
             logger.info("Info file is valid.")
-            with open(info_path, "w+", encoding="utf-8") as _fdr:
-                _fdr.write(new_info)
+            with open(info_path, "w+", encoding="utf-8") as fd:
+                fd.write(new_info)
+
             doc.load()
 
             from papis.api import save_doc

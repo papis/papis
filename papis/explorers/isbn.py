@@ -28,6 +28,12 @@ def cli(ctx: click.core.Context, query: str, service: str) -> None:
             pick \\
             cmd 'firefox {doc[url]}'
     """
+    try:
+        import isbnlib  # noqa: F401
+    except ImportError:
+        logger.error("'isbn' explorer requires 'isbnlib'.")
+        return None
+
     if not query:
         logger.warning("No query provided.")
         return None

@@ -219,8 +219,8 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
         assert not errors
 
 
-def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import key_type_check
+def test_field_type_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import field_type_check
 
     doc = papis.document.from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
@@ -230,59 +230,59 @@ def test_key_type_check(tmp_config: TemporaryConfiguration) -> None:
         })
 
     # check: invalid setting parsing
-    papis.config.set("doctor-key-type-keys", ["year = WithoutColon"])
-    errors = key_type_check(doc)
+    papis.config.set("document-field-types", ["year = WithoutColon"])
+    errors = field_type_check(doc)
     assert not errors
 
-    papis.config.set("doctor-key-type-keys", ["year:NotBuiltin"])
-    errors = key_type_check(doc)
+    papis.config.set("document-field-types", ["year:NotBuiltin"])
+    errors = field_type_check(doc)
     assert not errors
 
     # check: incorrect type
-    papis.config.set("doctor-key-type-keys", ["year:int"])
-    error, = key_type_check(doc)
+    papis.config.set("document-field-types", ["year:int"])
+    error, = field_type_check(doc)
     assert error.payload == "year"
 
     # check: correct type
-    papis.config.set("doctor-key-type-keys", ["  author_list :    list"])
-    errors = key_type_check(doc)
+    papis.config.set("document-field-types", ["  author_list :    list"])
+    errors = field_type_check(doc)
     assert not errors
 
     # check: fix int
-    papis.config.set("doctor-key-type-keys", ["year:int"])
-    error, = key_type_check(doc)
+    papis.config.set("document-field-types", ["year:int"])
+    error, = field_type_check(doc)
     assert error.payload == "year"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["year"] == 2023
 
     # check: fix list
-    papis.config.set("doctor-key-type-separator", " ")
-    papis.config.set("doctor-key-type-keys", ["projects:list"])
-    error, = key_type_check(doc)
+    papis.config.set("doctor-field-type-separator", " ")
+    papis.config.set("document-field-types", ["projects:list"])
+    error, = field_type_check(doc)
     assert error.payload == "projects"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["projects"] == ["test-key-project"]
 
-    papis.config.set("doctor-key-type-keys", ["tags:list"])
-    error, = key_type_check(doc)
+    papis.config.set("document-field-types", ["tags:list"])
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
-    papis.config.set("doctor-key-type-separator", ",")
+    papis.config.set("doctor-field-type-separator", ",")
     doc["tags"] = "test-key-tag-1,test-key-tag-2    ,  test-key-tag-3"
-    error, = key_type_check(doc)
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()
     assert doc["tags"] == ["test-key-tag-1", "test-key-tag-2", "test-key-tag-3"]
 
-    papis.config.set("doctor-key-type-keys", [])
-    papis.config.set("doctor-key-type-keys-extend", ["tags:str"])
-    error, = key_type_check(doc)
+    papis.config.set("document-field-types", [])
+    papis.config.set("document-field-types-extend", ["tags:str"])
+    error, = field_type_check(doc)
     assert error.payload == "tags"
     assert error.fix_action is not None
     error.fix_action()
@@ -422,16 +422,9 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None:
-    from papis.commands.doctor import (
-        STRING_CLEANER_INITIALS_DOTS_REGEX,
-        STRING_CLEANER_INITIALS_SPACE_REGEX,
-    )
+    from papis.commands.doctor import _dotify_initials as dotify  # noqa: PLC2701
 
-    def dotify(text: str) -> str:
-        text = STRING_CLEANER_INITIALS_SPACE_REGEX.sub(r"\1.", text)
-        text = STRING_CLEANER_INITIALS_DOTS_REGEX.sub(r" ", text)
-        return text
-
+    # basic ASCII
     assert dotify("F") == "F."
     assert dotify("F.") == "F."
     assert dotify("A B") == "A. B."
@@ -440,6 +433,37 @@ def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None
     assert dotify("J.R.R") == "J. R. R."
     assert dotify("A. B.C") == "A. B. C."
     assert dotify("J.R.R. Tolkien") == "J. R. R. Tolkien"
+    assert dotify("j.R.R. Tolkien") == "J. R. R. Tolkien"
+
+    # accented Latin characters
+    assert dotify("É Dupont") == "É. Dupont"
+    assert dotify("Ö Schmidt") == "Ö. Schmidt"
+    assert dotify("Á.É. Kovács") == "Á. É. Kovács"
+    assert dotify("J.Ø. Hansen") == "J. Ø. Hansen"
+    assert dotify("Ñ Rodríguez") == "Ñ. Rodríguez"
+
+    # cyrillic initials
+    assert dotify("А.С. Пушкин") == "А. С. Пушкин"  # noqa: RUF001
+    assert dotify("Л Толстой") == "Л. Толстой"
+    assert dotify("Ф.М. Достоевский") == "Ф. М. Достоевский"  # noqa: RUF001
+
+    # greek initials
+    assert dotify("Α.Β. Γεωργίου") == "Α. Β. Γεωργίου"  # noqa: RUF001
+
+    # mixed scripts (transliterated contexts)
+    assert dotify("É.A. Müller") == "É. A. Müller"
+    assert dotify("Ç Yılmaz") == "Ç. Yılmaz"  # noqa: RUF001
+    assert dotify("Ł.Ś. Kowalski") == "Ł. Ś. Kowalski"
+
+    # mixed case
+    assert dotify("j.R.r. Tolkien") == "J. R. R. Tolkien"
+    assert dotify("é.A. Müller") == "É. A. Müller"
+    assert dotify("a.ö. Björk-Hansen") == "A. Ö. Björk-Hansen"
+
+    # dashes
+    assert dotify("J-P Sartre") == "J.-P. Sartre"  # Jean-Paul
+    assert dotify("J.-P. Sartre") == "J.-P. Sartre"
+    assert dotify("J-C Van Damme") == "J.-C. Van Damme"  # Jean-Claude
 
 
 def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
@@ -525,3 +549,34 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     assert doc["author"] == orig_value
     assert doc["author_list"][0]["given"] == "F."
     assert doc["author_list"][2]["given"] == "A. R."
+
+    # check author with no space + multiple names
+    doc["author"] = "Schmidt, Johannes F.K."
+    doc["author_list"] = [{"family": "Schmidt", "given": "Johannes F.K."}]
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author_list"][0]["given"] == "Johannes F. K."
+
+
+def test_string_cleaner_missing_author(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import string_cleaner_check
+
+    doc = papis.document.from_data({
+        "author": "Caravaggio and M Merisi da Caravaggio",
+        "author_list": [
+            {"family": "Caravaggio"},
+            {"given": "M", "family": "Merisi da Caravaggio"},
+        ],
+        "title": "Narcissus at the Source",
+        })
+
+    error, = string_cleaner_check(doc)
+    assert error.payload == "author"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert doc["author_list"][1]["given"] == "M."

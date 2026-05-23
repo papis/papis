@@ -18,7 +18,7 @@ def test_database_query(tmp_library: TemporaryLibrary) -> None:
     db = papis.database.get()
     assert db.get_backend_name() == "whoosh"
 
-    docs = db.query("*")
+    docs = db.query(db.get_all_query_string())
     all_docs = db.get_all_documents()
     assert len(docs) > 0
     assert len(docs) == len(all_docs)

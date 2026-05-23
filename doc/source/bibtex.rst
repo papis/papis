@@ -43,6 +43,31 @@ In this example, the title that will be added to the BibTeX entry
 is ``title_latex``, since we have overridden it by appending the ``_latex``
 suffix to the ``title`` key.
 
+This approach is also useful if you need to use some tricks to get BibTeX to
+parse and render your entries correctly. Some examples (taken from `Tame the
+BeaST`_ 13.1-13.5):
+
+.. code:: yaml
+
+   # Names with multicharacter initials
+   author: Matiyasevich, Yuri
+   author_latex: Matiyasevich, {\relax Yu}ri
+
+   # Names with capitalized "von" parts
+   author: De La Cruz, Maria
+   author_latex: {D}e {L}a Cruz, Maria
+
+   # Names with uncapitalized last name parts
+   author: de la Cierva y Codorníu, Juan
+   author_latex: de la {Cierva y} Codorn{\’\i}u, Juan
+
+   # Names with no space between von and last name
+   author: d'Ormesson, Jean
+   author_latex: d'\relax Ormesson, Jean
+
+.. _`Tame the BeaST`:
+   http://texdoc.net/texmf-dist/doc/bibtex/tamethebeast/ttb_en.pdf
+
 Ignore keys
 -----------
 

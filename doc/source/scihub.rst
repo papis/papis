@@ -32,7 +32,8 @@ Some usage examples are:
       papis scihub 10.1002/andp.19053220607 \
         add -d einstein_papers --folder-name photon_definition
 
-  - Download via a url that contains the doi number in the format ``.*/doi/<doinumber>``:
+  - Download via a url that contains the doi number in the format
+    ``.*/doi/<doinumber>``:
 
     .. code:: bash
 

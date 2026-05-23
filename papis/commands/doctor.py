@@ -31,10 +31,10 @@ implemented
   provided by :confval:`doctor-html-codes-keys`.
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :confval:`doctor-html-tags-keys`.
-* ``key-type``: checks the type of keys provided by
-  :confval:`doctor-key-type-keys`, e.g. year should be an ``int``.
+* ``field-type``: checks the type of fields provided by :confval:`document-field-types`
+  (and :confval:`document-field-types-extend`), e.g. year should be an ``int``.
   Lists can be automatically fixed (by splitting or joining) using the
-  :confval:`doctor-key-type-separator` setting.
+  :confval:`doctor-field-type-separator` setting.
 * ``keys-missing``: checks that the keys provided by
   :confval:`doctor-keys-missing-keys` exist in the document.
 * ``refs``: checks that the document has a valid reference (i.e. one that would
@@ -683,7 +683,8 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
         fix_action = None
         if key == "issue":
             if is_number_like(value):
-                msg = f"Document key 'issue' looks like a 'number': '{value}'"
+                msg = (f"Document key 'issue' looks like a 'number'"
+                       f" (see BibLaTeX manual §2.3.11): '{value}'")
                 fix_action = issue_to_number_fixer
 
         if fix_action is None:
@@ -697,56 +698,20 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
     return results
 
 
-KEY_TYPE_CHECK_NAME = "key-type"
+FIELD_TYPE_CHECK_NAME = "field-type"
 
 
 def get_key_type_check_keys() -> dict[str, type]:
-    """
-    Check the ``doctor-key-type-keys`` configuration entry for correctness.
+    from warnings import warn
+    warn("'papis.commands.doctor.get_key_type_check_keys' is deprecated and will "
+         "be removed in Papis v0.17. Use 'papis.document.get_document_field_types' "
+         "instead.", DeprecationWarning, stacklevel=2)
 
-    The :confval:`doctor-key-type-keys` configuration entry
-    defines a mapping of keys and their expected types. If the desired type is
-    a list, the :confval:`doctor-key-type-separator` setting
-    can be used to split an existing string (and, similarly, if the desired type
-    is a string, it can be used to join a list of items).
-
-    :returns: A dictionary mapping key names to types.
-    """
-    import builtins
-
-    from papis.defaults import NOT_SET
-
-    keys = papis.config.get("key-type-check-keys", section="doctor")
-    if keys is NOT_SET:
-        keys = papis.config.getlist("key-type-keys", section="doctor")
-    else:
-        keys = papis.config.getlist("key-type-check-keys", section="doctor")
-        logger.warning("The configuration option 'doctor-key-type-check-keys' "
-                       "is deprecated and will be removed in the next version. "
-                       "Use 'doctor-key-type-keys' instead.")
-
-    keys.extend(papis.config.getlist("key-type-keys-extend", section="doctor"))
-    processed_keys: dict[str, type] = {}
-    for value in keys:
-        if ":" not in value:
-            logger.error("Invalid (key, type) pair: '%s'. Must be 'key:type'.",
-                         value)
-            continue
-        key, cls_name = value.split(":")
-        key, cls_name = key.strip(), cls_name.strip()
-
-        cls = getattr(builtins, cls_name, None)
-        if not isinstance(cls, type):
-            logger.error(
-                "Invalid type for key '%s': '%s'. Only builtin types are supported",
-                key, cls_name)
-            continue
-        processed_keys[key] = cls
-
-    return processed_keys
+    from papis.document import get_document_field_types
+    return get_document_field_types()
 
 
-def key_type_check(doc: Document) -> list[Error]:
+def field_type_check(doc: Document) -> list[Error]:
     """
     Check document keys have expected types.
 
@@ -759,10 +724,16 @@ def key_type_check(doc: Document) -> list[Error]:
     separator = papis.config.get("key-type-check-separator", section="doctor")
     if separator is NOT_SET:
         separator = papis.config.get("key-type-separator", section="doctor")
+        if separator is NOT_SET:
+            separator = papis.config.get("field-type-separator", section="doctor")
+        else:
+            logger.warning("The configuration option 'doctor-key-type-separator' "
+                           "is deprecated and will be removed in Papis 0.17. "
+                           "Use 'doctor-field-type-separator' instead.")
     else:
         logger.warning("The configuration option 'doctor-key-type-check-separator' "
-                       "is deprecated and will be removed in the next version. "
-                       "Use 'doctor-key-type-separator' instead.")
+                       "is deprecated and will be removed in Papis 0.17. "
+                       "Use 'doctor-field-type-separator' instead.")
 
     separator = separator.strip("'").strip('"') if separator else None
 
@@ -815,13 +786,15 @@ def key_type_check(doc: Document) -> list[Error]:
         else:
             return fixer_convert_any
 
+    from papis.document import get_document_field_types
+
     results = []
-    for key, cls in get_key_type_check_keys().items():
+    for key, cls in get_document_field_types().items():
         doc_value = doc.get(key)
 
         if doc_value is not None and not isinstance(doc_value, cls):
             results.append(
-                make_error(doc, KEY_TYPE_CHECK_NAME,
+                make_error(doc, FIELD_TYPE_CHECK_NAME,
                            msg=(f"Key '{key}' should be of type '{cls.__name__}' "
                                 f"but got '{type(doc_value).__name__}': "
                                 f"{doc_value!r}"),
@@ -974,10 +947,26 @@ STRING_CLEANER_CHECK_NAME = "string-cleaner"
 STRING_CLEANER_WHITESPACE_REGEX = re.compile(r"\s{2,}")
 # NOTE: matches all text with "abstract" at the start
 STRING_CLEANER_ABSTRACT_REGEX = re.compile(r"^\W*abstract\W*", re.IGNORECASE)
-# NOTE: matches all text that is a single uppercase letter not followed by a dot
-STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b([A-Z])(?!\.)\b")
+# NOTE: matches all text that is a single letter not followed by a dot
+STRING_CLEANER_INITIALS_SPACE_REGEX = re.compile(r"\b(\w)(?!\.)\b")
 # NOTE: matches all text that is a letter followed by dot and another letter
-STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b[A-Z]\.)(?=[A-Z])")
+STRING_CLEANER_INITIALS_DOTS_REGEX = re.compile(r"(?<=\b\w\.)(?=\w)")
+# NOTE: matches all text that is a single letter followed by a dot
+STRING_CLEANER_INITIALS_UPPER_REGEX = re.compile(r"\b([^\W\d_])\.")
+
+
+def _dotify_initials(text: str) -> str:
+    # add dots
+    text = STRING_CLEANER_INITIALS_SPACE_REGEX.sub(r"\1.", text)
+    # add spaces
+    text = STRING_CLEANER_INITIALS_DOTS_REGEX.sub(" ", text)
+    # uppercase
+    text = STRING_CLEANER_INITIALS_UPPER_REGEX.sub(
+        lambda m: f"{m.group(1).upper()}.",
+        text,
+    )
+
+    return text
 
 
 def string_cleaner_check(doc: Document) -> list[Error]:
@@ -985,12 +974,15 @@ def string_cleaner_check(doc: Document) -> list[Error]:
     Check string keys in the document for various errors.
 
     This check goes through all the keys of the document that are known to be
-    keys, according to :confval:`doctor-key-type-keys`, and fixes any obvious
+    keys, according to :confval:`document-field-types`, and fixes any obvious
     errors. For example (not exhaustive):
 
     * Double spacing or any repeated whitespace.
     * Unexpected new line characters.
-    * Weirdly formatted names, e.g. "J R R Tolkien" should be "J. R. R. Tolkien".
+    * Non-standard initial formatting, e.g. "J R R Tolkien" should be
+      "J. R. R. Tolkien". This is the formatting recommended in the
+      `APA style <https://apastyle.apa.org/style-grammar-guidelines/references/elements-list-entry>`_,
+      but many other (mostly Western) styles use it as well.
 
     :returns: a :class:`list` of errors, one for each string-based key that has
         unexpected formatting.
@@ -1043,28 +1035,28 @@ def string_cleaner_check(doc: Document) -> list[Error]:
         # be left alone)
         return any(pattern.search(author["given"])
                    for author in doc["author_list"]
-                   if author["given"] and author["family"])
+                   if author.get("given") and author.get("family"))
 
-    def make_author_initials_fixer(pattern: re.Pattern[str], sub: str) -> FixFn:
-        def fixer() -> None:
-            author_list = doc.get("author_list")
-            if author_list is None:
-                return
+    def author_initials_fixer() -> None:
+        author_list = doc.get("author_list")
+        if author_list is None:
+            return
 
-            for author in author_list:
-                author.update({"given": pattern.sub(sub, author["given"])})
+        for author in author_list:
+            if author.get("given") and author.get("family"):
+                author.update({"given": _dotify_initials(author["given"])})
 
-            doc["author_list"] = author_list
-            doc["author"] = author_list_to_author(doc)
-            logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
+        doc["author_list"] = author_list
+        doc["author"] = author_list_to_author(doc)
+        logger.info("[FIX] Cleaning 'author' key for missing dots and spaces.")
 
-        return fixer
+    from papis.document import get_document_field_types
 
-    key_types = get_key_type_check_keys()
+    field_types = get_document_field_types()
     results = []
 
     for key, value in doc.items():
-        if key_types.get(key) is not str:
+        if field_types.get(key) is not str:
             continue
 
         if not isinstance(value, str):
@@ -1082,22 +1074,13 @@ def string_cleaner_check(doc: Document) -> list[Error]:
                            fix_action=remove_abstract_fixer,
                            payload=key))
 
-        if has_author_initials(key, value, STRING_CLEANER_INITIALS_SPACE_REGEX):
+        if (has_author_initials(key, value, STRING_CLEANER_INITIALS_SPACE_REGEX)
+            or has_author_initials(key, value, STRING_CLEANER_INITIALS_DOTS_REGEX)):
             results.append(
                 make_error(doc, STRING_CLEANER_CHECK_NAME,
                            msg=("Key 'author' contains initials that are not "
-                                "separated by whitespace"),
-                           fix_action=make_author_initials_fixer(
-                               STRING_CLEANER_INITIALS_SPACE_REGEX, r"\1."),
-                           payload=key))
-
-        if has_author_initials(key, value, STRING_CLEANER_INITIALS_DOTS_REGEX):
-            results.append(
-                make_error(doc, STRING_CLEANER_CHECK_NAME,
-                           msg=("Key 'author' contains initials that are not "
-                                "followed by a dot"),
-                           fix_action=make_author_initials_fixer(
-                               STRING_CLEANER_INITIALS_DOTS_REGEX, r" "),
+                                "followed by a dot+space (e.g. 'J R R' or 'J.R.R.')"),
+                           fix_action=author_initials_fixer,
                            payload=key))
 
         if has_extra_newlines(key, value):
@@ -1129,11 +1112,12 @@ register_check(BIBLATEX_KEY_CONVERT_CHECK_NAME, biblatex_key_convert_check)
 register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
-register_check(KEY_TYPE_CHECK_NAME, key_type_check)
+register_check(FIELD_TYPE_CHECK_NAME, field_type_check)
 register_check(STRING_CLEANER_CHECK_NAME, string_cleaner_check)
 
 DEPRECATED_CHECK_NAMES = {
     "keys-exist": "keys-missing",
+    "key-type": "field-type",
 }
 
 
@@ -1369,10 +1353,11 @@ def cli(query: str,
         check_name = check
         new_check_name = DEPRECATED_CHECK_NAMES.get(check)
         if new_check_name is not None:
-            check_name = new_check_name
             logger.warning("Check '%s' is deprecated and has been replace by "
                            "'%s'. Please use this in the future.",
                            check_name, new_check_name)
+
+            check_name = new_check_name
 
         new_checks.append(check_name)
     checks = new_checks

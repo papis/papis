@@ -312,7 +312,7 @@ def process_autodoc_missing_reference(
                 env, node["refdoc"], app.builder, reftype, objname,
                 node, contnode)
 
-    return new_node
+    return new_node  # type: ignore[no-any-return,unused-ignore]
 
 
 def setup(app: Sphinx) -> dict[str, Any]:

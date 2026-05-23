@@ -71,12 +71,12 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
     doc, = db.query_dict({"author": "krishnamurti"})
     files = [os.path.basename(f) for f in doc.get_files()][-nfiles:]
 
-    from papis.paths import normalize_path
+    from papis.paths import normalize_path_part
 
     def eq(outfile: str, infile: str) -> bool:
         outfile, _ = os.path.splitext(os.path.basename(outfile))
         infile, _ = os.path.splitext(os.path.basename(infile))
-        return outfile.startswith(normalize_path(infile))
+        return outfile.startswith(normalize_path_part(infile))
 
     assert (
         all(eq(a, b) for a, b in zip(files, inputfiles, strict=True))), (

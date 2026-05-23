@@ -220,25 +220,15 @@ def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     # ensure that author_list and author are consistent
     new_data["author"] = author_list_to_author(new_data)
 
-    # special cleanup for APS journals
+    # special cleanup for journals that use `article-number` as the page number
     # xref: https://github.com/papis/papis/issues/1019
+    #       https://github.com/papis/papis/issues/1151
     #       https://github.com/JabRef/jabref/issues/7019
     #       https://journals.aps.org/pra/articleid
     if "pages" not in new_data:
         article_number = data.get("article-number", None)
         if article_number:
-            # FIXME: add nicer DOI parsing (probably in `python-doi`)
-            # determine from DOI if the journal in question is an APS journal.
-            is_aps = False
-            doi = new_data.get("doi", "")
-            if "/" in doi:
-                prefix, _ = doi.split("/", maxsplit=1)
-                if "." in prefix:
-                    _, journal_id = prefix.split(".", maxsplit=1)
-                    is_aps = journal_id == "1103"
-
-            if is_aps:
-                new_data["pages"] = article_number
+            new_data["pages"] = article_number
 
     return new_data
 

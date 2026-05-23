@@ -56,6 +56,21 @@ typos:								## Run typos (spellchecking)
 	@echo -e "\e[1;32mtypos clean!\e[0m"
 .PHONY: codespell
 
+sphinxlint:							## Run sphinx-lint (linting)
+	python -m sphinxlint \
+		--max-line-length 88 \
+		--enable all \
+		--ignore doc/build --ignore tests
+.PHONY: sphinxlint
+
+lychee:								## Find broken links (lychee)
+	lychee --exclude localhost doc/**/*.rst papis/**/*.py README.rst
+.PHONY: lychee
+
+linkcheck:  						## Find broken links in documentation (linkcheck)
+	cd doc && make linkcheck SPHINXOPTS="-W --keep-going -n"
+.PHONY: linkcheck
+
 ci-install:							## Install dependencies like on the CI
 	bash tools/ci-install.sh
 .PHONY: ci-install

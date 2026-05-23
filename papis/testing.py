@@ -180,6 +180,82 @@ def populate_library(libdir: str) -> None:
         doc.save()
 
 
+def generate_random_bibtex_entry(bibtype: str | None = None) -> str:
+    from papis.bibtex import (
+        bibtex_standard_keys,
+        bibtex_standard_types,
+        bibtex_type_required_keys,
+        bibtex_type_required_keys_aliases,
+    )
+
+    if bibtype is None:
+        bibtype = random.choice(list(bibtex_standard_types))
+
+    if bibtype not in bibtex_type_required_keys:
+        bibtype = bibtex_type_required_keys_aliases.get(bibtype, bibtype)
+
+    if bibtype not in bibtex_type_required_keys:
+        raise ValueError(f"unknown BibTeX entry type: '{bibtype}'")
+
+    from papis.document import get_document_field_types
+    field_types = get_document_field_types()
+
+    import string
+
+    def generate_word(size: int | None = None) -> str:
+        if size is None:
+            size = random.randint(3, 12)
+
+        return "".join(random.choices(string.ascii_lowercase, k=size)).capitalize()
+
+    def generate_value(key: str) -> Any:
+        cls = field_types.get(key, str)
+
+        if cls is str:
+            if key == "author":
+                return " and ".join(f"{generate_word()} {generate_word()}"
+                                    for _ in range(random.randint(1, 5)))
+            else:
+                return " ".join(generate_word() for _ in range(random.randint(1, 15)))
+        elif cls is int:
+            return random.randint(1870, 2025)
+        elif cls is list:
+            return [generate_word() for _ in range(random.randint(2, 10))]
+        else:
+            raise TypeError(f"unsupported key type: {cls}")
+
+    data = {
+        "type": bibtype,
+        "ref": generate_word(16),
+    }
+
+    # add some required keys
+    required_keys = bibtex_type_required_keys[bibtype]
+    for keys in required_keys:
+        key = random.choice(list(keys))
+        if key in data:
+            continue
+
+        data[key] = generate_value(key)
+
+    # add some optional keys
+    k = random.randint(3, 10)
+    for key in random.choices(list(bibtex_standard_keys), k=k):
+        if key in data:
+            continue
+
+        data[key] = generate_value(key)
+
+    from papis.document import from_data
+    doc = from_data(data)
+
+    from papis.exporters.bibtex import to_bibtex
+    return to_bibtex(doc,
+                     bibtex_unicode=True,
+                     bibtex_journal_key="journal",
+                     bibtex_export_file=False)
+
+
 class TemporaryConfiguration:
     """A context manager used to create a temporary papis configuration.
 
@@ -270,6 +346,7 @@ class TemporaryConfiguration:
         default_query_string = {
             "papis": ".",
             "whoosh": "*",
+            "sqlite": "*",
         }.get(database_backend, "papis")
 
         settings = {
@@ -328,6 +405,11 @@ class TemporaryConfiguration:
                  exc_type: type[BaseException] | None,
                  exc_val: BaseException | None,
                  exc_tb: TracebackType | None) -> None:
+        # NOTE: ensure that all databases are closed and files removed
+        from papis.database import DATABASES
+        for db in DATABASES.values():
+            db.clear()
+
         # cleanup
         if self._monkeypatch:
             self._monkeypatch.undo()

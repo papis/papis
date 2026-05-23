@@ -8,6 +8,12 @@ import click
 import platformdirs
 
 import papis.logging
+from papis.exceptions import (
+    DefaultSettingValueMissing,
+    InvalidLibraryError,
+    MissingLibraryDirectoryError,
+    UnexpectedSettingTypeError,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -421,7 +427,6 @@ def general_get(key: str,
         if qualified_key in general_settings:
             return general_settings[qualified_key]
 
-        from papis.exceptions import DefaultSettingValueMissing
         raise DefaultSettingValueMissing(qualified_key)
 
     return value
@@ -443,7 +448,9 @@ def getint(key: str, section: str | None = None) -> int | None:
         return general_get(key, section=section, data_type=int)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(f"Key '{key}' should be an integer: '{value}'") from exc
+        raise UnexpectedSettingTypeError(
+            f"Key '{key}' should be an integer: '{value}'"
+        ) from exc
 
 
 def getfloat(key: str, section: str | None = None) -> float | None:
@@ -457,7 +464,9 @@ def getfloat(key: str, section: str | None = None) -> float | None:
         return general_get(key, section=section, data_type=float)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(f"Key '{key}' should be a float: '{value}'") from exc
+        raise UnexpectedSettingTypeError(
+            f"Key '{key}' should be a float: '{value}'"
+        ) from exc
 
 
 def getboolean(key: str, section: str | None = None) -> bool | None:
@@ -471,7 +480,9 @@ def getboolean(key: str, section: str | None = None) -> bool | None:
         return general_get(key, section=section, data_type=bool)
     except ValueError as exc:
         value = general_get(key, section=section)
-        raise ValueError(f"Key '{key}' should be a boolean: '{value}'") from exc
+        raise UnexpectedSettingTypeError(
+            f"Key '{key}' should be a boolean: '{value}'"
+        ) from exc
 
 
 def getstring(key: str, section: str | None = None) -> str:
@@ -483,7 +494,9 @@ def getstring(key: str, section: str | None = None) -> str:
     """
     result = general_get(key, section=section, data_type=str)
     if not isinstance(result, str):
-        raise ValueError(f"Key '{key}' should be a string: {result!r}")
+        raise UnexpectedSettingTypeError(
+            f"Key '{key}' should be a string: {result!r}"
+        )
 
     return str(result)
 
@@ -527,8 +540,6 @@ def getformatpattern(key: str,
     formatter = getstring("formatter")
     result: str | None = None
 
-    from papis.exceptions import DefaultSettingValueMissing
-
     for f in get_available_formatters():
         try:
             tmp = general_get(f"{key}.{f}", section=section, data_type=str)
@@ -547,7 +558,9 @@ def getformatpattern(key: str,
     elif isinstance(result, str):
         return FormatPattern(formatter, result)
     else:
-        raise ValueError(f"Key '{key}' should be a string: '{result}'")
+        raise UnexpectedSettingTypeError(
+            f"Key '{key}' should be a string: '{result}'"
+        )
 
 
 def getlist(key: str, section: str | None = None) -> list[str]:
@@ -561,8 +574,8 @@ def getlist(key: str, section: str | None = None) -> list[str]:
         >>> getlist("tags")
         ['a', 'b', 'c']
 
-    :raises SyntaxError: Whenever the parsed syntax is either not a valid
-        python object or not a valid python list.
+    :raises papis.exceptions.UnexpectedSettingTypeError: Whenever the parsed
+        syntax is either not a valid python object or not a valid python list.
     """
     rawvalue: Any = general_get(key, section=section)
     if isinstance(rawvalue, list):
@@ -570,12 +583,12 @@ def getlist(key: str, section: str | None = None) -> list[str]:
     try:
         rawvalue = eval(rawvalue)
     except Exception as exc:
-        raise SyntaxError(
+        raise UnexpectedSettingTypeError(
             f"The key '{key}' must be a valid Python object: {rawvalue}"
             ) from exc
     else:
         if not isinstance(rawvalue, list):
-            raise SyntaxError(
+            raise UnexpectedSettingTypeError(
                 f"The key '{key}' must be a valid Python list. "
                 f"Got: {rawvalue} (type {type(rawvalue)})")
 
@@ -640,7 +653,7 @@ def set_lib_from_name(libname: str) -> None:
     set_lib(get_lib_from_name(libname))
 
 
-def get_lib_from_name(libname: str) -> Library:
+def get_lib_from_name(libname_or_path: str) -> Library:
     """Get a library object from a name.
 
     :param libname: the name of a library in the configuration file or a path
@@ -652,22 +665,33 @@ def get_lib_from_name(libname: str) -> Library:
 
     from papis.library import Library, from_paths
 
-    if libname not in libs:
-        if os.path.isdir(libname):
-            logger.warning("Setting path '%s' as the main library folder.", libname)
+    if libname_or_path not in libs:
+        path = os.path.abspath(os.path.expanduser(libname_or_path))
 
-            lib = from_paths([libname])
+        # first check if this path corresponds to an existing library
+        for libname in libs:
+            lib = get_lib_from_name(libname)
+            if path in lib.paths:
+                return lib
+
+        if os.path.isdir(path):
+            logger.warning("Setting path '%s' as the main library folder.",
+                           libname_or_path)
+
             # NOTE: can't use set(...) here due to cyclic dependencies
-            config[lib.name] = {"dirs": str([escape_interp(libname)])}
+            lib = from_paths([path])
+            config[lib.name] = {"dirs": str([escape_interp(path)])}
         else:
-            raise RuntimeError(
-                f"Library '{libname}' does not seem to exist. "
+            raise InvalidLibraryError(
+                f"Library '{libname_or_path}' does not seem to exist. ",
                 "To add a library simply write the following "
                 f"in your configuration file located at '{get_config_file()}'\n\n"
-                f"\t[{libname}]\n"
-                f"\tdir = path/to/your/{libname}/folder"
+                f"\t[{libname_or_path}]\n"
+                f"\tdir = path/to/your/{libname_or_path}/folder"
                 )
     else:
+        libname = libname_or_path
+
         if libname in default_settings and libname not in config:
             config[libname] = default_settings[libname]
 
@@ -680,7 +704,7 @@ def get_lib_from_name(libname: str) -> Library:
                 paths = eval(config[libname]["dirs"])
                 paths = [os.path.expanduser(d) for d in paths]
             except Exception as exc:
-                raise RuntimeError(
+                raise MissingLibraryDirectoryError(
                     "To define a library you have to set either 'dir' or 'dirs' "
                     "in the configuration file.\n"
                     "\t'dir' must be a path to an existing folder.\n"

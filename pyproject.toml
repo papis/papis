@@ -4,7 +4,7 @@ requires = ["hatchling>=1.10.0"]
 
 [project]
 name = "papis"
-version = "0.14.1"
+version = "0.15.0"
 description = "Powerful and highly extensible command-line based document and bibliography manager"
 readme = "README.rst"
 keywords = [
@@ -74,15 +74,10 @@ dependencies = [
     "platformdirs>=4.0.0",
     "prompt_toolkit>=3.0.5",
     "pygments>=2.2",
-    "pyparsing>=2.2",
+    "lark>=1.2.0",
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
-
-    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
-    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
-    #   https://github.com/xlcnd/isbnlib/pull/145
-    "setuptools",
 ]
 
 [project.urls]
@@ -95,6 +90,7 @@ develop = ["papis[lint,typing,test]"]
 # Style enforcement
 lint = [
     "ruff",
+    "sphinx-lint",
 ]
 # Test suite
 test = [
@@ -103,7 +99,7 @@ test = [
 ]
 # Type-checking
 typing = [
-    "mypy>=0.7",
+    "mypy>=1.0",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
@@ -124,7 +120,13 @@ optional = [
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "citeproc-py>=0.6",
-    "markdownify>=0.11.6",
+    "isbnlib>=3.9.1",
+    "markdownify>=1.0.0",
+
+    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
+    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
+    #   https://github.com/xlcnd/isbnlib/pull/145
+    "setuptools<82.0.0",
 ]
 # Custom Sphinx directives for Papis docs
 "papis.sphinx_ext" = [
@@ -188,6 +190,7 @@ get = "papis.downloaders.get:DocumentDownloader"
 hal = "papis.downloaders.hal:HALDownloader"
 ieee = "papis.downloaders.ieee:IEEEDownloader"
 iopscience = "papis.downloaders.iopscience:IOPscienceDownloader"
+lingbuzz = "papis.downloaders.lingbuzz:LingbuzzDownloader"
 projecteuclid = "papis.downloaders.projecteuclid:ProjectEuclidDownloader"
 sciencedirect = "papis.downloaders.sciencedirect:ScienceDirectDownloader"
 scitationaip = "papis.downloaders.scitationaip:AIPDownloader"
@@ -210,10 +213,11 @@ yaml = "papis.explorers.yaml:cli"
 
 [project.entry-points."papis.exporter"]
 bibtex = "papis.exporters.bibtex:exporter"
+csl = "papis.exporters.csl:exporter"
+csv = "papis.exporters.csv:exporter"
 json = "papis.exporters.json:exporter"
 typst = "papis.exporters.typst:exporter"
 yaml = "papis.exporters.yaml:exporter"
-csl = "papis.exporters.csl:exporter"
 
 [project.entry-points."papis.format"]
 jinja2 = "papis.format.jinja:Jinja2Formatter"
@@ -306,6 +310,8 @@ ignore = [
     "PLR2004", # magic-value-comparison
     "PLR5501", # collapsible-else-if
     "PLW0603", # global-statement
+    "PLW0717", # too-many-statements-in-try-clause
+    "RUF067",  # non-empty-init-module
 ]
 task-tags = ["spell"]
 
@@ -340,11 +346,15 @@ module = [
     "filetype.*",
     "habanero.*",
     "isbnlib.*",
-    "markdownify.*",
     "sphinx_click.*",
     "whoosh.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# NOTE: sphinx > 9.0.0 requires Python >= 3.12 for type checking, so we ignore it
+module = ["sphinx.*"]
+follow_imports = "skip"
 
 [tool.typos.default]
 extend-ignore-re = [
@@ -362,6 +372,7 @@ extend-exclude = [
 [tool.typos.default.extend-words]
 # NOTE: in docs
 formater = "formater"
+rela = "rela"
 # NOTE: these appear in some queries and urls
 ACI = "ACI"
 ein = "ein"
