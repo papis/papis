@@ -408,6 +408,17 @@ class Document(dict[str, Any]):
         """
         return ""
 
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        """Update the document, silently dropping keys with ``None`` values.
+
+        This overrides :meth:`dict.update` to ensure that fields with a
+        ``None`` value never leak into the document and get persisted to
+        its ``info.yaml`` file.
+        """
+        super().update(*args, **kwargs)
+        for key in [k for k in self if self[k] is None]:
+            del self[key]
+
     def copy(self) -> Document:
         """Make a shallow copy of the :class:`Document`."""
         doc = Document(data=dict(self))

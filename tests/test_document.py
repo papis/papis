@@ -53,6 +53,17 @@ def test_from_folder() -> None:
     assert doc["author"] == "Russell, Bertrand"
 
 
+def test_update_drops_none_values() -> None:
+    """Document.update() must silently drop keys with None values."""
+    doc = papis.document.from_data({"title": "Hello", "author": "Turing"})
+
+    doc.update({"doi": None, "year": 1999, "abstract": None})
+    assert "doi" not in doc
+    assert "abstract" not in doc
+    assert doc["year"] == 1999
+    assert doc["title"] == "Hello"
+
+
 def test_main_features() -> None:
     doc = papis.document.from_data({
         "title": "Hello World",
