@@ -26,7 +26,7 @@ logger = papis.logging.get_logger("papis.commands.ga")
 
 
 def add(doc: papis.document.Document) -> None:
-    path = os.path.expanduser(papis.config.get_lib_dirs()[0])
+    path = os.path.expanduser(papis.config.get_lib().path)
     cmd = ["git", "-C", path, "add", *doc.get_files(), doc.get_info_file()]
 
     logger.info("Running command: '%s'", " ".join(cmd))

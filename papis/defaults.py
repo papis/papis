@@ -73,7 +73,7 @@ settings: dict[str, Any] = {
     "ref-word-separator": "_",
     "library-header-format": _f(
         "<ansired>{library[name]}</ansired>"
-        " <ansiblue>{library[paths]}</ansiblue>"
+        " <ansiblue>{library[dir]}</ansiblue>"
     ),
     "document-field-types": [
         "abstract:str",

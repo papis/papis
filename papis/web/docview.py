@@ -43,7 +43,7 @@ def html(libname: str, doc: Document) -> t.html_tag:
 
     checks = registered_checks_names()
     errors = gather_errors([doc], checks)
-    libfolder = get_lib_from_name(libname).paths[0]
+    libfolder = get_lib_from_name(libname).path
 
     from papis.exporters.bibtex import exporter as bibtex
 

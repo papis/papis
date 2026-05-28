@@ -232,7 +232,7 @@ def run(paths: list[str],
 
     # create a nice folder name for the new document
     if base_path is None:
-        base_path = os.path.expanduser(papis.config.get_lib_dirs()[0])
+        base_path = os.path.expanduser(papis.config.get_lib().path)
 
     if subfolder:
         base_path = os.path.join(base_path, subfolder)

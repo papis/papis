@@ -21,5 +21,5 @@ def test_git_cli(tmp_library: TemporaryLibrary) -> None:
         ["init"])
     assert result.exit_code == 0
 
-    folder, = papis.config.get_lib_dirs()
+    folder = papis.config.get_lib().path
     assert os.path.exists(os.path.join(folder, ".git"))

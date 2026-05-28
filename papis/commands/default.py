@@ -158,15 +158,14 @@ def run(ctx: click.Context,
     if lib is None:
         # NOTE: check if the current folder is a configured library
         libdir = os.getcwd()
-        config_lib_dirs = {
-            path: libname
+        config_lib_paths = {
+            papis.config.get_lib_from_name(libname).path: libname
             for libname in papis.config.get_libs()
-            for path in papis.config.get_lib_from_name(libname).paths
         }
 
         while libdir != (nextlibdir := os.path.dirname(libdir)):
-            if libdir in config_lib_dirs:
-                lib = config_lib_dirs[libdir]
+            if libdir in config_lib_paths:
+                lib = config_lib_paths[libdir]
                 break
 
             libdir = nextlibdir
@@ -183,21 +182,20 @@ def run(ctx: click.Context,
         raise SystemExit(1) from None
 
     configuration = papis.config.get_configuration()
-    if library.paths:
-        # Now the library should be set, let us check if there is a
-        # local configuration file there, and if there is one, then
+    if os.path.isdir(library.path):
+        # Check if there's a local configuration file in the library, and if so,
         # merge its contents
         local_config_file = papis.config.getstring("local-config-file")
-        for path in library.paths:
-            local_config_path = os.path.join(path, local_config_file)
-            papis.config.merge_configuration_from_path(local_config_path, configuration)
+        local_config_path = os.path.join(library.path, local_config_file)
+        papis.config.merge_configuration_from_path(local_config_path, configuration)
     else:
         config_file = papis.config.get_config_file()
         if os.path.exists(config_file):
             logger.error(
-                "Library '%s' does not have any folders attached to it. Please "
-                "create and add the required paths to the configuration file.",
-                library)
+                "Library '%s' directory '%s' does not exist. Please "
+                "create it or update the 'dir' setting in the "
+                "configuration file.",
+                library, library.path)
         elif ctx.invoked_subcommand != "init":
             logger.warning("No configuration file exists at '%s'.", config_file)
             logger.warning("Create a configuration file and define your "

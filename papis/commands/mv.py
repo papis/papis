@@ -81,7 +81,7 @@ def cli(query: str,
 
     document = documents[0]
 
-    lib_dir = os.path.expanduser(papis.config.get_lib_dirs()[0])
+    lib_dir = os.path.expanduser(papis.config.get_lib().path)
 
     completer = prompt_toolkit.completion.PathCompleter(
         only_directories=True,
