@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import logging
 import os
 import sys
@@ -65,6 +66,9 @@ class ColoramaFormatter(logging.Formatter):
         into the message, removes the ``papis`` namespace from the name, etc. Any
         formatting of the logging output is made here.
         """
+
+        # Work on a copy so we don't mutate the shared record in place.
+        record = copy.copy(record)
 
         if isinstance(record.msg, str):
             record.msg = record.msg.format(c=c)
