@@ -410,6 +410,13 @@ class TemporaryConfiguration:
         for db in DATABASES.values():
             db.clear()
 
+        # NOTE: remove any handlers and reset the logger level
+        import logging
+        papis_logger = logging.getLogger("papis")
+        for handler in papis_logger.handlers[:]:
+            papis_logger.removeHandler(handler)
+        papis_logger.setLevel(logging.NOTSET)
+
         # cleanup
         if self._monkeypatch:
             self._monkeypatch.undo()
