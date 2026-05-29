@@ -198,37 +198,36 @@ def run(paths: list[str],
         if not os.path.exists(p):
             raise FileNotFoundError(f"File '{p}' not found")
 
-    import tempfile
-
     in_document_paths = paths
-    temp_dir = tempfile.mkdtemp()
 
     from papis.database import get as get_database
 
     db = get_database()
 
-    from papis.document import Document, describe, dump
+    from papis.document import describe, dump
+    from papis.tui.utils import confirm as ask_confirm, text_area
+    from papis.utils import open_file as open_file_viewer
 
-    tmp_document = Document(folder=temp_dir, data=data)
-    db.maybe_compute_id(tmp_document)
+    approved_files: list[str] = []
+    for in_file_path in in_document_paths:
+        if not batch and open_file:
+            open_file_viewer(in_file_path)
 
-    # reference building
-    # NOTE: this needs to go before any papis.format calls, so that those can
-    # potentially use the 'ref' key in the format patterns.
-    if "ref" not in data:
-        from papis.bibtex import create_reference
+        if not batch and confirm and not ask_confirm(
+                f"Add file '{os.path.basename(in_file_path)}' to document?"):
+            continue
 
-        new_ref = create_reference(data)
-        if new_ref:
-            logger.info("Created reference '%s'.", new_ref)
-            tmp_document["ref"] = new_ref
+        approved_files.append(in_file_path)
 
-    if auto_doctor:
-        from papis.commands.doctor import fix_errors
+    from papis.document import new as new_document
 
-        logger.info("Running doctor auto-fixers on document: '%s'.",
-                    describe(tmp_document))
-        fix_errors(tmp_document)
+    tmp_document = new_document(
+        data,
+        approved_files,
+        link=link,
+        move_files=move,
+        file_name_format=file_name,
+        auto_doctor=auto_doctor)
 
     # create a nice folder name for the new document
     if base_path is None:
@@ -236,49 +235,6 @@ def run(paths: list[str],
 
     if subfolder:
         base_path = os.path.join(base_path, subfolder)
-
-    # rename all the given file names
-    from papis.paths import rename_document_files, symlink
-
-    renamed_file_list = rename_document_files(
-        tmp_document, in_document_paths,
-        file_name_format=file_name, allow_remote=False)
-
-    import shutil
-
-    from papis.tui.utils import confirm as ask_confirm, text_area
-    from papis.utils import open_file as open_file_viewer
-
-    document_file_list = []
-    for in_file_path, out_file_name in (
-            zip(in_document_paths, renamed_file_list, strict=True)):
-        out_file_path = os.path.join(temp_dir, out_file_name)
-        if os.path.exists(out_file_path):
-            logger.warning("File '%s' already exists. Skipping...", out_file_path)
-            continue
-
-        if not batch and open_file:
-            open_file_viewer(in_file_path)
-
-        if not batch and confirm and not ask_confirm(
-                f"Add file '{os.path.basename(in_file_path)}' "
-                f"(renamed to '{os.path.basename(out_file_path)}') to document?"):
-            continue
-
-        if link:
-            logger.info("[LN] '%s' to '%s'.", in_file_path, out_file_name)
-            symlink(in_file_path, out_file_path)
-        elif move:
-            logger.info("[MV] '%s' to '%s'.", in_file_path, out_file_name)
-            shutil.copy(in_file_path, out_file_path)
-        else:
-            logger.info("[CP] '%s' to '%s'.", in_file_path, out_file_name)
-            shutil.copy(in_file_path, out_file_path)
-
-        document_file_list.append(out_file_name)
-
-    tmp_document["files"] = document_file_list
-    tmp_document.save()
 
     from papis.paths import get_document_unique_folder
 
@@ -288,7 +244,7 @@ def run(paths: list[str],
         folder_name_format=folder_name)
 
     logger.info("Document folder is '%s'.", out_folder_path)
-    logger.debug("Document includes files: '%s'.", "', '".join(document_file_list))
+    logger.debug("Document includes files: '%s'.", "', '".join(tmp_document["files"]))
 
     # Check if the user wants to edit before submitting the doc
     # to the library
@@ -368,7 +324,7 @@ def run(paths: list[str],
             f"Add document '{describe(tmp_document)}'")
 
     if move:
-        for in_file_path in in_document_paths:
+        for in_file_path in approved_files:
             try:
                 os.remove(in_file_path)
             except Exception as exc:
