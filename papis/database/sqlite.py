@@ -167,7 +167,7 @@ class SQLiteDatabase(Database):
         self.cache_dir = os.path.join(get_cache_home(), "database", "sqlite")
         self.cache_file_name = os.path.join(
             self.cache_dir,
-            f"{get_cache_file_name(self.lib.path_format())}.sqlite")
+            f"{get_cache_file_name(self.lib.path)}.sqlite")
 
         self.initialize()
 
@@ -354,7 +354,7 @@ class SQLiteDatabase(Database):
         from papis.utils import folders_to_documents, get_folders
 
         logger.info("Indexing library. This might take a while...")
-        folders = [f for path in self.lib.paths for f in get_folders(path)]
+        folders = get_folders(self.lib.path)
         documents = folders_to_documents(folders)
 
         from papis.document import describe

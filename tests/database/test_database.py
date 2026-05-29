@@ -28,7 +28,7 @@ def test_database_paths(tmp_library: TemporaryLibrary) -> None:
     assert db is not None
     assert db.get_backend_name() == papis.config.getstring("database-backend")
     assert db.lib.name == papis.config.get_lib_name()
-    assert db.lib.paths == papis.config.get_lib_dirs()
+    assert db.lib.path == papis.config.get_lib().path
     assert db.get_all_query_string() == papis.database.get_all_query_string()
 
     docs = db.get_all_documents()

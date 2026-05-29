@@ -37,4 +37,4 @@ class InvalidLibraryError(RuntimeError):
 
 
 class MissingLibraryDirectoryError(InvalidLibraryError):
-    """Exception raised when a library does not have 'dir' or 'dirs' set."""
+    """Exception raised when a library does not have 'dir' set."""
