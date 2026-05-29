@@ -11,6 +11,7 @@ import papis.logging
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+    from typing import Literal
 
     from papis.strings import AnyString
 
@@ -697,33 +698,83 @@ def sort(docs: Sequence[Document], key: str, reverse: bool = False) -> list[Docu
     return sorted(docs, key=document_sort_key, reverse=reverse)
 
 
-def new(folder_path: str,
-        data: dict[str, Any],
-        files: Sequence[str] | None = None) -> Document:
-    """Creates a complete document with data and existing files.
+def new(
+        data: DocumentLike,
+        files: Sequence[str] = (), *,
+        mode: Literal["copy", "link"] = "copy",
+        file_name_format: AnyString | None = None,
+        auto_doctor: bool = False) -> Document:
+    """Create a new document from *data* and *files* in a temporary directory.
 
-    The document is saved to the filesystem at *folder_path* and all the given
-    files are copied over to the main folder.
+    This function handles all non-interactive steps of creating a document:
+    generating a Papis ID, creating a BibTeX reference, running auto-doctor
+    checks, renaming files, and copying or linking them into the document
+    folder.
 
-    :param folder_path: a main folder for the document.
+    The document is created in a temporary directory. The caller is
+    responsible for moving it to its final location and adding it to the
+    database.
+
     :param data: a :class:`dict` with key and values to be used as metadata
         in the document.
-    :param files: a sequence of files to add to the document.
-    :raises FileExistsError: if *folder_path* already exists.
+    :param files: a sequence of file paths to add to the document.
+    :param mode: how to place files into the document directory: ``"copy"``
+        copies files, ``"link"`` creates symbolic links to the originals.
+    :param file_name_format: a format pattern used to construct new file names
+        from the document data (defaults to :confval:`add-file-name`).
+    :param auto_doctor: if *True*, run the doctor auto-fixers on the document
+        before saving.
+    :returns: the new document, residing in a temporary directory.
     """
-
-    if files is None:
-        files = []
-
-    os.makedirs(folder_path)
-
     import shutil
-    doc = Document(folder=folder_path, data=data)
-    doc["files"] = []
+    import tempfile
 
-    for f in files:
-        shutil.copy(f, os.path.join(folder_path))
-        doc["files"].append(os.path.basename(f))
+    temp_dir = tempfile.mkdtemp()
+    doc = Document(folder=temp_dir, data=data)
 
+    # Compute a unique Papis ID for the document
+    from papis.database import get as get_database
+
+    db = get_database()
+    db.maybe_compute_id(doc)
+
+    # Create a BibTeX reference if missing
+    if "ref" not in doc:
+        from papis.bibtex import create_reference
+
+        new_ref = create_reference(doc)
+        if new_ref:
+            logger.info("Created reference '%s'.", new_ref)
+            doc["ref"] = new_ref
+
+    # Run auto-doctor if requested
+    if auto_doctor:
+        from papis.commands.doctor import fix_errors
+
+        logger.info("Running doctor auto-fixers on document: '%s'.",
+                    describe(doc))
+        fix_errors(doc)
+
+    # Rename files according to the format pattern
+    from papis.paths import rename_document_files, symlink
+
+    renamed_files = rename_document_files(
+        doc, files,
+        file_name_format=file_name_format, allow_remote=False)
+
+    # Copy or link files into the temporary directory
+    document_file_list: list[str] = []
+    for in_file_path, out_file_name in zip(files, renamed_files, strict=True):
+        out_file_path = os.path.join(temp_dir, out_file_name)
+
+        if mode == "link":
+            symlink(in_file_path, out_file_path)
+        else:
+            shutil.copy(in_file_path, out_file_path)
+
+        document_file_list.append(out_file_name)
+
+    doc["files"] = document_file_list
     doc.save()
+
     return doc
