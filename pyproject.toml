@@ -68,6 +68,8 @@ dependencies = [
     "click>=7",
     "colorama>=0.2",
     "dominate>=2.8",
+    "fastapi>=0.100",
+    "python-multipart>=0.0.9",
     "filetype>=1.0.1",
     "habanero>=0.6",
     "lxml>=4.3.5",
@@ -78,6 +80,7 @@ dependencies = [
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
+    "uvicorn>=0.20",
 ]
 
 [project.urls]
@@ -235,6 +238,7 @@ lib = "papis.importer.library:FromLibraryImporter"
 pdf2arxivid = "papis.importer.arxiv:ArxivFromPDFImporter"
 pdf2doi = "papis.importer.doi:DOIFromPDFImporter"
 pmid = "papis.importer.pubmed:PubMedImporter"
+url = "papis.downloaders:WebImporter"
 yaml = "papis.importer.yaml:YAMLImporter"
 zenodo = "papis.importer.zenodo:ZenodoImporter"
 
