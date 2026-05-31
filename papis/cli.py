@@ -18,12 +18,20 @@ if TYPE_CHECKING:
     # NOTE: these were introduced in click 8.4.0. We cannot use them directly
     # in the class definitions because they're evaluated eagerly there.
     FormatPatternParamTypeBase = click.ParamType[str | FormatPattern]  # type: ignore[type-arg]
-    LibraryParamTypeBase = click.ParamType[str]  # type: ignore[type-arg]
+    StringParamTypeBase = click.ParamType[str]  # type: ignore[type-arg]
 else:
     FormatPatternParamTypeBase = click.ParamType
-    LibraryParamTypeBase = click.ParamType
+    StringParamTypeBase = click.ParamType
 
 DecoratorCallable = Callable[..., Any]
+
+
+class KeyParamType(StringParamTypeBase):
+    name: str = "key"
+
+
+class ValueParamType(StringParamTypeBase):
+    name: str = "value"
 
 
 class FormatPatternParamType(FormatPatternParamTypeBase):
@@ -47,7 +55,7 @@ class FormatPatternParamType(FormatPatternParamTypeBase):
         return "FORMATPATTERN"
 
 
-class LibraryParamType(LibraryParamTypeBase):
+class LibraryParamType(StringParamTypeBase):
     name: str = "library"
 
     def shell_complete(self,  # noqa: PLR6301
