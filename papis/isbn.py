@@ -181,8 +181,7 @@ def meta_openl(isbn: str) -> dict[str, Any] | None:
 
 
 def meta_wiki(isbn: str) -> dict[str, Any] | None:
-    url = f"https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/{
-        isbn}"
+    url = f"https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/{isbn}"
     data = json_request(url)
     if not data:
         return None
