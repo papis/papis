@@ -30,10 +30,10 @@ def load_json(filename: str, data_getter: Callable[[], Any] | None = None) -> An
 
 
 def get_unmodified_isbn_data(query: str) -> Any:
-    isbnlib = pytest.importorskip("isbnlib")
+    from papis.isbn import isbn_from_words, meta
 
-    isbn = isbnlib.isbn_from_words(query)
-    data = isbnlib.meta(isbn, service="openl")
+    isbn = isbn_from_words(query)
+    data = meta(isbn, service="openl")
     assert data is not None
 
     return data
@@ -41,8 +41,6 @@ def get_unmodified_isbn_data(query: str) -> Any:
 
 @pytest.mark.xfail(reason="sometimes makes too many requests")
 def test_get_data(tmp_config: TemporaryConfiguration) -> None:
-    pytest.importorskip("isbnlib")
-
     from papis.isbn import get_data
 
     result = get_data(query="Mattuck feynan diagrams")
@@ -54,8 +52,6 @@ def test_get_data(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_importer_match(tmp_config: TemporaryConfiguration) -> None:
-    pytest.importorskip("isbnlib")
-
     from papis.importer.isbn import ISBNImporter
 
     assert ISBNImporter.match("9780486670478")
@@ -69,8 +65,6 @@ def test_importer_match(tmp_config: TemporaryConfiguration) -> None:
 
 @pytest.mark.parametrize("basename", ["test_isbn_1"])
 def test_isbn_to_papis(tmp_config: TemporaryConfiguration, basename: str) -> None:
-    pytest.importorskip("isbnlib")
-
     from papis.isbn import data_to_papis
 
     data = load_json(
