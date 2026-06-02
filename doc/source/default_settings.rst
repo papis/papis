@@ -920,9 +920,8 @@ Downloaders
 
 .. papis-config:: isbn-service
 
-    Sets the ISBN service used by the ISBN importer. Available plugins are
-    documented
-    `here <https://isbnlib.readthedocs.io/en/latest/devs.html#plugins>`__.
+    Sets the ISBN service used by the ISBN importer. Available plugins are:
+    "goob" (Google Books), "openl" (OpenLibrary), and "wiki" (Wikipedia).
 
 Databases
 ---------
