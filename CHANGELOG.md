@@ -4,6 +4,8 @@
 
 * Switched from `pyparsing` to [Lark](https://lark-parser.readthedocs.io) for
   query parsing.
+* Removed the `isbnlib` dependency. The library itself has not been maintained
+  in a while. The new ISBN functionality is built-in with no additional dependencies.
 
 ## Features
 
