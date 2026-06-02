@@ -120,13 +120,7 @@ optional = [
     "Whoosh>=2.7.4",
     "chardet>=3.0.2",
     "citeproc-py>=0.6",
-    "isbnlib>=3.9.1",
     "markdownify>=1.0.0",
-
-    # NOTE: this dependency is added for `isbnlib`, which has an undeclared
-    # runtime dependency on `pkg_resources`. Could remove once the PR is in:
-    #   https://github.com/xlcnd/isbnlib/pull/145
-    "setuptools<82.0.0",
 ]
 # Custom Sphinx directives for Papis docs
 "papis.sphinx_ext" = [
@@ -345,7 +339,6 @@ module = [
     "dominate.*",
     "filetype.*",
     "habanero.*",
-    "isbnlib.*",
     "sphinx_click.*",
     "whoosh.*",
 ]
