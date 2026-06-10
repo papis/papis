@@ -283,3 +283,29 @@ def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None
     #   s = "Last, First First"       # one author
     #   s = "Last Last, First First"  # one author
     #   s = "First Last, First Last"  # two authors
+
+
+def test_update_drops_none_values() -> None:
+    """Document.update() should drop None values to keep info.yaml clean."""
+    doc = papis.document.from_data({"title": "Test", "author": "Turing"})
+    
+    # Update with a dict containing None values
+    doc.update({"year": 2024, "none_field": None, "tags": ["a", "b"], "none_tag": None})
+    
+    # None values should not be in the document
+    assert "none_field" not in doc
+    assert "none_tag" not in doc
+    # Real values should be there
+    assert doc["year"] == 2024
+    assert doc["tags"] == ["a", "b"]
+    assert doc["title"] == "Test"
+
+
+def test_update_with_kwargs_drops_none() -> None:
+    """Document.update() should also filter None from kwargs."""
+    doc = papis.document.from_data({"title": "Test"})
+    doc.update(title="Updated", none_val=None, count=42)
+    
+    assert "none_val" not in doc
+    assert doc["title"] == "Updated"
+    assert doc["count"] == 42

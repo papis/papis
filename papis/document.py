@@ -408,6 +408,28 @@ class Document(dict[str, Any]):
         """
         return ""
 
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        """Override dict.update to drop None values.
+        
+        This ensures that calling document.update(data) does not introduce
+        None values into the document, keeping info.yaml clean.
+        """
+        if args:
+            other = args[0]
+            if hasattr(other, 'keys'):
+                for key in other.keys():
+                    if other[key] is not None:
+                        dict.update(self, {key: other[key]})
+            else:
+                for key, value in other:
+                    if value is not None:
+                        dict.update(self, {key: value})
+        for key, value in kwargs.items():
+            if value is not None:
+                dict.update(self, {key: value})
+
+
+
     def copy(self) -> Document:
         """Make a shallow copy of the :class:`Document`."""
         doc = Document(data=dict(self))
