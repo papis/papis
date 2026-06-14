@@ -57,6 +57,26 @@ papis open 'title:^Quantum'
 Note that this new query syntax still uses the `match-format` configuration setting
 for free-form terms in the query (i.e. ones not using a `key:value` format).
 
+### Minor: papis update can rename files ([1108](https://github.com/papis/papis/pull/1108))
+
+The `papis update` command has been reworked quite extensively and has some new
+interesting functionality. First, updating document files will also rename these
+files on disk. For example, running
+```bash
+papis update --set files 0:my-new-file.pdf QUERY
+```
+will change the first file in the document to `my-new-file.pdf` and rename it
+on disk from its previous name. This also applies to `notes` in the document.
+
+Second, we can also reset certain values to their defaults (as defined in the
+configuration file). For example, to update some document references according to
+`ref-format`, use
+```bash
+papis update --all --reset ref QUERY
+```
+for a bulk operation. This can also be applied to `author`, `files`, and `notes`.
+For more information, see the documentation of the `papis update command`.
+
 # VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes
