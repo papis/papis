@@ -178,8 +178,8 @@ def pick_subfolder_from_lib(libname: str) -> list[str]:
 
     # get all document directories
     folders = [os.path.dirname(str(d.get_main_folder())) for d in documents]
-    # get all library directories
-    folders.extend(papis.config.get_lib_from_name(libname).paths)
+    # get the library directory
+    folders.append(papis.config.get_lib_from_name(libname).path)
     # remove duplicates and sort paths
     folders = sorted(set(folders))
 
@@ -209,8 +209,8 @@ def pick_library(libs: list[str] | None = None, *,
         library = papis.config.get_lib_from_name(lib)
         return format(header_format, {
             "name": library.name,
-            "dir": library.paths[0],
-            "paths": library.paths
+            "dir": library.path,
+            "paths": [library.path],
             }, doc_key="library", additional={"c": colorama})
 
     return pick(libs,

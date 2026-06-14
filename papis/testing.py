@@ -456,7 +456,7 @@ class TemporaryLibrary(TemporaryConfiguration):
 
         # initialize library
         from papis.library import Library
-        lib = Library(self.libname, [self.libdir])
+        lib = Library(self.libname, self.libdir)
 
         import papis.config
         papis.config.set("default-library", self.libname)

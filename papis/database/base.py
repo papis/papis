@@ -9,11 +9,11 @@ if TYPE_CHECKING:
     from papis.library import Library
 
 
-def get_cache_file_name(libpaths: str) -> str:
+def get_cache_file_name(libpath: str) -> str:
     """Create a cache file name out of the path of a given directory.
 
-    :param libpaths: folder names to be used as a seed for the cache name.
-    :returns: a name for the cache file specific to *libpaths*.
+    :param libpath: folder name to be used as a seed for the cache name.
+    :returns: a name for the cache file specific to *libpath*.
 
     >>> get_cache_file_name('path/to/my/lib')
     'a8c689820a94babec20c5d6269c7d488-lib'
@@ -22,18 +22,18 @@ def get_cache_file_name(libpaths: str) -> str:
     """
     import hashlib
 
-    digest = hashlib.md5(libpaths.encode()).hexdigest()
-    return f"{digest}-{os.path.basename(libpaths)}"
+    digest = hashlib.md5(libpath.encode()).hexdigest()
+    return f"{digest}-{os.path.basename(libpath)}"
 
 
-def get_cache_file_path(libpaths: str) -> str:
+def get_cache_file_path(libpath: str) -> str:
     """Get the full path to the cache file.
 
-    :param libpaths: a cache file specific for the given library paths.
+    :param libpath: a cache file specific for the given library path.
     """
     from papis.utils import get_cache_home
 
-    cache_name = get_cache_file_name(libpaths)
+    cache_name = get_cache_file_name(libpath)
     folder = os.path.join(get_cache_home(), "database")
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -165,10 +165,10 @@ class Database(ABC):
 
         warn(f"Calling '{type(self).__name__}.get_dirs' directly is deprecated "
              "and will be removed in the next version of Papis (after 0.15). Use "
-             "the 'self.lib.paths' member directly.",
+             "the 'self.lib.path' member directly.",
              DeprecationWarning, stacklevel=2)
 
-        return self.lib.paths
+        return [self.lib.path]
 
     @staticmethod
     def get_id_key() -> str:

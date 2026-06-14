@@ -35,7 +35,7 @@ def get_exported_variables(ctx: dict[str, Any] | None = None) -> dict[str, str]:
     """
     exports = {
         "PAPIS_LIB": papis.config.get_lib().name,
-        "PAPIS_LIB_PATH": papis.config.get_lib().path_format(),
+        "PAPIS_LIB_PATH": papis.config.get_lib().path,
         "PAPIS_CONFIG_PATH": papis.config.get_config_folder(),
         "PAPIS_CONFIG_FILE": papis.config.get_config_file(),
         "PAPIS_SCRIPTS_PATH": papis.config.get_scripts_folder(),

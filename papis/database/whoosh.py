@@ -65,7 +65,7 @@ class WhooshDatabase(Database):
 
         self.cache_dir = os.path.join(get_cache_home(), "database", "whoosh")
         self.index_dir = os.path.expanduser(
-            os.path.join(self.cache_dir, get_cache_file_name(self.lib.path_format()))
+            os.path.join(self.cache_dir, get_cache_file_name(self.lib.path))
             )
 
         self.initialize()
@@ -222,7 +222,7 @@ class WhooshDatabase(Database):
         from papis.utils import folders_to_documents, get_folders
 
         logger.debug("Indexing the library, this might take a while...")
-        folders = [f for path in self.lib.paths for f in get_folders(path)]
+        folders = get_folders(self.lib.path)
         documents = folders_to_documents(folders)
 
         schema_keys = self._get_schema_init_fields().keys()

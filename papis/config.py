@@ -638,8 +638,7 @@ def set_lib(library: Library) -> None:
 
     if library.name not in config:
         # NOTE: can't use set(...) here due to cyclic dependencies
-        paths = [escape_interp(path) for path in library.paths]
-        config[library.name] = {"dirs": str(paths)}
+        config[library.name] = {"dir": escape_interp(library.path)}
 
     CURRENT_LIBRARY = library
 
@@ -656,14 +655,14 @@ def set_lib_from_name(libname: str) -> None:
 def get_lib_from_name(libname_or_path: str) -> Library:
     """Get a library object from a name.
 
-    :param libname: the name of a library in the configuration file or a path
-        to an existing folder that should be considered a library.
+    :param libname_or_path: the name of a library in the configuration file
+        or a path to an existing folder that should be considered a library.
     """
     config = get_configuration()
     default_settings = get_default_settings()
     libs = get_libs_from_config(config)
 
-    from papis.library import Library, from_paths
+    from papis.library import Library
 
     if libname_or_path not in libs:
         path = os.path.abspath(os.path.expanduser(libname_or_path))
@@ -671,16 +670,16 @@ def get_lib_from_name(libname_or_path: str) -> Library:
         # first check if this path corresponds to an existing library
         for libname in libs:
             lib = get_lib_from_name(libname)
-            if path in lib.paths:
+            if path == lib.path:
                 return lib
 
+        lib = Library(libname_or_path, path)
         if os.path.isdir(path):
             logger.warning("Setting path '%s' as the main library folder.",
                            libname_or_path)
 
             # NOTE: can't use set(...) here due to cyclic dependencies
-            lib = from_paths([path])
-            config[lib.name] = {"dirs": str([escape_interp(path)])}
+            config[lib.name] = {"dir": escape_interp(path)}
         else:
             raise InvalidLibraryError(
                 f"Library '{libname_or_path}' does not seem to exist. ",
@@ -697,27 +696,48 @@ def get_lib_from_name(libname_or_path: str) -> Library:
 
         try:
             # NOTE: can't use `getstring(...)` due to cyclic dependency
-            paths = [os.path.expanduser(config[libname]["dir"])]
+            path = os.path.expanduser(config[libname]["dir"])
         except KeyError:
-            try:
-                # NOTE: can't use `getlist(...)` due to cyclic dependency
-                paths = eval(config[libname]["dirs"])
-                paths = [os.path.expanduser(d) for d in paths]
-            except Exception as exc:
-                raise MissingLibraryDirectoryError(
-                    "To define a library you have to set either 'dir' or 'dirs' "
-                    "in the configuration file.\n"
-                    "\t'dir' must be a path to an existing folder.\n"
-                    "\t'dirs' must be a list of paths.") from exc
+            if "dirs" in config[libname]:
+                from warnings import warn
 
-        lib = Library(libname, paths)
+                warn(
+                    f"Library '{libname}' uses the 'dirs' setting, which is "
+                    "deprecated and will be removed in Papis 0.17. "
+                    "Use 'dir' with a single path instead. "
+                    "Only the first path in 'dirs' will be used.",
+                    DeprecationWarning, stacklevel=2)
+                try:
+                    # NOTE: can't use `getlist(...)` due to cyclic dependency
+                    dirs = eval(config[libname]["dirs"])
+                    path = os.path.expanduser(dirs[0])
+                except Exception as exc:
+                    raise MissingLibraryDirectoryError(
+                        "To define a library you have to set 'dir' "
+                        "in the configuration file.\n"
+                        "\t'dir' must be a path to an existing folder.") from exc
+            else:
+                raise MissingLibraryDirectoryError(
+                    "To define a library you have to set 'dir' "
+                    "in the configuration file.\n"
+                    "\t'dir' must be a path to an existing folder.") from None
+
+        lib = Library(libname, path)
 
     return lib
 
 
 def get_lib_dirs() -> list[str]:
     """Get the directories of the current library."""
-    return get_lib().paths
+    from warnings import warn
+
+    warn(
+        "'papis.config.get_lib_dirs' is deprecated "
+        "and will be removed in Papis 0.17. "
+        "Use 'papis.config.get_lib().path' instead.",
+        DeprecationWarning, stacklevel=2)
+
+    return [get_lib().path]
 
 
 def get_lib_name() -> str:
@@ -764,14 +784,24 @@ def get_libs() -> list[str]:
 def get_libs_from_config(config: Configuration) -> list[str]:
     """Get all library names from the given *configuration*.
 
-    In the configuration file, any sections that contain a ``"dir"`` or a
-    ``"dirs"`` key are considered to be libraries.
+    In the configuration file, any sections that contain a ``"dir"`` key
+    are considered to be libraries.
     """
 
     libs = []
     for section in config:
         sec = config[section]
-        if "dir" in sec or "dirs" in sec:
+        if "dir" in sec:
+            libs.append(section)
+        elif "dirs" in sec:
+            from warnings import warn
+
+            warn(
+                f"Library '{section}' uses the 'dirs' setting, which is "
+                "deprecated and will be removed in Papis 0.17. "
+                "Use 'dir' with a single path instead. "
+                "Only the first path in 'dirs' will be used.",
+                DeprecationWarning, stacklevel=2)
             libs.append(section)
 
     # NOTE: also look through default settings in case they were registered
@@ -781,7 +811,17 @@ def get_libs_from_config(config: Configuration) -> list[str]:
         if name in config:
             continue
 
-        if "dir" in values or "dirs" in values:
+        if "dir" in values:
+            libs.append(name)
+        elif "dirs" in values:
+            from warnings import warn
+
+            warn(
+                f"Library '{name}' uses the 'dirs' setting, which is "
+                "deprecated and will be removed in Papis 0.17. "
+                "Use 'dir' with a single path instead. "
+                "Only the first path in 'dirs' will be used.",
+                DeprecationWarning, stacklevel=2)
             libs.append(name)
 
     return sorted(libs)

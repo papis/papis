@@ -57,7 +57,7 @@ def get_libraries() -> list[str]:
     Get all the libraries declared in the configuration files.
 
     A library in the configuration files is a section that has the ``dir``
-    or ``dirs`` key defined.
+    key defined.
 
     :returns: a :class:`list` of library names.
 

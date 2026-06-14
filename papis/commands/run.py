@@ -120,7 +120,7 @@ def cli(run_command: list[str],
     if documents:
         folders = [d for d in [d.get_main_folder() for d in documents] if d]
     else:
-        folders = papis.config.get_lib_dirs()
+        folders = [papis.config.get_lib().path]
 
     for folder in folders:
         cmd = ([prefix] if prefix else []) + list(run_command)

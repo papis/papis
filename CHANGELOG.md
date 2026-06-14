@@ -57,6 +57,11 @@ papis open 'title:^Quantum'
 Note that this new query syntax still uses the `match-format` configuration setting
 for free-form terms in the query (i.e. ones not using a `key:value` format).
 
+## Other noteworthy features
+
+- Remove undocumented `dirs` option (only allow one `dir` per library).
+  ([#1182](https://github.com/papis/papis/pull/1182)).
+
 # VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes

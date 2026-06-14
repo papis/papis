@@ -197,11 +197,11 @@ class PickleDatabase(Database):
             import pickle
             with open(cache_path, "rb") as fd:
                 self.documents = pickle.load(fd)
-        elif self.lib.paths:
+        elif self.lib.path:
             from papis.utils import folders_to_documents, get_folders
 
             logger.info("Indexing library. This might take a while...")
-            folders = [f for path in self.lib.paths for f in get_folders(path)]
+            folders = get_folders(self.lib.path)
             self.documents = folders_to_documents(folders)
 
             from papis.id import ID_KEY_NAME
@@ -228,7 +228,7 @@ class PickleDatabase(Database):
             pickle.dump(docs, fd)
 
     def _get_cache_file_path(self) -> str:
-        return get_cache_file_path(self.lib.path_format())
+        return get_cache_file_path(self.lib.path)
 
     def _locate_document(self,
                          document: Document
