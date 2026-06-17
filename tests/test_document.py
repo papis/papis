@@ -19,27 +19,23 @@ def test_new(tmp_config: TemporaryConfiguration) -> None:
     nfiles = 10
     files = [tmp_config.create_random_file() for _ in range(nfiles)]
 
-    tmp = os.path.join(tmp_config.tmpdir, "doc1")
-    doc = papis.document.new(tmp, {"author": "hello"}, files)
-
-    folder = doc.get_main_folder()
-    assert folder is not None
-    assert os.path.exists(folder)
-    assert folder == tmp
-
-    files = doc.get_files()
-    assert len(files) == nfiles
-    assert all(os.path.exists(f) for f in files)
-
-    tmp = os.path.join(tmp_config.tmpdir, "doc2")
-    doc = papis.document.new(tmp, {"author": "hello"}, [])
+    doc = papis.document.new({"author": "hello"}, files)
     folder = doc.get_main_folder()
 
     assert folder is not None
     assert os.path.exists(folder)
-    assert folder == tmp
-    assert len(doc["files"]) == 0
-    assert len(doc.get_files()) == 0
+    doc_files = doc.get_files()
+    assert len(doc_files) == nfiles
+    assert all(os.path.exists(f) for f in doc_files)
+    assert doc["author"] == "hello"
+
+    doc2 = papis.document.new({"author": "hello"}, [])
+    folder2 = doc2.get_main_folder()
+
+    assert folder2 is not None
+    assert os.path.exists(folder2)
+    assert len(doc2["files"]) == 0
+    assert len(doc2.get_files()) == 0
 
 
 def test_from_data() -> None:
