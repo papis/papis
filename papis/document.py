@@ -370,6 +370,20 @@ class DocHtmlEscaped(dict[str, Any]):
             .replace('"', "&quot;"))
 
 
+def is_empty_value(value: Any) -> bool:
+    """Check if a value is empty and should be treated as missing.
+
+    Returns *True* for ``None``, empty strings, empty lists, and empty
+    dicts. Numeric values (including ``0``) and booleans are never
+    considered empty.
+    """
+    if value is None:
+        return True
+    if isinstance(value, (int, float, bool)):
+        return False
+    return not value
+
+
 class Document(dict[str, Any]):
     """An abstract document in a ``papis`` library.
 
@@ -410,15 +424,25 @@ class Document(dict[str, Any]):
         return ""
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        """Update the document, silently dropping keys with ``None`` values.
+        """Update the document, dropping fields set to empty values.
 
-        This overrides :meth:`dict.update` to ensure that fields with a
-        ``None`` value never leak into the document and get persisted to
-        its ``info.yaml`` file.
+        Empty values (``None``, ``""``, ``[]``, ``{}``) passed into this
+        call cause the corresponding field to be removed.  Pre-existing
+        empty values elsewhere in the document are left untouched.
+
+        This overrides :meth:`dict.update` to ensure that empty fields
+        never leak into the document and get persisted to its
+        ``info.yaml`` file.
         """
-        super().update(*args, **kwargs)
-        for key in [k for k in self if self[k] is None]:
-            del self[key]
+        incoming = dict(*args, **kwargs)
+        filtered: dict[str, Any] = {}
+        for key, value in incoming.items():
+            if is_empty_value(value):
+                self.pop(key, None)
+            else:
+                filtered[key] = value
+
+        super().update(filtered)
 
     def copy(self) -> Document:
         """Make a shallow copy of the :class:`Document`."""
