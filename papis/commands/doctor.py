@@ -31,6 +31,8 @@ implemented
   provided by :confval:`doctor-html-codes-keys`.
 * ``html-tags``: checks that no HTML or XML tags (e.g. ``<a>``) appear in the keys
   provided by :confval:`doctor-html-tags-keys`.
+* ``empty-fields``: checks that the document does not contain fields with
+  empty values (``None``, ``""``, ``[]``, ``{}``).
 * ``field-type``: checks the type of fields provided by :confval:`document-field-types`
   (and :confval:`document-field-types-extend`), e.g. year should be an ``int``.
   Lists can be automatically fixed (by splitting or joining) using the
@@ -941,6 +943,33 @@ def html_tags_check(doc: Document) -> list[Error]:
     return results
 
 
+EMPTY_FIELDS_CHECK_NAME = "empty-fields"
+
+
+def empty_fields_check(doc: Document) -> list[Error]:
+    """
+    Checks for fields with empty values (``None``, ``""``, ``[]``, ``{}``).
+
+    :returns: a :class:`list` of errors, one for each field with an empty value.
+    """
+    from papis.document import is_empty_value
+
+    def make_fixer(key: str) -> FixFn:
+        def fixer() -> None:
+            del doc[key]
+            logger.info("[FIX] Removing empty field '%s'.", key)
+
+        return fixer
+
+    return [
+        make_error(doc, EMPTY_FIELDS_CHECK_NAME,
+                   msg=f"Field '{key}' has an empty value ({doc[key]!r})",
+                   fix_action=make_fixer(key),
+                   payload=key)
+        for key in doc if is_empty_value(doc[key])
+    ]
+
+
 STRING_CLEANER_CHECK_NAME = "string-cleaner"
 
 # NOTE: matches all text with two or more consecutive whitespace characters
@@ -1113,6 +1142,7 @@ register_check(REFS_CHECK_NAME, refs_check)
 register_check(HTML_CODES_CHECK_NAME, html_codes_check)
 register_check(HTML_TAGS_CHECK_NAME, html_tags_check)
 register_check(FIELD_TYPE_CHECK_NAME, field_type_check)
+register_check(EMPTY_FIELDS_CHECK_NAME, empty_fields_check)
 register_check(STRING_CLEANER_CHECK_NAME, string_cleaner_check)
 
 DEPRECATED_CHECK_NAMES = {

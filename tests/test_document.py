@@ -49,15 +49,81 @@ def test_from_folder() -> None:
     assert doc["author"] == "Russell, Bertrand"
 
 
-def test_update_drops_none_values() -> None:
-    """Document.update() must silently drop keys with None values."""
+def test_update_drops_empty_values() -> None:
+    """Document.update() must drop fields passed with empty values."""
     doc = papis.document.from_data({"title": "Hello", "author": "Turing"})
 
-    doc.update({"doi": None, "year": 1999, "abstract": None})
+    doc.update({
+        "doi": None,
+        "year": 1999,
+        "abstract": "",
+        "files": [],
+        "extra": {},
+        "pages": 0,
+        "valid": False,
+    })
+    assert "doi" not in doc
+    assert "abstract" not in doc
+    assert "files" not in doc
+    assert "extra" not in doc
+    assert doc["year"] == 1999
+    assert doc["pages"] == 0
+    assert doc["valid"] is False
+    assert doc["title"] == "Hello"
+
+    # passing an empty value for an existing field should remove it
+    doc.update({"title": ""})
+    assert "title" not in doc
+
+
+def test_update_does_not_touch_existing_empty() -> None:
+    """Document.update() must not remove pre-existing empty values."""
+    doc = papis.document.from_data({"title": "Hello"})
+
+    doc["notes"] = []
+    doc["extra"] = {}
+    doc["comment"] = ""
+
+    doc.update({"year": 1999})
+    # pre-existing empty values are left alone
+    assert "notes" in doc
+    assert doc["notes"] == []
+    assert "extra" in doc
+    assert doc["extra"] == {}
+    assert "comment" in doc
+    assert doc["comment"] == ""
+    assert doc["year"] == 1999
+
+
+def test_update_call_forms() -> None:
+    """Document.update() must drop empty values regardless of call form."""
+    # via dict
+    doc = papis.document.from_data({"title": "Hello"})
+    doc.update({"doi": None, "abstract": "", "year": 1999})
     assert "doi" not in doc
     assert "abstract" not in doc
     assert doc["year"] == 1999
-    assert doc["title"] == "Hello"
+
+    # via iterable of pairs
+    doc = papis.document.from_data({"title": "Hello"})
+    doc.update([("doi", None), ("abstract", ""), ("year", 1999)])
+    assert "doi" not in doc
+    assert "abstract" not in doc
+    assert doc["year"] == 1999
+
+    # via keyword arguments
+    doc = papis.document.from_data({"title": "Hello"})
+    doc.update(doi=None, abstract="", year=1999)
+    assert "doi" not in doc
+    assert "abstract" not in doc
+    assert doc["year"] == 1999
+
+    # mixed: dict + kwargs
+    doc = papis.document.from_data({"title": "Hello"})
+    doc.update({"doi": None}, abstract="", year=1999)
+    assert "doi" not in doc
+    assert "abstract" not in doc
+    assert doc["year"] == 1999
 
 
 def test_main_features() -> None:
