@@ -580,3 +580,67 @@ def test_string_cleaner_missing_author(tmp_config: TemporaryConfiguration) -> No
 
     error.fix_action()
     assert doc["author_list"][1]["given"] == "M."
+
+
+def test_empty_fields_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.commands.doctor import empty_fields_check
+
+    # check: no empty fields
+    doc = papis.document.from_data({
+        "title": "Test Title",
+        "author": "Doe, John",
+        "year": 2023,
+        })
+
+    errors = empty_fields_check(doc)
+    assert not errors
+
+    # check: empty string
+    doc["journal"] = ""
+    error, = empty_fields_check(doc)
+    assert error.payload == "journal"
+    assert "empty" in error.msg
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "journal" not in doc
+
+    # check: empty list
+    doc["tags"] = []
+    error, = empty_fields_check(doc)
+    assert error.payload == "tags"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "tags" not in doc
+
+    # check: empty dict
+    doc["extra"] = {}
+    error, = empty_fields_check(doc)
+    assert error.payload == "extra"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "extra" not in doc
+
+    # check: None value
+    doc["note"] = None
+    error, = empty_fields_check(doc)
+    assert error.payload == "note"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "note" not in doc
+
+    # check: non-empty values are not flagged
+    doc = papis.document.from_data({
+        "title": "Test",
+        "year": 0,
+        "bool_field": False,
+        "count": -1,
+        "list": [1],
+        "dict": {"a": 1},
+        })
+
+    errors = empty_fields_check(doc)
+    assert not errors
