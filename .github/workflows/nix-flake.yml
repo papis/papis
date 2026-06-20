@@ -19,7 +19,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: setup nix
-        uses: ./.github/actions/nix-setup
-      - name: run tests with nix
-        uses: ./.github/actions/nix-test
+      - name: Install nix
+        uses: nixbuild/nix-quick-install-action@v34
+      - name: Restore and save nix store from cache
+        uses: nix-community/cache-nix-action@v6.1.3
+        with:
+          # save a new cache every time the ci file or the flake changes
+          primary-key: nix-cache-${{ hashFiles('.github/workflows/nix-flake.yml', 'flake.nix', 'flake.lock') }}
+          # if no hit, restore current versions of individual caches
+          restore-prefixes-first-match: nix-cache-
+          # purge all versions of the cache
+          purge: true
+          purge-prefixes: nix-cache-
+          # created more than 0 seconds ago relative to the start of the `Post Restore` phase
+          purge-created: 0
+          # except the version with the `primary-key`, if it exists
+          purge-primary-key: never
+      - name: check installed nix version
+        run: which nix; nix build --version
+      - name: check nix flake
+        run: nix flake check
+      - name: install papis from nix flake into profile.
+        # this also persists the papis package as gcroot, so it is not garbage
+        # collected and is persisted in the cache
+        run: nix profile install '.#papis'
+      - name: run unit tests in nix devShell
+        run: nix develop --command bash -c "python -m pytest -v papis tests"
+      - name: persist devshell as gcroot, s.t., it is cached
+        run: |
+          rm /nix/var/nix/gcroots/devshell || true
+          ln -s $(nix develop --command bash -c 'echo $NIX_GCROOT') /nix/var/nix/gcroots/devshell
+      # now the cache-nix-action post code runs and persists the nix store,
+      # after running garbage collection. Since we have both papis installed as
+      # profile and the devshell saved as gcroot, the cache should contain all
+      # nix derivations need for papis. This should speed up the CI quite a bit.
