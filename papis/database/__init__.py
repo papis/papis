@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 logger = papis.logging.get_logger(__name__)
 
-DATABASES: dict[Library, Database] = {}
+DATABASES: dict[str, Database] = {}
 
 
 def _instantiate_database(backend_name: str,
@@ -47,10 +47,10 @@ def get_database(library_name: str | None = None) -> Database:
 
     backend = papis.config.getstring("database-backend") or "papis"
     try:
-        database = DATABASES[library]
+        database = DATABASES[library.name]
     except KeyError:
         database = _instantiate_database(backend, library)
-        DATABASES[library] = database
+        DATABASES[library.name] = database
 
     return database
 
