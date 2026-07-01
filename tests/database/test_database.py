@@ -94,3 +94,18 @@ def test_database_add(tmp_library: TemporaryLibrary) -> None:
 
         ndocs_after_add = len(db.get_all_documents())
         assert ndocs == ndocs_after_add - 1
+
+
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_database_cache_same_library_via_different_paths(
+    tmp_library: TemporaryLibrary,
+) -> None:
+    """:func:`papis.database.get` returns the same library instance regardless of
+    whether it was resolved via :func:`~papis.config.get_lib` or
+    :func:`~papis.config.get_lib_from_name`."""
+    db_via_current = papis.database.get()
+    lib_name = papis.config.get_lib_name()
+
+    db_via_name = papis.database.get(library_name=lib_name)
+
+    assert db_via_current is db_via_name
