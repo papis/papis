@@ -263,18 +263,18 @@ Renaming folders
 
 Papis will automatically name the folders in your library in a reasonable (and
 configurable) way, but if you want to rename them manually, you're free to do
-so. For this purpose, Papis offers the ``rename`` command, which changes the
-name of a document's folder.
+so. For this purpose, Papis offers the ``mv`` command, which can be used to
+change the name of a document's folder.
 
 This can be particularly useful when you've adjusted some document's metadata
 and would like the folder's name to reflect this. Remember how we changed the
 author of the Principia Mathematica from "Isaac Newton" to "Sir Isaac Newton"?
 Let's make that show up in the folder name! It's simple to do this: run ``papis
-rename``, pick the relevant document, and follow the prompts. Here, you do not
+mv``, pick the relevant document, and follow the prompts. Here, you do not
 need to set anything by hand as Papis regenerates the folder name based on the
 updated metadata.
 
-Alternatively, you could also use the ``--folder-name`` option to set the folder
+Alternatively, you could also use the ``--to`` option to set the folder
 name to whatever you want. Finally, you could also adjust the
 :confval:`add-folder-name` configuration option so that folders are
 automatically named according to your preferences.
