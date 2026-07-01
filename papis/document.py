@@ -11,6 +11,7 @@ import papis.logging
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+    from pathlib import Path
     from typing import Literal
 
     from papis.strings import AnyString
@@ -576,6 +577,19 @@ def from_folder(folder_path: str) -> Document:
     :param folder_path: absolute path to a valid ``papis`` folder.
     """
     return Document(folder=folder_path)
+
+
+def is_document_folder(path: Path) -> bool:
+    """Check whether *path* is an existing document folder.
+
+    A folder is considered a document folder if it contains an info file
+    (see :confval:`info-name`).
+
+    :param path: absolute path to a folder on the filesystem.
+    :returns: *True* if the folder contains a document info file.
+    """
+    info_name = papis.config.getstring("info-name")
+    return path.joinpath(info_name).exists()
 
 
 def to_json(document: Document) -> str:

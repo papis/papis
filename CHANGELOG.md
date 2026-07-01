@@ -57,6 +57,27 @@ papis open 'title:^Quantum'
 Note that this new query syntax still uses the `match-format` configuration setting
 for free-form terms in the query (i.e. ones not using a `key:value` format).
 
+### Major: Improve `mv` command ([#2822](https://github.com/papis/papis/pull/2822))
+
+The `mv` command has been completely rewritten with many new features. It now
+works similarly to the Unix `mv` command for moving document folders: if the
+target folder already exists, the document's folder is moved *into* it (e.g.
+`papis mv --to existing-folder query` places the document at
+`existing-folder/<doc-folder>`); if the target does not exist, the document is
+renamed to that name. When no target is given, it defaults to the
+`add-folder-name` pattern, which means `papis mv query` now does
+everything that `papis rename` used to do.
+
+The new `--to` flag accepts formatting patterns (e.g.
+`papis mv --to "{doc[year]}" query`). The command now also allows moving documents
+between libraries by specifying a target library.
+
+The new command performs pre-flight checks on all planned moves before touching
+any files. Issues such as duplicate target paths, nesting a document inside
+another document's folder, or missing source folders are warned about upfront. The
+user can abort, skip problematic moves, or fix collisions interactively. A new
+`--batch` flag allows skipping all interactive prompts.
+
 ## Other noteworthy features
 
 - Remove undocumented `dirs` option (only allow one `dir` per library).
