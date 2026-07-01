@@ -57,7 +57,7 @@ papis open 'title:^Quantum'
 Note that this new query syntax still uses the `match-format` configuration setting
 for free-form terms in the query (i.e. ones not using a `key:value` format).
 
-### Major: Improve `mv` command ([#2822](https://github.com/papis/papis/pull/2822))
+### Major: Improve `mv` command ([#1104](https://github.com/papis/papis/pull/1104))
 
 The `mv` command has been completely rewritten with many new features. It now
 works similarly to the Unix `mv` command for moving document folders: if the
