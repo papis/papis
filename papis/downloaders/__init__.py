@@ -212,9 +212,9 @@ class Downloader(Importer):
             rawdata = self.get_document_data()
             if rawdata and self.check_document_format():
                 if self.document_filename:
-                    from papis.paths import _make_unique_file
+                    from papis.paths import make_unique_file
 
-                    filename = _make_unique_file(
+                    filename = make_unique_file(
                         os.path.join(tempfile.gettempdir(), self.document_filename)
                     )
                     with open(filename, mode="wb") as f:

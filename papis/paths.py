@@ -350,7 +350,8 @@ def _make_unique_folder(out_folder_path: PathLike) -> str:
     return out_folder_path_suffix
 
 
-def _make_unique_file(filename: PathLike) -> str:
+def make_unique_file(filename: PathLike) -> str:
+    """Add a suffix to the basename of *filename* until it is unique."""
     if not os.path.exists(filename):
         return str(filename)
 
