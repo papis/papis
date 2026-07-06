@@ -127,7 +127,7 @@ Command-line interface
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import click
 
@@ -138,7 +138,6 @@ from papis.doctor import (
     DEPRECATED_CHECK_NAMES,
     REGISTERED_CHECKS,
     Error,
-    error_to_dict,
     gather_errors,
     registered_checks_names,
 )
@@ -147,6 +146,23 @@ if TYPE_CHECKING:
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
+
+
+def _suggestion_cmd(error: Error) -> str:
+    """Build the CLI suggestion string for a given error."""
+    if error.fix_action is not None:
+        return f"papis doctor --fix -t {error.name} --doc-folder {error.path!r}"
+    return f"papis edit --doc-folder {error.path!r}"
+
+
+def _error_to_dict(error: Error) -> dict[str, Any]:
+    """Convert an :class:`Error` to a JSON-serializable dictionary."""
+    return {
+        "msg": error.payload,
+        "path": error.path,
+        "name": error.name,
+        "suggestion": _suggestion_cmd(error),
+    }
 
 
 def process_errors(errors: list[Error],
@@ -190,7 +206,7 @@ def process_errors(errors: list[Error],
         if suggest:
             click.echo(
                 f"\t{c.Style.BRIGHT}{c.Fore.GREEN}Suggestion{c.Style.RESET_ALL}: "
-                f"{error.suggestion_cmd}")
+                f"{_suggestion_cmd(error)}")
 
         if fix and error.fix_action:
             try:
@@ -339,7 +355,7 @@ def cli(query: str,
         import json
 
         click.echo(json.dumps(
-            list(map(error_to_dict, errors)),
+            list(map(_error_to_dict, errors)),
             indent=2))
         return
 

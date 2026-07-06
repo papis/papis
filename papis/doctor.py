@@ -32,8 +32,6 @@ class Error(NamedTuple):
     payload: str
     #: A short message describing the error that can be displayed to the user.
     msg: str
-    #: A command to run to fix the error that can be suggested to the user.
-    suggestion_cmd: str
     #: A callable that can autofix the error (see :data:`FixFn`). Note that this
     #: will change the attached :attr:`doc`.
     fix_action: FixFn | None
@@ -63,31 +61,16 @@ def make_error(
         raise ValueError(f"unknown check '{name}'")
 
     folder = doc.get_main_folder()
-    if folder is not None:
-        if fix_action is None:
-            suggestion_cmd = f"papis edit --doc-folder {folder!r}"
-        else:
-            suggestion_cmd = f"papis doctor --fix -t {name} --doc-folder {folder!r}"
-    else:
+    if folder is None:
         # FIXME: this should only be hit during testing?
-        suggestion_cmd = "papis edit"
         folder = "NOTFOUND"
 
     return Error(name=name,
                  path=folder,
                  msg=msg,
-                 suggestion_cmd=suggestion_cmd,
                  fix_action=fix_action,
                  payload=payload,
                  doc=doc)
-
-
-def error_to_dict(e: Error) -> dict[str, Any]:
-    return {
-        "msg": e.payload,
-        "path": e.path,
-        "name": e.name,
-        "suggestion": e.suggestion_cmd}
 
 
 def register_check(name: str, check: CheckFn) -> None:
