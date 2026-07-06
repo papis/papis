@@ -62,11 +62,11 @@ papis_missing_reference_aliases = {
     "pending_xref": "class:sphinx.addnodes.pending_xref",
     # internal
     "AnyString": "obj:papis.strings.AnyString",
-    "CheckFn": "obj:papis.commands.doctor.CheckFn",
+    "CheckFn": "obj:papis.doctor.CheckFn",
     "Citations": "obj:papis.citations.Citations",
     "Document": "class:papis.document.Document",
     "DocumentLike": "obj:papis.document.DocumentLike",
-    "FixFn": "obj:papis.commands.doctor.FixFn",
+    "FixFn": "obj:papis.doctor.FixFn",
     "PathLike": "obj:papis.paths.PathLike",
 }
 

@@ -119,7 +119,7 @@ def list_plugins(show_paths: bool = False,
         ]
 
     if show_doctor:
-        from papis.commands.doctor import REGISTERED_CHECKS
+        from papis.doctor import REGISTERED_CHECKS
         results = []
         for name, check in REGISTERED_CHECKS.items():
             results.append(
