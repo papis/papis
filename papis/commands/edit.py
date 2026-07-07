@@ -56,11 +56,15 @@ def run(document: Document,
     db.update(document)
 
     if git:
-        from papis.git import add_and_commit
-        add_and_commit(
-            str(document.get_main_folder()),
-            info_file_path,
-            f"Update information for '{describe(document)}'")
+        from papis.git import GitError, add_and_commit as git_add_and_commit
+
+        try:
+            git_add_and_commit(
+                str(document.get_main_folder()),
+                info_file_path,
+                f"Update information for '{describe(document)}'")
+        except GitError as exc:
+            logger.error("%s", exc)
 
 
 def edit_notes(document: Document,
@@ -85,14 +89,17 @@ def edit_notes(document: Document,
     edit_file(notes_path)
 
     if git:
-        from papis.git import add_and_commit
+        from papis.git import GitError, add_and_commit as git_add_and_commit
 
-        folder = document.get_main_folder()
-        if folder:
-            msg = f"Update notes for '{describe(document)}'"
-            add_and_commit(folder,
-                           [notes_path, document.get_info_file()],
-                           msg)
+        try:
+            folder = document.get_main_folder()
+            if folder:
+                msg = f"Update notes for '{describe(document)}'"
+                git_add_and_commit(folder,
+                               [notes_path, document.get_info_file()],
+                               msg)
+        except GitError as exc:
+            logger.error("%s", exc)
 
 
 @click.command("edit")

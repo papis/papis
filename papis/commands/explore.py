@@ -98,6 +98,7 @@ Command-line interface
 from __future__ import annotations
 
 import shlex
+import subprocess
 
 import click
 
@@ -199,7 +200,13 @@ def cmd(ctx: click.Context, command: str) -> None:
     docs = ctx.obj["documents"]
     for doc in docs:
         fcommand = format(command, doc, default="")
-        run(shlex.split(fcommand))
+        try:
+            run(shlex.split(fcommand))
+        except subprocess.CalledProcessError as exc:
+            logger.error(
+                "Command failed for '%s': exited with code %d.",
+                fcommand, exc.returncode)
+            raise
 
 
 @cli.command("export")

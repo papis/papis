@@ -52,6 +52,9 @@ Command-line interface
 """
 from __future__ import annotations
 
+import shlex
+import subprocess
+
 import click
 
 import papis.cli
@@ -66,7 +69,13 @@ def run(folder: str, command: list[str] | None = None) -> None:
         return
 
     from papis.utils import run as run_command
-    run_command(command, cwd=folder, wait=True)
+
+    try:
+        run_command(command, cwd=folder, wait=True)
+    except subprocess.CalledProcessError as exc:
+        logger.error("Command '%s' exited with code %d.",
+                     shlex.join(exc.cmd), exc.returncode)
+        raise SystemExit(exc.returncode) from exc
 
 
 @click.command("run", context_settings={"ignore_unknown_options": True})

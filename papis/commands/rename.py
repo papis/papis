@@ -100,11 +100,22 @@ def run(document: Document,
     db.add(document)
 
     if git:
-        from papis.git import add as git_add, commit as git_commit, rm_cached as git_rm_cached
-        git_rm_cached(parent, folder, recursive=True)
-        git_add(parent, new_folder_path)
-        git_commit(parent,
-                   f"Rename '{folder}' to '{new_folder_name}'")
+        from papis.git import (
+            GitError,
+            add as git_add,
+            commit as git_commit,
+            rm_cached as git_rm_cached,
+        )
+
+        try:
+            git_rm_cached(parent, folder, recursive=True)
+            git_add(parent, new_folder_path)
+            git_commit(
+                parent,
+                f"Rename '{folder}' to '{new_folder_name}'",
+            )
+        except GitError as exc:
+            logger.error("%s", exc)
 
 
 @click.command("rename")
