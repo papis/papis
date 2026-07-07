@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import re
+import subprocess
 import tempfile
+
+import pytest
 
 from papis.testing import PapisRunner, TemporaryLibrary
 
@@ -86,3 +89,18 @@ def test_explore_citations_and_json_cli(tmp_library: TemporaryLibrary) -> None:
         exported_json = fd.read()
 
     assert exported_json == "[]"
+
+
+def test_explore_cmd_batch(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.explore import cli
+    cli_runner = PapisRunner()
+
+    result = cli_runner.invoke(
+        cli,
+        ["lib", "krishnamurti", "cmd", "--batch", "sh -c 'exit 1'"])
+    assert result.exit_code == 0
+
+    with pytest.raises(subprocess.CalledProcessError):
+        cli_runner.invoke(
+            cli,
+            ["lib", "krishnamurti", "cmd", "sh -c 'exit 1'"])
