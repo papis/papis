@@ -334,8 +334,8 @@ def run(paths: list[str],
     db.add(tmp_document)
 
     if git:
-        from papis.git import add_and_commit_resource
-        add_and_commit_resource(
+        from papis.git import add_and_commit
+        add_and_commit(
             out_folder_path, ".",
             f"Add document '{describe(tmp_document)}'")
 

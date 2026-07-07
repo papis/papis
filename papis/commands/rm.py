@@ -43,7 +43,11 @@ def run(document: Document,
         from papis.exceptions import DocumentFolderNotFound
         raise DocumentFolderNotFound(describe(document))
 
-    from papis.git import add as git_add, commit as git_commit, remove as git_rm
+    from papis.git import (
+        add as git_add,
+        commit as git_commit,
+        rm_cached as git_rm_cached,
+    )
 
     if filepath is not None:
         os.remove(filepath)
@@ -51,7 +55,7 @@ def run(document: Document,
         document.save()
         db.update(document)
         if git:
-            git_rm(doc_folder, filepath)
+            git_rm_cached(doc_folder, filepath)
             git_add(doc_folder, document.get_info_file())
             git_commit(doc_folder, f"Remove file '{filepath}'")
 
@@ -61,22 +65,21 @@ def run(document: Document,
         document.save()
         db.update(document)
         if git:
-            git_rm(doc_folder, notespath)
+            git_rm_cached(doc_folder, notespath)
             git_add(doc_folder, document.get_info_file())
             git_commit(doc_folder, f"Remove notes file '{notespath}'")
 
     # if neither files nor notes were deleted -> delete whole document
     if not (filepath or notespath):
+        delete(document)
+        db.delete(document)
+
         if git:
             topfolder = os.path.dirname(os.path.abspath(doc_folder))
-            git_rm(doc_folder, doc_folder, recursive=True)
+            git_rm_cached(topfolder, doc_folder, recursive=True)
             git_commit(
                 topfolder,
                 f"Remove document '{describe(document)}'")
-        else:
-            delete(document)
-
-        db.delete(document)
 
 
 @click.command("rm")

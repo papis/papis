@@ -414,8 +414,8 @@ def run(
     save_doc(document)
 
     if git:
-        from papis.git import add_and_commit_resource
-        add_and_commit_resource(
+        from papis.git import add_and_commit
+        add_and_commit(
             folder,
             info,
             f"Update information for '{describe(document)}'",

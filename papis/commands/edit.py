@@ -56,8 +56,8 @@ def run(document: Document,
     db.update(document)
 
     if git:
-        from papis.git import add_and_commit_resource
-        add_and_commit_resource(
+        from papis.git import add_and_commit
+        add_and_commit(
             str(document.get_main_folder()),
             info_file_path,
             f"Update information for '{describe(document)}'")
@@ -85,14 +85,14 @@ def edit_notes(document: Document,
     edit_file(notes_path)
 
     if git:
-        from papis.git import add_and_commit_resources
+        from papis.git import add_and_commit
 
         folder = document.get_main_folder()
         if folder:
             msg = f"Update notes for '{describe(document)}'"
-            add_and_commit_resources(folder,
-                                     [notes_path, document.get_info_file()],
-                                     msg)
+            add_and_commit(folder,
+                           [notes_path, document.get_info_file()],
+                           msg)
 
 
 @click.command("edit")

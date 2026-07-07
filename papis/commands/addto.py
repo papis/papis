@@ -117,9 +117,9 @@ def run(document: Document,
     save_doc(document)
 
     if git:
-        from papis.git import add_and_commit_resources
+        from papis.git import add_and_commit
 
-        add_and_commit_resources(
+        add_and_commit(
             doc_folder,
             [*new_filenames, document.get_info_file()],
             f"Add new files to '{describe(document)}'")

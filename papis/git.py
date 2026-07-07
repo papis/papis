@@ -1,8 +1,15 @@
 """
 This module serves as an lightweight interface for ``git`` related functions.
+
+Note that these git functions do not touch the file system. The caller must always
+manipulate the filesystem first and then use the git functions to record the changes
+to the index. This means that failure of a git operation always just means a failure
+of committing changes.
+
 """
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import papis.logging
@@ -13,28 +20,63 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
-def init(path: str) -> None:
+def is_git_repo(
+    path: str | os.PathLike[str],
+    *,
+    root: str | os.PathLike[str] | None = None,
+) -> bool:
+    """Check if *path* is inside a git repository.
+
+    :param path: starting path.
+    :param root: optional boundary directory (inclusive).
+    """
+    path = os.path.abspath(path)
+    if root is not None:
+        root = os.path.abspath(root)
+
+    while True:
+        if os.path.exists(os.path.join(path, ".git")):
+            return True
+
+        parent = os.path.dirname(path)
+        if parent == path:
+            return False  # hit filesystem root
+
+        if root is not None and path == root:
+            return False  # hit boundary, don't go above
+
+        path = parent
+
+
+def init(path: str | os.PathLike[str]) -> None:
     """Initialize a git repository at *path*."""
     from papis.utils import run
 
     logger.info("Initializing git repository: '%s'.", path)
-    run(["git", "init"], cwd=path)
+    run(["git", "init"], cwd=str(path))
 
 
-def add(path: str, resource: str) -> None:
-    """Adds changes in the *path* to the git index with a *message*.
+def add(
+    path: str | os.PathLike[str],
+    resource: str | Sequence[str],
+) -> None:
+    """Stage a resource (or resources) in the git repository at *path*.
 
     :param path: a folder with an existing git repository.
-    :param resource: a resource (e.g. ``info.yaml`` file) to add to the index.
+    :param resource: a resource to add to the index (e.g. ``info.yaml``),
+        or a sequence of resources.
     """
     from papis.utils import run
 
-    logger.info("Adding '%s'.", path)
-    run(["git", "add", resource], cwd=path)
+    if isinstance(resource, str):
+        resource = [resource]
+
+    logger.info("Adding %s to '%s'.", ", ".join(resource), path)
+    run(["git", "add", *resource], cwd=str(path))
 
 
-def commit(path: str, message: str) -> None:
-    """Commits changes in the *path* with a *message*.
+def commit(path: str | os.PathLike[str], message: str) -> None:
+    """Commit staged changes in the git repository at *path*.
 
     :param path: a folder with an existing git repository.
     :param message: a commit message.
@@ -42,72 +84,45 @@ def commit(path: str, message: str) -> None:
     from papis.utils import run
 
     logger.info("Committing '%s' with message '%s'.", path, message)
-    run(["git", "commit", "-m", message], cwd=path)
+    run(["git", "commit", "-m", message], cwd=str(path))
 
 
-def mv(from_path: str, to_path: str) -> None:
-    """Renames (moves) the path *from_path* to *to_path*.
+def rm_cached(
+    path: str | os.PathLike[str],
+    resource: str | os.PathLike[str],
+    *,
+    recursive: bool = False,
+) -> None:
+    """Remove a *resource* from the git index without touching the
+    working tree. The caller must have already deleted or moved the
+    files on disk.
 
-    :param from_path: path to be moved (the source).
-    :param to_path: destination where *from_path* is moved. If this is in the
-        same parent directory as *from_path*, it is a simple rename.
+    :param path: a folder with an existing git repository.
+    :param resource: a resource to remove from the index.
+    :param recursive: if *True*, remove the resource recursively.
     """
     from papis.utils import run
 
-    logger.info("Moving '%s' to '%s'.", from_path, to_path)
-    run(["git", "mv", from_path, to_path], cwd=from_path)
+    logger.info("Removing '%s' from index (cwd: '%s').", resource, path)
+
+    flags = ["--cached"]
+    if recursive:
+        flags.append("-r")
+
+    run(["git", "rm", *flags, str(resource)], cwd=str(path))
 
 
-def remove(path: str, resource: str,
-           recursive: bool = False,
-           force: bool = True) -> None:
-    """Remove a *resource* from the git repository at *path*.
-
-    :param path: a folder with an existing git repository.
-    :param resource: a resource (e.g. ``info.yaml`` file) to remove from git.
-    :param recursive: if *True*, the given resource is removed recursively.
-    :param force: if *True*, the removal is forced so any errors (e.g. file
-        does not exist) are silently ignored.
-    """
-    from papis.utils import run
-
-    logger.info("Removing '%s'.", path)
-
-    flag_rec = "-r" if recursive else ""
-    flag_force = "-f" if force else ""
-    run(["git", "rm", flag_force, flag_rec, resource], cwd=path)
-
-
-def add_and_commit_resource(path: str, resource: str, message: str) -> None:
-    """Adds and commits a single *resource*.
+def add_and_commit(
+    path: str | os.PathLike[str],
+    resources: str | Sequence[str],
+    message: str,
+) -> None:
+    """Stage *resources* and commit with *message*.
 
     :param path: a folder with an existing git repository.
-    :param resource: a resource (e.g. ``info.yaml`` file) to remove from git.
+    :param resources: a resource (e.g. ``info.yaml`` file) or sequence of
+        resources to add.
     :param message: a commit message.
     """
-    add(path, resource)
-    commit(path, message)
-
-
-def mv_and_commit_resource(from_path: str, to_path: str, message: str) -> None:
-    """Moves *from_path* and commits the change.
-
-    :param from_path: path to be moved (the source).
-    :param to_path: destination where *from_path* is moved.
-    :param message: a commit message.
-    """
-    mv(from_path, to_path)
-    commit(to_path, message)
-
-
-def add_and_commit_resources(path: str,
-                             resources: Sequence[str],
-                             message: str) -> None:
-    """Add and commit multiple resources (see :func:`add_and_commit_resource`).
-
-    Note that a single commit message is generated for all the resources.
-    """
-    for resource in resources:
-        add(path, resource)
-
+    add(path, resources)
     commit(path, message)
