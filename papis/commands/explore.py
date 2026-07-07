@@ -176,10 +176,13 @@ def add(ctx: click.Context) -> None:
 
 
 @cli.command("cmd")
+@papis.cli.bool_flag(
+    "--batch",
+    help="Skip documents containing errors rather than aborting.")
 @click.pass_context
 @click.help_option("-h", "--help")
 @click.argument("command", type=papis.cli.FormatPatternParamType())
-def cmd(ctx: click.Context, command: str) -> None:
+def cmd(ctx: click.Context, command: str, batch: bool) -> None:
     """
     Run a general command on the document list.
 
@@ -203,10 +206,13 @@ def cmd(ctx: click.Context, command: str) -> None:
         try:
             run(shlex.split(fcommand))
         except subprocess.CalledProcessError as exc:
-            logger.error(
-                "Command failed for '%s': exited with code %d.",
-                fcommand, exc.returncode)
-            raise
+            msg = "Command failed for `%s`: exited with code %d."
+            if batch:
+                logger.warning(msg, fcommand, exc.returncode)
+                continue
+            else:
+                logger.error(msg, fcommand, exc.returncode)
+                raise
 
 
 @cli.command("export")
