@@ -38,8 +38,8 @@ def html(libname: str, doc: Document) -> t.html_tag:
     View of a single document to edit the information of the YAML file,
     and maybe in the future to update the information.
     """
-    from papis.commands.doctor import gather_errors, registered_checks_names
     from papis.config import get_lib_from_name
+    from papis.doctor import gather_errors, registered_checks_names
 
     checks = registered_checks_names()
     errors = gather_errors([doc], checks)

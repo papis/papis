@@ -798,7 +798,7 @@ def new(
 
     # Run auto-doctor if requested
     if auto_doctor:
-        from papis.commands.doctor import fix_errors
+        from papis.doctor import fix_errors
 
         logger.info("Running doctor auto-fixers on document: '%s'.",
                     describe(doc))
