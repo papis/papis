@@ -15,6 +15,12 @@ class DOIImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> DOIImporter | None:
+        # NOTE: a local path is never a DOI; skipping it avoids querying
+        # doi.org for every file handed to `papis add` (and paths with spaces
+        # make for an invalid URL that crashes `validate_doi` -- see #1201)
+        if os.path.exists(uri):
+            return None
+
         from doi import validate_doi
 
         from papis.crossref import DOI_ORG_URL
