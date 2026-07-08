@@ -151,6 +151,21 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     assert isinstance(importers[1], USENIXDownloader)
 
 
+def test_doi_importer_does_not_match_local_paths(
+        tmp_config: TemporaryConfiguration) -> None:
+    import os
+
+    from papis.importer.doi import DOIImporter
+
+    # NOTE: a space makes the doi.org handle URL invalid, which used to crash
+    # the importer matching instead of skipping it (see #1201)
+    path = os.path.join(tmp_config.tmpdir, "some presentation.txt")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("this is not a doi\n")
+
+    assert DOIImporter.match(path) is None
+
+
 def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
     from papis.importer import get_matching_importers_by_doc
     from papis.importer.doi import DOIImporter

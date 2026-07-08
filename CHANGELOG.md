@@ -83,6 +83,12 @@ user can abort, skip problematic moves, or fix collisions interactively. A new
 - Remove undocumented `dirs` option (only allow one `dir` per library).
   ([#1182](https://github.com/papis/papis/pull/1182)).
 
+## Bug Fixes
+
+- Fix crash in `papis add` when a given file path contains spaces (the DOI
+  importer no longer tries to resolve local paths on doi.org)
+  ([#1201](https://github.com/papis/papis/issues/1201)).
+
 # VERSION v0.15.0 (February 8th, 2026)
 
 ## Dependency Changes
