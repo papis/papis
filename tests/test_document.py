@@ -38,6 +38,22 @@ def test_new(tmp_config: TemporaryConfiguration) -> None:
     assert len(doc2.get_files()) == 0
 
 
+def test_new_derives_author_list(tmp_config: TemporaryConfiguration) -> None:
+    # NOTE: a flat 'author' (e.g. from `papis add --set author ...`) should be
+    # parsed into a structured 'author_list' so that formats using it work
+    doc = papis.document.new({"author": "Doe, Jane and Smith, Bob"}, [])
+    assert doc["author_list"] == [
+        {"family": "Doe", "given": "Jane"},
+        {"family": "Smith", "given": "Bob"},
+    ]
+
+    # NOTE: an existing 'author_list' should not be overwritten
+    author_list = [{"family": "Curie", "given": "Marie"}]
+    doc = papis.document.new(
+        {"author": "Someone Else", "author_list": author_list}, [])
+    assert doc["author_list"] == author_list
+
+
 def test_from_data() -> None:
     doc = papis.document.from_data({"title": "Hello World", "author": "turing"})
     assert isinstance(doc, papis.document.Document)

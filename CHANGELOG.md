@@ -82,6 +82,10 @@ user can abort, skip problematic moves, or fix collisions interactively. A new
 
 - Remove undocumented `dirs` option (only allow one `dir` per library).
   ([#1182](https://github.com/papis/papis/pull/1182)).
+- Derive `author_list` from a flat `author` when creating a new document
+  (e.g. `papis add --set author ...`), so formats using
+  `{doc[author_list][0][family]}` work without a manual `papis doctor` pass
+  ([#1202](https://github.com/papis/papis/issues/1202)).
 
 ## Bug Fixes
 
