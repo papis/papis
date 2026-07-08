@@ -35,9 +35,9 @@ General settings
 .. papis-config:: use-git
 
     Some commands will issue `git <https://git-scm.com/>`__ commands if this
-    option is set to *True*. For example ``papis mv`` or ``papis rename`` can
-    automatically commit any changes to a document by default. See
-    :ref:`Git support <git-support>` for additional details.
+    option is set to *True*. For example ``papis mv`` can automatically commit any
+    changes to a document by default. See :ref:`Git support <git-support>` for
+    additional details.
 
 .. papis-config:: user-agent
 

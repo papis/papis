@@ -62,7 +62,7 @@ that, you can push your library to a remote repository by running:
 
    papis git push origin main
 
-As expected, other ``papis`` commands like ``update``, ``addto``, ``rename``, ``mv``,
+As expected, other ``papis`` commands like ``update``, ``addto``, ``mv``,
 etc. also offer such functionality, and they all go through the ``--git`` flag.
 
 Updating the library
