@@ -787,6 +787,12 @@ def new(
     db = get_database()
     db.maybe_compute_id(doc)
 
+    # Derive the structured author list if only a flat author was given
+    # (e.g. `papis add --set author ...`), so that formats using
+    # `author_list` (ref-format, add-folder-name, ...) work below
+    if "author" in doc and "author_list" not in doc:
+        doc["author_list"] = split_authors_name(doc["author"])
+
     # Create a BibTeX reference if missing
     if "ref" not in doc:
         from papis.bibtex import create_reference
