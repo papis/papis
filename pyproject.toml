@@ -135,9 +135,10 @@ optional = [
 "papis.testing" = [
     "pytest"
 ]
-# Needed when creating Windows installer
+# Needed for windows
 windows = [
-    "pyinstaller"
+    "pyinstaller", # Needed for the installer
+    "psutil" # Needed for the server command
 ]
 
 [project.scripts]
