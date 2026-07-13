@@ -324,6 +324,11 @@ multiline-quotes = "double"
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
 
+[tool.ruff.lint.per-file-ignores]
+"papis/server/app.py" = ["unused-import"]
+"papis/server/routes/*.py" = ["unused-async"]
+"papis/server/exceptions.py" = ["unused-async"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = true
