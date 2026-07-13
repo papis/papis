@@ -98,7 +98,6 @@ import papis.cli
 import papis.config
 import papis.database
 import papis.document
-import papis.git
 import papis.logging
 import papis.paths
 import papis.tui.utils
@@ -254,30 +253,9 @@ def run(
     papis.config.set_lib_from_name(source_library)
 
     if target_lib_dir == source_lib_dir:
-        if git:
-            papis.git.mv_and_commit_resource(
-                str(main_folder_old),
-                str(main_folder_new),
-                f"Move '{papis.document.describe(document)}'",
-            )
-        else:
-            shutil.move(main_folder_old, main_folder_new)
+        shutil.move(main_folder_old, main_folder_new)
     else:
         shutil.move(doc_folder_old, main_folder_new)
-
-        if git:
-            papis.git.remove(str(source_lib_dir), str(main_folder_old))
-            papis.git.commit(
-                str(source_lib_dir),
-                f"Remove '{papis.document.describe(document)}' "
-                f"(moved to '{target_library}' library)",
-            )
-
-            papis.git.add_and_commit_resource(
-                str(target_lib_dir),
-                str(main_folder_new),
-                f"Add '{papis.document.describe(document)}'",
-            )
 
     source_db = papis.database.get()
     source_db.delete(document)
@@ -287,6 +265,40 @@ def run(
     document.set_folder(str(main_folder_new))
 
     target_db.add(document)
+
+    if git:
+        from papis.git import (
+            GitError,
+            add as git_add,
+            add_and_commit as git_add_and_commit,
+            commit as git_commit,
+            rm_cached as git_rm_cached,
+        )
+
+        try:
+            git_rm_cached(str(source_lib_dir),
+                                str(main_folder_old),
+                                recursive=True)
+            if target_lib_dir == source_lib_dir:
+                git_add(str(source_lib_dir), str(main_folder_new))
+                git_commit(
+                    str(source_lib_dir),
+                    f"Move '{papis.document.describe(document)}'",
+                )
+            else:
+                git_commit(
+                    str(source_lib_dir),
+                    f"Remove '{papis.document.describe(document)}' "
+                    f"(moved to '{target_library}' library)",
+                )
+
+                git_add_and_commit(
+                    str(target_lib_dir),
+                    str(main_folder_new),
+                    f"Add '{papis.document.describe(document)}'",
+                )
+        except GitError as exc:
+            logger.error("%s", exc)
 
     logger.info(
         "Moved document '%s' to '%s' (library '%s').",

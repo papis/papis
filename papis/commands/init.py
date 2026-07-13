@@ -72,25 +72,6 @@ INIT_PROMPTS = [
 ]
 
 
-def _is_git_repository(path: str) -> bool:
-    path = os.path.abspath(path)
-
-    while True:
-        # check if a '.git' subdirectory exists
-        git_path = os.path.join(path, ".git")
-        if os.path.exists(git_path):
-            return True
-
-        # check if we reached the root
-        parent = os.path.dirname(path)
-        if parent == path:
-            break
-
-        path = parent
-
-    return False
-
-
 @click.command("init")
 @click.help_option("--help", "-h")
 @click.argument(
@@ -169,14 +150,25 @@ def cli(dir_path: str | None) -> None:
 
     papis.config.set_lib_from_name(library_name)
     use_git = papis.config.getboolean("use-git")
-    if use_git and not _is_git_repository(library_path):
-        if confirm(f"Library '{library_path}' is not a git repository and 'use-git' "
-                   "is enabled. Would you like to initialize a git repository?"):
-            from papis.git import add as git_add, commit as git_commit, init as git_init
 
-            git_init(library_path)
-            git_add(library_path, ".")
-            git_commit(library_path, f"Initialized library '{library_name}'")
+    if use_git:
+        from papis.git import (
+            GitError,
+            add as git_add,
+            commit as git_commit,
+            init as git_init,
+            is_repo as git_is_repo,
+        )
+
+        if not git_is_repo(library_path):
+            if confirm(f"Library '{library_path}' is not a git repository and 'use-git'"
+                       " is enabled. Would you like to initialize a git repository?"):
+                try:
+                    git_init(library_path)
+                    git_add(library_path, ".")
+                    git_commit(library_path, f"Initialize library '{library_name}'")
+                except GitError as exc:
+                    logger.error("%s", exc)
 
     if confirm("Do you want to save?"):
         config_folder = papis.config.get_config_folder()

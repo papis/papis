@@ -38,12 +38,16 @@ def run(document: Document,
     doc_folder = document.get_main_folder()
 
     from papis.document import delete, describe
+    from papis.git import (
+        GitError,
+        add as git_add,
+        commit as git_commit,
+        rm_cached as git_rm_cached,
+    )
 
     if not doc_folder:
         from papis.exceptions import DocumentFolderNotFound
         raise DocumentFolderNotFound(describe(document))
-
-    from papis.git import add as git_add, commit as git_commit, remove as git_rm
 
     if filepath is not None:
         os.remove(filepath)
@@ -51,9 +55,12 @@ def run(document: Document,
         document.save()
         db.update(document)
         if git:
-            git_rm(doc_folder, filepath)
-            git_add(doc_folder, document.get_info_file())
-            git_commit(doc_folder, f"Remove file '{filepath}'")
+            try:
+                git_rm_cached(doc_folder, filepath)
+                git_add(doc_folder, document.get_info_file())
+                git_commit(doc_folder, f"Remove file '{filepath}'")
+            except GitError as exc:
+                logger.error("%s", exc)
 
     if notespath is not None:
         os.remove(notespath)
@@ -61,22 +68,27 @@ def run(document: Document,
         document.save()
         db.update(document)
         if git:
-            git_rm(doc_folder, notespath)
-            git_add(doc_folder, document.get_info_file())
-            git_commit(doc_folder, f"Remove notes file '{notespath}'")
+            try:
+                git_rm_cached(doc_folder, notespath)
+                git_add(doc_folder, document.get_info_file())
+                git_commit(doc_folder, f"Remove notes file '{notespath}'")
+            except GitError as exc:
+                logger.error("%s", exc)
 
     # if neither files nor notes were deleted -> delete whole document
     if not (filepath or notespath):
-        if git:
-            topfolder = os.path.dirname(os.path.abspath(doc_folder))
-            git_rm(doc_folder, doc_folder, recursive=True)
-            git_commit(
-                topfolder,
-                f"Remove document '{describe(document)}'")
-        else:
-            delete(document)
-
+        delete(document)
         db.delete(document)
+
+        if git:
+            try:
+                topfolder = os.path.dirname(os.path.abspath(doc_folder))
+                git_rm_cached(topfolder, doc_folder, recursive=True)
+                git_commit(
+                    topfolder,
+                    f"Remove document '{describe(document)}'")
+            except GitError as exc:
+                logger.error("%s", exc)
 
 
 @click.command("rm")

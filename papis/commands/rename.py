@@ -93,17 +93,29 @@ def run(document: Document,
         return
 
     logger.info("Rename '%s' to '%s'.", folder, new_folder_name)
-    if git:
-        from papis.git import mv_and_commit_resource
-        mv_and_commit_resource(
-            folder, new_folder_path,
-            f"Rename '{folder}' to '{new_folder_name}'")
-    else:
-        shutil.move(folder, new_folder_path)
+    shutil.move(folder, new_folder_path)
 
     db.delete(document)
     document.set_folder(new_folder_path)
     db.add(document)
+
+    if git:
+        from papis.git import (
+            GitError,
+            add as git_add,
+            commit as git_commit,
+            rm_cached as git_rm_cached,
+        )
+
+        try:
+            git_rm_cached(parent, folder, recursive=True)
+            git_add(parent, new_folder_path)
+            git_commit(
+                parent,
+                f"Rename '{folder}' to '{new_folder_name}'",
+            )
+        except GitError as exc:
+            logger.error("%s", exc)
 
 
 @click.command("rename")

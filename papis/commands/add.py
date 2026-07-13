@@ -334,10 +334,14 @@ def run(paths: list[str],
     db.add(tmp_document)
 
     if git:
-        from papis.git import add_and_commit_resource
-        add_and_commit_resource(
-            out_folder_path, ".",
-            f"Add document '{describe(tmp_document)}'")
+        from papis.git import GitError, add_and_commit as git_add_and_commit
+
+        try:
+            git_add_and_commit(
+                out_folder_path, ".",
+                f"Add document '{describe(tmp_document)}'")
+        except GitError as exc:
+            logger.error("%s", exc)
 
     if move:
         for in_file_path in approved_files:

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 import sys
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, overload
 from warnings import warn
 
 try:
@@ -98,10 +99,34 @@ def parmap(f: Callable[[A], B],
         return list(map(f, xs))
 
 
+@overload
+def run(
+    cmd: Sequence[str],
+    wait: Literal[True] = True,
+    env: dict[str, Any] | None = None,
+    cwd: str | None = None,
+    *,
+    capture_output: bool = False,
+) -> subprocess.CompletedProcess[str]: ...
+
+
+@overload
+def run(
+    cmd: Sequence[str],
+    wait: Literal[False],
+    env: dict[str, Any] | None = None,
+    cwd: str | None = None,
+    *,
+    capture_output: bool = False,
+) -> None: ...
+
+
 def run(cmd: Sequence[str],
         wait: bool = True,
         env: dict[str, Any] | None = None,
-        cwd: str | None = None) -> None:
+        cwd: str | None = None,
+        *,
+        capture_output: bool = False) -> subprocess.CompletedProcess[str] | None:
     """Run a given command with :mod:`subprocess`.
 
     This is a simple wrapper around :class:`subprocess.Popen` with custom
@@ -114,11 +139,14 @@ def run(cmd: Sequence[str],
     :param env: a mapping that defines additional environment variables for
         the child process.
     :param cwd: current working directory in which to run the command.
+    :param capture_output: if *True*, capture stdout and stderr so they can
+        be inspected via :class:`~subprocess.CalledProcessError`. When *False*
+        (default), output streams to the terminal.
     """
 
     cmd = list(cmd)
     if not cmd:
-        return
+        return None
 
     if cwd:
         cwd = os.path.expanduser(cwd)
@@ -132,10 +160,11 @@ def run(cmd: Sequence[str],
     if not shutil.which(cmd[0]):
         raise FileNotFoundError(f"Command not found: '{cmd[0]}'")
 
-    import subprocess
     if wait:
         logger.debug("Waiting for process to finish.")
-        subprocess.call(cmd, shell=False, cwd=cwd, env=env)
+        return subprocess.run(cmd, shell=False, cwd=cwd, env=env,
+                              check=True, capture_output=capture_output,
+                              text=True)
     else:
         # NOTE: detach process so that the terminal can be closed without also
         # closing the 'opentool' itself with the open document
@@ -159,6 +188,7 @@ def run(cmd: Sequence[str],
                          stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL,
                          **platform_kwargs)
+        return None
 
 
 def general_open(file_name: str,
@@ -194,11 +224,17 @@ def general_open(file_name: str,
     cmd = [*shlex.split(str(opener), posix=not is_windows), file_name]
 
     import shutil
+    import subprocess
     if shutil.which(cmd[0]) is None:
         raise FileNotFoundError(
             f"Command not found for '{key}': '{opener}'")
 
-    run(cmd, wait=wait)
+    try:
+        run(cmd, wait=wait)  # type: ignore[call-overload]
+    except subprocess.CalledProcessError as exc:
+        logger.warning(
+            "Opener for '%s' exited with code %d.",
+            key, exc.returncode)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 from typing import Any
 
 import click
@@ -84,4 +85,9 @@ def external_cli(ctx: click.core.Context, query: str, flags: list[str]) -> None:
 
     from papis.utils import run
 
-    run(cmd, env=environ)
+    try:
+        run(cmd, env=environ)
+    except subprocess.CalledProcessError as exc:
+        logger.error("External script '%s' exited with code %d.",
+                     cmd[0], exc.returncode)
+        ctx.exit(exc.returncode)
