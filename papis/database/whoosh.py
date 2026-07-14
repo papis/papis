@@ -167,6 +167,21 @@ class WhooshDatabase(Database):
     def get_all_documents(self) -> list[Document]:
         return self.query(self.get_all_query_string())
 
+    def find_by_folder(self, folder: str) -> Document | None:
+        """Find a document in the library by its *folder* path."""
+        from whoosh.qparser import QueryParser
+
+        from papis.document import from_folder
+
+        index = self._get_index()
+        qp = QueryParser(WHOOSH_FOLDER_FIELD, schema=index.schema)
+        query = qp.parse(f'"{folder}"')
+        with index.searcher() as searcher:
+            results = searcher.search(query, limit=1)
+            if not results:
+                return None
+            return from_folder(results[0].get(WHOOSH_FOLDER_FIELD))
+
     def _create_index(self) -> None:
         """Create a new index.
 

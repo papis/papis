@@ -126,6 +126,10 @@ class Database(ABC):
 
         return results[0] if results else None
 
+    @abstractmethod
+    def find_by_folder(self, folder: str) -> Document | None:
+        """Find a document in the library by its *folder* path."""
+
     def maybe_compute_id(self, doc: Document) -> str:
         """Compute a Papis ID for the document *doc*.
 

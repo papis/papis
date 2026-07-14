@@ -339,6 +339,24 @@ class SQLiteDatabase(Database):
     def get_all_documents(self) -> list[Document]:
         return self.query(self.get_all_query_string())
 
+    def find_by_folder(self, folder: str) -> Document | None:
+        conn = self.connection
+        results = conn.execute(
+            f"SELECT doc_folder, doc FROM {SQLITE_TABLE_NAME} "
+            "WHERE doc_folder = ?",
+            (folder,),
+        ).fetchall()
+
+        if not results:
+            return None
+
+        from papis.document import from_data
+
+        result = results[0]
+        doc = from_data(json.loads(result[1]))
+        doc.set_folder(result[0])
+        return doc
+
     def _create_tables(self) -> None:
         if os.path.exists(self.cache_file_name):
             # NOTE: everything already exists, so we can just skip it

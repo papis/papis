@@ -186,6 +186,13 @@ class PickleDatabase(Database):
     def get_all_documents(self) -> list[Document]:
         return self._get_documents()
 
+    def find_by_folder(self, folder: str) -> Document | None:
+        for doc in self.get_all_documents():
+            doc_folder = doc.get_main_folder()
+            if doc_folder == folder:
+                return doc
+        return None
+
     def _get_documents(self) -> list[Document]:
         if self.documents is not None:
             return self.documents
