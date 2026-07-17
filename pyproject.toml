@@ -290,22 +290,22 @@ select = [
 ]
 ignore = [
     # https://docs.astral.sh/ruff/rules/#rules
-    "N818",    # error-suffix-on-exception-name
-    "PLC0415", # import-outside-top-level
-    "PLC1901", # compare-to-empty-string
-    "PLR0904", # too-many-public-methods
-    "PLR0911", # too-many-return-statements
-    "PLR0912", # too-many-branches
-    "PLR0913", # too-many-arguments
-    "PLR0914", # too-many-local-variables
-    "PLR0915", # too-many-statements
-    "PLR0917", # too-many-positional
-    "PLR1702", # too-many-nested-blocks
-    "PLR2004", # magic-value-comparison
-    "PLR5501", # collapsible-else-if
-    "PLW0603", # global-statement
-    "PLW0717", # too-many-statements-in-try-clause
-    "RUF067",  # non-empty-init-module
+    "collapsible-else-if",
+    "compare-to-empty-string",
+    "error-suffix-on-exception-name",
+    "global-statement",
+    "import-outside-top-level",
+    "magic-value-comparison",
+    "non-empty-init-module",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-locals",
+    "too-many-nested-blocks",
+    "too-many-positional-arguments",
+    "too-many-public-methods",
+    "too-many-return-statements",
+    "too-many-statements",
+    "too-many-statements-in-try-clause",
 ]
 task-tags = ["spell"]
 

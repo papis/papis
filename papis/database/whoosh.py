@@ -70,13 +70,13 @@ class WhooshDatabase(Database):
 
         self.initialize()
 
-    def get_backend_name(self) -> str:  # noqa: PLR6301
+    def get_backend_name(self) -> str:  # ruff:ignore[no-self-use]
         return "whoosh"
 
     def get_cache_path(self) -> str:
         return self.index_dir
 
-    def get_all_query_string(self) -> str:  # noqa: PLR6301
+    def get_all_query_string(self) -> str:  # ruff:ignore[no-self-use]
         return "*"
 
     def initialize(self) -> None:
@@ -247,13 +247,18 @@ class WhooshDatabase(Database):
         fields = self._get_schema_init_fields()
         return Schema(**fields)
 
-    def _get_schema_init_fields(self) -> dict[str, FieldType]:  # noqa: PLR6301
+    def _get_schema_init_fields(self) -> dict[str, FieldType]:  # ruff:ignore[no-self-use]
         """
         :returns: the keyword arguments to be passed to the Whoosh schema object
             (see :meth:`_create_schema`).
         """
         # NOTE: these are imported here so that `eval` sees them
-        from whoosh.fields import ID, KEYWORD, STORED, TEXT  # noqa: F401
+        from whoosh.fields import (  # ruff:ignore[unused-import]
+            ID,
+            KEYWORD,
+            STORED,
+            TEXT,
+        )
 
         # TODO: this is a security risk, find a way to fix it
         user_prototype = eval(papis.config.getstring("whoosh-schema-prototype"))

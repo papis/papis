@@ -172,7 +172,7 @@ def _get_crossref_key_conversion() -> list[KeyConversionPair]:
         }]),
         KeyConversionPair("link", [{
             "key": str(papis.config.getstring("doc-url-key-name")),
-            "action": lambda x: _crossref_link(x)  # noqa: PLW0108
+            "action": lambda x: _crossref_link(x)  # ruff:ignore[unnecessary-lambda]
         }]),
         KeyConversionPair("issued", [
             {"key": "year", "action": lambda x: _crossref_date_parts(x, 0)},
@@ -196,7 +196,7 @@ def _get_crossref_key_conversion() -> list[KeyConversionPair]:
             ]
         }]),
         KeyConversionPair("title", [
-            {"key": None, "action": lambda t: " ".join(t)}]),  # noqa: PLW0108
+            {"key": None, "action": lambda t: " ".join(t)}]),  # ruff:ignore[unnecessary-lambda]
         KeyConversionPair("type", [
             {"key": None, "action": lambda t: CROSSREF_TO_BIBTEX_CONVERTER[t]}]),
         KeyConversionPair("volume", [EmptyKeyConversion]),

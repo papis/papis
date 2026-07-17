@@ -407,7 +407,7 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
         "number": "0",
         })
 
-    for value in (1, "3", "12", "No. 3", "1–2", "S1", "C2",  # noqa: RUF001
+    for value in (1, "3", "12", "No. 3", "1–2", "S1", "C2",  # ruff:ignore[ambiguous-unicode-character-string]
                   "4B", "4es", "A", "B", "A-1", "Suppl. 3"):
         del doc["number"]
         doc["issue"] = value
@@ -422,7 +422,9 @@ def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
 
 
 def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None:
-    from papis.doctor import _dotify_initials as dotify  # noqa: PLC2701
+    from papis.doctor import (
+        _dotify_initials as dotify,  # ruff:ignore[import-private-name]
+    )
 
     # basic ASCII
     assert dotify("F") == "F."
@@ -443,16 +445,16 @@ def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None
     assert dotify("Ñ Rodríguez") == "Ñ. Rodríguez"
 
     # cyrillic initials
-    assert dotify("А.С. Пушкин") == "А. С. Пушкин"  # noqa: RUF001
+    assert dotify("А.С. Пушкин") == "А. С. Пушкин"  # ruff:ignore[ambiguous-unicode-character-string]
     assert dotify("Л Толстой") == "Л. Толстой"
-    assert dotify("Ф.М. Достоевский") == "Ф. М. Достоевский"  # noqa: RUF001
+    assert dotify("Ф.М. Достоевский") == "Ф. М. Достоевский"  # ruff:ignore[ambiguous-unicode-character-string]
 
     # greek initials
-    assert dotify("Α.Β. Γεωργίου") == "Α. Β. Γεωργίου"  # noqa: RUF001
+    assert dotify("Α.Β. Γεωργίου") == "Α. Β. Γεωργίου"  # ruff:ignore[ambiguous-unicode-character-string]
 
     # mixed scripts (transliterated contexts)
     assert dotify("É.A. Müller") == "É. A. Müller"
-    assert dotify("Ç Yılmaz") == "Ç. Yılmaz"  # noqa: RUF001
+    assert dotify("Ç Yılmaz") == "Ç. Yılmaz"  # ruff:ignore[ambiguous-unicode-character-string]
     assert dotify("Ł.Ś. Kowalski") == "Ł. Ś. Kowalski"
 
     # mixed case
@@ -476,7 +478,7 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
             "A new method for determining nucleotide sequences in DNA is described. "
             "It is similar to the “plus and minus” method [Sanger, F. & Coulson, "
             "A. R. (1975) J. Mol. Biol. 94, 441-448] but makes use of the "
-            "2′,3′-dideoxy and arabinonucleoside analogues of the normal "  # noqa: RUF001
+            "2′,3′-dideoxy and arabinonucleoside analogues of the normal "  # ruff:ignore[ambiguous-unicode-character-string]
             "deoxynucleoside triphosphates, which act as specific chain-terminating "
             "inhibitors of DNA polymerase. The technique has been applied to the "
             "DNA of bacteriophage ϕX174 and is more rapid and more accurate than "

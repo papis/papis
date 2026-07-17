@@ -279,7 +279,7 @@ def cli_update(ctx: click.Context, _all: bool,
         if fromdb:
             logger.info("Updating BibTeX entry from library.")
             if keys:
-                docs[j].update({k: libdoc[k] for k in keys if k in libdoc})  # noqa: PLR1736
+                docs[j].update({k: libdoc[k] for k in keys if k in libdoc})  # ruff:ignore[unnecessary-list-index-lookup]
             else:
                 docs[j] = libdoc.copy()
 

@@ -19,7 +19,9 @@ def test_schema_fields_extend_rebuilds_database(tmp_library: TemporaryLibrary) -
     cache_path = db.get_cache_path()
     assert os.path.exists(cache_path)
 
-    from papis.database.sqlite import _get_sqlite_fields  # noqa: PLC2701
+    from papis.database.sqlite import (
+        _get_sqlite_fields,  # ruff:ignore[import-private-name]
+    )
 
     initial_fields = _get_sqlite_fields(cache_path)
     assert "volume" not in initial_fields

@@ -72,7 +72,7 @@ def test_clean_ref(tmp_config: TemporaryConfiguration) -> None:
     for (r, rc) in [
             (r"Albert Einstein ()\:1923", "Albert_Einstein:1923"),
             ("Einstein über etwas und so 1923", "Einstein_uber_etwas_und_so_1923"),
-            ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),  # noqa: RUF001
+            ("Äöasf () : Aλבert Eιنς€in", "Aoasf_Albert_EinsEURin"),  # ruff:ignore[ambiguous-unicode-character-string]
             (r"Albert_Ein\_stein\.1923.b", "Albert_Ein_stein.1923_b"),
             ]:
         assert rc == ref_cleanup(r)
@@ -161,7 +161,7 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "type": "report",
         "author": "Albert Einstein",
         "author_list": [{"given": "Albert", "family": "Einstein"}],
-        "title": "Ä α The Theory of Everything & Nothing",  # noqa: RUF001
+        "title": "Ä α The Theory of Everything & Nothing",  # ruff:ignore[ambiguous-unicode-character-string]
         "title_latex": r"The Theory of Everything \& Nothing",
         "journal": "Nature",
         "year": 2350,

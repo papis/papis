@@ -104,7 +104,7 @@ PAPIS_TEST_DOCUMENTS = [
         "journal": "Proceedings of the London Mathematical Society",
         "note": "First turing machine paper foundation of cs",
         "pages": "230--265",
-        "title": "On Computable Numbers with an Application to the Entscheidungsproblem",           # noqa: E501
+        "title": "On Computable Numbers with an Application to the Entscheidungsproblem",           # ruff:ignore[line-too-long]
         "url": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1112%2Fplms%2Fs2-42.1.230",
         "volume": "s2-42",
         "year": 1937,

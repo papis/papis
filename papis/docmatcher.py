@@ -208,32 +208,32 @@ class Pair(QueryItem):
 
 
 class QueryTransformer(Transformer[Any, QueryItem]):
-    def start(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+    def start(self, children: list[QueryItem]) -> QueryItem:  # ruff:ignore[no-self-use]
         if not children:
             return And([])
         return children[0]
 
-    def or_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+    def or_expr(self, children: list[QueryItem]) -> QueryItem:  # ruff:ignore[no-self-use]
         return Or(children)
 
-    def and_expr(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+    def and_expr(self, children: list[QueryItem]) -> QueryItem:  # ruff:ignore[no-self-use]
         return And(children)
 
-    def not_op(self, children: list[QueryItem]) -> QueryItem:  # noqa: PLR6301
+    def not_op(self, children: list[QueryItem]) -> QueryItem:  # ruff:ignore[no-self-use]
         return Not(children[0])
 
-    def term(self, children: Sequence[Token]) -> Term:  # noqa: PLR6301
+    def term(self, children: Sequence[Token]) -> Term:  # ruff:ignore[no-self-use]
         term = str(children[0])
         return Term(term, get_regex_from_search(term))
 
-    def pair(self, children: Sequence[str]) -> Pair:  # noqa: PLR6301
+    def pair(self, children: Sequence[str]) -> Pair:  # ruff:ignore[no-self-use]
         key, value = children
         return Pair(key, value, get_regex_from_search(value))
 
-    def key(self, children: Sequence[Token]) -> str:  # noqa: PLR6301
+    def key(self, children: Sequence[Token]) -> str:  # ruff:ignore[no-self-use]
         return str(children[0])
 
-    def value(self, children: Sequence[Token]) -> str:  # noqa: PLR6301
+    def value(self, children: Sequence[Token]) -> str:  # ruff:ignore[no-self-use]
         return str(children[0])
 
 
@@ -269,7 +269,7 @@ def parse_query(query_string: str) -> QueryItem:
 
     :param query_string: a search string to parse into a structured format.
     :returns: a parsing result for the query string.
-    """  # noqa: E501
+    """  # ruff:ignore[line-too-long]
 
     logger.debug("Parsing query: '%s'.", query_string)
 

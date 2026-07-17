@@ -53,7 +53,7 @@ class Jinja2Formatter(Formatter):
         super().__init__()
 
         try:
-            import jinja2  # noqa: F401
+            import jinja2  # ruff:ignore[unused-import]
         except ImportError as exc:
             logger.error(
                 "The 'jinja2' formatter requires the 'jinja2' library. "

@@ -20,7 +20,7 @@ class DocumentDownloader(Downloader):
         False
         >>> DocumentDownloader.match('https://whatever?path?is?therefile') is None
         True
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         endings = "pdf|djvu|epub|mobi|jpg|png|md"
         m = re.match(fr"^http.*\.({endings})$", url, re.IGNORECASE)
         if m:

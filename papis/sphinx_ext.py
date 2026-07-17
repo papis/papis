@@ -102,7 +102,7 @@ class PapisConfig(Directive):
 
     def run(self) -> Any:
         # NOTE: these are imported to register additional config settings
-        import papis.commands.bibtex  # noqa: F401
+        import papis.commands.bibtex  # ruff:ignore[unused-import]
         from papis.config import get_default_settings, get_general_settings_name
 
         default_settings = get_default_settings()

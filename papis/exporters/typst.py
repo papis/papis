@@ -25,7 +25,7 @@ def _get_hayagriva_key_conversions() -> list[KeyConversionPair]:
         }]),
         KeyConversionPair("author_list", [{
             "key": "author",
-            "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
+            "action": lambda a: to_hayagriva_authors(a)  # ruff:ignore[unnecessary-lambda]
         }]),
         KeyConversionPair("year", [{"key": "date", "action": None}]),
         KeyConversionPair("date", [{"key": "date", "action": None}]),
@@ -35,7 +35,7 @@ def _get_hayagriva_key_conversions() -> list[KeyConversionPair]:
         }]),
         KeyConversionPair("editor_list", [{
             "key": "editor",
-            "action": lambda a: to_hayagriva_authors(a)  # noqa: PLW0108
+            "action": lambda a: to_hayagriva_authors(a)  # ruff:ignore[unnecessary-lambda]
         }]),
         KeyConversionPair("publisher", [EmptyKeyConversion]),
         KeyConversionPair("location", [EmptyKeyConversion]),

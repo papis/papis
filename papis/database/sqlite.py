@@ -207,13 +207,13 @@ class SQLiteDatabase(Database):
     def __del__(self) -> None:
         self._finalize_connection()
 
-    def get_backend_name(self) -> str:  # noqa: PLR6301
+    def get_backend_name(self) -> str:  # ruff:ignore[no-self-use]
         return "sqlite"
 
     def get_cache_path(self) -> str:
         return self.cache_file_name
 
-    def get_all_query_string(self) -> str:  # noqa: PLR6301
+    def get_all_query_string(self) -> str:  # ruff:ignore[no-self-use]
         return "*"
 
     def initialize(self) -> None:

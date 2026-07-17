@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 PAPIS_DB_BACKENDS = ["papis", "sqlite"]
 
 try:
-    import whoosh  # noqa: F401
+    import whoosh  # ruff:ignore[unused-import]
     PAPIS_DB_BACKENDS.append("whoosh")
 except ImportError:
     pass
