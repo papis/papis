@@ -222,7 +222,7 @@ bibtex_type_required_keys_aliases = {
 # NOTE: Zotero translator fields are defined in
 #   https://github.com/zotero/zotero-schema
 # and were extracted with
-#   curl -s https://raw.githubusercontent.com/zotero/zotero-schema/master/schema.json | jq ' .itemTypes[].itemType'  # noqa: E501
+#   curl -s https://raw.githubusercontent.com/zotero/zotero-schema/master/schema.json | jq ' .itemTypes[].itemType'  # ruff:ignore[line-too-long]
 
 #: A mapping of arbitrary types to BibLaTeX types in :data:`bibtex_types`. This
 #: mapping can be used when translating from other software, e.g. Zotero has

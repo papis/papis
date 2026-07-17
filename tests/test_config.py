@@ -81,8 +81,8 @@ def test_get(tmp_config: TemporaryConfiguration) -> None:
 
     # NOTE: float(str(x)) == x is always true, so we can check strict equality
     papis.config.set("test_getfloat", str(3.14))
-    assert papis.config.getfloat("test_getfloat") == 3.14  # noqa: RUF069
-    assert papis.config.getfloat("test_getfloat", section=section) == 3.14  # noqa: RUF069
+    assert papis.config.getfloat("test_getfloat") == 3.14  # ruff:ignore[float-equality-comparison]
+    assert papis.config.getfloat("test_getfloat", section=section) == 3.14  # ruff:ignore[float-equality-comparison]
     assert isinstance(papis.config.getfloat("test_getfloat", section=section), float)
 
     papis.config.set("test_getbool", "True")
@@ -117,7 +117,7 @@ def test_get_types(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("float_config", str(3.1415))
     val_float = papis.config.getfloat("float_config")
     assert isinstance(val_float, float)
-    assert val_float == 3.1415  # noqa: RUF069
+    assert val_float == 3.1415  # ruff:ignore[float-equality-comparison]
 
     papis.config.set("float_config", "not1")
     with pytest.raises(ValueError,

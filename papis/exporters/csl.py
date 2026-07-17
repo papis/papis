@@ -228,7 +228,7 @@ def exporter(documents: list[Document]) -> str:
     """Export documents using the CSL (Citation Style Language) styles."""
 
     try:
-        import citeproc  # noqa: F401
+        import citeproc  # ruff:ignore[unused-import]
     except ImportError:
         logger.error("CSL export requires the 'citeproc-py' package.")
         return ""

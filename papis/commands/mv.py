@@ -320,7 +320,7 @@ def run(
 @click.option(
     "--target-library",
     help="Target library",
-    default=lambda: papis.config.get_lib_name(),  # noqa: PLW0108
+    default=lambda: papis.config.get_lib_name(),  # ruff:ignore[unnecessary-lambda]
     type=str,
 )
 @papis.cli.bool_flag(

@@ -9,7 +9,7 @@ from warnings import warn
 
 try:
     # NOTE: multiprocessing is not available on some platforms (e.g. Android)
-    import multiprocessing.synchronize  # noqa: F401
+    import multiprocessing.synchronize  # ruff:ignore[unused-import]
     from multiprocessing import Pool
     HAS_MULTIPROCESSING = True
 except ImportError:

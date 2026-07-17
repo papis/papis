@@ -142,7 +142,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     The main request handler of the Papis web application.
     """
 
-    def log_message(self, fmt: str, *args: Any) -> None:  # noqa: PLR6301
+    def log_message(self, fmt: str, *args: Any) -> None:  # ruff:ignore[no-self-use]
         logger.info(fmt, *args)
 
     def _ok(self) -> None:
@@ -405,7 +405,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                                   f"Server path {self.path} not understood"
                                   )
 
-    def _handle_lib(self, libname: str) -> None:  # noqa: PLR6301
+    def _handle_lib(self, libname: str) -> None:  # ruff:ignore[no-self-use]
         from papis.api import set_lib_from_name
         set_lib_from_name(libname)
 

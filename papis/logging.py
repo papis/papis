@@ -33,7 +33,7 @@ class ColoramaFormatter(logging.Formatter):
         #: used with ``logger.info(..., exc_info=ext)``.
         self.full_tb: bool = full_tb
 
-    def formatException(self, exc_info: tuple[Any, ...]) -> str:    # noqa: N802
+    def formatException(self, exc_info: tuple[Any, ...]) -> str:    # ruff:ignore[invalid-function-name]
         """Format and return the specified exception information as a string.
 
         If :attr:`full_tb` is *True*, then the full traceback is shown. Otherwise,

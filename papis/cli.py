@@ -30,7 +30,7 @@ class FormatPatternParamType(FormatPatternParamTypeBase):
     #: Name of the parameter type (shown in the command-line).
     name: str = "pattern"
 
-    def convert(self,  # noqa: PLR6301
+    def convert(self,  # ruff:ignore[no-self-use]
                 value: Any,
                 param: click.Parameter | None,
                 ctx: click.Context | None) -> str | FormatPattern:
@@ -50,7 +50,7 @@ class FormatPatternParamType(FormatPatternParamTypeBase):
 class LibraryParamType(LibraryParamTypeBase):
     name: str = "library"
 
-    def shell_complete(self,  # noqa: PLR6301
+    def shell_complete(self,  # ruff:ignore[no-self-use]
                        ctx: click.Context,
                        param: click.Parameter,
                        incomplete: str) -> list[CompletionItem]:

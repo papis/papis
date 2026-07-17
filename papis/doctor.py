@@ -488,11 +488,11 @@ BIBLATEX_KEY_CONVERT_NUMBER_REGEX = re.compile(
     r"^(?:(?:no\.?|nr\.?|suppl\.?)\s*)?"
     r"(?:"
     # pure numeric or range, e.g. 3, 3-4
-    r"\d+(?:\s*[-–]\s*\d+)?"  # noqa: RUF001
+    r"\d+(?:\s*[-–]\s*\d+)?"  # ruff:ignore[ambiguous-unicode-character-string]
     # letter+number combos, e.g. S1, 4B, 4es
     r"|[A-Za-z]?\s*\d+(?:[A-Za-z]+)?"
     # letter-hyphen-number, e.g. A-1, Suppl-A-3
-    r"|[A-Za-z]+\s*[-–]\s*\d+"  # noqa: RUF001
+    r"|[A-Za-z]+\s*[-–]\s*\d+"  # ruff:ignore[ambiguous-unicode-character-string]
     r")$",
     re.I
 )

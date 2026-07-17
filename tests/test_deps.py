@@ -19,23 +19,29 @@ def test_colorama() -> None:
 
 
 def test_prompt_toolkit() -> None:
-    from prompt_toolkit.application import Application  # noqa: F401
-    from prompt_toolkit.buffer import Buffer  # noqa: F401
-    from prompt_toolkit.enums import EditingMode  # noqa: F401
-    from prompt_toolkit.formatted_text.html import HTML, html_escape  # noqa: F401
-    from prompt_toolkit.history import FileHistory  # noqa: F401
-    from prompt_toolkit.key_binding import KeyBindings  # noqa: F401
-    from prompt_toolkit.layout.containers import HSplit, Window  # noqa: F401
-    from prompt_toolkit.layout.controls import (  # noqa: F401
+    from prompt_toolkit.application import Application  # ruff:ignore[unused-import]
+    from prompt_toolkit.buffer import Buffer  # ruff:ignore[unused-import]
+    from prompt_toolkit.enums import EditingMode  # ruff:ignore[unused-import]
+    from prompt_toolkit.formatted_text.html import (  # ruff:ignore[unused-import]
+        HTML,
+        html_escape,
+    )
+    from prompt_toolkit.history import FileHistory  # ruff:ignore[unused-import]
+    from prompt_toolkit.key_binding import KeyBindings  # ruff:ignore[unused-import]
+    from prompt_toolkit.layout.containers import (  # ruff:ignore[unused-import]
+        HSplit,
+        Window,
+    )
+    from prompt_toolkit.layout.controls import (  # ruff:ignore[unused-import]
         BufferControl,
         FormattedTextControl,
     )
-    from prompt_toolkit.layout.layout import Layout  # noqa: F401
-    from prompt_toolkit.widgets import HorizontalLine  # noqa: F401
+    from prompt_toolkit.layout.layout import Layout  # ruff:ignore[unused-import]
+    from prompt_toolkit.widgets import HorizontalLine  # ruff:ignore[unused-import]
 
     try:
         from prompt_toolkit.data_structures import Point
     except ImportError:
         from prompt_toolkit.layout.screen import (  # type: ignore[attr-defined]
-            Point,  # noqa: F401
+            Point,  # ruff:ignore[unused-import]
         )

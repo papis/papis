@@ -92,13 +92,13 @@ class PickleDatabase(Database):
         self.documents: list[Document] | None = None
         self.initialize()
 
-    def get_backend_name(self) -> str:  # noqa: PLR6301
+    def get_backend_name(self) -> str:  # ruff:ignore[no-self-use]
         return "papis"
 
     def get_cache_path(self) -> str:
         return self._get_cache_file_path()
 
-    def get_all_query_string(self) -> str:  # noqa: PLR6301
+    def get_all_query_string(self) -> str:  # ruff:ignore[no-self-use]
         return "."
 
     def initialize(self) -> None:
