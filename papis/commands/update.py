@@ -1,19 +1,21 @@
 """
 This command allows you to update the document metadata stored in the
-``info.yaml`` file. With it, you can either change individual values manually
+``info.yaml`` file. With it, you can either set individual fields' values manually
 or update a document with information automatically retrieved from a variety
-of sources.
+of sources. The command also renames files and notes on disk when needed.
 
-When using it to add information, Papis formatting patterns and Python
-expressions can be used. See below examples for more information. The command
-also tries to sanitise filenames so that they don't contain any problematic
-characters.
+Papis formatting patterns and Python expressions can be used. See below examples
+for more information. The command also sanitises filenames so that they don't
+contain any problematic characters (see :confval:`doc-paths-extra-chars`).
 
-Normally, ``papis update`` will prompt you when it encounters an error. If you
-want to continue errors without input and apply as many changes as possible,
-use the ``--batch`` flag. With this in mind, the command is mostly meant to be
-used to apply sweeping changes to a larger number of documents. If you just
-want to update a single document, ``papis edit`` might be more appropriate.
+By default, ``papis update`` will prompt you when it encounters an error. If you
+want to skip errors automatically and apply as many changes as possible,
+use the ``--batch`` flag.
+
+This command is mostly meant to be used to apply sweeping changes across a large
+number of documents. If you just want to update a single document, ``papis edit``
+might be more appropriate.
+
 
 Examples
 ^^^^^^^^
@@ -37,25 +39,10 @@ Examples
 
 
   The ``--all`` flag means that the operation is applied to all documents that
-  match the query, rather than allowing you to pick one individual document to
+  match the query, rather than opening the picker to select individual documents to
   update.
 
-- Update a document automatically and interactively (searching by DOI in
-  Crossref or in other sources...):
-
-    .. code:: sh
-
-        papis update --auto "author:dyson"
-
-- Update your document from a DOI using the importer functionality as
-
-    .. code:: sh
-
-        papis update --from doi '10.1103/PhysRev.47.777' 'author:einstein'
-
-  For a list of all supported importers use ``papis update --list-importers``.
-
-- Add the ", Albert" to the author string of a documents matching 'Einstein':
+- Add ", Albert" to the author string of a documents matching 'Einstein':
 
     .. code:: sh
 
@@ -65,20 +52,19 @@ Examples
   formatter. Here, it is used to get the existing author "Albert" and then add
   the string ", Einstein" to end up with "Einstein, Albert".
 
-- Reset keys to their default values using:
+- Reset a field to its default value using:
 
     .. code:: sh
 
         papis update --reset ref Einstein
 
-  This will reset the value to the default value defined for the key. In the
-  above case the "ref" is set to the format described by :confval:`ref-format`.
-  Other supported keys are: "author" (gets updated from ``author_list`` and
-  :confval:`multiple-authors-format`), "notes" (using :confval:`notes-name`),
-  and "files" (using :confval:`add-file-name`). Other keys do not support this
-  as they do not have any well-defined default.
+  This will reset the value to the default value defined for the field. Here, the "ref"
+  is set to :confval:`ref-format`. Other fields that can be reset are: "author" (gets
+  updated from ``author_list`` and :confval:`multiple-authors-format`), "notes"
+  (using :confval:`notes-name`), and "files" (using :confval:`add-file-name`). Other
+  fields do not support this as they do not have any well-defined default.
 
-- The ``--append`` option can be used to append a string to an existing key:
+- The ``--append`` option can be used to append to a string value:
 
     .. code:: sh
 
@@ -99,9 +85,9 @@ Examples
     doesn't yet exist, it will be created. The new tag will only be appended to
     the list if the tag does not already exist (as an exact case-sensitive match).
 
-    The ``--append`` flag needs to know the type of the key it is appending to.
-    If the key exists in the document, then the value set in the document
-    determines the type. If the key doesn't exist in the document, the command
+    The ``--append`` flag needs to know the type of the field it is appending to.
+    If the field exists in the document, then the value set in the document
+    determines the type. If the field doesn't exist in the document, the command
     looks at the list of types defined in the :confval:`document-field-types`
     (and :confval:`document-field-types-extend`) configuration option. If the
     type cannot be determined in either of these two ways, the command will
@@ -114,7 +100,7 @@ Examples
 
         papis update --remove tags physics 'author:einstein'
 
-- To remove a key-value pair entirely, use ``--drop``. For example, to remove all
+- To remove a field entirely, use ``--drop``. For example, to remove all
   tags from documents use
 
     .. code:: sh
@@ -122,7 +108,9 @@ Examples
         papis update --drop tags 'author:einstein'
 
 - There is also a convenience option ``--rename`` if you want to rename
-  a list item. It's equivalent to doing ``--remove`` and ``--append``, but as
+  a list item. It's equivalent to doing ``--remove`
+and`
+--append``, but as
   a single operation:
 
     .. code:: sh
@@ -133,8 +121,8 @@ Examples
   not be added to the list if the original tag doesn't exist.
 
 - The ``--batch`` flag suppresses interactive prompts and skips any document
-  that cannot be fully updated. This is useful when applying the same operation
-  across many documents where some may not have the expected keys or values:
+  for which an update operation has failed. This is useful when applying the same
+  operation across many documents where some may not have the expected keys or values:
 
     .. code:: sh
 
@@ -147,42 +135,67 @@ Examples
 
   More specifically, ``--batch`` suppresses prompts for the following errors:
 
-  * An operation on a key fails (e.g. trying to ``--remove`` a value that is
+  * An operation on a field fails (e.g. trying to ``--remove`` a value that is
     not in the list, ``--append`` to a key of unknown type, or a type
     conversion error from ``--set``). The affected key retains its original
     value and the remaining keys for that document are still processed.
   * A file rename fails (e.g. the file on disk is missing or cannot be moved).
     The whole document is skipped.
 
-  In all cases the command exits with a non-zero status if any document was
-  skipped.
+  In all cases the command exits with a non-zero status (indicating a failure) if
+  any document was skipped.
 
-Advanced Examples
-^^^^^^^^^^^^^^^^^
+- Update a document automatically and interactively (searching by DOI in
+  Crossref or in other sources...):
 
-- When you update the ``files`` or ``notes`` keys, the corresponding files on
-  disk are also renamed to match the new value:
+    .. code:: sh
+
+        papis update --auto "author:dyson"
+
+- Update your document from a DOI using the importer functionality:
+
+    .. code:: sh
+
+        papis update --from doi '10.1103/PhysRev.47.777' 'author:einstein'
+
+  For a list of all supported importers use ``papis update --list-importers``.
+
+- When you update the ``files`
+or`
+notes`` fields, the corresponding files on
+  disk are renamed to match the new value:
 
     .. code:: sh
 
         papis update --set notes "my-new-notes.tex" Einstein
 
-  This renames the ``notes`` file on disk from its current name to
-  ``my-new-notes.tex`` and updates the ``info.yaml`` file accordingly. The same
-  applies when updating ``files``:
+  This updates the ``info.yaml`
+file and renames the`
+notes`` file on disk from
+  its current name to ``my-new-notes.tex``
+. The same applies when updating``
+files``:
 
     .. code:: sh
 
-        papis update --set files 0:einstein-new.pdf Einstein
+        papis update --rename files einstein-old.pdf einstein-new.pdf Einstein
 
-  This renames the first file in the document's file list to ``einstein-new.pdf``
-  on disk. If the rename fails (e.g. the file does not exist or there is a
-  permissions error), the metadata is not updated and an error is reported.
+  This renames the file ``einstein-old.pdf`
+to`
+einstein-new.pdf`` in the
+  ``info.yaml`` file and on disk. If the rename fails (e.g. the file does not exist
+  or there is a permissions error), the metadata is not updated and an error is
+  reported.
 
   Note that the ``--reset`` option also triggers a rename when used with
-  ``notes`` or ``files``. It renames the files to the names derived from the
+  ``notes`
+or`
+files``. It renames the files to the names derived from the
   configured :confval:`notes-name` and :confval:`add-file-name` formats
   respectively.
+
+Advanced Examples
+^^^^^^^^^^^^^^^^^
 
 - As an advanced feature, ``papis update`` also supports the parsing of Python
   expressions (such as lists or dictionaries). This can be used as follows:
@@ -194,15 +207,16 @@ Advanced Examples
   Because the above string is a valid Python expression, ``author_list`` is
   updated to a list that contains a dictionary.
 
-- You can use ``--set`` to set a value into a list at a given position:
+- You can use ``--set`` to set a value in a list at a given position:
 
     .. code:: sh
 
         papis update --set files 0:some-new-file.pdf Einstein
 
-  This special syntax for ``--set`` only works with keys that are known to be
-  lists (as before, based on :confval:`document-field-types` and
-  :confval:`document-field-types-extend`). If the key is not a list, then the
+  This command will rename the first entry in the list of files. This special
+  syntax for ``--set`` only works with keys that are known to be lists (as
+  determined based on :confval:`document-field-types` and
+  :confval:`document-field-types-extend`). If the field is not a list, then the
   value is treated as a string. This might be unexpected, so make sure you are
   using it for list keys only.
 
@@ -212,6 +226,7 @@ Command-line interface
 .. click:: papis.commands.update:cli
     :prog: papis update
 """
+
 from __future__ import annotations
 
 import ast
