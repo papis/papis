@@ -237,7 +237,11 @@ settings: dict[str, Any] = {
                            "latest/css/timeline.css"),
 
     # server
+    "server-host": "127.0.0.1",
+    "server-port": 8383,
+    "server-background": False,
     "server-local-mode": True,
+    "server-log-file": "",
 
     # citations
     "citations-file-name": "citations.yaml",
