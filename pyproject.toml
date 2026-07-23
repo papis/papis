@@ -68,6 +68,8 @@ dependencies = [
     "click>=7",
     "colorama>=0.2",
     "dominate>=2.8",
+    "fastapi>=0.100",
+    "python-multipart>=0.0.9",
     "filetype>=1.0.1",
     "habanero>=0.6",
     "lxml>=4.3.5",
@@ -78,6 +80,7 @@ dependencies = [
     "python-doi>=0.1.1",
     "python-slugify>=1.2.6",
     "requests>=2.11.1",
+    "uvicorn>=0.20",
 ]
 
 [project.urls]
@@ -132,9 +135,10 @@ optional = [
 "papis.testing" = [
     "pytest"
 ]
-# Needed when creating Windows installer
+# Needed for windows
 windows = [
-    "pyinstaller"
+    "pyinstaller", # Needed for the installer
+    "psutil" # Needed for the server command
 ]
 
 [project.scripts]
@@ -166,6 +170,7 @@ rename = "papis.commands.rename:cli"
 rm = "papis.commands.rm:cli"
 run = "papis.commands.run:cli"
 serve = "papis.commands.serve:cli"
+server = "papis.commands.server:cli"
 tag = "papis.commands.tag:cli"
 update = "papis.commands.update:cli"
 
@@ -229,6 +234,7 @@ lib = "papis.importer.library:FromLibraryImporter"
 pdf2arxivid = "papis.importer.arxiv:ArxivFromPDFImporter"
 pdf2doi = "papis.importer.doi:DOIFromPDFImporter"
 pmid = "papis.importer.pubmed:PubMedImporter"
+url = "papis.downloaders:WebImporter"
 yaml = "papis.importer.yaml:YAMLImporter"
 zenodo = "papis.importer.zenodo:ZenodoImporter"
 
@@ -320,6 +326,11 @@ multiline-quotes = "double"
 [tool.ruff.lint.isort]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"papis/server/app.py" = ["unused-import"]
+"papis/server/routes/*.py" = ["unused-async"]
+"papis/server/exceptions.py" = ["unused-async"]
 
 [tool.mypy]
 python_version = "3.10"
