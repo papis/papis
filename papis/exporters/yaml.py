@@ -12,8 +12,12 @@ def exporter(documents: list[Document]) -> str:
 
     from papis.document import to_dict
 
+    # NOTE: 'explicit_start' adds a '---' marker before every document, so that
+    # the result can be safely concatenated with an existing YAML file, e.g. by
+    # 'papis export --append'.
     string = yaml.dump_all(
         [to_dict(document) for document in documents],
-        allow_unicode=True)
+        allow_unicode=True,
+        explicit_start=True)
 
     return str(string)

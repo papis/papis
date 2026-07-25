@@ -200,3 +200,23 @@ def test_export_folder_all_cli(tmp_library: TemporaryLibrary) -> None:
     for d in dirs:
         assert os.path.exists(d)
         assert os.path.isdir(d)
+
+
+def test_export_yaml_append(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.export import cli
+
+    cli_runner = PapisRunner()
+    outfile = os.path.join(tmp_library.tmpdir, "test_append.yaml")
+
+    for query in ("krishnamurti", "popper"):
+        result = cli_runner.invoke(
+            cli,
+            ["--append", "--format", "yaml", "--out", outfile, query])
+        assert result.exit_code == 0
+
+    from papis.yaml import yaml_to_list
+    data = yaml_to_list(outfile, raise_exception=True)
+
+    assert len(data) == 2
+    assert "Krishnamurti" in data[0]["author"]
+    assert "Popper" in data[1]["author"]
