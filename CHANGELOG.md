@@ -92,6 +92,10 @@ user can abort, skip problematic moves, or fix collisions interactively. A new
 - Fix crash in `papis add` when a given file path contains spaces (the DOI
   importer no longer tries to resolve local paths on doi.org)
   ([#1201](https://github.com/papis/papis/issues/1201)).
+- The YAML exporter now starts each document with an explicit `---` marker, so
+  that `papis export --format yaml --append` produces a valid multi-document
+  file instead of merging the documents together
+  ([#1038](https://github.com/papis/papis/issues/1038)).
 
 # VERSION v0.15.0 (February 8th, 2026)
 
