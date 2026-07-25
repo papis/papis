@@ -194,7 +194,8 @@ def run(cmd: Sequence[str],
 def general_open(file_name: str,
                  key: str,
                  default_opener: str | None = None,
-                 wait: bool = True) -> None:
+                 wait: bool = True,
+                 raise_on_error: bool = False) -> None:
     """Open a file with a configured open tool (executable).
 
     :param file_name: a file path to open.
@@ -205,6 +206,9 @@ def general_open(file_name: str,
         *key*, if any, or the default ``papis`` opener are used.
     :param wait: if *True* wait for the process to finish, otherwise detach the
         process and return immediately.
+    :param raise_on_error: if *True*, a non-zero exit code of the opener is
+        raised as a :class:`subprocess.CalledProcessError` instead of only
+        being logged as a warning.
     """
     from papis.exceptions import DefaultSettingValueMissing
 
@@ -232,6 +236,9 @@ def general_open(file_name: str,
     try:
         run(cmd, wait=wait)  # type: ignore[call-overload]
     except subprocess.CalledProcessError as exc:
+        if raise_on_error:
+            raise
+
         logger.warning(
             "Opener for '%s' exited with code %d.",
             key, exc.returncode)

@@ -268,7 +268,15 @@ def run(paths: list[str],
         from papis.api import edit_file
         logger.info("Editing file before adding it.")
 
-        edit_file(tmp_document.get_info_file(), wait=True)
+        import subprocess
+        try:
+            edit_file(tmp_document.get_info_file(), wait=True, raise_on_error=True)
+        except subprocess.CalledProcessError as exc:
+            logger.error(
+                "Editor exited with code %d. No new document is created.",
+                exc.returncode)
+            return
+
         tmp_document.load()
 
     from papis.hooks import run as run_hook

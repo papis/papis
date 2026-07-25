@@ -348,3 +348,25 @@ def test_add_set_invalid_format_cli(tmp_library: TemporaryLibrary) -> None:
     doc, = db.query_dict({"author": "Bertrand Russell"})
     assert doc["title"] == "Principia"
     assert not doc.get_files()
+
+
+@pytest.mark.skipif(
+    not shutil.which("false"),
+    reason="Test requires 'false' executable to be in the PATH")
+def test_add_edit_failure(tmp_library: TemporaryLibrary) -> None:
+    import papis.config
+    from papis.commands.add import run
+
+    papis.config.set("editor", "false")
+
+    from papis.testing import create_random_file
+    filename = create_random_file(dir=tmp_library.tmpdir)
+
+    run([filename],
+        data={"author": "Whitehead", "title": "Process and Reality"},
+        edit=True)
+
+    import papis.database
+
+    db = papis.database.get()
+    assert not db.query_dict({"author": "Whitehead"})
