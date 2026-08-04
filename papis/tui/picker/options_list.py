@@ -84,7 +84,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         # ##################################################
 
         content = FormattedTextControl(
-            text=self.get_tokens,
+            text=self.get_tokens,  # type: ignore[arg-type]
             focusable=False,
             key_bindings=None,
             get_cursor_position=lambda: self.cursor,
