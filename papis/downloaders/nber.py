@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 
-from papis.downloaders import Downloader
+from papis.downloaders.fallback import FallbackDownloader
 
 
-class NberImporter(Downloader):
+class NberDownloader(FallbackDownloader):
     """Importer from NBER working paper URLs."""
 
     _BASE_URL = "https://www.nber.org/"
@@ -13,22 +13,22 @@ class NberImporter(Downloader):
     _BIBTEX_URL = "https://back.nber.org/bibliographic/{0}.bib"
     _PDF_URL = "https://www.nber.org/system/files/working_papers/{0}/{0}.pdf"
 
-    def __init__(self, uri: str) -> None:
+    def __init__(self, url: str) -> None:
         super().__init__(
             name="nber",
-            uri=uri,
-            priority=100,
+            uri=url,
+            priority=10,
         )
 
     @classmethod
-    def match(cls, url: str) -> NberImporter | None:
+    def match(cls, url: str) -> NberDownloader | None:
         url = url.replace("http://", "https://")
 
-        if url.startswith(cls._BASE_URL):
-            return NberImporter(url)
+        if "nber.org" in url:
+            return NberDownloader(url)
 
         if re.match(r"^w\d+$", url):
-            return NberImporter(cls._BASE_URL + "/" + url)
+            return NberDownloader(cls._BASE_URL + "/" + url)
 
         return None
 
