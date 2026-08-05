@@ -37,8 +37,15 @@ def run(document: Document,
 
     old_dict = to_dict(document)
 
+    import subprocess
+
     from papis.utils import general_open
-    general_open(info_file_path, "editor", wait=wait)
+    try:
+        general_open(info_file_path, "editor", wait=wait)
+    except subprocess.CalledProcessError as exc:
+        logger.error("Editor exited with code %d. Document is not updated.",
+                     exc.returncode)
+        return
 
     document.load()
     new_dict = to_dict(document)
@@ -85,8 +92,15 @@ def edit_notes(document: Document,
     from papis.notes import notes_path_ensured
     notes_path = notes_path_ensured(document)
 
+    import subprocess
+
     from papis.api import edit_file
-    edit_file(notes_path)
+    try:
+        edit_file(notes_path)
+    except subprocess.CalledProcessError as exc:
+        logger.error("Editor exited with code %d. Notes are not updated.",
+                     exc.returncode)
+        return
 
     if git:
         from papis.git import GitError, add_and_commit as git_add_and_commit

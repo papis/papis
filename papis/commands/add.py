@@ -270,7 +270,7 @@ def run(paths: list[str],
 
         import subprocess
         try:
-            edit_file(tmp_document.get_info_file(), wait=True, raise_on_error=True)
+            edit_file(tmp_document.get_info_file(), wait=True)
         except subprocess.CalledProcessError as exc:
             logger.error(
                 "Editor exited with code %d. No new document is created.",
