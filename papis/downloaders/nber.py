@@ -17,25 +17,31 @@ class NberDownloader(Downloader):
         super().__init__(
             name="nber",
             uri=url,
-            priority=10,
+            priority=2,
         )
 
     @classmethod
     def match(cls, url: str) -> NberDownloader | None:
-        url = url.replace("http://", "https://")
+        url = url.replace("http://", "https://", 1).strip()
 
-        if "nber.org" in url:
-            return NberDownloader(url)
+        # url
+        if re.match(r"^https://(www\.)?nber\.org/papers/(w\d+)(?:[/?#].*)?$", url):
+            return cls(url)
 
-        if re.match(r"^w\d+$", url):
-            return NberDownloader(cls._BASE_URL + "/" + url)
+        # straight working paper id
+        m = re.match(r"^(w\d+)$", url)
+        if m:
+            return cls(f"{cls._BASE_URL}papers/{m.group(1)}")
 
         return None
 
     @property
     def nberid(self) -> str:
         match = re.search(r"w\d+", self.uri)
-        assert match
+
+        if not match:
+            raise ValueError(f"could not extract NBER paper ID from URI: {self.uri!r}")
+
         return match.group(0)
 
     def get_bibtex_url(self) -> str:
