@@ -1,23 +1,24 @@
 {
-  "abstract": "Founded in 1920, the NBER is a private, non-profit, non-partisan organization dedicated to conducting economic research and to disseminating research findings among academics, public policy makers, and business professionals.",
-  "author": "Lucca, David and Wright, Jonathan H.",
+  "abstract": "We study the recent Australian experience with yield curve control (YCC) of government bonds as perhaps the best evidence of how this policy might work in other developed economies. We interpret the evidence with a simple model in which YCC affects prices of both government and other bonds via “broad” transmission channels, but only government bond prices through “narrow” liquidity channels. YCC seemingly worked well in 2020 while the market expected short rates to stay at zero for long. But as the global recovery and inflation gained momentum in 2021, liftoff expectations moved up, the Reserve Bank of Australia purchased most of the outstanding amount of the targeted government bond, and its yield dislocated from other financial market instruments. The model and empirical evidence point to narrow transmission channels playing more prominent roles than broad channels considered in prior studies of quantitative easing (QE), such as portfolio balance effects and signaling about short term rates. We argue that asset-specific narrow channels may be primary transmission mechanisms of quantity-based QE policies as well.",
+  "author": "Lucca, David and Wright, Jonathan H",
   "author_list": [
     {
-      "affiliation": [],
       "family": "Lucca",
       "given": "David"
     },
     {
-      "affiliation": [],
       "family": "Wright",
-      "given": "Jonathan H."
+      "given": "Jonathan H"
     }
   ],
   "doi": "10.3386/w29971",
-  "keywords": "David Lucca, Jonathan H. Wright",
-  "pdf_url": "https://www.nber.org/system/files/working_papers/w29971/w29971.pdf",
-  "publication_date": "2022/04/25",
+  "institution": "National Bureau of Economic Research",
+  "month": "April",
+  "number": "29971",
+  "ref": "NBERw29971",
+  "series": "Working Paper Series",
   "title": "The Narrow Channel of Quantitative Easing: Evidence from YCC Down Under",
-  "type": "article",
-  "url": "https://www.nber.org/papers/w29971"
+  "type": "Working Paper",
+  "url": "http://www.nber.org/papers/w29971",
+  "year": "2022"
 }

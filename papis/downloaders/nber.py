@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 
-from papis.downloaders.fallback import FallbackDownloader
+from papis.downloaders import Downloader
 
 
-class NberDownloader(FallbackDownloader):
+class NberDownloader(Downloader):
     """Importer from NBER working paper URLs."""
 
     _BASE_URL = "https://www.nber.org/"

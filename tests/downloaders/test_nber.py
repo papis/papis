@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 NBER_URLS = (
     "https://www.nber.org/papers/w33843",
     "https://www.nber.org/papers/w29971",
-    "w33843",
 )
 
 
@@ -51,10 +50,19 @@ def test_nber_fetch(tmp_config: TemporaryConfiguration,
     infile = f"NBER_{uid}.html"
     outfile = f"NBER_{uid}_Out.json"
 
+    bib_url = down.get_bibtex_url()
+    bibfile = f"NBER_{uid}.bib"
+
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
     monkeypatch.setattr(down, "download_document", lambda: None)
-    monkeypatch.setattr(down, "download_bibtex", lambda: None)
+    monkeypatch.setattr(
+        down, "download_bibtex",
+        lambda: setattr(
+            down, "bibtex_data",
+            resource_cache.get_remote_resource(bibfile, bib_url).decode(),
+        ),
+    )
 
     down.fetch()
     extracted_data = down.ctx.data
