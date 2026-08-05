@@ -18,11 +18,13 @@ NBER_URLS = (
 
 def test_nber_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = (
+        "w33843",
         "https://www.nber.org/papers/w33843",
         "http://www.nber.org/papers/w29971",
         *NBER_URLS,
     )
     invalid_urls = (
+        "https://www.nber.org/subscribe",
         "https://www.example.com/papers/w33843",
         "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.145901",
     )
