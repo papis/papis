@@ -64,7 +64,8 @@ class DOIImporter(Importer):
         except Exception:
             resolved_url = self.uri
 
-        # use downloader if redirect matches an existing downloader (e.g. get for pdfs or a known source)
+        # use existing downloader if one matches
+        # (e.g. get for pdfs or a known source)
         down = next(
             (d for d in get_matching_downloaders(resolved_url) if d.name != "fallback"),
             None,
@@ -73,7 +74,7 @@ class DOIImporter(Importer):
             self.logger.info("Trying to download document using '%s'.", down.name)
             down.fetch_files()
             self.ctx.files.extend(down.ctx.files)
-            return # NOTE: do we want to end here or keep goign?
+            return  # NOTE: do we want to end here or keep goign?
 
         from papis.config import getstring
 
