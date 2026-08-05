@@ -1,33 +1,32 @@
 {
-  "abstract": "Founded in 1920, the NBER is a private, non-profit, non-partisan organization dedicated to conducting economic research and to disseminating research findings among academics, public policy makers, and business professionals.",
+  "abstract": "We evaluate a firm’s unusual, worker-centered, solution to the agency problem: enabling employees to reduce the cost of effort rather than pushing them with performance rewards. We randomize the roll-out of the firm’s “Discover Your Purpose” intervention among 2,976 white-collar employees and evaluate their outcomes over two years. We find that performance increases because the low performers either leave the firm or improve in their current jobs. The trade-off between meaning and pay flattens as those with low meaning and high pay leave the firm. Treatment also reshapes stated priorities and reduces gender gaps in preferences and behaviors, including uptake of parental leave. A cost-benefit analysis reveals high returns that are shared between the firm and the employees through higher bonuses. Finally, we show that observational data obscure these gains, causing firms to underestimate the intervention’s true value.",
   "author": "Ashraf, Nava and Bandiera, Oriana and Minni, Virginia and Zingales, Luigi",
   "author_list": [
     {
-      "affiliation": [],
       "family": "Ashraf",
       "given": "Nava"
     },
     {
-      "affiliation": [],
       "family": "Bandiera",
       "given": "Oriana"
     },
     {
-      "affiliation": [],
       "family": "Minni",
       "given": "Virginia"
     },
     {
-      "affiliation": [],
       "family": "Zingales",
       "given": "Luigi"
     }
   ],
   "doi": "10.3386/w33843",
-  "keywords": "Nava Ashraf, Oriana Bandiera, Virginia Minni, Luigi Zingales",
-  "pdf_url": "https://www.nber.org/system/files/working_papers/w33843/w33843.pdf",
-  "publication_date": "2025/05/26",
+  "institution": "National Bureau of Economic Research",
+  "month": "May",
+  "number": "33843",
+  "ref": "NBERw33843",
+  "series": "Working Paper Series",
   "title": "Meaning At Work",
-  "type": "article",
-  "url": "https://www.nber.org/papers/w33843"
+  "type": "Working Paper",
+  "url": "http://www.nber.org/papers/w33843",
+  "year": "2025"
 }
