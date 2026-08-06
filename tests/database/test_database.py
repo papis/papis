@@ -109,3 +109,23 @@ def test_database_cache_same_library_via_different_paths(
     db_via_name = papis.database.get(library_name=lib_name)
 
     assert db_via_current is db_via_name
+
+
+@pytest.mark.parametrize("tmp_library", PAPIS_DB_SETTINGS, indirect=True)
+def test_find_by_folder(tmp_library: TemporaryLibrary) -> None:
+    """``find_by_folder`` returns the correct document or ``None``."""
+    db = papis.database.get()
+
+    docs = db.get_all_documents()
+    assert len(docs) > 0
+
+    doc = docs[0]
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    found = db.find_by_folder(folder)
+    assert found is not None
+    assert found["papis_id"] == doc["papis_id"]
+
+    # Non-existent folder returns None
+    assert db.find_by_folder("/nonexistent/path/to/doc") is None
