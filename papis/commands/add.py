@@ -275,6 +275,13 @@ def run(paths: list[str],
             logger.error(
                 "Editor exited with code %d. No new document is created.",
                 exc.returncode)
+
+            import shutil
+
+            tmp_folder = tmp_document.get_main_folder()
+            if tmp_folder is not None:
+                shutil.rmtree(tmp_folder, ignore_errors=True)
+
             return
 
         tmp_document.load()
