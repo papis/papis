@@ -48,7 +48,7 @@ jobs:
       - name: persist devshell as gcroot, s.t., it is cached
         run: |
           rm /nix/var/nix/gcroots/devshell || true
-          ln -s $(nix develop --command bash -c 'echo $NIX_GCROOT') /nix/var/nix/gcroots/devshell
+          ln -s "$(nix develop --command bash -c 'printf %s "$NIX_GCROOT"')" /nix/var/nix/gcroots/devshell
       # now the cache-nix-action post code runs and persists the nix store,
       # after running garbage collection. Since we have both papis installed as
       # profile and the devshell saved as gcroot, the cache should contain all
