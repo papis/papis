@@ -73,7 +73,13 @@
                 attrs
                 // {
                   # Because we're following main, use the git rev as version
-                  version = if (self ? rev) then self.shortRev else self.dirtyShortRev;
+                  version = if (self ? rev)
+                    then "${project.pyproject.project.version}+git.${self.shortRev}"
+                    else self.dirtyShortRev;
+
+                  nativeBuildInputs = (attrs.nativeBuildInputs or []) ++ [
+                    final.pyprojectVersionPatchHook
+                  ];
                 }
               );
           };
