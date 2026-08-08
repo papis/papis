@@ -36,7 +36,7 @@ jobs:
           # except the version with the `primary-key`, if it exists
           purge-primary-key: never
       - name: check installed nix version
-        run: which nix; nix build --version
+        run: command -v nix; nix --version
       - name: check nix flake
         run: nix flake check
       - name: install papis from nix flake into profile.
