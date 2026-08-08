@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: nixbuild/nix-quick-install-action@v35
       - name: Restore and save nix store from cache
         uses: nix-community/cache-nix-action@v6.1.3
         with:
