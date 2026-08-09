@@ -829,7 +829,8 @@ def new(
 
         document_file_list.append(out_file_name)
 
-    doc["files"] = document_file_list
+    if document_file_list:
+        doc["files"] = document_file_list
     doc.save()
 
     return doc
