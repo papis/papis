@@ -157,7 +157,8 @@
                   +
                   # bash
                   ''
-                    "$container_cmd" run -v "$(pwd)":/papis --rm -it papisdev
+                    "$container_cmd" run --env PAPIS_DATABASE_BACKEND \
+                      -v "$(pwd)":/papis --rm -it papisdev
                   '';
               };
 
