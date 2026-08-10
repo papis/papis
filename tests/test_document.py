@@ -38,6 +38,18 @@ def test_new(tmp_config: TemporaryConfiguration) -> None:
     assert len(doc2.get_files()) == 0
 
 
+def test_new_empty_files_not_persisted(tmp_config: TemporaryConfiguration) -> None:
+    """Creating a document without files must not persist an empty 'files' key."""
+    doc = papis.document.new({"author": "hello"}, [])
+
+    assert "files" not in doc
+
+    info_file = doc.get_info_file()
+    assert os.path.exists(info_file)
+    with open(info_file, encoding="utf-8") as f:
+        assert "files" not in f.read()
+
+
 def test_new_derives_author_list(tmp_config: TemporaryConfiguration) -> None:
     # NOTE: a flat 'author' (e.g. from `papis add --set author ...`) should be
     # parsed into a structured 'author_list' so that formats using it work
