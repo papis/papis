@@ -239,6 +239,9 @@ settings: dict[str, Any] = {
     # server
     "server-local-mode": True,
     "server-max-page-size": 0,
+    "server-url": "http://127.0.0.1:8383",
+    "server-background": False,
+    "server-log-file": "",
 
     # citations
     "citations-file-name": "citations.yaml",
