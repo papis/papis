@@ -195,7 +195,14 @@ class SQLiteDatabase(Database):
         logger.debug("Connecting to database at '%s'", self.cache_file_name)
 
         # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
-        conn = sqlite3.connect(self.cache_file_name, isolation_level=None)
+        # NOTE: the thread-affinity check is disabled because the API server test client
+        # runs the app in a worker thread while finalising the connection on the main
+        # thread. Papis itself runs (and must run) single-threaded.
+        conn = sqlite3.connect(
+            self.cache_file_name,
+            isolation_level=None,
+            check_same_thread=False,
+        )
 
         # https://github.com/litements/litedict/blob/377603fa597453ffd9997186a493ed4fd23e5399/litedict.py
         # NOTE: setting 'synchronous = OFF' can corrupt the database on a crash,
