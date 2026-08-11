@@ -120,6 +120,7 @@ class WhooshDatabase(Database):
 
         self._add_document_with_writer(document, writer, schema_keys)
         writer.commit()
+        self._trigger_on_change_callback("document_added", document)
 
     def update(self, document: Document) -> None:
         self.delete(document)
@@ -135,6 +136,7 @@ class WhooshDatabase(Database):
         from papis.id import ID_KEY_NAME
         writer.delete_by_term(ID_KEY_NAME, document[ID_KEY_NAME])
         writer.commit()
+        self._trigger_on_change_callback("document_deleted", document)
 
     def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)

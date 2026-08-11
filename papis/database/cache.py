@@ -112,9 +112,7 @@ class PickleDatabase(Database):
             logger.info("Clearing cache at '%s'.", cache_path)
             os.remove(cache_path)
 
-        if self.documents:
-            self.documents.clear()
-            self.documents = None
+        self.documents = None
 
     def add(self, document: Document) -> None:
         if not self.use_cache:
@@ -135,6 +133,7 @@ class PickleDatabase(Database):
         docs.append(document)
 
         self._save_documents()
+        self._trigger_on_change_callback("document_added", document)
 
     def update(self, document: Document) -> None:
         if not self.use_cache:
@@ -152,6 +151,7 @@ class PickleDatabase(Database):
         index, _ = result[0]
         docs[index] = document
         self._save_documents()
+        self._trigger_on_change_callback("document_updated", document)
 
     def delete(self, document: Document) -> None:
         if not self.use_cache:
@@ -169,6 +169,7 @@ class PickleDatabase(Database):
         index, _ = result[0]
         docs.pop(index)
         self._save_documents()
+        self._trigger_on_change_callback("document_deleted", document)
 
     def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)

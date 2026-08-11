@@ -279,6 +279,8 @@ class SQLiteDatabase(Database):
                  folder,
                  json.dumps(doc, cls=JSONEncoder)))
 
+        self._trigger_on_change_callback("document_added", doc)
+
     def update(self, doc: Document) -> None:
         from papis.document import describe
         logger.debug("Updating document: '%s'.", describe(doc))
@@ -298,6 +300,8 @@ class SQLiteDatabase(Database):
                  json.dumps(doc, cls=JSONEncoder),
                  self.maybe_compute_id(doc)))
 
+        self._trigger_on_change_callback("document_updated", doc)
+
     def delete(self, doc: Document) -> None:
         from papis.document import describe
         logger.debug("Deleting document: '%s'.", describe(doc))
@@ -311,6 +315,8 @@ class SQLiteDatabase(Database):
         if cursor.rowcount == 0:
             from papis.exceptions import DocumentFolderNotFound
             raise DocumentFolderNotFound(describe(doc))
+
+        self._trigger_on_change_callback("document_deleted", doc)
 
     def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)

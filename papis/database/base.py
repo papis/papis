@@ -5,10 +5,11 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Collection
+    from collections.abc import Callable, Collection
 
     from papis.document import Document
     from papis.library import Library
+    from papis.server.events import DBEventType
 
 
 def get_cache_file_name(libpath: str) -> str:
@@ -56,6 +57,9 @@ class Database(ABC):
             raise TypeError(f"Provided library has unsupported type: {type(library)}")
 
         self.lib = library
+        self._on_change_callback: (
+            Callable[[DBEventType, Document | None], None] | None
+        ) = None
 
     def _resolve_sort(
         self,
@@ -275,3 +279,16 @@ class Database(ABC):
 
         from papis.id import ID_KEY_NAME
         return ID_KEY_NAME
+
+    def set_on_change_callback(
+        self, callback: Callable[[DBEventType, Document | None], None]
+    ) -> None:
+        """Register a callback to be notified of database mutations."""
+        self._on_change_callback = callback
+
+    def _trigger_on_change_callback(
+        self, change_type: DBEventType, document: Document | None = None
+    ) -> None:
+        """Fire the registered change callback, if any."""
+        if self._on_change_callback is not None:
+            self._on_change_callback(change_type, document)
