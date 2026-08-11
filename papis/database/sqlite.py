@@ -14,7 +14,7 @@ import papis.logging
 from papis.database.base import Database
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Collection, Iterator, Sequence
 
     from papis.document import Document
     from papis.library import Library
@@ -155,6 +155,22 @@ class JSONEncoder(json.JSONEncoder):
             return obj.isoformat()
 
         return super().default(obj)
+
+
+def _docs_from_rows(rows: Sequence[tuple[str, ...]]) -> list[Document]:
+    """Materialize :class:`~papis.document.Document` objects from rows.
+
+    :param rows: ``(doc_folder, doc, ...)`` tuples as returned by
+        ``SELECT doc_folder, doc ...`` queries.
+    """
+    from papis.document import from_data
+
+    documents: list[Document] = []
+    for doc_folder, doc_json, *_ in rows:
+        doc = from_data(json.loads(doc_json))
+        doc.set_folder(doc_folder)
+        documents.append(doc)
+    return documents
 
 
 class SQLiteDatabase(Database):
@@ -320,13 +336,7 @@ class SQLiteDatabase(Database):
                 logger.error("Failed to query for '%s'.", query_string, exc_info=exc)
                 results = []
 
-        from papis.document import from_data
-
-        documents: list[Document] = []
-        for result in results:
-            doc = from_data(json.loads(result[1]))
-            doc.set_folder(result[0])
-            documents.append(doc)
+        documents = _docs_from_rows(results)
 
         tdelta = 1000 * (time.time() - tstart)
         logger.debug("Finished querying in %.2fms (%d docs).", tdelta, len(documents))
@@ -339,6 +349,87 @@ class SQLiteDatabase(Database):
     def get_all_documents(self) -> list[Document]:
         return self.query(self.get_all_query_string())
 
+    def query_paged(
+        self,
+        query: str,
+        *,
+        folder: str | None = None,
+        ids: Collection[str] | None = None,
+        sort: str | None = None,
+        reverse: bool | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> tuple[list[Document], int]:
+        from pathlib import Path
+
+        sort, reverse = self._resolve_sort(query, sort, reverse)
+
+        table = SQLITE_TABLE_NAME
+        joins: list[str] = []
+        clauses: list[str] = []
+        params: dict[str, object] = {}
+        if query != self.get_all_query_string():
+            joins.append(
+                f"JOIN {table}_fts ON {table}.papis_id = {table}_fts.papis_id"
+            )
+            clauses.append(f"{table}_fts MATCH :query")
+            params["query"] = query
+
+        if folder is not None:
+            abs_prefix = str(Path(self.lib.path) / folder)
+            # check if doc_folder is equal to or subfolder of *folder*
+            clauses.append(
+                f"({table}.doc_folder = :folder"
+                f" OR instr({table}.doc_folder, :folder || '/') = 1)"
+            )
+            params["folder"] = abs_prefix
+
+        if ids is not None:
+            placeholders = ", ".join(f":id{i}" for i in range(len(ids)))
+            clauses.append(f"{table}.papis_id IN ({placeholders})")
+            params.update({f"id{i}": v for i, v in enumerate(ids)})
+
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+
+        if sort is not None:
+            direction = "DESC" if reverse else "ASC"
+            params["path"] = f"$.{sort}"
+            # NOTE: sorting by an arbitrary metadata key always requires a full table
+            # scan. If it ever becomes a bottleneck, index the generated
+            # ``sqlite-schema-fields`` columns and order by the column name.
+            order_by = (
+                f"ORDER BY json_extract({table}.doc, :path) IS NULL,"
+                f" json_extract({table}.doc, :path) {direction}"
+            )
+        elif query != self.get_all_query_string():
+            order_by = f"ORDER BY bm25({table}_fts)"
+        else:
+            order_by = ""
+
+        params["limit"] = -1 if limit is None else limit
+        params["offset"] = offset
+
+        join_clauses = " ".join(joins)
+        try:
+            rows = self.connection.execute(
+                f"SELECT {table}.doc_folder, {table}.doc"
+                f" FROM {table} {join_clauses} {where} {order_by}"
+                f" LIMIT :limit OFFSET :offset",
+                params,
+            ).fetchall()
+
+            total = self.connection.execute(
+                f"SELECT COUNT(*) FROM {table} {join_clauses} {where}",
+                params,
+            ).fetchone()[0]
+        except sqlite3.OperationalError as exc:
+            logger.error(
+                "Failed to query for '%s'.", query, exc_info=exc,
+            )
+            return [], 0
+
+        return _docs_from_rows(rows), total
+
     def find_by_folder(self, folder: str) -> Document | None:
         conn = self.connection
         results = conn.execute(
@@ -350,12 +441,7 @@ class SQLiteDatabase(Database):
         if not results:
             return None
 
-        from papis.document import from_data
-
-        result = results[0]
-        doc = from_data(json.loads(result[1]))
-        doc.set_folder(result[0])
-        return doc
+        return _docs_from_rows(results[:1])[0]
 
     def _create_tables(self) -> None:
         if os.path.exists(self.cache_file_name):

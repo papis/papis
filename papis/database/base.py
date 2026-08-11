@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Collection
+
     from papis.document import Document
     from papis.library import Library
 
@@ -54,6 +56,34 @@ class Database(ABC):
             raise TypeError(f"Provided library has unsupported type: {type(library)}")
 
         self.lib = library
+
+    def _resolve_sort(
+        self,
+        query: str,
+        sort: str | None,
+        reverse: bool | None,
+    ) -> tuple[str | None, bool]:
+        """Resolve the effective sort field and direction for a paged query.
+
+        Returns ``(None, False)`` when the backend's default ordering should be kept
+        (relevance for searches, natural order for browse). The direction is only
+        meaningful together with a sort field.
+        """
+        import papis.config
+
+        sort_field = sort
+        if sort_field is None and query == self.get_all_query_string():
+            sort_field = papis.config.get("sort-field")
+
+        if sort_field is None:
+            return None, False
+
+        sort_reverse = (
+            reverse
+            if reverse is not None
+            else papis.config.getboolean("sort-reverse") or False
+        )
+        return sort_field, sort_reverse
 
     @abstractmethod
     def get_backend_name(self) -> str:
@@ -115,6 +145,67 @@ class Database(ABC):
     @abstractmethod
     def get_all_documents(self) -> list[Document]:
         """Get all documents in the database."""
+
+    def query_paged(
+        self,
+        query: str,
+        *,
+        folder: str | None = None,
+        ids: Collection[str] | None = None,
+        sort: str | None = None,
+        reverse: bool | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> tuple[list[Document], int]:
+        """Return a paged, sorted, filtered view of documents.
+
+        :param query: A query string in the backend's syntax. It is passed to
+            the backend unchanged (like :meth:`query`); use
+            :meth:`get_all_query_string` to match all documents.
+        :param folder: A folder path prefix relative to the library root. Only documents
+            whose folder equals or is a descendant of this prefix are included.
+        :param ids: A collection of Papis IDs. Only documents whose ID is in
+            this collection are included. An empty collection matches no
+            documents; ``None`` does not filter by ID.
+        :param sort: A document metadata key to sort by. Documents missing the key sort
+            last in both directions. ``None`` keeps the backend's default
+            ordering: relevance for searches, and the configured ``sort-field``
+            for non-query (browse) requests (see :meth:`_resolve_sort`).
+        :param reverse: If *True*, sort descending. ``None`` falls back to the
+            configured ``sort-reverse``.
+        :param limit: Maximum number of documents to return. ``None`` means unlimited.
+        :param offset: Number of matching documents to skip.
+        :returns: A tuple ``(page, total)`` where *page* is the requested slice of
+            matching documents and *total* is the count of all matching documents.
+
+        The default implementation materialises all matching documents in
+        memory via :meth:`query` and applies the filters, sort, and page
+        slice in Python; backends may override it for better performance.
+        """
+        from pathlib import Path
+
+        sort, reverse = self._resolve_sort(query, sort, reverse)
+        docs = self.query(query)
+        if ids is not None:
+            from papis.id import ID_KEY_NAME
+
+            docs = [d for d in docs if str(d.get(ID_KEY_NAME)) in ids]
+        if folder is not None:
+            prefix = Path(self.lib.path) / folder
+            docs = [
+                d for d in docs
+                if (f := d.get_main_folder()) is not None
+                and Path(f).is_relative_to(prefix)
+            ]
+
+        if sort is not None:
+            from papis.document import sort as sort_documents
+
+            docs = sort_documents(docs, sort, reverse=reverse)
+
+        total = len(docs)
+        page = docs[offset:] if limit is None else docs[offset:offset + limit]
+        return page, total
 
     def find_by_id(self, identifier: str) -> Document | None:
         """Find a document in the library by its Papis ID *identifier*."""
