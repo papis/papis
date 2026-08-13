@@ -182,26 +182,27 @@ def run(ctx: click.Context,
         raise SystemExit(1) from None
 
     configuration = papis.config.get_configuration()
-    if os.path.isdir(library.path):
-        # Check if there's a local configuration file in the library, and if so,
-        # merge its contents
-        local_config_file = papis.config.getstring("local-config-file")
-        local_config_path = os.path.join(library.path, local_config_file)
-        papis.config.merge_configuration_from_path(local_config_path, configuration)
-    else:
-        config_file = papis.config.get_config_file()
-        if os.path.exists(config_file):
+    config_file = papis.config.get_config_file()
+    if os.path.isfile(config_file):
+        if os.path.isdir(library.path):
+            # Check if there's a local configuration file in the library, and if so,
+            # merge its contents
+            local_config_file = papis.config.getstring("local-config-file")
+            local_config_path = os.path.join(library.path, local_config_file)
+            papis.config.merge_configuration_from_path(local_config_path, configuration)
+        else:
             logger.error(
                 "Library '%s' directory '%s' does not exist. Please "
                 "create it or update the 'dir' setting in the "
                 "configuration file.",
                 library, library.path)
-        elif ctx.invoked_subcommand != "init":
-            logger.warning("No configuration file exists at '%s'.", config_file)
-            logger.warning("Create a configuration file and define your "
-                           "libraries before using Papis. You can use "
-                           "'papis init /path/to/my/library' for a quick "
-                           "interactive setup.")
+    elif ctx.invoked_subcommand != "init":
+        logger.error("No configuration file exists at '%s'.", config_file)
+        logger.error("Create a configuration file and define your "
+                     "libraries before using Papis. You can use "
+                     "'papis init /path/to/my/library' for a quick "
+                     "interactive setup.")
+        raise click.FileError(config_file, hint="No configuration file exists there")
 
     # read in configuration from command-line
     sections = configuration.sections()

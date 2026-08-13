@@ -10,12 +10,13 @@ def test_no_config_shows_init_hint(tmp_config: TemporaryConfiguration) -> None:
     from papis.commands.default import run as cli
 
     shutil.rmtree(tmp_config.configdir)
+    shutil.rmtree(tmp_config.libdir)
     papis.config.reset_configuration()
 
     cli_runner = PapisRunner()
-    result = cli_runner.invoke(cli, ["list"])
+    result = cli_runner.invoke(cli, ["list", "-c", tmp_config.configfile])
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "No configuration file exists at" in result.output
     assert "papis init" in result.output
 
