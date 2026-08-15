@@ -181,7 +181,11 @@ def author_list_to_author(
 
     from papis.format import format
     return separator.join([
-        format(multiple_authors_format, author, doc_key="au")
+        # FIXME: that strip assumes either "Given Family" or "Family, Given", which
+        # is not particularly robust. It's needed so that separators in single-name
+        # authors don't end up in the author string, e.g.
+        #   https://doi.org/10.3389/fncom.2023.1215824
+        format(multiple_authors_format, author, doc_key="au").strip(" ,")
         for author in data["author_list"]
         ])
 

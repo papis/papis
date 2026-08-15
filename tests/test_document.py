@@ -310,6 +310,34 @@ def test_multiple_authors_separator(tmp_config: TemporaryConfiguration,
     assert result == "Cox and Little and O'Shea"
 
 
+@pytest.mark.parametrize("formatter", ["python", "jinja2"])
+def test_single_name_author(tmp_config: TemporaryConfiguration,
+                            formatter: str) -> None:
+    papis.config.set("formatter", formatter)
+
+    if formatter == "jinja2":
+        pytest.importorskip("jinja2")
+        multiple_authors_format = "{{ au.family }}, {{ au.given }}"
+    elif formatter == "python":
+        multiple_authors_format = "{au[family]}, {au[given]}"
+    else:
+        raise ValueError(f"Unknown formatter: '{formatter}'")
+
+    data = {
+        "author_list": [
+            {"family": "Turing", "given": "Alan"},
+            {"family": "Single"},
+        ],
+    }
+
+    from papis.document import author_list_to_author
+
+    result = author_list_to_author(data, separator=" and ",
+                                   multiple_authors_format=multiple_authors_format)
+
+    assert result == "Turing, Alan and Single"
+
+
 def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None:
     import re
 
