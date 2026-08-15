@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 import tempfile
 from typing import TYPE_CHECKING
@@ -47,6 +48,17 @@ def test_general_open_with_spaces(tmp_config: TemporaryConfiguration) -> None:
 
     assert content == "Sume cuntent"
     os.unlink(filename)
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="uses linux tools")
+def test_general_open_raises_only_when_requested(
+        tmp_config: TemporaryConfiguration) -> None:
+    from papis.utils import general_open
+
+    general_open("unused", "nonexistentoption", default_opener="false")
+    with pytest.raises(subprocess.CalledProcessError):
+        general_open("unused", "nonexistentoption", default_opener="false",
+                     raise_on_error=True)
 
 
 def test_locate_document(tmp_config: TemporaryConfiguration) -> None:

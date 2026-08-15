@@ -135,20 +135,25 @@ def open_dir(dir_path: str, wait: bool = True) -> None:
     general_open(dir_path, "file-browser", wait=wait)
 
 
-def edit_file(file_path: str, wait: bool = True) -> None:
+def edit_file(file_path: str,
+              wait: bool = True,
+              raise_on_error: bool = False) -> None:
     """
     Edit the given file using the configured ``editor``.
 
     :param file_path: a path to a file.
     :param wait: if *True*, wait for the completion of the editor before
         continuing execution (blocking behavior).
+    :param raise_on_error: if *True*, propagate a non-zero editor exit;
+        otherwise log a warning and return.
 
-    :raises subprocess.CalledProcessError: if the editor exits with a non-zero
-        exit code (only possible when *wait* is *True*).
+    :raises subprocess.CalledProcessError: if *raise_on_error* is *True* and the
+        editor exits with a non-zero exit code (only possible when *wait* is
+        *True*).
     """
 
     from papis.utils import general_open
-    general_open(file_path, "editor", wait=wait)
+    general_open(file_path, "editor", wait=wait, raise_on_error=raise_on_error)
 
 
 def get_all_documents_in_lib(

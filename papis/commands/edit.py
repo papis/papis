@@ -41,7 +41,7 @@ def run(document: Document,
 
     from papis.utils import general_open
     try:
-        general_open(info_file_path, "editor", wait=wait)
+        general_open(info_file_path, "editor", wait=wait, raise_on_error=True)
     except subprocess.CalledProcessError as exc:
         logger.error("Editor exited with code %d. Document is not updated.",
                      exc.returncode)
@@ -96,7 +96,7 @@ def edit_notes(document: Document,
 
     from papis.api import edit_file
     try:
-        edit_file(notes_path)
+        edit_file(notes_path, raise_on_error=True)
     except subprocess.CalledProcessError as exc:
         logger.error("Editor exited with code %d. Notes are not updated.",
                      exc.returncode)
