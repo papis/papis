@@ -197,12 +197,11 @@ def run(ctx: click.Context,
                 "configuration file.",
                 library, library.path)
     elif ctx.invoked_subcommand != "init":
-        logger.error("No configuration file exists at '%s'.", config_file)
-        logger.error("Create a configuration file and define your "
-                     "libraries before using Papis. You can use "
-                     "'papis init /path/to/my/library' for a quick "
-                     "interactive setup.")
-        raise click.FileError(config_file, hint="No configuration file exists there")
+        logger.warning("No configuration file exists at '%s'.", config_file)
+        logger.warning("Create a configuration file and define your "
+                       "libraries before using Papis. You can use "
+                       "'papis init /path/to/my/library' for a quick "
+                       "interactive setup.")
 
     # read in configuration from command-line
     sections = configuration.sections()
