@@ -666,41 +666,57 @@ def describe(document: Document | dict[str, Any]) -> str:
         document, default=document.get("title", str(document)))
 
 
-def move(document: Document, path: str) -> None:
+def move(document: Document, path: str, *, dirumask: int | None = None) -> None:
     """Move the *document* to a new main folder at *path*.
 
-    This supposes that the document exists in the location
-    ``document.get_main_folder()`` and will change the folder in the input
-    *document* as a result.
+    This assumes that the document exists in the location given by
+    :meth:`~Document.get_main_folder`. It will move the document from there to
+    *path* and also change the main folder in the input *document*.
 
     :param path: absolute path where the document should be moved to. This
         path is expected to not exist yet and will be created by this function.
+    :param dirumask: a umask used by the new document folder. This defaults to
+        :confval:`dir-umask` or ``0o600`` if that is *None*.
 
+    >>> import tempfile
     >>> doc = from_data({'title': 'Hello World'})
-    >>> doc.set_folder('path/to/folder')
-    >>> import tempfile; newfolder = tempfile.mkdtemp()
+    >>> doc.set_folder(tempfile.mkdtemp())
+    >>> newfolder = tempfile.mkdtemp()
     >>> move(doc, newfolder)
     Traceback (most recent call last):
     ...
-    FileExistsError: There is already...
+    FileExistsError: cannot move document to directory...
     """
     folder = document.get_main_folder()
     if not folder:
         return
 
+    if not os.path.exists(folder):
+        raise FileNotFoundError(f"document main folder does not exist: '{folder}'")
+
     path = os.path.expanduser(path)
     if os.path.exists(path):
-        raise FileExistsError(
-            f"There is already a document at '{path}' that should be checked. "
-            f"A temporary document has been stored at '{folder}'"
+        if os.path.isdir(path):
+            raise FileExistsError(f"cannot move document to directory '{path}'")
+        else:
+            raise NotADirectoryError(f"cannot move document to '{path}'")
+
+    # NOTE: we check this because shutil.move will automatically create the whole
+    # directory tree if the parents do not exist. We do not want this, because
+    # it usually means that the library dir does not exist or something like that!
+    if not os.path.isdir(os.path.dirname(path)):
+        raise NotADirectoryError(
+            f"cannot move document to a path whose parent does not exist: '{path}'"
         )
+
+    if dirumask is None:
+        # NOTE: 0o600 is used for temporary folders usually, so it's a good default
+        dirumask = papis.config.getint("dir-umask") or 0o600
 
     import shutil
     shutil.move(folder, path)
 
-    # Let us chmod it because it might come from a temp folder
-    # and temp folders are per default 0o600
-    os.chmod(path, papis.config.getint("dir-umask") or 0o600)
+    os.chmod(path, dirumask)
     document.set_folder(path)
 
 
