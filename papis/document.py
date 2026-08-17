@@ -10,8 +10,8 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
+    import pathlib
     from collections.abc import Callable, Sequence
-    from pathlib import Path
     from typing import Literal
 
     from papis.strings import AnyString
@@ -584,7 +584,7 @@ def from_folder(folder_path: str) -> Document:
     return Document(folder=folder_path)
 
 
-def is_document_folder(path: Path) -> bool:
+def is_document_folder(path: pathlib.Path) -> bool:
     """Check whether *path* is an existing document folder.
 
     A folder is considered a document folder if it contains an info file
