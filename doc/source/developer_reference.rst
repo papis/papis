@@ -66,6 +66,12 @@ Developer API reference
 .. automodule:: papis.docmatcher
     :members:
 
+``papis.doctor``
+----------------
+
+.. automodule:: papis.doctor
+    :members:
+
 ``papis.document``
 ------------------
 
