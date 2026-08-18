@@ -320,7 +320,8 @@ def run(paths: list[str],
         dup_text = " (duplicate) " if has_duplicate else " "
         text_area(
             dump(tmp_document),
-            title=f"This{dup_text}document will be added to your library",
+            title=f"This{dup_text}document will be added to the "
+                  f"'{papis.config.get_lib()}' library",
             lexer_name="yaml")
 
     if confirm:
