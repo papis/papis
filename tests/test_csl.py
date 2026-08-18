@@ -29,7 +29,7 @@ def test_csl_export(tmp_config: TemporaryConfiguration) -> None:
     # NOTE: older versions used a "harvard" style and newer versions use a
     # "harvard-cite-them-right" style that's quite different, see:
     #   https://github.com/citeproc-py/citeproc-py/pull/197
-    version = tuple(int(v) for v in citeproc.__version__.split("."))
+    version = tuple(int(v) for v in citeproc.__version__.split("+")[0].split("."))
     if version < (0, 10, 3):
         assert result == (
             # ruff: ignore[ambiguous-unicode-character-string]
