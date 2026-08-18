@@ -1,11 +1,13 @@
-# VERSION NEXT (TBD)
+# VERSION 0.16.0 (August 18th, 2026)
 
 ## Dependency Changes
 
-* Switched from `pyparsing` to [Lark](https://lark-parser.readthedocs.io) for
-  query parsing.
-* Removed the `isbnlib` dependency. The library itself has not been maintained
-  in a while. The new ISBN functionality is built-in with no additional dependencies.
+* Switched from [`pyparsing`](https://github.com/pyparsing/pyparsing) to
+  [Lark](https://lark-parser.readthedocs.io) for query parsing.
+* Removed the [`isbnlib`](https://github.com/xlcnd/isbnlib) dependency. The
+  library itself has not been maintained in a while. The new ISBN functionality
+  is built-in with no additional dependencies. The supported services are
+  (no plugins are supported): `goob`, `openl`, and `wiki`.
 
 ## Features
 
@@ -15,8 +17,12 @@ Papis added a new database backend based on the built-in `sqlite3` database as a
 alternative to the `papis` backend (based on `pickle`) and the `whoosh` backend.
 
 This new backend works similarly to the `whoosh` backend. To use it, you need to
-1. Set `database-backend = sqlite` in your configuration file (globally or per-library).
-2. Tinker with [sqlite](https://papis.readthedocs.io/en/latest/configuration.html#confval-sqlite-schema-fields) to add more fields you'd like to query.
+
+1. Set `database-backend = sqlite` in your configuration file (globally or
+   per-library).
+2. Tinker with
+   [sqlite](https://papis.readthedocs.io/en/latest/configuration.html#confval-sqlite-schema-fields)
+   to add more fields you'd like to query.
 
 From preliminary testing, this backend seems to be quite fast, both for searching
 and caching. A quick benchmark on a library with about 2000 documents (and a query
@@ -33,6 +39,10 @@ Benchmark 1: papis list --all QUERY
   Time (mean ± σ):      97.4 ms ±  11.4 ms    [User: 81.1 ms, System: 15.3 ms]
   Range (min … max):    79.7 ms … 115.2 ms    27 runs
 ```
+
+See the [documentation](https://papis.readthedocs.io/en/latest/database_structure.html#sqlite-backend)
+for additional information and usage examples. In particular, regex support for
+this backend is rather limited.
 
 ### Major: Improve query syntax ([#1165](https://github.com/papis/papis/pull/1165))
 
@@ -54,35 +64,42 @@ papis open 'author:einstein AND (year:1905 OR year:1915)'
 papis open 'title:^Quantum'
 ```
 
-Note that this new query syntax still uses the `match-format` configuration setting
-for free-form terms in the query (i.e. ones not using a `key:value` format).
+Note that this new query syntax still uses the
+[`match-format`](https://papis.readthedocs.io/en/latest/configuration.html#confval-match-format)
+configuration setting for free-form terms in the query (i.e. ones not using a
+`key:value` format).
 
 ### Major: Improve `mv` command ([#1104](https://github.com/papis/papis/pull/1104)) and remove `rename` ([#1196](https://github.com/papis/papis/pull/1196))
 
-The `mv` command has been completely rewritten with many new features. It now
-works similarly to the Unix `mv` command for moving document folders: if the
-target folder already exists, the document's folder is moved *into* it (e.g.
-`papis mv --to existing-folder query` places the document at
-`existing-folder/<doc-folder>`); if the target does not exist, the document is
-renamed to that name. When no target is given, it defaults to the
-`add-folder-name` pattern, which means `papis mv query` now does
-everything that `papis rename` used to do.
+The `mv` command has been completely rewritten with many new features (see the
+[docs](https://papis.readthedocs.io/en/latest/commands/mv.html)). It now works
+similarly to the Unix `mv` command for moving document folders:
 
-The new `--to` flag accepts formatting patterns (e.g.
-`papis mv --to "{doc[year]}" query`). The command now also allows moving documents
-between libraries by specifying a target library.
+- if the target folder already exists, the document's folder is moved *into* it
+  (e.g. `papis mv --to existing-folder query` places the document at
+  `existing-folder/<doc-folder>`);
+- if the target does not exist, the document is renamed to that name.
+
+When no target folder is given, it defaults to the
+[`add-folder-name`](https://papis.readthedocs.io/en/latest/configuration.html#confval-add-folder-name)
+pattern, which means `papis mv query` now does everything that `papis rename`
+used to do. The new `--to` flag also accepts formatting patterns (e.g. `papis
+mv --to "{doc[year]}" query`). The command can now move documents between
+libraries by specifying a target library.
 
 The new command performs pre-flight checks on all planned moves before touching
 any files. Issues such as duplicate target paths, nesting a document inside
-another document's folder, or missing source folders are warned about upfront. The
-user can abort, skip problematic moves, or fix collisions interactively. A new
-`--batch` flag allows skipping all interactive prompts.
+another document's folder, or missing source folders are warned about upfront.
+The user can abort, skip problematic moves, or fix collisions interactively. A
+new `--batch` flag allows skipping all interactive prompts.
 
-### Minor: papis update can rename files ([1108](https://github.com/papis/papis/pull/1108))
+### Minor: `papis update` can rename files ([1108](https://github.com/papis/papis/pull/1108))
 
 The `papis update` command has been reworked quite extensively and has some new
-interesting functionality. First, updating document files will also rename these
-files on disk. For example, running
+interesting functionality (see the
+[docs](https://papis.readthedocs.io/en/latest/commands/update.html)). First,
+updating document files will also rename these files on disk. For example,
+running
 ```bash
 papis update --set files 0:my-new-file.pdf QUERY
 ```
@@ -96,26 +113,46 @@ configuration file). For example, to update some document references according t
 papis update --all --reset ref QUERY
 ```
 for a bulk operation. This can also be applied to `author`, `files`, and `notes`.
-For more information, see the documentation of the `papis update command`.
 
 ## Other noteworthy features
 
+- Vendored parts from `isbnlib`
+  ([#1102](https://github.com/papis/papis/pull/1102)).
+- Add a CSV exporter
+  ([#1172](https://github.com/papis/papis/pull/1172)).
+- Match directories to libraries if possible
+  ([#1179](https://github.com/papis/papis/pull/1179)).
 - Remove undocumented `dirs` option (only allow one `dir` per library).
   ([#1182](https://github.com/papis/papis/pull/1182)).
+- Do not add "empty" values into the document
+  ([#1192](https://github.com/papis/papis/pull/1192)).
+- Move `papis doctor` checks to `papis.doctor`
+  ([#1200](https://github.com/papis/papis/pull/1200)).
 - Derive `author_list` from a flat `author` when creating a new document
-  (e.g. `papis add --set author ...`), so formats using
-  `{doc[author_list][0][family]}` work without a manual `papis doctor` pass
   ([#1202](https://github.com/papis/papis/issues/1202)).
+- Improve error reporting from git failures
+  ([#1204](https://github.com/papis/papis/pull/1204)).
+- Add a downloader for [NBER](https://www.nber.org/) working papers
+  ([#1218](https://github.com/papis/papis/pull/1218)).
 
 ## Bug Fixes
 
+- Better matching initials in `string-cleaner` doctor check
+  ([#1134](https://github.com/papis/papis/pull/1134)).
+- The YAML exporter now starts each document with an explicit `---` marker, so
+  that `papis export --format yaml --append` produces a valid multi-document
+  file ([#1038](https://github.com/papis/papis/issues/1038)).
+- Detect `article-number` in more journals
+  ([#1152](https://github.com/papis/papis/pull/1152)).
+- Fix database caching with multiple libraries
+  ([#1195](https://github.com/papis/papis/pull/1195)).
 - Fix crash in `papis add` when a given file path contains spaces (the DOI
   importer no longer tries to resolve local paths on doi.org)
   ([#1201](https://github.com/papis/papis/issues/1201)).
-- The YAML exporter now starts each document with an explicit `---` marker, so
-  that `papis export --format yaml --append` produces a valid multi-document
-  file instead of merging the documents together
-  ([#1038](https://github.com/papis/papis/issues/1038)).
+- Skip local paths when matching DOIs
+  ([#1203](https://github.com/papis/papis/pull/1203)).
+- Fix extra separators when joining single-name authors
+  ([#1229](https://github.com/papis/papis/pull/1229)).
 
 # VERSION v0.15.0 (February 8th, 2026)
 
