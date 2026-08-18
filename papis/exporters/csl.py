@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from contextlib import suppress
 from typing import TYPE_CHECKING, Any
 
 import papis.config
@@ -95,6 +94,7 @@ def to_csl(doc: Document) -> Reference:
     """
     from citeproc.source import Name
     from citeproc.source.bibtex import BibTeX
+    from citeproc.string import String
 
     # FIXME: we're using the fields from citeproc to make sure that we're
     # compatible with their CSL spec, but ideally this would map all BibTeX fields
@@ -107,9 +107,11 @@ def to_csl(doc: Document) -> Reference:
             continue
 
         csl_value: Any
-        if key in {"number", "volume"}:
-            with suppress(ValueError):
+        if key in {"number", "volume", "year"}:
+            try:
                 csl_value = int(value)
+            except ValueError:
+                csl_value = String(str(value))
         elif key == "pages":
             # NOTE: this just tries to remove any double dashes from the pages
             csl_value = "-".join([
@@ -124,7 +126,7 @@ def to_csl(doc: Document) -> Reference:
         else:
             # FIXME: citeproc seems to have some notion of MixedString that
             # allows keeping some words capitalized. We don't have that..
-            csl_value = str(value)
+            csl_value = String(str(value))
 
         result[csl_key] = csl_value
 
