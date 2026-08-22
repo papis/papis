@@ -236,6 +236,13 @@ settings: dict[str, Any] = {
     "serve-timeline-css": ("https://cdn.knightlab.com/libs/timeline3/"
                            "latest/css/timeline.css"),
 
+    # server
+    "server-local-mode": True,
+    "server-max-page-size": 0,
+    "server-url": "http://127.0.0.1:8383",
+    "server-background": False,
+    "server-log-file": "",
+
     # citations
     "citations-file-name": "citations.yaml",
     "cited-by-file-name": "cited-by.yaml",
