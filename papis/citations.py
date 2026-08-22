@@ -244,7 +244,7 @@ def has_cited_by(doc: Document) -> bool:
 
 def save_cited_by(doc: Document, citations: Citations) -> None:
     """Save the cited-by list *citations* to the document's cited-by file."""
-    file_path = get_citations_file(doc)
+    file_path = get_cited_by_file(doc)
     if not file_path:
         return
 
