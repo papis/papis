@@ -39,6 +39,8 @@ implemented:
   :confval:`doctor-field-type-separator` setting.
 * ``keys-missing``: checks that the keys provided by
   :confval:`doctor-keys-missing-keys` exist in the document.
+* ``values-missing``: checks that fields in the document do not have empty values
+  (e.g. *None*, empty lists, empty strings, etc).
 * ``refs``: checks that the document has a valid reference (i.e. one that would
   be accepted by BibTeX and only contains valid characters).
 * ``string-cleaner``: checks that strings do contain various undesired characters

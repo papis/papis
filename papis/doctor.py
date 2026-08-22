@@ -193,6 +193,42 @@ def keys_missing_check(doc: Document) -> list[Error]:
             for k in keys if k not in doc]
 
 
+VALUES_MISSING_CHECK_NAME = "values-missing"
+
+
+def values_missing_check(doc: Document) -> list[Error]:
+    """
+    Checks whether any keys have missing values. This can values set to *None*,
+    empty lists or empty strings.
+
+    :returns: a :class: list or errors, one for each missing value.
+    """
+
+    def is_nonempty(arg: Any) -> bool:
+        if isinstance(arg, bool):
+            return True
+        else:
+            return bool(arg)
+
+    def make_fixer(key: str) -> FixFn:
+        def fix_missing_value() -> None:
+            if key not in doc:
+                return
+
+            del doc[key]
+            logger.info("[FIX] Removed key '%s' with empty value.", key)
+
+        return fix_missing_value
+
+    return [
+        make_error(doc, VALUES_MISSING_CHECK_NAME,
+                   msg=f"Key '{k}' has an empty value",
+                   fix_action=make_fixer(k),
+                   payload=k)
+        for k, v in doc.items() if not is_nonempty(v)
+    ]
+
+
 REFS_CHECK_NAME = "refs"
 REFS_BAD_SYMBOL_REGEX = re.compile(r"[ ,{}\[\]@#`']")
 
@@ -984,6 +1020,7 @@ def string_cleaner_check(doc: Document) -> list[Error]:
 
 register_check(FILES_CHECK_NAME, files_check)
 register_check(KEYS_MISSING_CHECK_NAME, keys_missing_check)
+register_check(VALUES_MISSING_CHECK_NAME, values_missing_check)
 register_check(DUPLICATED_KEYS_NAME, duplicated_keys_check)
 register_check(DUPLICATED_VALUES_NAME, duplicated_values_check)
 register_check(BIBTEX_TYPE_CHECK_NAME, bibtex_type_check)
