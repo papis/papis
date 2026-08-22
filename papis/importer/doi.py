@@ -53,6 +53,29 @@ class DOIImporter(Importer):
         if not self.ctx.data:
             return
 
+        from papis.downloaders import download_document, get_matching_downloaders
+        from papis.utils import get_session
+
+        # resolve doi redirect
+        try:
+            with get_session() as session:
+                response = session.head(self.uri, allow_redirects=True)
+                resolved_url = str(response.url)
+        except Exception:
+            resolved_url = self.uri
+
+        # use existing downloader if one matches
+        # (e.g. get for pdfs or a known source)
+        down = next(
+            (d for d in get_matching_downloaders(resolved_url) if d.name != "fallback"),
+            None,
+        )
+        if down:
+            self.logger.info("Trying to download document using '%s'.", down.name)
+            down.fetch_files()
+            self.ctx.files.extend(down.ctx.files)
+            return  # NOTE: do we want to end here or keep goign?
+
         from papis.config import getstring
 
         doc_url_key_name = getstring("doc-url-key-name")
@@ -62,8 +85,6 @@ class DOIImporter(Importer):
             return
 
         self.logger.info("Trying to download document from '%s'.", doc_url)
-
-        from papis.downloaders import download_document
 
         filename = download_document(doc_url)
         if filename is not None:
@@ -81,9 +102,11 @@ class DOIFromPDFImporter(DOIImporter):
     def match(cls, uri: str) -> DOIFromPDFImporter | None:
         from papis.filetype import get_document_extension
 
-        if (not os.path.exists(uri)
-                or os.path.isdir(uri)
-                or get_document_extension(uri) != "pdf"):
+        if (
+            not os.path.exists(uri)
+            or os.path.isdir(uri)
+            or get_document_extension(uri) != "pdf"
+        ):
             return None
 
         from doi import pdf_to_doi

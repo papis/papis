@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pathlib
 import time
 from typing import TYPE_CHECKING, Any
 
@@ -174,3 +175,46 @@ def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
     importers = get_matching_importers_by_doc(doc)
     assert len(importers) == 1
     assert isinstance(importers[0], DOIImporter)
+
+
+def test_doi_importer_fetches_pdf_via_nber_downloader(
+        tmp_config: TemporaryConfiguration,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        ) -> None:
+    """DOI redirect to NBER uses the NBER downloader to fetch the PDF."""
+    import unittest.mock
+
+    from papis.importer.doi import DOIImporter
+
+    doi = "10.3386/w33344"
+    imp = DOIImporter.match(doi)
+    assert imp is not None
+
+    # provide minimal crossref data so fetch_files proceeds
+    imp.ctx.data = {"title": "Test Paper", "doi": doi}
+
+    nber_url = "https://www.nber.org/papers/w33344"
+    fake_pdf = str(tmp_path / "paper.pdf")
+
+    # mock HEAD redirect to NBER
+    mock_response = unittest.mock.MagicMock()
+    mock_response.url = nber_url
+    mock_session = unittest.mock.MagicMock()
+    mock_session.__enter__ = unittest.mock.MagicMock(return_value=mock_session)
+    mock_session.__exit__ = unittest.mock.MagicMock(return_value=False)
+    mock_session.head.return_value = mock_response
+
+    monkeypatch.setattr("papis.utils.get_session", lambda: mock_session)
+
+    # mock the NBER downloader's fetch_files to simulate a downloaded PDF
+    from papis.downloaders.nber import NberDownloader
+
+    def fake_fetch_files(self: NberDownloader) -> None:
+        self.ctx.files.append(fake_pdf)
+
+    monkeypatch.setattr(NberDownloader, "fetch_files", fake_fetch_files)
+
+    imp.fetch_files()
+
+    assert imp.ctx.files == [fake_pdf]
