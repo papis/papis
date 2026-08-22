@@ -26,36 +26,68 @@ class IEEEDownloader(Downloader):
             return None
 
     def get_identifier(self) -> str:
-        url = self.uri
-        return re.sub(r"^.*ieeexplore\.ieee\.org/document/(.*)\/", r"\1", url)
+        m = re.search(r"ieeexplore\.ieee\.org/(?:abstract/)?document/(\d+)",
+                      self.uri)
+        if m:
+            return m.group(1)
 
-    def _get_bibtex_url(self) -> tuple[str, dict[str, str]]:
+        m = re.search(r"[?&]arnumber=(\d+)", self.uri)
+        if m:
+            return m.group(1)
+
+        m = re.match(r"^ieee:(\d+)$", self.uri, re.IGNORECASE)
+        if m:
+            return m.group(1)
+
+        return self.uri
+
+    def _get_bibtex_request(self) -> tuple[str, dict[str, object]]:
         identifier = self.get_identifier()
-        bibtex_url = "https://ieeexplore.ieee.org/xpl/downloadCitations?reload=true"
+        bibtex_url = "https://ieeexplore.ieee.org/rest/search/citation/format"
         data = {
-            "recordIds": identifier,
-            "citations-format": "citation-and-abstract",
+            "recordIds": [identifier],
             "download-format": "download-bibtex",
-            "x": "0",
-            "y": "0"
+            "lite": True,
         }
         return bibtex_url, data
 
     def download_bibtex(self) -> None:
-        url, params = self._get_bibtex_url()
+        import html
+        import json
+
+        url, params = self._get_bibtex_request()
         self.logger.debug("Using BibTeX URL: '%s'.", url)
 
-        response = self.session.get(url, params=params)
+        headers = {
+            "Content-Type": "application/json",
+            "X-Security-Request": "required",
+            "Referer": self.uri,
+        }
+        response = self.session.post(url, json=params, headers=headers)
         if not response.ok:
             return
 
-        self.bibtex_data = response.content.decode().replace("<br>", "")
+        # IEEE returns JSON ``{"data": "<bibtex...>"}`` (same shape Zotero
+        # parses); the BibTeX itself may contain HTML entities / ``<br>``.
+        try:
+            payload = response.json()
+        except json.JSONDecodeError:
+            self.logger.debug("IEEE citation response was not JSON.")
+            return
+
+        bibtex = payload.get("data") if isinstance(payload, dict) else None
+        if not isinstance(bibtex, str) or not bibtex.strip():
+            self.logger.debug("IEEE citation JSON had no BibTeX in 'data'.")
+            return
+
+        self.bibtex_data = html.unescape(bibtex.replace("<br>", ""))
 
     def get_document_url(self) -> str | None:
         identifier = self.get_identifier()
         pdf_url = "{}{}{}".format(
             "https://ieeexplore.ieee.org/",
             "stampPDF/getPDF.jsp?tp=&isnumber=&arnumber=",
-            identifier)
+            identifier,
+        )
         self.logger.debug("Using document URL: '%s'.", pdf_url)
         return pdf_url
