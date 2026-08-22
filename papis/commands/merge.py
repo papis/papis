@@ -78,15 +78,20 @@ def run(keep: Document,
         files: list[str],
         keep_both: bool,
         git: bool = False) -> None:
+    import shutil
 
     files_to_move = set(files) - set(keep.get_files())
-    for f in files_to_move:
-        to_folder = keep.get_main_folder()
-        if to_folder:
-            import shutil
-            logger.info("Moving '%s' to '%s'.", f, to_folder)
+    to_folder = keep.get_main_folder()
+
+    if to_folder:
+        keep_file_names = keep.get("files", [])
+        for f in files_to_move:
+            logger.info("Copying file '%s' to '%s'.", f, to_folder)
             shutil.copy(f, to_folder)
-            keep.get("files", []).append(os.path.basename(f))
+            keep_file_names.append(os.path.basename(f))
+
+        if keep_file_names:
+            keep["files"] = keep_file_names
 
     from papis.commands.update import run as update
     update(keep, data, git=git)
