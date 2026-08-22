@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import shutil
 import sys
+from typing import Any
 
 import pytest
 
@@ -348,3 +349,43 @@ def test_add_set_invalid_format_cli(tmp_library: TemporaryLibrary) -> None:
     doc, = db.query_dict({"author": "Bertrand Russell"})
     assert doc["title"] == "Principia"
     assert not doc.get_files()
+
+
+@pytest.mark.skipif(
+    not shutil.which("false"),
+    reason="Test requires 'false' executable to be in the PATH")
+def test_add_edit_failure(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    import tempfile
+
+    import papis.config
+    from papis.commands.add import run
+
+    papis.config.set("editor", "false")
+
+    temp_dirs = []
+    mkdtemp = tempfile.mkdtemp
+
+    def record_mkdtemp(*args: Any, **kwargs: Any) -> str:
+        path = mkdtemp(*args, **kwargs)
+        temp_dirs.append(path)
+        return path
+
+    monkeypatch.setattr(tempfile, "mkdtemp", record_mkdtemp)
+
+    from papis.testing import create_random_file
+    filename = create_random_file(dir=tmp_library.tmpdir)
+
+    run([filename],
+        data={"author": "Whitehead", "title": "Process and Reality"},
+        edit=True)
+
+    import papis.database
+
+    db = papis.database.get()
+    assert not db.query_dict({"author": "Whitehead"})
+
+    # the temporary document folder should not be left behind (see gh-1211)
+    assert temp_dirs
+    assert not [d for d in temp_dirs if os.path.exists(d)]

@@ -194,7 +194,8 @@ def run(cmd: Sequence[str],
 def general_open(file_name: str,
                  key: str,
                  default_opener: str | None = None,
-                 wait: bool = True) -> None:
+                 wait: bool = True,
+                 raise_on_error: bool = False) -> None:
     """Open a file with a configured open tool (executable).
 
     :param file_name: a file path to open.
@@ -205,6 +206,8 @@ def general_open(file_name: str,
         *key*, if any, or the default ``papis`` opener are used.
     :param wait: if *True* wait for the process to finish, otherwise detach the
         process and return immediately.
+    :param raise_on_error: if *True*, propagate a non-zero exit from the opener;
+        otherwise log a warning and return.
     """
     from papis.exceptions import DefaultSettingValueMissing
 
@@ -224,17 +227,18 @@ def general_open(file_name: str,
     cmd = [*shlex.split(str(opener), posix=not is_windows), file_name]
 
     import shutil
-    import subprocess
     if shutil.which(cmd[0]) is None:
         raise FileNotFoundError(
             f"Command not found for '{key}': '{opener}'")
 
+    import subprocess
     try:
         run(cmd, wait=wait)  # type: ignore[call-overload]
     except subprocess.CalledProcessError as exc:
-        logger.warning(
-            "Opener for '%s' exited with code %d.",
-            key, exc.returncode)
+        if raise_on_error:
+            raise
+        logger.warning("Opener for '%s' exited with code %d.",
+                       key, exc.returncode)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:

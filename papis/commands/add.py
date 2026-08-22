@@ -268,7 +268,23 @@ def run(paths: list[str],
         from papis.api import edit_file
         logger.info("Editing file before adding it.")
 
-        edit_file(tmp_document.get_info_file(), wait=True)
+        import subprocess
+        try:
+            edit_file(tmp_document.get_info_file(), wait=True,
+                      raise_on_error=True)
+        except subprocess.CalledProcessError as exc:
+            logger.error(
+                "Editor exited with code %d. No new document is created.",
+                exc.returncode)
+
+            import shutil
+
+            tmp_folder = tmp_document.get_main_folder()
+            if tmp_folder is not None:
+                shutil.rmtree(tmp_folder, ignore_errors=True)
+
+            return
+
         tmp_document.load()
 
     from papis.hooks import run as run_hook

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 
 import pytest
 
@@ -90,3 +91,24 @@ def test_edit_cli(tmp_library: TemporaryLibrary) -> None:
 
     expected_notes_path = os.path.join(folder, str(notes_name))
     assert os.path.exists(expected_notes_path)
+
+
+@pytest.mark.skipif(
+    not shutil.which("false"),
+    reason="Test requires 'false' executable to be in the PATH")
+@pytest.mark.library_setup(settings={"editor": "false"})
+def test_edit_run_failure(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.edit import run
+
+    db = papis.database.get()
+    docs = db.get_all_documents()
+    doc = docs[0]
+
+    old_title = doc["title"]
+    run(doc)
+
+    db.clear()
+    db.initialize()
+
+    doc, = db.query_dict({"title": old_title})
+    assert doc["title"] == old_title
