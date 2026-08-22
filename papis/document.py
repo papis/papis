@@ -271,7 +271,7 @@ def split_author_name(author: str) -> dict[str, Any]:
     return {"family": latex_to_unicode(family), "given": latex_to_unicode(given)}
 
 
-def split_authors_name(authors: str | list[str],
+def split_authors_name(authors: str | Sequence[str],
                        separator: str | None = None) -> list[dict[str, Any]]:
     """Convert list of authors to a fixed format.
 
@@ -291,6 +291,14 @@ def split_authors_name(authors: str | list[str],
     author_list = []
     for subauthors in authors:
         sep = separator if separator else guess_authors_separator(subauthors)
+
+        # NOTE: if the separator is alphanumeric, it can potentially be part of
+        # the author name (see e.g. separator="and" and author="Roland"). In
+        # that case, we force a word bound around the separator.
+        sep = sep.strip()
+        if sep.isalnum():
+            sep = rf"\b{sep}\b"
+
         author_list.extend([
             split_author_name(author)
             for author in re.split(fr"\s*{sep}\s+", subauthors)
