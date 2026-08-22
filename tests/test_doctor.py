@@ -98,6 +98,60 @@ def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
     assert doc["author"] == "Doe, John and Doe, Jane"
 
 
+def test_values_missing_check(tmp_config: TemporaryConfiguration) -> None:
+    from papis.doctor import values_missing_check
+
+    # check: no missing values
+    doc = papis.document.from_data({
+        "title": "DNA sequencing with chain-terminating inhibitors",
+        "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
+        "year": 1977,
+        "bool_field": False,
+        "list": ["a", "b"],
+        "dict": {"a": 1},
+        })
+
+    errors = values_missing_check(doc)
+    assert not errors
+
+    # check: None value
+    doc["note"] = None
+    error, = values_missing_check(doc)
+    assert error.payload == "note"
+    assert "empty" in error.msg
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "note" not in doc
+
+    # check: empty string
+    doc["journal"] = ""
+    error, = values_missing_check(doc)
+    assert error.payload == "journal"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "journal" not in doc
+
+    # check: empty list
+    doc["tags"] = []
+    error, = values_missing_check(doc)
+    assert error.payload == "tags"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "tags" not in doc
+
+    # check: empty dict
+    doc["extra"] = {}
+    error, = values_missing_check(doc)
+    assert error.payload == "extra"
+    assert error.fix_action is not None
+
+    error.fix_action()
+    assert "extra" not in doc
+
+
 def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import refs_check
 
