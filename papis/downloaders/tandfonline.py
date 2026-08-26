@@ -12,19 +12,13 @@ tf_to_bibtex_converter = {
 
 
 def _parse_year(date: str) -> int | None:
-    from datetime import datetime
-    try:
-        return datetime.strptime(date, "%d %b %Y").year
-    except ValueError:
-        return None
+    match = re.match(r"(\d{4})-\d{1,2}-\d{1,2}", date)
+    return int(match.group(1)) if match else None
 
 
 def _parse_month(date: str) -> int | None:
-    from datetime import datetime
-    try:
-        return datetime.strptime(date, "%d %b %Y").month
-    except ValueError:
-        return None
+    match = re.match(r"\d{4}-(\d{1,2})-\d{1,2}", date)
+    return int(match.group(1)) if match else None
 
 
 class TaylorFrancisDownloader(Downloader):
