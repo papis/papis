@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from papis.downloaders import Downloader
 
@@ -38,6 +38,22 @@ class IOPscienceDownloader(Downloader):
         # NOTE: this is not very robust, but we do not have access to any data
         offset = len("https://iopscience.iop.org/article/")
         return self.uri[offset:]
+
+    def get_data(self) -> dict[str, Any]:
+        soup = self._get_soup()
+        from papis.downloaders.base import parse_meta_headers
+
+        data = parse_meta_headers(soup)
+
+        abstract_nodes = soup.find_all("div", attrs={"class": "wd-jnl-art-abstract"})
+        if abstract_nodes:
+            data["abstract"] = " ".join(a.text for a in abstract_nodes).strip()
+
+        date = data.get("date")
+        if date is not None:
+            data["year"] = date.split("-")[0]
+
+        return data
 
     def get_document_url(self) -> str | None:
         url = self.ctx.data.get("pdf_url")
