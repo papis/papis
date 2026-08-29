@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from papis.document import Document
-from papis.testing import PapisRunner, TemporaryLibrary
+from papis.testing import PapisRunner, TemporaryConfiguration, TemporaryLibrary
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
@@ -389,3 +389,150 @@ def test_add_edit_failure(
     # the temporary document folder should not be left behind (see gh-1211)
     assert temp_dirs
     assert not [d for d in temp_dirs if os.path.exists(d)]
+
+
+def test_add_nested_folder_name_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Euclid",
+         "--set", "title", "Elements",
+         "--batch",
+         "--folder-name", "math/ancient/elements",
+         filename])
+    assert result.exit_code == 0
+
+    from papis.database import get_database
+
+    db = get_database()
+    doc, = db.query_dict({"author": "Euclid"})
+    folder = doc.get_main_folder()
+    assert folder is not None
+    assert os.path.exists(folder)
+    assert folder.endswith(os.path.join("math", "ancient", "elements"))
+
+
+def test_add_subfolder_cli(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Archimedes",
+         "--set", "title", "On the Sphere and Cylinder",
+         "--batch",
+         "--subfolder", "greek/math",
+         filename])
+    assert result.exit_code == 0
+
+    from papis.database import get_database
+
+    db = get_database()
+    doc, = db.query_dict({"author": "Archimedes"})
+    folder = doc.get_main_folder()
+    assert folder is not None
+    assert os.path.exists(folder)
+    assert os.path.join("greek", "math") in folder
+
+
+def test_add_subfolder_outside_base(tmp_library: TemporaryLibrary) -> None:
+    from papis.commands.add import run
+
+    filename = tmp_library.create_random_file()
+    with pytest.raises(ValueError, match="outside of directory"):
+        run([filename],
+            data={"author": "Test", "title": "Escape"},
+            subfolder="../../outside",
+            batch=True)
+
+
+def test_add_run_missing_library(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+    from papis.commands.add import run
+
+    # Custom base path that does not exist
+    with pytest.raises(NotADirectoryError, match="base path does not exist"):
+        run([],
+            data={"author": "Test", "title": "No Base"},
+            base_path=os.path.join(tmp_config.tmpdir, "nonexistent"),
+            batch=True)
+
+    # Configured library path that does not exist
+    lib_name = papis.config.get_lib_name()
+    nonexistent_lib = os.path.join(tmp_config.tmpdir, "missing_lib")
+    papis.config.set("dir", nonexistent_lib, section=lib_name)
+    papis.config.set_lib_from_name(lib_name)
+
+    with pytest.raises(
+        NotADirectoryError, match=r"library '.*' directory does not exist"
+    ):
+        run([],
+            data={"author": "Test", "title": "No Lib"},
+            batch=True)
+
+
+def test_add_cli_missing_library_batch(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    lib_name = papis.config.get_lib_name()
+    nonexistent_lib = os.path.join(tmp_config.tmpdir, "batch_new_lib")
+    papis.config.set("dir", nonexistent_lib, section=lib_name)
+    papis.config.set_lib_from_name(lib_name)
+
+    assert not os.path.exists(nonexistent_lib)
+
+    result = cli_runner.invoke(
+        cli,
+        ["--set", "author", "Newton",
+         "--set", "title", "Principia",
+         "--batch"])
+    assert result.exit_code == 0
+    assert os.path.exists(nonexistent_lib)
+
+
+def test_add_cli_missing_library_interactive(
+        tmp_config: TemporaryConfiguration,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.config
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    lib_name = papis.config.get_lib_name()
+
+    # User confirms creation
+    nonexistent_lib_yes = os.path.join(tmp_config.tmpdir, "interactive_yes_lib")
+    papis.config.set("dir", nonexistent_lib_yes, section=lib_name)
+    papis.config.set_lib_from_name(lib_name)
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.tui.utils, "confirm", lambda *args, **kwargs: True)
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        result = cli_runner.invoke(
+            cli,
+            ["--set", "author", "Kepler",
+             "--set", "title", "Astronomia Nova"])  # spell: disable
+        assert result.exit_code == 0
+        assert os.path.exists(nonexistent_lib_yes)
+
+    # User denies creation
+    nonexistent_lib_no = os.path.join(tmp_config.tmpdir, "interactive_no_lib")
+    papis.config.set("dir", nonexistent_lib_no, section=lib_name)
+    papis.config.set_lib_from_name(lib_name)
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.tui.utils, "confirm", lambda *args, **kwargs: False)
+        result = cli_runner.invoke(
+            cli,
+            ["--set", "author", "Galileo",
+             "--set", "title", "Sidereus Nuncius"])
+        assert result.exit_code == 1
+        assert not os.path.exists(nonexistent_lib_no)
