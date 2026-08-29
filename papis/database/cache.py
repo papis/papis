@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
+from typing_extensions import deprecated
+
 import papis.config
 import papis.logging
 from papis.database.base import Database, get_cache_file_path
@@ -61,16 +63,15 @@ def filter_documents(documents: list[Document],
     return filtered_docs
 
 
+@deprecated(
+    "'papis.database.cache.match_document' is deprecated and will be removed in "
+    "Papis 0.17. This function is no longer used by `papis.docmatcher`."
+)
 def match_document(
         document: Document,
         search: re.Pattern[str],
         match_format: AnyString | None = None,
         doc_key: str | None = None) -> re.Match[str] | None:
-    from warnings import warn
-
-    warn("'match_document' is deprecated and will be removed in Papis 0.17.",
-         DeprecationWarning, stacklevel=2)
-
     if doc_key is not None:
         match_string = str(document[doc_key])
     else:
