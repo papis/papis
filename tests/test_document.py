@@ -430,3 +430,43 @@ def test_author_separator_heuristics(tmp_config: TemporaryConfiguration) -> None
     #   s = "Last, First First"       # one author
     #   s = "Last Last, First First"  # one author
     #   s = "First Last, First Last"  # two authors
+
+
+def test_document_move(tmp_config: TemporaryConfiguration) -> None:
+    doc = papis.document.new({"author": "Turing", "title": "Computing"}, [])
+    old_folder = doc.get_main_folder()
+    assert old_folder is not None
+    assert os.path.exists(old_folder)
+
+    # Move to a new folder within an existing parent directory
+    target_parent = tempfile.mkdtemp(dir=tmp_config.tmpdir)
+    target_folder = os.path.join(target_parent, "new_folder")
+
+    papis.document.move(doc, target_folder)
+    assert not os.path.exists(old_folder)
+    assert os.path.exists(target_folder)
+    assert doc.get_main_folder() == target_folder
+
+    # Moving to an existing folder must raise FileExistsError
+    existing_folder = tempfile.mkdtemp(dir=tmp_config.tmpdir)
+    with pytest.raises(FileExistsError):
+        papis.document.move(doc, existing_folder)
+
+    # Moving to a path whose parent directory does not exist must raise
+    # NotADirectoryError
+    nonexistent_parent_target = os.path.join(
+        target_parent, "nonexistent_sub", "target"
+    )
+    with pytest.raises(NotADirectoryError):
+        papis.document.move(doc, nonexistent_parent_target)
+
+    # Moving when the document folder does not exist must raise FileNotFoundError
+    doc.set_folder(os.path.join(target_parent, "does_not_exist"))
+    with pytest.raises(FileNotFoundError):
+        papis.document.move(doc, os.path.join(target_parent, "another_folder"))
+
+    # Moving when doc has no folder should return cleanly
+    doc_no_folder = papis.document.from_data(
+        {"author": "Turing", "title": "Computing"}
+    )
+    papis.document.move(doc_no_folder, os.path.join(target_parent, "ignored"))
