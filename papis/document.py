@@ -699,7 +699,7 @@ def move(document: Document, path: str, *, dirumask: int | None = None) -> None:
     :param path: absolute path where the document should be moved to. This
         path is expected to not exist yet and will be created by this function.
     :param dirumask: a umask used by the new document folder. This defaults to
-        :confval:`dir-umask` or ``0o600`` if that is *None*.
+        :confval:`dir-umask`.
 
     >>> import tempfile
     >>> doc = from_data({'title': 'Hello World'})
@@ -733,8 +733,8 @@ def move(document: Document, path: str, *, dirumask: int | None = None) -> None:
         )
 
     if dirumask is None:
-        # NOTE: 0o600 is used for temporary folders usually, so it's a good default
-        dirumask = papis.config.getint("dir-umask") or 0o600
+        dirumask = papis.config.getint("dir-umask")
+        assert dirumask is not None
 
     import shutil
     shutil.move(folder, path)
