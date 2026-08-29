@@ -19,7 +19,8 @@ USENIX_LINK_URLS = [
 ]
 
 
-def test_usenix_match() -> None:
+def test_usenix_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at USENIX conferences are matched, others rejected."""
     valid_urls = (
         "https://usenix.org/conference",
         "http://usenix.org/conference",
@@ -43,6 +44,7 @@ def test_usenix_fetch(tmp_config: TemporaryConfiguration,
                       resource_cache: ResourceCache,
                       monkeypatch: MonkeyPatch,
                       url: str) -> None:
+    """Fetch and parse metadata from a USENIX presentation URL."""
     cls = get_downloader_by_name("usenix")
     assert cls is USENIXDownloader
 

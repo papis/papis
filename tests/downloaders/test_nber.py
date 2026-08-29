@@ -17,6 +17,7 @@ NBER_URLS = (
 
 
 def test_nber_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at NBER are matched, others rejected."""
     valid_urls = (
         "w33843",
         "https://www.nber.org/papers/w33843",

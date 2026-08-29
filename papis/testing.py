@@ -10,7 +10,7 @@ import click.testing
 import pytest
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Callable, Iterator, Sequence
     from types import TracebackType
 
     from _pytest.config import Config
@@ -735,6 +735,36 @@ def resource_cache(request: SubRequest) -> ResourceCache:
         kwargs["cachedir"] = os.path.join(dirname, cachedir)
 
     return ResourceCache(**kwargs)
+
+
+@pytest.fixture
+def make_fake_importer(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
+    """Create a fake importer with the given *data* and *files*.
+
+    The returned factory patches the importer matching functions so that the fake
+    importer is the only match. This allows CLI testing without network access.
+    """
+
+    def make_fake_importer(data: dict[str, object],
+                           files: list[str] | None = None) -> None:
+        import papis.importer
+
+        class FakeImporter(papis.importer.Importer):
+            def __init__(self, uri: str) -> None:
+                super().__init__(name="fake", uri=uri)
+
+            def fetch(self) -> None:
+                self.ctx.data = dict(data)
+                self.ctx.files = list(files or [])
+
+        monkeypatch.setattr(
+            papis.importer, "get_matching_importers_by_uri",
+            lambda uri, *, include_downloaders=False: [FakeImporter(uri)])
+        monkeypatch.setattr(
+            papis.importer, "get_matching_importers_by_doc",
+            lambda doc, *, include_downloaders=False: [FakeImporter("fake://auto")])
+
+    return make_fake_importer
 
 
 def pytest_addoption(parser: Parser) -> None:

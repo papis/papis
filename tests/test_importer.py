@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import re
 import time
 from typing import TYPE_CHECKING, Any
 
@@ -100,9 +102,32 @@ def test_get_importer(tmp_config: TemporaryConfiguration) -> None:
         _ = get_importer_by_name("this_is_not_a_known_importer_hopefully")
 
 
-def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> None:
+def _fake_validate_doi(doi: str) -> None:
+    """Mimic :func:`doi.validate_doi` without querying doi.org."""
+    if not re.match(r"10\.\d{4,9}/\S+", doi):
+        raise ValueError(f"not a doi: {doi}")
+
+
+def _patch_network_matching(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Do importer matching without network.
+
+    Some importers query remote services from within :meth:`Importer.match`. Patch those
+    validators so that the tests here don't touch the network. The matching itself is
+    tested in the relevant importer tests.
+    """
+    monkeypatch.setattr("doi.validate_doi", _fake_validate_doi)
+    monkeypatch.setattr("papis.arxiv.is_arxivid", lambda arg: "arxiv" in arg)
+    monkeypatch.setattr("papis.downloaders.download_document",
+                        lambda *args, **kwargs: None)
+
+
+def test_matching_importers_by_name(tmp_config: TemporaryConfiguration,
+                                        monkeypatch: pytest.MonkeyPatch,
+                                        ) -> None:
     from papis.importer import get_matching_importers_by_name
     from papis.importer.doi import DOIImporter
+
+    _patch_network_matching(monkeypatch)
 
     name_and_uris = [
         # 1. a valid importer name + valid uri
@@ -131,6 +156,8 @@ def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> N
 def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration,
                                    monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.importer import get_matching_importers_by_uri
+
+    _patch_network_matching(monkeypatch)
 
     importers = get_matching_importers_by_uri("this_is_not_an_uri")
     assert len(importers) == 0
@@ -201,3 +228,98 @@ def test_fetch_importers_source_error(
         assert fetch_importers([FailingImporter()]) == []
 
     assert "FailingImporter" in caplog.text
+
+
+def _make_simple_importer(name: str, data: dict[str, Any],
+                          files: list[str]) -> Any:
+    from papis.importer import Importer
+
+    importer = Importer(uri=name, name=name)
+    importer.ctx.data = dict(data)
+    importer.ctx.files = list(files)
+    return importer
+
+
+def test_collect_from_importers_batch(tmp_config: TemporaryConfiguration) -> None:
+    """Checks that batch collection merges later importer data over earlier."""
+    from papis.importer import collect_from_importers
+
+    imp1 = _make_simple_importer("a",
+                                 {"title": "t1", "year": 2000, "ref": "key-a"},
+                                 ["f1.pdf"])
+    imp2 = _make_simple_importer("b",
+                                 {"title": "t2", "author": "A", "ref": "key-b"},
+                                 ["f1.pdf", "f2.pdf"])
+
+    ctx = collect_from_importers([imp1, imp2], batch=True)
+
+    # later importers overwrite earlier data for the same key and the 'ref' key is
+    # always dropped
+    assert ctx.data == {"title": "t2", "year": 2000, "author": "A"}
+
+    # files are concatenated and duplicates are kept
+    assert ctx.files == ["f1.pdf", "f1.pdf", "f2.pdf"]
+
+
+def test_collect_from_importers_interactive(
+        tmp_config: TemporaryConfiguration,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Checks that interactive collection only prompts for later importers."""
+    import papis.utils
+    from papis.importer import collect_from_importers
+
+    calls: list[tuple[dict[str, Any], dict[str, Any], str]] = []
+
+    def _update_interactively(doc: dict[str, Any], data: dict[str, Any],
+                              name: str) -> None:
+        calls.append((dict(doc), dict(data), name))
+
+        # emulate a user that keeps existing values
+        for key, value in data.items():
+            if key not in doc:
+                doc[key] = value
+
+    monkeypatch.setattr(papis.utils, "update_doc_from_data_interactively",
+                        _update_interactively)
+
+    imp1 = _make_simple_importer("a", {"title": "t1", "year": 2000}, ["f1.pdf"])
+    imp2 = _make_simple_importer("b", {"title": "t2", "author": "A"}, [])
+
+    ctx = collect_from_importers([imp1, imp2], batch=False)
+
+    assert len(calls) == 1
+    assert calls[0][0] == {"title": "t1", "year": 2000}
+    assert calls[0][1] == {"title": "t2", "author": "A"}
+
+    assert ctx.data == {"title": "t1", "year": 2000, "author": "A"}
+    assert ctx.files == ["f1.pdf"]
+
+
+def test_bibtex_importer_multi_entry(tmp_config: TemporaryConfiguration,
+                                     caplog: pytest.LogCaptureFixture) -> None:
+    """Checks that multi-entry bibtex only keeps the first entry, with a warning."""
+    from papis.importer.bibtex import BibTeXImporter
+
+    bibtex_string = (
+        "@article{first,\n"
+        "  author = {A. One},\n"
+        "  title = {First entry}\n"
+        "}\n"
+        "@article{second,\n"
+        "  author = {B. Two},\n"
+        "  title = {Second entry}\n"
+        "}\n"
+    )
+
+    path = os.path.join(tmp_config.tmpdir, "multi.bib")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(bibtex_string)
+
+    importer = BibTeXImporter.match(path)
+    assert importer is not None
+    importer.fetch_data()
+
+    assert importer.ctx.data["title"] == "First entry"
+    assert importer.ctx.data["author"] == "One, A."
+    assert "2 entries" in caplog.text
+    assert "Picking the first one" in caplog.text

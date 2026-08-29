@@ -1,13 +1,31 @@
 from __future__ import annotations
 
+import json
+import os
 import re
 import subprocess
 import tempfile
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
 from papis.testing import PapisRunner, TemporaryLibrary
+
+
+def _explore_export(tmp_library: TemporaryLibrary,
+                    chain: list[str],
+                    outname: str) -> list[dict[str, object]]:
+    # NOTE: Tests use this function not to check if JSON export is correct, but rather
+    # to check whether the explorer's internal data processing is correct.
+    from papis.commands.explore import cli
+
+    outfile = os.path.join(tmp_library.tmpdir, outname)
+    result = PapisRunner().invoke(
+        cli, [*chain, "export", "--format", "json", "--out", outfile])
+    assert result.exit_code == 0
+
+    with open(outfile, encoding="utf-8") as fd:
+        return cast("list[dict[str, object]]", json.load(fd))
 
 
 def test_explore_cli(tmp_library: TemporaryLibrary) -> None:
@@ -133,3 +151,46 @@ def test_explore_source_error(tmp_library: TemporaryLibrary,
 
     result = PapisRunner().invoke(module.cli, ["-q", "test"])
     assert result.exit_code == 0
+
+
+def test_explore_bibtex_file_cli(tmp_library: TemporaryLibrary) -> None:
+    """BibTeX files are exported to documents with normalized author lists."""
+    bibfile = os.path.join(tmp_library.tmpdir, "test.bib")
+    with open(bibfile, "w", encoding="utf-8") as fd:
+        fd.write(
+            "@article{test,\n"
+            "  author = {D. Bohm},\n"
+            "  title = {Quantum Theory}\n"
+            "}\n")
+
+    data = _explore_export(tmp_library, ["bibtex", bibfile], "bibtex_out.json")
+
+    assert len(data) == 1
+    assert data[0]["title"] == "Quantum Theory"
+    assert data[0]["author"] == "Bohm, D."
+
+
+def test_explore_yaml_file_cli(tmp_library: TemporaryLibrary) -> None:
+    """YAML files are exported."""
+    yamlfile = os.path.join(tmp_library.tmpdir, "test.yaml")
+    with open(yamlfile, "w", encoding="utf-8") as fd:
+        fd.write("author: Tolkien\ntitle: The lord of the rings\n")
+
+    data = _explore_export(tmp_library, ["yaml", yamlfile], "yaml_out.json")
+
+    assert len(data) == 1
+    assert data[0]["title"] == "The lord of the rings"
+    assert data[0]["author"] == "Tolkien"
+
+
+def test_explore_json_file_cli(tmp_library: TemporaryLibrary) -> None:
+    """JSON files are exported."""
+    jsonfile = os.path.join(tmp_library.tmpdir, "test.json")
+    with open(jsonfile, "w", encoding="utf-8") as fd:
+        json.dump([{"author": "Bohm", "title": "Quantum Theory"}], fd)
+
+    data = _explore_export(tmp_library, ["json", jsonfile], "json_out.json")
+
+    assert len(data) == 1
+    assert data[0]["title"] == "Quantum Theory"
+    assert data[0]["author"] == "Bohm"

@@ -18,6 +18,7 @@ ACS_URLS = (
 
 
 def test_acs_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at ACS publications are matched, others rejected."""
     valid_urls = (
         "https://acs.org",
         "http://acs.org",
@@ -35,12 +36,12 @@ def test_acs_match(tmp_config: TemporaryConfiguration) -> None:
         assert ACSDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="acs.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ACS_URLS)
 def test_acs_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
+    """Fetch and parse metadata from an ACS publications URL."""
     cls = get_downloader_by_name("acs")
     assert cls is ACSDownloader
 

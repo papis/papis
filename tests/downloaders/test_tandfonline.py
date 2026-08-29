@@ -18,6 +18,7 @@ TANDFONLINE_URLS = (
 
 
 def test_tandfonline_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at Taylor & Francis Online are matched, others rejected."""
     valid_urls = (
         "https://tandfonline.com",
         "http://tandfonline.com",
@@ -35,12 +36,12 @@ def test_tandfonline_match(tmp_config: TemporaryConfiguration) -> None:
         assert TaylorFrancisDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="tandfonline.com seems to require javascript")
 @pytest.mark.parametrize("url", TANDFONLINE_URLS)
 def test_tandfonline_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
                            url: str) -> None:
+    """Fetch and parse metadata from a Taylor & Francis Online URL."""
     cls = get_downloader_by_name("tandfonline")
     assert cls is TaylorFrancisDownloader
 

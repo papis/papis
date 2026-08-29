@@ -1,0 +1,228 @@
+{
+"result":{
+"query":"Comput* Educ*",
+"status":{
+"@code":"200",
+"text":"OK"
+},
+"time":{
+"@unit":"msecs",
+"text":"2.56"
+},
+"completions":{
+"@total":"3",
+"@computed":"3",
+"@sent":"3",
+"c":[
+{
+"@sc":"1",
+"@dc":"47",
+"@oc":"52",
+"@id":"73048",
+"text":"education"
+},
+{
+"@sc":"1",
+"@dc":"2",
+"@oc":"3",
+"@id":"73053",
+"text":"educators"
+},
+{
+"@sc":"1",
+"@dc":"1",
+"@oc":"1",
+"@id":"73049",
+"text":"educational"
+}
+]
+},
+"hits":{
+"@total":"49",
+"@computed":"49",
+"@sent":"30",
+"@first":"0",
+"hit":[{
+"@score":"4",
+"@id":"3487",
+"info":{"venue":"International Conference on Computer Games (CGAMES)","acronym":"CGAMES","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cgames/"},
+"url":"URL#3487"
+},
+{
+"@score":"3",
+"@id":"184",
+"info":{"venue":"ACM Transactions on Computing Education (TOCE)","acronym":"TOCE","type":"Journal","url":"https://dblp.org/db/journals/toce/"},
+"url":"URL#184"
+},
+{
+"@score":"3",
+"@id":"482",
+"info":{"venue":"Annual Conference on Innovation and Technology in Computer Science Education (ITiCSE)","acronym":"ITiCSE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/iticse/"},
+"url":"URL#482"
+},
+{
+"@score":"3",
+"@id":"1246",
+"info":{"venue":"Conference on Primary and Secondary Computing Education Research (WIPSCE)","acronym":"WIPSCE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/wipsce/"},
+"url":"URL#1246"
+},
+{
+"@score":"3",
+"@id":"1999",
+"info":{"venue":"Frontiers in Education: Computer Science &amp; Computer Engineering (FECS)","acronym":"FECS","type":"Conference or Workshop","url":"https://dblp.org/db/conf/fecs/"},
+"url":"URL#1999"
+},
+{
+"@score":"3",
+"@id":"3066",
+"info":{"venue":"International Computing Education Research Conference (ICER)","acronym":"ICER","type":"Conference or Workshop","url":"https://dblp.org/db/conf/icer/"},
+"url":"URL#3066"
+},
+{
+"@score":"3",
+"@id":"3100",
+"info":{"venue":"International Conference of Pioneering Computer Scientists, Engineers and Educators (ICPCSEE)","acronym":"ICPCSEE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/icycsee/"},
+"url":"URL#3100"
+},
+{
+"@score":"3",
+"@id":"4901",
+"info":{"venue":"International Joint Conferences on Computer, Information, and Systems Sciences, and Engineering (CISSE)","acronym":"CISSE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cisse/"},
+"url":"URL#4901"
+},
+{
+"@score":"2",
+"@id":"218",
+"info":{"venue":"ACM Virtual Global Computing Education Conference (SIGCSE Virtual)","acronym":"SIGCSE Virtual","type":"Conference or Workshop","url":"https://dblp.org/db/conf/sigcsevirtual/"},
+"url":"URL#218"
+},
+{
+"@score":"2",
+"@id":"665",
+"info":{"venue":"Australasian Computing Education Conference (ACE)","acronym":"ACE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/ace/"},
+"url":"URL#665"
+},
+{
+"@score":"2",
+"@id":"667",
+"info":{"venue":"Australasian Conference on Computer Science Education (ACSE)","acronym":"ACSE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/acse/"},
+"url":"URL#667"
+},
+{
+"@score":"2",
+"@id":"690",
+"info":{"venue":"Australian Society for Computers in Tertiary Education (ASCILITE)","acronym":"ASCILITE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/ascilite/"},
+"url":"URL#690"
+},
+{
+"@score":"2",
+"@id":"1025",
+"info":{"venue":"Computer Applications in Engineering Education","type":"Journal","url":"https://dblp.org/db/journals/caee/"},
+"url":"URL#1025"
+},
+{
+"@score":"2",
+"@id":"1048",
+"info":{"venue":"Computer Science Education","type":"Journal","url":"https://dblp.org/db/journals/csedu/"},
+"url":"URL#1048"
+},
+{
+"@score":"2",
+"@id":"1049",
+"info":{"venue":"Computer Science Education Research Conference (CSERC)","acronym":"CSERC","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cserc/"},
+"url":"URL#1049"
+},
+{
+"@score":"2",
+"@id":"1080",
+"info":{"venue":"Computers &amp; Education","type":"Journal","url":"https://dblp.org/db/journals/ce/"},
+"url":"URL#1080"
+},
+{
+"@score":"2",
+"@id":"1081",
+"info":{"venue":"Computers &amp; Education: Artificial Intelligence","type":"Journal","url":"https://dblp.org/db/journals/caeai/"},
+"url":"URL#1081"
+},
+{
+"@score":"2",
+"@id":"1082",
+"info":{"venue":"Computers &amp; Education: X Reality","type":"Journal","url":"https://dblp.org/db/journals/cexr/"},
+"url":"URL#1082"
+},
+{
+"@score":"2",
+"@id":"1090",
+"info":{"venue":"Computers and Advanced Technology in Education (CATE)","acronym":"CATE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cate/"},
+"url":"URL#1090"
+},
+{
+"@score":"2",
+"@id":"1174",
+"info":{"venue":"Conference on Computing Education Practice (CEP)","acronym":"CEP","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cep/"},
+"url":"URL#1174"
+},
+{
+"@score":"2",
+"@id":"1201",
+"info":{"venue":"Conference on Global Computing Education (CompEd)","acronym":"CompEd","type":"Conference or Workshop","url":"https://dblp.org/db/conf/comped/"},
+"url":"URL#1201"
+},
+{
+"@score":"2",
+"@id":"1888",
+"info":{"venue":"FIRA RoboWorld Congress","acronym":"CIRAS","type":"Conference or Workshop","url":"https://dblp.org/db/conf/fira/"},
+"url":"URL#1888"
+},
+{
+"@score":"2",
+"@id":"2779",
+"info":{"venue":"IFIP World Conference on Computers in Education (WCCE)","acronym":"WCCE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/wcce/"},
+"url":"URL#2779"
+},
+{
+"@score":"2",
+"@id":"2838",
+"info":{"venue":"Illia O. Teplytskyi Workshop on Computer Simulation in Education (CoSinE)","acronym":"CoSinE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/cosine/"},
+"url":"URL#2838"
+},
+{
+"@score":"2",
+"@id":"3061",
+"info":{"venue":"International Computer Programming Education Conference (ICPEC)","acronym":"ICPEC","type":"Conference or Workshop","url":"https://dblp.org/db/conf/icpec/"},
+"url":"URL#3061"
+},
+{
+"@score":"2",
+"@id":"3503",
+"info":{"venue":"International Conference on Computer Science &amp; Education (ICCSE)","acronym":"ICCSE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/iccse2/"},
+"url":"URL#3503"
+},
+{
+"@score":"2",
+"@id":"3515",
+"info":{"venue":"International Conference on Computer Science, Environment, Ecoinformatics, and Education (CSEE)","acronym":"CSEE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/csee2/"},
+"url":"URL#3515"
+},
+{
+"@score":"2",
+"@id":"3518",
+"info":{"venue":"International Conference on Computer Supported Education (CSEDU)","acronym":"CSEDU","type":"Conference or Workshop","url":"https://dblp.org/db/conf/csedu/"},
+"url":"URL#3518"
+},
+{
+"@score":"2",
+"@id":"3550",
+"info":{"venue":"International Conference on Computers in Education (ICCE)","acronym":"ICCE","type":"Conference or Workshop","url":"https://dblp.org/db/conf/icce/"},
+"url":"URL#3550"
+},
+{
+"@score":"2",
+"@id":"3731",
+"info":{"venue":"International Conference on Education Technology and Computer (ICETC)","acronym":"ICETC","type":"Conference or Workshop","url":"https://dblp.org/db/conf/icetc/"},
+"url":"URL#3731"
+}
+]
+}
+}
+}

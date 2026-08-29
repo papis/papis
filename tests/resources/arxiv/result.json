@@ -1,0 +1,52 @@
+{
+  "entry_id": "http://arxiv.org/abs/1911.07439v1",
+  "updated": "2019-11-18T05:43:56+00:00",
+  "published": "2019-11-18T05:43:56+00:00",
+  "title": "Finite temperature density matrix embedding theory",
+  "authors": [
+    {
+      "name": "Chong Sun"
+    },
+    {
+      "name": "Ushnish Ray"
+    },
+    {
+      "name": "Zhi-Hao Cui"
+    },
+    {
+      "name": "Miles Stoudenmire"
+    },
+    {
+      "name": "Michel Ferrero"
+    },
+    {
+      "name": "Garnet Kin-Lic Chan"
+    }
+  ],
+  "summary": "We describe a formulation of the density matrix embedding theory at finite temperature. We present a generalization of the ground-state bath orbital construction that embeds a mean-field finite-temperature density matrix up to a given order in the Hamiltonian, or the Hamiltonian up to a given order in the density matrix. We assess the performance of the finite-temperature density matrix embedding on the 1D Hubbard model both at half-filling and away from it, and the 2D Hubbard model at half-filling, comparing to exact data where available, as well as results from finite-temperature density matrix renormalization group, dynamical mean-field theory, and dynamical cluster approximations. The accuracy of finite-temperature density matrix embedding appears comparable to that of the ground-state theory, with at most a modest increase in bath size, and competitive with that of cluster dynamical mean-field theory.",
+  "comment": "9 pages, 8 figures",
+  "journal_ref": "Phys. Rev. B 101, 075131 (2020)",
+  "doi": "10.1103/PhysRevB.101.075131",
+  "primary_category": "cond-mat.str-el",
+  "categories": [
+    "cond-mat.str-el"
+  ],
+  "links": [
+    {
+      "href": "https://arxiv.org/abs/1911.07439v1",
+      "title": null,
+      "rel": "alternate"
+    },
+    {
+      "href": "https://arxiv.org/pdf/1911.07439v1",
+      "title": "pdf",
+      "rel": "related"
+    },
+    {
+      "href": "https://doi.org/10.1103/PhysRevB.101.075131",
+      "title": "doi",
+      "rel": "related"
+    }
+  ],
+  "pdf_url": "https://arxiv.org/pdf/1911.07439v1"
+}

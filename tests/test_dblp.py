@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -7,6 +8,11 @@ import requests
 
 if TYPE_CHECKING:
     from papis.testing import ResourceCache, TemporaryConfiguration
+
+DBLP_RESOURCEDIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "resources", "dblp"
+)
 
 DBLP_KEYS_VALID = [
     "books/sp/02/ST2002",
@@ -23,64 +29,74 @@ DBLP_KEYS_INVALID = [
 ]
 
 
-def get(code: int, url: str) -> requests.Response:
-    assert url.startswith("https://dblp.org/rec")
-
-    r = requests.Response()
-    r.status_code = code
-    return r
-
-
-@pytest.mark.xfail(reason="dblp times out sometimes")
-def test_valid_dblp_key(tmp_config: TemporaryConfiguration,
-                        monkeypatch: pytest.MonkeyPatch,
-                        has_connection: bool = True) -> None:
+@pytest.mark.xfail(reason="online service is flaky")
+def test_valid_dblp_key_online(tmp_config: TemporaryConfiguration) -> None:
+    """Checks that only real dblp keys validate."""
     from papis.dblp import is_valid_dblp_key
 
-    with monkeypatch.context() as m:
-        if not has_connection:
-            m.setattr(requests.Session, "get", lambda self, url: get(200, url))
+    for key in DBLP_KEYS_VALID:
+        assert is_valid_dblp_key(key)
 
-        for key in DBLP_KEYS_VALID:
-            assert is_valid_dblp_key(key)
-
-    with monkeypatch.context() as m:
-        if not has_connection:
-            m.setattr(requests.Session, "get", lambda self, url: get(404, url))
-
-        for key in DBLP_KEYS_INVALID:
-            assert not is_valid_dblp_key(key)
+    for key in DBLP_KEYS_INVALID:
+        assert not is_valid_dblp_key(key)
 
 
-@pytest.mark.xfail(reason="dblp times out sometimes")
-def test_importer_match(tmp_config: TemporaryConfiguration,
-                        monkeypatch: pytest.MonkeyPatch,
-                        has_connection: bool = True) -> None:
+@pytest.mark.xfail(reason="online service is flaky")
+def test_importer_match_online(tmp_config: TemporaryConfiguration) -> None:
+    """Checks that only real dblp keys and URLs match."""
     from papis.dblp import DBLP_URL_FORMAT
     from papis.importer.dblp import DBLPImporter
 
-    with monkeypatch.context() as m:
-        if not has_connection:
-            m.setattr(requests.Session, "get", lambda self, url: get(200, url))
+    for key in DBLP_KEYS_VALID:
+        url = DBLP_URL_FORMAT.format(uri=key)
+        importer = DBLPImporter.match(url)
+        assert importer is not None
 
-        for key in DBLP_KEYS_VALID:
-            url = DBLP_URL_FORMAT.format(uri=key)
-            importer = DBLPImporter.match(url)
-            assert importer is not None
+        importer = DBLPImporter.match(key)
+        assert importer is not None
 
-            importer = DBLPImporter.match(key)
-            assert importer is not None
+    # NOTE: this relies on dblp.org answering non-ok status codes for well-shaped but
+    # nonexistent keys
+    for key in DBLP_KEYS_INVALID:
+        importer = DBLPImporter.match(key)
+        assert importer is None
 
-        for key in DBLP_KEYS_INVALID:
-            importer = DBLPImporter.match(key)
-            assert importer is None
+    for url in [
+            "https://dblp.net/rec/books/sp/02/ST2002.html",
+            "https://dblp.org/rec/books/sp/02/ST2002.bib",
+            ]:
+        importer = DBLPImporter.match(url)
+        assert importer is None
 
-        for url in [
-                "https://dblp.net/rec/books/sp/02/ST2002.html",
-                "https://dblp.org/rec/books/sp/02/ST2002.bib",
-                ]:
-            importer = DBLPImporter.match(url)
-            assert importer is None
+
+@pytest.mark.resource_setup(cachedir="resources/dblp")
+def test_get_data(tmp_config: TemporaryConfiguration,
+                  monkeypatch: pytest.MonkeyPatch,
+                  resource_cache: ResourceCache,
+                  ) -> None:
+    """Checks that dblp data is processed correctly."""
+    import papis.dblp
+
+    saved = {
+        ("johnson", "publ"): "publ_johnson.json",
+        ("Comput. Educ.$", "venue"): "venue_Comput_Educ.json",
+        ("Frontiers Virtual Real.$", "venue"): "venue_Frontiers_Virtual_Real.json",
+        }
+
+    def _search(query: str = "", output_format: str = "json",
+                max_results: int = 30, max_completions: int = 10,
+                api: str = "publ") -> str:
+        fname = saved.get((query, api))
+        assert fname is not None
+
+        with open(os.path.join(DBLP_RESOURCEDIR, fname), encoding="utf-8") as fd:
+            return fd.read()
+
+    monkeypatch.setattr(papis.dblp, "search", _search)
+    data = papis.dblp.get_data(query="johnson", max_results=2)
+
+    expected = resource_cache.get_local_resource("get_data_out.json", data)
+    assert data == expected
 
 
 @pytest.mark.resource_setup(cachedir="resources/dblp")

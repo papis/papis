@@ -90,3 +90,13 @@ def test_get_data_invalid_response(tmp_config: TemporaryConfiguration,
 
     with pytest.raises(SourceError, match="Unexpected response from Zenodo"):
         papis.zenodo.get_data("7391177")
+
+
+@pytest.mark.xfail(reason="online service is flaky")
+def test_zenodo_online(tmp_config: TemporaryConfiguration) -> None:
+    """Checks that data can be fetched from the online zenodo service."""
+    import papis.zenodo
+
+    data = papis.zenodo.get_data("7391177")
+    assert data["doi"]
+    assert data["metadata"]["title"]

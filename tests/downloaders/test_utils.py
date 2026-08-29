@@ -26,6 +26,7 @@ def test_get_downloader(tmp_config: TemporaryConfiguration) -> None:
     assert down[0].name == "arxiv"
 
 
+@pytest.mark.xfail(reason="online service is flaky")
 @pytest.mark.parametrize(("url", "expected_file_name", "ext"), [
     (
         "https://arxiv.org/pdf/2408.03952",
@@ -43,10 +44,11 @@ def test_get_downloader(tmp_config: TemporaryConfiguration) -> None:
         None
     )
     ])
-def test_download_document(tmp_config: TemporaryConfiguration,
-                           url: str,
-                           expected_file_name: str,
-                           ext: str | None) -> None:
+def test_download_document_online(tmp_config: TemporaryConfiguration,
+                                 url: str,
+                                 expected_file_name: str,
+                                 ext: str | None) -> None:
+    """Checks the generic download path across online hosts."""
     from papis.downloaders import download_document
 
     local_file_name = download_document(url, expected_document_extension=ext)

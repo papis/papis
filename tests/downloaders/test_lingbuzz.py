@@ -18,6 +18,7 @@ LB_URLS = (
 
 
 def test_lingbuzz_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at LingBuzz are matched, others rejected."""
     valid_urls = (
         "https://lingbuzz.net/000002",
         "https://ling.auf.net/lingbuzz/2",
@@ -42,6 +43,7 @@ def test_lingbuzz_fetch(
     monkeypatch: pytest.MonkeyPatch,
     url: str,
 ) -> None:
+    """Fetch and parse metadata from a LingBuzz URL."""
     cls_ = get_downloader_by_name("lingbuzz")
     assert cls_ is LingbuzzDownloader
 

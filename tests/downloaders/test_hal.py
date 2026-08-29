@@ -20,6 +20,7 @@ HAL_URLS = (
 
 
 def test_hal_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at HAL are matched, others rejected."""
     valid_urls = (
         "https://halshs.archives-ouvertes.fr/halshs-02285492",
         "https://shs.hal.science/halshs-02285492",
@@ -43,6 +44,7 @@ def test_hal_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
+    """Fetch and parse metadata from a HAL URL."""
     cls = get_downloader_by_name("hal")
     assert cls is HALDownloader
 

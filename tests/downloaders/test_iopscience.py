@@ -17,12 +17,30 @@ IOPSCIENCE_URLS = (
     )
 
 
-@pytest.mark.skip(reason="iopscience.iop.org blocked by radware captcha")
+def test_iopscience_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at IOPscience are matched, others rejected."""
+    valid_urls = (
+        "https://iopscience.iop.org",
+        "https://iopscience.iop.org/article/10.1088/0026-1394/12/4/002/pdf",
+        *IOPSCIENCE_URLS)
+    invalid_urls = (
+        "https://iop.org/article/123",
+        "https://iopscience.iop.co.uk/article/123",
+        )
+
+    for url in valid_urls:
+        assert isinstance(IOPscienceDownloader.match(url), IOPscienceDownloader)
+
+    for url in invalid_urls:
+        assert IOPscienceDownloader.match(url) is None
+
+
 @pytest.mark.parametrize("url", IOPSCIENCE_URLS)
-def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
+def test_iopscience_fetch(tmp_config: TemporaryConfiguration,
                            resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
                            url: str) -> None:
+    """Fetch and parse metadata from an IOPscience URL."""
     cls = get_downloader_by_name("iopscience")
     assert cls is IOPscienceDownloader
 
@@ -36,6 +54,9 @@ def test_iop_science_fetch(tmp_config: TemporaryConfiguration,
     monkeypatch.setattr(down, "_get_body",
                         lambda: resource_cache.get_remote_resource(infile, url))
     monkeypatch.setattr(down, "download_document", lambda: None)
+
+    # NOTE: bibtex adds some extra fields, so we just disable it for the test
+    monkeypatch.setattr(down, "download_bibtex", lambda: None)
 
     down.fetch()
     extracted_data = down.ctx.data

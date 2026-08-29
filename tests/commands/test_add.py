@@ -3,12 +3,15 @@ from __future__ import annotations
 import os
 import shutil
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from papis.document import Document
 from papis.testing import PapisRunner, TemporaryConfiguration, TemporaryLibrary
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
@@ -536,3 +539,80 @@ def test_add_cli_missing_library_interactive(
              "--set", "title", "Sidereus Nuncius"])
         assert result.exit_code == 1
         assert not os.path.exists(nonexistent_lib_no)
+
+
+def test_add_set_precedence_cli(tmp_library: TemporaryLibrary,
+                                make_fake_importer: Callable[..., None],
+                                ) -> None:
+    """``--set`` overwrites importer data."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    make_fake_importer(
+        {"author": "Bohm", "title": "My effect"}, [])
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "--set", "author", "Plato", filename])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Plato"})
+
+    assert doc["title"] == "My effect"
+
+    files = doc.get_files()
+    assert len(files) == 1
+    assert os.path.exists(files[0])
+
+
+def test_add_importer_files_cli(tmp_library: TemporaryLibrary,
+                                make_fake_importer: Callable[..., None],
+                                ) -> None:
+    """Explicit files and files from the importer are both collected."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    extra_file = tmp_library.create_random_file()
+    make_fake_importer(
+        {"author": "Bohm", "title": "My effect"}, [extra_file])
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "--download-files", filename])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+
+    files = doc.get_files()
+    assert len(files) == 2
+    assert all(os.path.exists(f) for f in files)
+
+
+def test_add_no_importer_data_cli(tmp_library: TemporaryLibrary,
+                                  make_fake_importer: Callable[..., None],
+                                  ) -> None:
+    """No document is created when importers provide no data and no file exists."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    make_fake_importer({}, [])
+
+    import papis.database
+
+    db = papis.database.get()
+    ndocs = len(db.get_all_documents())
+
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "/path/that/does/not/exist.pdf"])
+    assert result.exit_code == 0
+
+    assert len(db.get_all_documents()) == ndocs

@@ -1,24 +1,122 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+import os
+from typing import TYPE_CHECKING, Any, Literal
 
 import pytest
 import requests
 
 if TYPE_CHECKING:
-    from papis.testing import TemporaryConfiguration
+    from papis.testing import ResourceCache, TemporaryConfiguration
+
+PUBMED_RESOURCEDIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "resources", "pubmed"
+)
 
 
-@pytest.mark.xfail(reason="remote pmid validity check can timeout")
-def test_match(tmp_config: TemporaryConfiguration) -> None:
+def _fake_session(pmid_responses: dict[str, int]) -> Any:
+    """A session that returns a saved CSL response or a given status code."""
+    import requests
+
+    class FakeSession:
+        def __init__(self) -> None:
+            self.calls: list[tuple[str, Any]] = []
+
+        def get(self, url: str, headers: Any = None) -> requests.Response:
+            self.calls.append((url, headers))
+
+            r = requests.Response()
+            r.url = url
+            pmid = url.rsplit("=", 1)[-1]
+
+            status = pmid_responses.get(pmid, 404)
+            r.status_code = status
+            r._content = b""
+            if status == 200:
+                with open(
+                    os.path.join(PUBMED_RESOURCEDIR, f"{pmid}.json"), encoding="utf-8"
+                ) as fd:
+                    r._content = fd.read().encode()
+
+            return r
+
+        def __enter__(self) -> FakeSession:
+            return self
+
+        def __exit__(self, *args: Any) -> Literal[False]:
+            return False
+
+    return FakeSession()
+
+
+@pytest.mark.resource_setup(cachedir="resources/pubmed")
+def test_get_data(
+    tmp_config: TemporaryConfiguration,
+    monkeypatch: pytest.MonkeyPatch,
+    resource_cache: ResourceCache,
+) -> None:
+    """Checks that pubmed data is processed correctly."""
+    import papis.pubmed
+    import papis.utils
+
+    session = _fake_session({"28012456": 200})
+    monkeypatch.setattr(papis.utils, "get_session", lambda: session)
+
+    data = papis.pubmed.get_data(" 28012456 ")
+
+    expected = resource_cache.get_local_resource("28012456_out.json", data)
+    assert data == expected
+    assert len(session.calls) == 1
+    assert session.calls[0][0].endswith("id=28012456")
+
+
+@pytest.mark.xfail(reason="online service is flaky")
+def test_get_data_online(tmp_config: TemporaryConfiguration) -> None:
+    """Checks that data can be fetched from the online pubmed service."""
+    from papis.pubmed import get_data
+
+    data = get_data("28012456")
+    assert data["title"]
+    assert data["author_list"]
+
+
+@pytest.mark.resource_setup(cachedir="resources/pubmed")
+def test_importer_fetch(
+    tmp_config: TemporaryConfiguration,
+    monkeypatch: pytest.MonkeyPatch,
+    resource_cache: ResourceCache,
+) -> None:
+    """Checks that the pubmed importer fetches data correctly."""
+    import papis.utils
     from papis.importer.pubmed import PubMedImporter
 
+    monkeypatch.setattr(
+        papis.utils, "get_session", lambda: _fake_session({"28012456": 200})
+    )
+
+    importer = PubMedImporter(uri="28012456")
+    importer.fetch_data()
+
+    expected = resource_cache.get_local_resource("28012456_out.json", importer.ctx.data)
+    assert importer.ctx.data == expected
+
+
+def test_importer_match(
+    tmp_config: TemporaryConfiguration, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Checks that only valid PMIDs match."""
+    import papis.utils
+    from papis.importer.pubmed import PubMedImporter
+
+    session = _fake_session({"28012456": 200})
+    monkeypatch.setattr(papis.utils, "get_session", lambda: session)
+
     assert PubMedImporter.match("28012456")
-    assert PubMedImporter.match("5503630")
-    assert PubMedImporter.match("   1397  ")
-    assert PubMedImporter.match("ABC1") is None
+    assert PubMedImporter.match("   1397  ") is None  # NOTE: unknown ID (404)
+    assert PubMedImporter.match("ABC1") is None  # NOTE: not a number
     assert PubMedImporter.match("1ABC") is None
+    assert len(session.calls) == 2  # only the digit-only IDs
 
 
 def _fake_response(status_code: int = 200, content: bytes = b"") -> Any:

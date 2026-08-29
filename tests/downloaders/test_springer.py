@@ -18,6 +18,7 @@ SPRINGER_LINK_URLS = (
 
 
 def test_springer_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at Springer are matched, others rejected."""
     valid_urls = (
         "https://link.springer.com",
         "http://link.springer.com",
@@ -40,6 +41,7 @@ def test_springer_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,
                         monkeypatch: pytest.MonkeyPatch,
                         url: str) -> None:
+    """Fetch and parse metadata from a Springer URL."""
     cls = get_downloader_by_name("springer")
     assert cls is SpringerLinkDownloader
 

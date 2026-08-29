@@ -18,6 +18,7 @@ ACL_URLS = (
 
 
 def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at the ACL Anthology are matched, others rejected."""
     valid_urls = (
         "https://aclanthology.org",
         "https://aclanthology.org/bogus/link/10.1007",
@@ -35,7 +36,6 @@ def test_acl_match(tmp_config: TemporaryConfiguration) -> None:
         assert ACLAnthologyDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="aclanthology.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ACL_URLS)
 def test_acl_fetch(
     tmp_config: TemporaryConfiguration,
@@ -43,6 +43,7 @@ def test_acl_fetch(
     monkeypatch: pytest.MonkeyPatch,
     url: str,
 ) -> None:
+    """Fetch and parse metadata from an ACL Anthology URL."""
     cls_ = get_downloader_by_name("acl")
     assert cls_ is ACLAnthologyDownloader
 

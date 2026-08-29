@@ -16,7 +16,8 @@ ANNUAL_REVIEWS_URLS = (
     )
 
 
-def test_annual_review_match(tmp_config: TemporaryConfiguration) -> None:
+def test_annualreviews_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at Annual Reviews are matched, others rejected."""
     valid_urls = (
         "https://www.annualreviews.org",
         "http://www.annualreviews.org",
@@ -35,12 +36,12 @@ def test_annual_review_match(tmp_config: TemporaryConfiguration) -> None:
         assert AnnualReviewsDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="annualreviews.org disallows web scrapers (cloudflare)")
 @pytest.mark.parametrize("url", ANNUAL_REVIEWS_URLS)
-def test_annual_review_fetch(tmp_config: TemporaryConfiguration,
+def test_annualreviews_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,
                              monkeypatch: pytest.MonkeyPatch,
                              url: str) -> None:
+    """Fetch and parse metadata from an Annual Reviews URL."""
     cls = get_downloader_by_name("annualreviews")
     assert cls is AnnualReviewsDownloader
 

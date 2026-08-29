@@ -9,6 +9,8 @@ import papis.database
 from papis.testing import PapisRunner, ResourceCache, TemporaryLibrary
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from papis.document import Document, DocumentLike
 
 
@@ -817,3 +819,57 @@ def test_update_bibtex_cli(
 
     (doc,) = db.query_dict({"author": "Wannier"})
     assert doc["doi"] == data["doi"]
+
+
+def test_update_auto_cli(tmp_library: TemporaryLibrary,
+                         make_fake_importer: Callable[..., None],
+                         ) -> None:
+    """``--auto`` merges importer data without fetching any files."""
+    from papis.commands.update import cli
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "krishnamurti"})
+    files_before = doc.get_files()
+
+    cli_runner = PapisRunner()
+    make_fake_importer(
+        {"title": "New title", "year": 2020},
+        ["/path/that/does/not/exist.pdf"])
+
+    result = cli_runner.invoke(
+        cli, ["--auto", "--batch", "krishnamurti"])
+    assert result.exit_code == 0
+
+    doc, = db.query_dict({"author": "krishnamurti"})
+
+    assert doc["title"] == "New title"
+    assert doc["year"] == 2020
+    assert doc["author"] == "J. Krishnamurti"
+
+    assert doc.get_files() == files_before
+
+
+def test_update_auto_unchanged_cli(tmp_library: TemporaryLibrary,
+                                   monkeypatch: pytest.MonkeyPatch,
+                                   make_fake_importer: Callable[..., None],
+                                   ) -> None:
+    """No document rewrite if ``--auto`` provides only existing values."""
+    import papis.commands.update
+    from papis.commands.update import cli
+
+    cli_runner = PapisRunner()
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "krishnamurti"})
+
+    make_fake_importer(
+        {"title": doc["title"], "year": doc["year"]},
+        ["/path/that/does/not/exist.pdf"])
+
+    calls: list[tuple[object, ...]] = []
+    monkeypatch.setattr(papis.commands.update, "run",
+                        lambda *args, **kwargs: calls.append(args))
+
+    result = cli_runner.invoke(
+        cli, ["--auto", "--batch", "krishnamurti"])
+    assert result.exit_code == 0
+    assert calls == []

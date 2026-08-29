@@ -1,0 +1,58 @@
+{
+    "source": "PubMed",
+    "accessed": {
+        "date-parts": [
+            [
+                2026,
+                8,
+                26
+            ]
+        ]
+    },
+    "id": "pmid:28012456",
+    "title": "Comparative phenotypic transcriptional characterization of human full-term placenta-derived mesenchymal stromal cells compared to bone marrow-derived mesenchymal stromal cells after differentiation in myogenic medium",
+    "author": [
+        {
+            "family": "Hart",
+            "given": "Melanie L"
+        },
+        {
+            "family": "Kaupp",
+            "given": "Marvin"
+        },
+        {
+            "family": "Brun",
+            "given": "Juliane"
+        },
+        {
+            "family": "Aicher",
+            "given": "Wilhelm K"
+        }
+    ],
+    "container-title-short": "Placenta",
+    "container-title": "Placenta",
+    "publisher-place": "Netherlands",
+    "ISSN": "0143-4004",
+    "issued": {
+        "date-parts": [
+            [
+                2017,
+                1
+            ]
+        ]
+    },
+    "epub-date": {
+        "date-parts": [
+            [
+                2016,
+                11,
+                16
+            ]
+        ]
+    },
+    "page": "64-67",
+    "volume": "49",
+    "PMID": "28012456",
+    "DOI": "10.1016/j.placenta.2016.11.007",
+    "type": "article-journal"
+}

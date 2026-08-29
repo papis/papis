@@ -17,11 +17,18 @@ FALLBACK_URLS = (
     )
 
 
+def test_fallback_match(tmp_config: TemporaryConfiguration) -> None:
+    """The fallback downloader matches any URL."""
+    for url in (*FALLBACK_URLS, "https://random-website.com/whatever"):
+        assert isinstance(FallbackDownloader.match(url), FallbackDownloader)
+
+
 @pytest.mark.parametrize("url", FALLBACK_URLS)
 def test_fallback_fetch(tmp_config: TemporaryConfiguration,
                         resource_cache: ResourceCache,
                         monkeypatch: pytest.MonkeyPatch,
                         url: str) -> None:
+    """Fetch and parse metadata from an arbitrary page via meta headers."""
     cls = get_downloader_by_name("fallback")
     assert cls is FallbackDownloader
 

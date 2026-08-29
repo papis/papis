@@ -7,10 +7,10 @@ import pytest
 from papis.downloaders.thesesfr import TheseFrDownloader
 
 if TYPE_CHECKING:
-    from papis.testing import TemporaryConfiguration
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 
-def test_match(tmp_config: TemporaryConfiguration) -> None:
+def test_thesesfr_match(tmp_config: TemporaryConfiguration) -> None:
     valid_urls = [
         "https://www.theses.fr/2014TOU30305",
         "2014TOU30305",  # spell: disable
@@ -22,6 +22,37 @@ def test_match(tmp_config: TemporaryConfiguration) -> None:
 
     for url in invalid_urls:
         assert TheseFrDownloader.match(url) is None
+
+
+@pytest.mark.resource_setup(cachedir="resources")
+def test_thesesfr_fetch(tmp_config: TemporaryConfiguration,
+                        resource_cache: ResourceCache,
+                        monkeypatch: pytest.MonkeyPatch,
+                        ) -> None:
+    """Metadata is fetched from the BibTeX endpoint."""
+    url = "https://theses.fr/2014TOU30305"
+    down = TheseFrDownloader.match(url)
+    assert down is not None
+
+    infile = "TheseFr_2014TOU30305.bib"
+    bib_url = down.get_bibtex_url()
+    assert bib_url is not None
+
+    monkeypatch.setattr(down, "download_document", lambda: None)
+    monkeypatch.setattr(
+        down, "download_bibtex",
+        lambda: setattr(
+            down, "bibtex_data",
+            resource_cache.get_remote_resource(infile, bib_url).decode(),
+        ),
+    )
+
+    down.fetch()
+    extracted_data = down.ctx.data
+    expected_data = resource_cache.get_local_resource(
+        "TheseFr_2014TOU30305_Out.json", extracted_data)
+
+    assert extracted_data == expected_data
 
 
 @pytest.mark.parametrize(

@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import json
+import os
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 import pytest
 
 if TYPE_CHECKING:
-    from papis.testing import TemporaryConfiguration
+    import arxiv
+
+    from papis.testing import ResourceCache, TemporaryConfiguration
+
+ARXIV_RESOURCEDIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "resources", "arxiv"
+)
 
 ARXIV_TEST_URLS = [
     ("/URI(https://arxiv.org/abs/1305.2291v2)>>", "1305.2291v2"),
@@ -25,17 +35,79 @@ ARXIV_TEST_URLS = [
 ]
 
 
-@pytest.mark.xfail(reason="arxiv times out sometimes")
-def test_get_data(tmp_config: TemporaryConfiguration) -> None:
-    from papis.arxiv import get_data
-    data = get_data(
-        author="Garnet Chan",
-        max_results=1,
-        title="Finite Temperature"
-    )
+def _load_arxiv_result() -> arxiv.Result:
+    """Reconstruct a real :class:`arxiv.Result` from a captured API response."""
+    import arxiv
 
-    assert data
-    assert len(data) == 1
+    with open(os.path.join(ARXIV_RESOURCEDIR, "result.json"), encoding="utf-8") as fd:
+        dump = json.load(fd)
+
+    result = arxiv.Result(
+        entry_id=dump["entry_id"],
+        updated=datetime.fromisoformat(dump["updated"]),
+        published=datetime.fromisoformat(dump["published"]),
+        title=dump["title"],
+        authors=[arxiv.Result.Author(a["name"]) for a in dump["authors"]],
+        summary=dump["summary"],
+        comment=dump["comment"],
+        journal_ref=dump["journal_ref"],
+        doi=dump["doi"],
+        primary_category=dump["primary_category"],
+        categories=dump["categories"],
+        links=[arxiv.Result.Link(link["href"], title=link["title"], rel=link["rel"])
+               for link in dump["links"]],
+        )
+
+    # NOTE: `pdf_url` is computed from the links in `arxiv` >= 4.0, but for backwards
+    # compatibility we're setting it explicitly.
+    if not getattr(result, "pdf_url", None):
+        result.pdf_url = dump.get("pdf_url")
+
+    return result
+
+
+@pytest.mark.resource_setup(cachedir="resources/arxiv")
+def test_arxiv_to_papis(tmp_config: TemporaryConfiguration,
+                        resource_cache: ResourceCache,
+                        ) -> None:
+    from papis.arxiv import arxiv_to_papis
+
+    data = arxiv_to_papis(_load_arxiv_result())
+    expected = resource_cache.get_local_resource("arxiv_to_papis_out.json", data)
+    assert data == expected
+
+
+@pytest.mark.resource_setup(cachedir="resources/arxiv")
+def test_get_data(tmp_config: TemporaryConfiguration,
+                  monkeypatch: pytest.MonkeyPatch,
+                  resource_cache: ResourceCache,
+                  ) -> None:
+    """Checks that arxiv data is processed correctly."""
+    import papis.arxiv
+
+    result = _load_arxiv_result()
+
+    class FakeClient:
+        def __init__(self) -> None:
+            self.searches: list[arxiv.Search] = []
+
+        def results(self, search: arxiv.Search) -> list[arxiv.Result]:
+            self.searches.append(search)
+            return [result]
+
+    client = FakeClient()
+    monkeypatch.setattr("arxiv.Client", lambda: client)
+
+    data = papis.arxiv.get_data(
+        author="Garnet Chan",
+        title="Finite Temperature",
+        max_results=1)
+
+    expected = resource_cache.get_local_resource("get_data_out.json", data)
+    assert data == expected
+    assert len(client.searches) == 1
+    assert client.searches[0].query == "ti:Finite%20Temperature AND au:Garnet%20Chan"
+    assert client.searches[0].max_results == 1
 
 
 def test_find_arxiv_id(tmp_config: TemporaryConfiguration) -> None:
@@ -64,13 +136,14 @@ def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
         assert down.uri == f"{ARXIV_ABS_URL}/{arxivid}"
 
 
-@pytest.mark.xfail(reason="arxiv times out sometimes")
+@pytest.mark.xfail(reason="online service is flaky")
 @pytest.mark.parametrize("url", [
     "https://arxiv.org/abs/1001.3032",
     "https://arxiv.org/abs/1001.3032vunknown",
     ])
-def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
-                                   url: str) -> None:
+def test_importer_downloader_fetch_online(tmp_config: TemporaryConfiguration,
+                                        url: str) -> None:
+    """End-to-end fetch against the online arxiv service."""
     from papis.downloaders import get_matching_downloaders
     from papis.downloaders.arxiv import ArxivDownloader
 
@@ -91,8 +164,9 @@ def test_importer_downloader_fetch(tmp_config: TemporaryConfiguration,
         assert doc is None
 
 
-@pytest.mark.xfail(reason="arxiv times out sometimes")
-def test_validate_arxivid(tmp_config: TemporaryConfiguration) -> None:
+@pytest.mark.xfail(reason="online service is flaky")
+def test_validate_arxivid_online(tmp_config: TemporaryConfiguration) -> None:
+    """Existence check against arxiv's online abstract pages."""
     from papis.arxiv import validate_arxivid
     # good
     validate_arxivid("1206.6272")

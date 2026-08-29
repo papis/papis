@@ -21,11 +21,29 @@ PROJECT_EUCLID_URLS = (
     )
 
 
+def test_project_euclid_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at Project Euclid are matched, others rejected."""
+    valid_urls = (
+        "https://projecteuclid.org",
+        *PROJECT_EUCLID_URLS)
+    invalid_urls = (
+        "https://projecteuclid.co.uk/article/123",
+        )
+
+    for url in valid_urls:
+        assert isinstance(ProjectEuclidDownloader.match(url),
+                          ProjectEuclidDownloader)
+
+    for url in invalid_urls:
+        assert ProjectEuclidDownloader.match(url) is None
+
+
 @pytest.mark.parametrize("url", PROJECT_EUCLID_URLS)
 def test_project_euclid_fetch(tmp_config: TemporaryConfiguration,
                               resource_cache: ResourceCache,
                               monkeypatch: pytest.MonkeyPatch,
                               url: str) -> None:
+    """Fetch and parse metadata from a Project Euclid URL."""
     cls = get_downloader_by_name("projecteuclid")
     assert cls is ProjectEuclidDownloader
 

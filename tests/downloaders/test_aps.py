@@ -18,12 +18,29 @@ APS_URLS = (
     )
 
 
-@pytest.mark.skip(reason="aclanthology.org disallows web scrapers (cloudflare)")
+def test_aps_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at the APS journals are matched, others rejected."""
+    valid_urls = (
+        "https://aps.org",
+        "http://aps.org",
+        *APS_URLS)
+    invalid_urls = (
+        "https://aps.co.uk/article/123",
+        )
+
+    for url in valid_urls:
+        assert isinstance(APSDownloader.match(url), APSDownloader)
+
+    for url in invalid_urls:
+        assert APSDownloader.match(url) is None
+
+
 @pytest.mark.parametrize("url", APS_URLS)
 def test_aps_fetch(tmp_config: TemporaryConfiguration,
                    resource_cache: ResourceCache,
                    monkeypatch: pytest.MonkeyPatch,
                    url: str) -> None:
+    """Fetch and parse metadata from an APS journal URL."""
     cls = get_downloader_by_name("aps")
     assert cls is APSDownloader
 

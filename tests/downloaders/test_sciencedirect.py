@@ -19,6 +19,7 @@ SCIENCE_DIRECT_URLS = (
 
 
 def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
+    """URLs pointing at ScienceDirect are matched, others rejected."""
     valid_urls = (
         "https://www.sciencedirect.com",
         "http://www.sciencedirect.com/science/article/pii/S0009261497040141",
@@ -35,12 +36,12 @@ def test_sciencedirect_match(tmp_config: TemporaryConfiguration) -> None:
         assert ScienceDirectDownloader.match(url) is None
 
 
-@pytest.mark.skip(reason="sciencedirect.com disallows web scraping")
 @pytest.mark.parametrize("url", SCIENCE_DIRECT_URLS)
 def test_sciencedirect_fetch(tmp_config: TemporaryConfiguration,
                              resource_cache: ResourceCache,
                              monkeypatch: pytest.MonkeyPatch,
                              url: str) -> None:
+    """Fetch and parse metadata from a ScienceDirect URL."""
     cls = get_downloader_by_name("sciencedirect")
     assert cls is ScienceDirectDownloader
 
