@@ -194,20 +194,45 @@ def run(paths: list[str],
     if citations is None:
         citations = []
 
+    # ensure library path exists
+    from papis.paths import is_relative_to
+
+    lib = papis.config.get_lib()
+    if base_path is None:
+        base_path = os.path.expanduser(lib.path)
+        if not os.path.isdir(base_path):
+            raise NotADirectoryError(
+                f"library '{lib.name}' directory does not exist or is not a "
+                f"directory: '{lib.path}'"
+            )
+    else:
+        base_path = os.path.expanduser(base_path)
+        if not os.path.isdir(base_path):
+            raise NotADirectoryError(
+                f"base path does not exist or is not a directory: '{base_path}'"
+            )
+
+    base_path = os.path.normpath(base_path)
+    if subfolder:
+        base_subfolder_path = os.path.normpath(os.path.join(base_path, subfolder))
+        if not is_relative_to(base_subfolder_path, base_path):
+            raise ValueError(
+                f"subfolder '{subfolder}' is outside of directory '{base_path}'"
+            )
+
+        base_path = base_subfolder_path
+
+    # ensure given file paths exist
     for p in paths:
         if not os.path.exists(p):
             raise FileNotFoundError(f"File '{p}' not found")
-
     in_document_paths = paths
-
-    from papis.database import get as get_database
-
-    db = get_database()
 
     from papis.document import describe, dump
     from papis.tui.utils import confirm as ask_confirm, text_area
     from papis.utils import open_file as open_file_viewer
 
+    # let the user filter the documents
     approved_files: list[str]
     if not batch:
         approved_files = []
@@ -223,6 +248,7 @@ def run(paths: list[str],
     else:
         approved_files = list(in_document_paths)
 
+    # create a new document with given metadata
     from papis.document import new as new_document
 
     tmp_document = new_document(
@@ -232,29 +258,13 @@ def run(paths: list[str],
         file_name_format=file_name,
         auto_doctor=auto_doctor)
 
-    # Log per-file operations
-    if link:
-        verb = "Linking"
-    elif move:
-        verb = "Moving"
-    else:
-        verb = "Copying"
-
-    for in_file, out_name in zip(
-            approved_files, tmp_document["files"], strict=True):
-        logger.info(
-            "%s '%s' to '%s'.", verb, os.path.basename(in_file), out_name)
+    verb = "Linking" if link else "Moving" if move else "Copying"
+    for in_file, out_name in zip(approved_files, tmp_document["files"], strict=True):
+        logger.info("%s '%s' to '%s'.", verb, os.path.basename(in_file), out_name)
 
     # create a nice folder name for the new document
-    if base_path is None:
-        base_path = os.path.expanduser(papis.config.get_lib().path)
-
-    if subfolder:
-        base_path = os.path.join(base_path, subfolder)
-
     from papis.paths import get_document_unique_folder
 
-    base_path = os.path.normpath(base_path)
     out_folder_path = get_document_unique_folder(
         tmp_document, base_path,
         folder_name_format=folder_name)
@@ -262,8 +272,9 @@ def run(paths: list[str],
     logger.info("Document folder is '%s'.", out_folder_path)
     logger.debug("Document includes files: '%s'.", "', '".join(tmp_document["files"]))
 
-    # Check if the user wants to edit before submitting the doc
-    # to the library
+    # check if the user wants to edit before submitting the doc to the library
+    # FIXME: this should maybe go before `new_document`? The user might change
+    # some metadata that changes the file format or the folder name
     if edit:
         from papis.api import edit_file
         logger.info("Editing file before adding it.")
@@ -289,19 +300,19 @@ def run(paths: list[str],
     from papis.hooks import run as run_hook
     run_hook("on_add_done", tmp_document)
 
-    # Duplication checking
+    # duplication checking
+    from papis.utils import locate_document_in_lib
+
     logger.info("Checking if this document is already in the library. "
                 "This uses the keys ['%s'] to determine uniqueness.",
                 "', '".join(papis.config.getlist("unique-document-keys")))
-
-    from papis.utils import locate_document_in_lib
 
     has_duplicate = False
     try:
         found_document = locate_document_in_lib(tmp_document)
     except IndexError:
         logger.info("No document matching the new metadata found in the '%s' library.",
-                    papis.config.get_lib_name())
+                    lib.name)
     else:
         text_area(
             dump(found_document),
@@ -311,7 +322,7 @@ def run(paths: list[str],
         logger.warning("Duplication Warning")
         logger.warning(
             "A document (shown above) in the '%s' library seems to match the "
-            "one to be added.", papis.config.get_lib())
+            "one to be added.", lib.name)
 
         if batch:
             logger.warning(
@@ -336,18 +347,28 @@ def run(paths: list[str],
         text_area(
             dump(tmp_document),
             title=f"This{dup_text}document will be added to the "
-                  f"'{papis.config.get_lib()}' library",
+                  f"'{lib.name}' library",
             lexer_name="yaml")
 
     if confirm:
         if not ask_confirm("Do you want to add the new document?"):
             return
 
+    from papis.database import get as get_database
     from papis.document import move as move_doc
 
     logger.info("Moving document to '%s'.", out_folder_path)
-    move_doc(tmp_document, out_folder_path)
-    db.add(tmp_document)
+
+    # ensure that all the subdirectories exist and move the document
+    dirumask = papis.config.getint("dir-umask")
+    assert dirumask is not None
+
+    out_folder_parent = os.path.dirname(out_folder_path)
+    if not os.path.isdir(out_folder_parent):
+        os.makedirs(out_folder_parent, mode=dirumask)
+
+    move_doc(tmp_document, out_folder_path, dirumask=dirumask)
+    get_database().add(tmp_document)
 
     if git:
         from papis.git import GitError, add_and_commit as git_add_and_commit
@@ -485,7 +506,7 @@ def cli(files: list[str],
 
     # ensure that the library directory exists
     lib = papis.config.get_lib()
-    if not os.path.exists(lib.path):
+    if not os.path.isdir(lib.path):
         from papis.tui.utils import confirm as ask_confirm
 
         # NOTE: only `batch` can disable this check, not `confirm`.
