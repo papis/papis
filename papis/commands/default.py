@@ -192,10 +192,10 @@ def run(ctx: click.Context,
             papis.config.merge_configuration_from_path(local_config_path, configuration)
         else:
             logger.error(
-                "Library '%s' directory '%s' does not exist. Please "
+                "Directory '%s' for library '%s' does not exist. Please "
                 "create it or update the 'dir' setting in the "
                 "configuration file.",
-                library, library.path)
+                library.path, library.name)
     elif ctx.invoked_subcommand != "init":
         logger.warning("No configuration file exists at '%s'.", config_file)
         logger.warning("Create a configuration file and define your "
