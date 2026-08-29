@@ -462,7 +462,10 @@ def run(paths: list[str],
     "--fetch-citations/--no-fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier).",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
-def cli(files: list[str],
+@click.pass_context
+def cli(
+        ctx: click.Context,
+        files: list[str],
         set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
@@ -502,7 +505,7 @@ def cli(files: list[str],
         from papis.commands.list import list_plugins
         for o in list_plugins(show_importers=True, verbose=True):
             click.echo(o)
-        return
+        ctx.exit(0)
 
     # ensure that the library directory exists
     lib = papis.config.get_lib()
@@ -524,7 +527,7 @@ def cli(files: list[str],
             logger.error("Cannot add document to library '%s': "
                          "library directory does not exist.",
                          lib.name)
-            return
+            ctx.exit(1)
 
     # gather up importer data
     known_importers = get_available_importers()
@@ -533,7 +536,7 @@ def cli(files: list[str],
         logger.error("Unknown importers chosen with '--from': ['%s'].",
                      "', '".join(extra_importers))
         logger.error("Supported importers are: ['%s'].", "', '".join(known_importers))
-        return
+        ctx.exit(1)
 
     if from_importer:
         importers = get_matching_importers_by_name(from_importer)
@@ -566,33 +569,30 @@ def cli(files: list[str],
     importers = fetch_importers(importers, download_files=download_files)
     imported = collect_from_importers(importers, batch=batch, use_files=download_files)
 
-    from papis.importer import Context
-
-    ctx = Context()
-    ctx.data = imported.data
-    ctx.files = [f for f in files if os.path.exists(f)] + imported.files
+    data = imported.data
+    files = [f for f in files if os.path.exists(f)] + imported.files
 
     # gather up user provided data
     if set_list:
-        if batch or not ctx.data:
-            ctx.data.update(set_list)
+        if batch or not data:
+            data.update(set_list)
         else:
             from papis.utils import update_doc_from_data_interactively
             update_doc_from_data_interactively(
-                ctx.data,
+                data,
                 dict(set_list),
                 "command-line")
 
-    if not ctx:
-        logger.error("No document is created, since no data or files have been "
-                     "found. Try providing a filename, an URL or use "
+    if not data and not files:
+        logger.error("No document is created, since no metadata or files have been "
+                     "obtained. Try providing a filename, an URL or use "
                      "`--from [importer] [uri]` to extract metadata for the "
                      "document.")
-        return
+        ctx.exit(1)
 
     if papis.config.getboolean("time-stamp"):
         from papis.strings import get_timestamp
-        ctx.data["time-added"] = get_timestamp()
+        data["time-added"] = get_timestamp()
 
     from papis.pick import pick_subfolder_from_lib
     base_path = (
@@ -605,7 +605,7 @@ def cli(files: list[str],
 
         try:
             logger.info("Fetching citations for document.")
-            citations = fetch_citations_for_doc(from_data(ctx.data))
+            citations = fetch_citations_for_doc(from_data(data))
         except ValueError as exc:
             logger.warning("Could not fetch any citations.", exc_info=exc)
             citations = []
@@ -613,8 +613,8 @@ def cli(files: list[str],
         citations = []
 
     try:
-        run(ctx.files,
-            data=ctx.data,
+        run(files,
+            data=data,
             folder_name=folder_name,
             file_name=file_name,
             subfolder=subfolder,
@@ -631,3 +631,4 @@ def cli(files: list[str],
     except Exception as exc:
         logger.error("Failed to add new document to library '%s'.",
                      lib.name, exc_info=exc)
+        ctx.exit(1)
