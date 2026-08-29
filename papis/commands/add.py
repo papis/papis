@@ -483,6 +483,29 @@ def cli(files: list[str],
             click.echo(o)
         return
 
+    # ensure that the library directory exists
+    lib = papis.config.get_lib()
+    if not os.path.exists(lib.path):
+        from papis.tui.utils import confirm as ask_confirm
+
+        # NOTE: only `batch` can disable this check, not `confirm`.
+        if batch or ask_confirm(
+                f"Create directory '{lib.path}' for library '{lib.name}'? "
+            ):
+
+            dirumask = papis.config.getint("dir-umask")
+            assert dirumask is not None
+
+            os.makedirs(lib.path, mode=dirumask)
+            logger.info("Created directory '%s' for library '%s' (mode 0o%o).",
+                        lib.path, lib.name, dirumask)
+        else:
+            logger.error("Cannot add document to library '%s': "
+                         "library directory does not exist.",
+                         lib.name)
+            return
+
+    # gather up importer data
     known_importers = get_available_importers()
     extra_importers = {name for name, _ in from_importer}.difference(known_importers)
     if extra_importers:
@@ -528,6 +551,7 @@ def cli(files: list[str],
     ctx.data = imported.data
     ctx.files = [f for f in files if os.path.exists(f)] + imported.files
 
+    # gather up user provided data
     if set_list:
         if batch or not ctx.data:
             ctx.data.update(set_list)
@@ -567,18 +591,22 @@ def cli(files: list[str],
     else:
         citations = []
 
-    run(ctx.files,
-        data=ctx.data,
-        folder_name=folder_name,
-        file_name=file_name,
-        subfolder=subfolder,
-        base_path=base_path,
-        batch=batch,
-        confirm=confirm,
-        open_file=open_file,
-        edit=edit,
-        git=git,
-        link=link,
-        move=move,
-        citations=citations,
-        auto_doctor=auto_doctor)
+    try:
+        run(ctx.files,
+            data=ctx.data,
+            folder_name=folder_name,
+            file_name=file_name,
+            subfolder=subfolder,
+            base_path=base_path,
+            batch=batch,
+            confirm=confirm,
+            open_file=open_file,
+            edit=edit,
+            git=git,
+            link=link,
+            move=move,
+            citations=citations,
+            auto_doctor=auto_doctor)
+    except Exception as exc:
+        logger.error("Failed to add new document to library '%s'.",
+                     lib.name, exc_info=exc)
