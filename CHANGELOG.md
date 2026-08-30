@@ -4,6 +4,8 @@
 
 * Added support for Python 3.15.
 * Switch from `mypy` to [`ty`](https://github.com/astral-sh/ty) for type checking.
+* Added an explicit dependency on [typing_extensions](https://typing-extensions.readthedocs.io)
+  to use the `warnings.deprecated` backport.
 
 # VERSION 0.16.1 (September 13th, 2026)
 
