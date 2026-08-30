@@ -101,7 +101,7 @@ def text_area(text: str,
         Frame(
             TextArea(
                 text=text,
-                lexer=PygmentsLexer(pygment_lexer),  # type: ignore[arg-type]
+                lexer=PygmentsLexer(pygment_lexer),
             ),
             title=title,
         ),
@@ -153,7 +153,7 @@ def prompt(
         ("", ": "),
     ]
 
-    result = prompt_toolkit.prompt(fragments,       # type: ignore[arg-type]
+    result = prompt_toolkit.prompt(fragments,
                                    validator=validator,
                                    multiline=multiline,
                                    bottom_toolbar=bottom_toolbar,

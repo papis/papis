@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
     # NOTE: these were introduced in click 8.4.0. We cannot use them directly
     # in the class definitions because they're evaluated eagerly there.
-    FormatPatternParamTypeBase = click.ParamType[str | FormatPattern]  # type: ignore[type-arg]
-    StringParamTypeBase = click.ParamType[str]  # type: ignore[type-arg]
+    FormatPatternParamTypeBase = click.ParamType[str | FormatPattern]
+    StringParamTypeBase = click.ParamType[str]
 else:
     FormatPatternParamTypeBase = click.ParamType
     StringParamTypeBase = click.ParamType
@@ -339,6 +339,6 @@ def bypass(
     group.add_command(command, command_name)
 
     def _decorator(new_callback: Callable[..., Any]) -> None:
-        command.bypassed = command.callback     # type: ignore[attr-defined]
+        command.bypassed = command.callback
         command.callback = new_callback
     return _decorator

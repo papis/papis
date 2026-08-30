@@ -651,7 +651,7 @@ def dump(document: Document) -> str:
     """
     import yaml
 
-    from papis.yaml import Dumper  # type: ignore[attr-defined]
+    from papis.yaml import Dumper
 
     data = dict(document)
 

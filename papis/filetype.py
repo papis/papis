@@ -6,7 +6,7 @@ import re
 import filetype
 
 
-class DjVu(filetype.Type):      # type: ignore[misc]
+class DjVu(filetype.Type):
     """
     Implements a custom DjVu type matcher for ``filetype``.
     """

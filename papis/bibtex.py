@@ -399,7 +399,7 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
         ]
 
     return [
-        KeyConversionPair("link", [{"key": "url"}]),  # type: ignore[typeddict-item]
+        KeyConversionPair("link", [{"key": "url"}]),
         KeyConversionPair("author", [{
             "key": "author_list",
             "action": bibtexparser_author_list,
@@ -447,7 +447,7 @@ def _get_latex_decoder(*, keep_braced_groups: bool = False) -> LatexNodes2Text:
 
 def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
     import bibtexparser.middlewares as m
-    from bibtexparser import parse_file, parse_string  # type: ignore[attr-defined]
+    from bibtexparser import parse_file, parse_string
 
     class VerbatimLatexDecoding(m.LatexDecodingMiddleware):
         """Decode LaTeX in free-text fields, but leave verbatim fields untouched."""
@@ -512,7 +512,7 @@ def latex_to_text(latex: str) -> str:
         m = LatexDecodingMiddleware(decoder=_get_latex_decoder())
         result, _ = m._transform_python_value_string(latex)
     except ImportError:
-        from bibtexparser.latexenc import latex_to_unicode  # type: ignore[no-redef]
+        from bibtexparser.latexenc import latex_to_unicode
 
         result = latex_to_unicode(latex)
 
@@ -526,7 +526,7 @@ def text_to_latex(text: str) -> str:
         m = LatexEncodingMiddleware()
         result, _ = m._transform_python_value_string(text)
     except ImportError:
-        from bibtexparser.latexenc import string_to_latex  # type: ignore[no-redef]
+        from bibtexparser.latexenc import string_to_latex
 
         result = string_to_latex(text)
 
@@ -541,9 +541,9 @@ def splitname(author: str) -> dict[str, list[str]]:
 
         return asdict(parse_single_name_into_parts(author))
     except ImportError:
-        from bibtexparser.customization import splitname  # type: ignore[no-redef]
+        from bibtexparser.customization import splitname
 
-        return splitname(author)  # type: ignore[no-any-return]
+        return splitname(author)
 
 
 def bibtex_to_dict(bibtex: str | bytes) -> list[DocumentLike]:

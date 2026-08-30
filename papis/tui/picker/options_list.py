@@ -84,7 +84,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         # ##################################################
 
         content = FormattedTextControl(
-            text=self.get_tokens,  # type: ignore[arg-type]
+            text=self.get_tokens,
             focusable=False,
             key_bindings=None,
             get_cursor_position=lambda: self.cursor,
@@ -109,7 +109,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         super().__init__(
             content=self.content_window,
             filter=(
-                custom_filter   # type: ignore[arg-type]
+                custom_filter
                 if custom_filter is not None
                 else has_focus(self.search_buffer)
             )

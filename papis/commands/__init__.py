@@ -336,7 +336,7 @@ def get_command_plugins(namespace: str) -> dict[str, CommandPlugin]:
         scripts[ep.name] = CommandPlugin(
             command_name=ep.name,
             path=None,
-            entrypoint=ep)  # type: ignore[arg-type]
+            entrypoint=ep)
 
     return scripts
 

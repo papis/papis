@@ -62,7 +62,7 @@ class InfoWindow(ConditionalContainer):
         self.buf.text = ""
 
         lexer = find_lexer_class_by_name(lexer_name)
-        self.lexer = PygmentsLexer(lexer)   # type: ignore[arg-type]
+        self.lexer = PygmentsLexer(lexer)
 
         self.window = HSplit([
             HorizontalLine(),

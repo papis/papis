@@ -26,7 +26,7 @@ def cli(ctx: click.Context, yamlfile: str) -> None:
     try:
         from yaml import CSafeLoader as Loader
     except ImportError:
-        from yaml import SafeLoader as Loader  # type: ignore[assignment]
+        from yaml import SafeLoader as Loader
 
     from papis.document import from_data
     with open(yamlfile, encoding="utf-8") as fd:

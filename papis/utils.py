@@ -231,7 +231,7 @@ def general_open(file_name: str,
         raise FileNotFoundError(
             f"Command not found for '{key}': '{opener}'")
 
-    run(cmd, wait=wait)  # type: ignore[call-overload]
+    run(cmd, wait=wait)
 
 
 def open_file(file_path: str, wait: bool = True) -> None:

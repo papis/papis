@@ -172,7 +172,7 @@ def get_importer_by_name(name: str) -> type[Importer]:
     if not issubclass(cls, Importer):
         raise InvalidPluginTypeError(IMPORTER_NAMESPACE_NAME, name)
 
-    return cls  # type: ignore[no-any-return]
+    return cls
 
 
 def get_matching_importers_by_name(

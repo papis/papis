@@ -504,7 +504,7 @@ class PapisRunner(click.testing.CliRunner):
         if hasattr(self, "mix_stderr") and "mix_stderr" not in kwargs:
             self.mix_stderr = False
 
-    def invoke(self,        # type: ignore[override]
+    def invoke(self,
                cli: click.Command,
                args: Sequence[str], **kwargs: Any) -> click.testing.Result:
         """A simple wrapper around the :meth:`click.testing.CliRunner.invoke`

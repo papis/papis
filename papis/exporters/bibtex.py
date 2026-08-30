@@ -11,9 +11,9 @@ logger = papis.logging.get_logger(__name__)
 
 
 def _to_bibtexparser_v1(entry: dict[str, Any], *, indent: int) -> str:
-    from bibtexparser import dumps  # type: ignore[attr-defined]
-    from bibtexparser.bibdatabase import BibDatabase  # type: ignore[attr-defined]
-    from bibtexparser.bwriter import BibTexWriter  # type: ignore[attr-defined]
+    from bibtexparser import dumps
+    from bibtexparser.bibdatabase import BibDatabase
+    from bibtexparser.bwriter import BibTexWriter
 
     db = BibDatabase()
     db.entries = [entry]
@@ -26,8 +26,8 @@ def _to_bibtexparser_v1(entry: dict[str, Any], *, indent: int) -> str:
 
 
 def _to_bibtexparser_v2(entry: dict[str, Any], *, indent: int) -> str:
-    from bibtexparser import BibtexFormat, Library  # type: ignore[attr-defined]
-    from bibtexparser.model import Entry, Field  # type: ignore[attr-defined]
+    from bibtexparser import BibtexFormat, Library
+    from bibtexparser.model import Entry, Field
 
     key = entry.pop("ID")
     entry_type = entry.pop("ENTRYTYPE")
@@ -41,11 +41,11 @@ def _to_bibtexparser_v2(entry: dict[str, Any], *, indent: int) -> str:
     )
 
     library = Library(blocks=[bibentry])
-    bibfmt = BibtexFormat()  # type: ignore[no-untyped-call]
+    bibfmt = BibtexFormat()
     bibfmt.indent = " " * indent
     bibfmt.trailing_comma = True
 
-    from bibtexparser import write_string  # type: ignore[attr-defined]
+    from bibtexparser import write_string
 
     return write_string(library, bibtex_format=bibfmt).strip()
 

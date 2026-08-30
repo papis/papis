@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from sphinx.environment import BuildEnvironment
 
 
-class CustomClickDirective(ClickDirective):     # type: ignore[misc]
+class CustomClickDirective(ClickDirective):
     """A custom
     `sphinx_click.ClickDirective <https://sphinx-click.readthedocs.io/en/latest/>`__
     that removes the automatic title from the generated documentation. Otherwise it
@@ -308,11 +308,11 @@ def process_autodoc_missing_reference(
 
         if new_node is None:
             py_domain = env.get_domain(domain)
-            new_node = py_domain.resolve_xref(  # type: ignore[assignment,unused-ignore]
+            new_node = py_domain.resolve_xref(
                 env, node["refdoc"], app.builder, reftype, objname,
                 node, contnode)
 
-    return new_node  # type: ignore[no-any-return,unused-ignore]
+    return new_node
 
 
 def setup(app: Sphinx) -> dict[str, Any]:

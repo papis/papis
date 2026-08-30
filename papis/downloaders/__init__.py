@@ -431,7 +431,7 @@ def get_downloader_by_name(name: str) -> type[Downloader]:
     if not issubclass(cls, Downloader):
         raise InvalidPluginTypeError(DOWNLOADERS_EXTENSION_NAME, name)
 
-    return cls  # type: ignore[no-any-return]
+    return cls
 
 
 def get_info_from_url(

@@ -32,7 +32,7 @@ AnyFn = Callable[..., Any]
 try:
     # NOTE: the cgi module is being removed in python 3.13, so we add our own
     # little copy of FieldStorage when it's not available
-    from cgi import FieldStorage  # type: ignore[import-not-found,unused-ignore]
+    from cgi import FieldStorage
 except ImportError:
     from dataclasses import dataclass, field
 
@@ -48,7 +48,7 @@ except ImportError:
             return f"MiniFieldStorage({self.name!r}, {self.value!r})"
 
     @dataclass
-    class FieldStorage:  # type: ignore[no-redef]
+    class FieldStorage:
         # NOTE: fields taken from cgi.FieldStorage.__init__
         # https://github.com/python/cpython/blob/3.12/Lib/cgi.py#L330
 
@@ -237,7 +237,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
         if TAGS_LIST.get(libname) is None:
             TAGS_LIST[libname] = collections.defaultdict(int)
             for tag in tags_of_tags:
-                TAGS_LIST[libname][tag] += 1  # type: ignore[index]
+                TAGS_LIST[libname][tag] += 1
 
         page = html(libname=libname,
                     pretitle="TAGS",
@@ -426,7 +426,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def _get_form(self, method: str = "POST") -> FieldStorage:
         # FIXME: rfile is a BufferedIOBase and fp is a IO[Any]. This seems to be
         # a bug in the type annotations for one of these classes
-        return FieldStorage(fp=self.rfile,  # type: ignore[arg-type]
+        return FieldStorage(fp=self.rfile,
                             headers=self.headers,
                             environ={"REQUEST_METHOD": method})
 
