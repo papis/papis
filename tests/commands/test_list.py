@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-import papis.database
+import papis.config
 
 if TYPE_CHECKING:
     from papis.testing import TemporaryLibrary
@@ -11,10 +11,11 @@ if TYPE_CHECKING:
 
 def test_list_run(tmp_library: TemporaryLibrary) -> None:
     from papis.commands.list import list_documents, list_plugins
+    from papis.database import get_database
 
     assert papis.config.get_lib_name() == tmp_library.libname
 
-    db = papis.database.get()
+    db = get_database()
     docs = db.get_all_documents()
 
     objs = list_documents(docs, show_info=True)

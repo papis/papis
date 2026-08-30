@@ -14,7 +14,7 @@ class ZenodoContext(Context):
 class ZenodoImporter(Importer):
     """Importer downloading data from a Zenodo ID"""
 
-    ctx: ZenodoContext
+    ctx: ZenodoContext  # ty: ignore[incompatible-mutable-override]
 
     def __init__(self, uri: str = "") -> None:
         super().__init__(name="zenodo", uri=uri, ctx=Context())

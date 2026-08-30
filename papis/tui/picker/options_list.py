@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.data_structures import Point
-from prompt_toolkit.filters import Filter, has_focus
+from prompt_toolkit.filters import FilterOrBool, has_focus
 from prompt_toolkit.formatted_text import HTML, AnyFormattedText, FormattedText
 from prompt_toolkit.layout.containers import (
     ConditionalContainer,
@@ -48,7 +48,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
             default_index: int = 0,
             header_filter: Callable[[Option], str] = str,
             match_filter: Callable[[Option], str] = str,
-            custom_filter: Filter | Callable[[str], bool] | None = None,
+            custom_filter: FilterOrBool | None = None,
             search_buffer: Buffer | None = None,
             cpu_count: int | None = None) -> None:
         if search_buffer is None:
@@ -84,7 +84,7 @@ class OptionsList(ConditionalContainer, Generic[Option]):
         # ##################################################
 
         content = FormattedTextControl(
-            text=self.get_tokens,
+            text=self.get_tokens,  # ty: ignore[invalid-argument-type]
             focusable=False,
             key_bindings=None,
             get_cursor_position=lambda: self.cursor,

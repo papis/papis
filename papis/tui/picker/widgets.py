@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition, has_focus
@@ -22,6 +22,7 @@ from .options_list import Option, OptionsList
 
 if TYPE_CHECKING:
     from prompt_toolkit.formatted_text import AnyFormattedText
+    from pygments.lexer import Lexer
 
 __all__ = [
     "Command",
@@ -61,8 +62,14 @@ class InfoWindow(ConditionalContainer):
         self.buf = Buffer()
         self.buf.text = ""
 
-        lexer = find_lexer_class_by_name(lexer_name)
-        self.lexer = PygmentsLexer(lexer)
+        from pygments.util import ClassNotFound
+        try:
+            lexer = cast("type[Lexer]",
+                         cast("Any", find_lexer_class_by_name(lexer_name)))
+        except ClassNotFound:
+            lexer = None
+
+        self.lexer = PygmentsLexer(lexer) if lexer is not None else None
 
         self.window = HSplit([
             HorizontalLine(),

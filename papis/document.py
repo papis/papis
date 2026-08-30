@@ -115,7 +115,7 @@ def keyconversion_to_data(
             papis_key = str(rule.get("key") or from_key)
             papis_value = data[from_key]
 
-            if (action := rule.get("action", default_action)) is not None:
+            if (action := rule.get("action") or default_action) is not None:
                 try:
                     new_value = action(papis_value)
                 except Exception as exc:

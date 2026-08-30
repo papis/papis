@@ -34,7 +34,7 @@ def test_custom_context_importer(tmp_config: TemporaryConfiguration) -> None:
             self.extra = ""
 
     class CustomContextImporter(Importer):
-        ctx: CustomContext
+        ctx: CustomContext  # ty: ignore[incompatible-mutable-override]
 
         def __init__(self, uri: str = "", **kwargs: Any) -> None:
             super().__init__(uri=uri, name="SimpleImporter", ctx=CustomContext())

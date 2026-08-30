@@ -172,7 +172,7 @@ class CommandPluginLoaderGroup(click.Group):
     def get_command(
             self,
             ctx: click.Context,
-            name: str) -> click.Command | None:
+            cmd_name: str) -> click.Command | None:
         """Get the command to be run.
 
         >>> group = CommandPluginLoaderGroup()
@@ -184,20 +184,20 @@ class CommandPluginLoaderGroup(click.Group):
         """
 
         # NOTE: allow using the standard `@group.command(name)` functionality
-        cmd = super().get_command(ctx, name)
+        cmd = super().get_command(ctx, cmd_name)
         if cmd is not None:
             return cmd
 
         try:
-            plugin = self.command_plugins[name]
+            plugin = self.command_plugins[cmd_name]
         except KeyError:
             import difflib
             matches = [
                 str(m) for m in difflib.get_close_matches(
-                    name, self.command_plugin_names, n=2)
+                    cmd_name, self.command_plugin_names, n=2)
             ]
 
-            click.echo(f"Command '{name}' is unknown!")
+            click.echo(f"Command '{cmd_name}' is unknown!")
             if len(matches) == 1:
                 # return the match if there was only one match
                 click.echo(f"I suppose you meant: '{matches[0]}'")

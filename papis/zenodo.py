@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from functools import cache
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import papis.logging
+
+if TYPE_CHECKING:
+    from papis.document import KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
 
@@ -60,7 +63,7 @@ def get_text_from_html(html: str) -> str:
 
 
 @cache
-def _get_zenodo_key_conversion() -> list[papis.document.KeyConversionPair]:
+def _get_zenodo_key_conversion() -> list[KeyConversionPair]:
     from datetime import datetime
 
     from papis.document import KeyConversionPair

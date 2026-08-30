@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import click
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
+
+    from pygments.lexer import Lexer
 
     from papis.api import T
 
@@ -88,8 +90,12 @@ def text_area(text: str,
         text should be highlighted.
     """
     from pygments.lexers import find_lexer_class_by_name
+    from pygments.util import ClassNotFound
 
-    pygment_lexer = find_lexer_class_by_name(lexer_name)
+    try:
+        lexer = cast("type[Lexer]", cast("Any", find_lexer_class_by_name(lexer_name)))
+    except ClassNotFound:
+        lexer = None
 
     from prompt_toolkit.lexers import PygmentsLexer
     from prompt_toolkit.shortcuts import print_container
@@ -101,7 +107,7 @@ def text_area(text: str,
         Frame(
             TextArea(
                 text=text,
-                lexer=PygmentsLexer(pygment_lexer),
+                lexer=PygmentsLexer(lexer) if lexer is not None else None,
             ),
             title=title,
         ),
@@ -136,10 +142,10 @@ def prompt(
     :param default: Default value to give if the user does not input anything
     :returns: User input or default
     """
-    import prompt_toolkit
-    import prompt_toolkit.validation
     if validator_function is not None:
-        validator = prompt_toolkit.validation.Validator.from_callable(
+        from prompt_toolkit.validation import Validator
+
+        validator = Validator.from_callable(
             validator_function,
             error_message=dirty_message,
             move_cursor_to_end=True
@@ -147,13 +153,17 @@ def prompt(
     else:
         validator = None
 
-    fragments = [
+    from prompt_toolkit.formatted_text import FormattedText
+
+    fragments = FormattedText([
         ("", prompt_string),
         ("fg:ansired", f" ({default})"),
         ("", ": "),
-    ]
+    ])
 
-    result = prompt_toolkit.prompt(fragments,
+    from prompt_toolkit import prompt as prompt_toolkit_prompt
+
+    result = prompt_toolkit_prompt(fragments,
                                    validator=validator,
                                    multiline=multiline,
                                    bottom_toolbar=bottom_toolbar,

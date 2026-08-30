@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import papis.logging
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Collection
 
     from papis.document import DocumentLike
 
@@ -176,7 +176,7 @@ def get_importer_by_name(name: str) -> type[Importer]:
 
 
 def get_matching_importers_by_name(
-        name_and_uris: Iterable[tuple[str, str]], *,
+        name_and_uris: Collection[tuple[str, str]], *,
         include_downloaders: bool = False,
     ) -> list[Importer]:
     """Get importers that match the given names.
@@ -349,7 +349,7 @@ def get_matching_importers_by_doc(
     return result
 
 
-def fetch_importers(importers: Iterable[Importer], *,
+def fetch_importers(importers: Collection[Importer], *,
                     download_files: bool = True) -> list[Importer]:
     """Fetch data from the given importers.
 
@@ -393,7 +393,7 @@ def fetch_importers(importers: Iterable[Importer], *,
 
 
 def collect_from_importers(
-        importers: Iterable[Importer],
+        importers: Collection[Importer],
         *,
         batch: bool = True,
         use_files: bool = True,

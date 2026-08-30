@@ -303,7 +303,7 @@ bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlr
 
 def _bibtexparser_version() -> str:
     try:
-        from bibtexparser.latexenc import latex_to_unicode  # ruff: ignore[unused-import]
+        from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[import-not-found] # ruff: ignore[unused-import]
         return "v1"
     except ImportError:
         return "v2"
@@ -338,7 +338,7 @@ def _normalize_bibtex_text(value: str) -> str:
 
 @cache
 def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
-    from bibtexparser.latexenc import latex_to_unicode
+    from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[import-not-found]
 
     from papis.document import KeyConversionPair, split_authors_name
 
@@ -358,7 +358,7 @@ def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
 
 
 def _bibtex_to_dict_v1(bibtex: str) -> list[DocumentLike]:
-    from bibtexparser.bparser import BibTexParser
+    from bibtexparser.bparser import BibTexParser  # ty: ignore[import-not-found]
 
     with papis.logging.quiet("bibtexparser.bparser"):
         parser = BibTexParser(
@@ -399,7 +399,7 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
         ]
 
     return [
-        KeyConversionPair("link", [{"key": "url"}]),
+        KeyConversionPair("link", [{"key": "url"}]),  # ty: ignore[invalid-argument-type,missing-typed-dict-key]
         KeyConversionPair("author", [{
             "key": "author_list",
             "action": bibtexparser_author_list,
@@ -512,7 +512,7 @@ def latex_to_text(latex: str) -> str:
         m = LatexDecodingMiddleware(decoder=_get_latex_decoder())
         result, _ = m._transform_python_value_string(latex)
     except ImportError:
-        from bibtexparser.latexenc import latex_to_unicode
+        from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[import-not-found]
 
         result = latex_to_unicode(latex)
 
@@ -526,7 +526,7 @@ def text_to_latex(text: str) -> str:
         m = LatexEncodingMiddleware()
         result, _ = m._transform_python_value_string(text)
     except ImportError:
-        from bibtexparser.latexenc import string_to_latex
+        from bibtexparser.latexenc import string_to_latex  # ty: ignore[import-not-found]
 
         result = string_to_latex(text)
 
@@ -541,7 +541,7 @@ def splitname(author: str) -> dict[str, list[str]]:
 
         return asdict(parse_single_name_into_parts(author))
     except ImportError:
-        from bibtexparser.customization import splitname
+        from bibtexparser.customization import splitname  # ty: ignore[import-not-found]
 
         return splitname(author)
 

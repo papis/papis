@@ -23,7 +23,7 @@ import papis.logging
 logger = papis.logging.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Iterator, Sequence
+    from collections.abc import Callable, Collection, Iterable, Iterator, Sequence
 
     import requests
 
@@ -456,7 +456,7 @@ def get_matching_importer_or_downloader(
 
 
 def get_matching_importer_by_name(
-        name_and_uris: Iterable[tuple[str, str]],
+        name_and_uris: Collection[tuple[str, str]],
         download_files: bool | None = None,
         only_data: bool | None = None,
         ) -> list[Importer]:
@@ -484,7 +484,7 @@ def get_matching_importer_by_name(
 
 
 def collect_importer_data(
-        importers: Iterable[Importer],
+        importers: Collection[Importer],
         batch: bool = True,
         use_files: bool | None = None,
         only_data: bool | None = None,

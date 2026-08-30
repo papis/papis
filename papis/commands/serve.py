@@ -142,8 +142,8 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     The main request handler of the Papis web application.
     """
 
-    def log_message(self, fmt: str, *args: Any) -> None:  # ruff:ignore[no-self-use]
-        logger.info(fmt, *args)
+    def log_message(self, format: str, *args: Any) -> None:  # ruff:ignore[no-self-use]
+        logger.info(format, *args)
 
     def _ok(self) -> None:
         self.send_response(200)
@@ -235,9 +235,10 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
                         for d in docs
                         for tag in ensure_tags_list(d["tags"])]
         if TAGS_LIST.get(libname) is None:
-            TAGS_LIST[libname] = collections.defaultdict(int)
+            lib_tags = collections.defaultdict(int)
             for tag in tags_of_tags:
-                TAGS_LIST[libname][tag] += 1
+                lib_tags[tag] += 1
+            TAGS_LIST[libname] = lib_tags
 
         page = html(libname=libname,
                     pretitle="TAGS",
@@ -426,7 +427,7 @@ class PapisRequestHandler(http.server.BaseHTTPRequestHandler):
     def _get_form(self, method: str = "POST") -> FieldStorage:
         # FIXME: rfile is a BufferedIOBase and fp is a IO[Any]. This seems to be
         # a bug in the type annotations for one of these classes
-        return FieldStorage(fp=self.rfile,
+        return FieldStorage(fp=self.rfile,  # ty: ignore[invalid-argument-type]
                             headers=self.headers,
                             environ={"REQUEST_METHOD": method})
 

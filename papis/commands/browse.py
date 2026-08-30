@@ -68,6 +68,7 @@ import click
 
 import papis.cli
 import papis.config
+import papis.format
 import papis.logging
 
 if TYPE_CHECKING:

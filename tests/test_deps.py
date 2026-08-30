@@ -15,7 +15,7 @@ def test_colorama() -> None:
     assert colorama.Style.RESET_ALL
     assert colorama.Fore.RED
     assert colorama.Fore.YELLOW
-    assert colorama.init
+    assert hasattr(colorama, "init")
 
 
 def test_prompt_toolkit() -> None:
