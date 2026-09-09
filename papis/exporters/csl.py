@@ -163,9 +163,9 @@ def normalize_style_path(name: str) -> str:
     return ""
 
 
-def export_document(doc: Document,
-                    style_name: str | None = None,
-                    formatter_name: str | None = None) -> str:
+def export_documents(documents: list[Document],
+                     style_name: str | None = None,
+                     formatter_name: str | None = None) -> list[str]:
     if style_name is None:
         style_name = papis.config.getstring("csl-style")
 
@@ -180,12 +180,13 @@ def export_document(doc: Document,
         logger.error("Cannot find style '%s'. You can download or create this "
                      "style yourself and place it in '%s'.",
                      os.path.basename(style_name), get_styles_folder())
-        return ""
+        return [""] * len(documents)
 
     from citeproc.source import BibliographySource
 
-    source = BibliographySource(doc)
-    source.add(to_csl(doc))
+    source = BibliographySource()
+    for doc in documents:
+        source.add(to_csl(doc))
 
     from citeproc import (
         Citation,
@@ -200,30 +201,40 @@ def export_document(doc: Document,
         logger.error("Formatter '%s' is not supported for CSL export. "
                      "Check your 'csl-formatter' setting in the configuration file.",
                      formatter_name)
-        return ""
+        return [""] * len(documents)
 
     style = CitationStylesStyle(style_name, validate=False)
     bib = CitationStylesBibliography(style, source, fmt)
-    citation = Citation([CitationItem(doc["ref"])])
-    bib.register(citation)
 
-    # TODO: the citeproc example says we should strive to cite all the documents
-    # at once, since some of the formatting may depend on the previous citations
     def warn(item: CitationItem) -> None:
         logger.warning("Reference with key '%s' not found in the bibliography",
                        item.key)
 
-    bib.cite(citation, callback=warn)
+    citations = [Citation([CitationItem(doc["ref"])]) for doc in documents]
+    for citation in citations:
+        bib.register(citation)
+
+    for citation in citations:
+        bib.cite(citation, callback=warn)
 
     try:
-        for item in bib.bibliography():
-            return str(item).replace("..", ".")
+        items = bib.bibliography()
     except AttributeError as exc:
         # NOTE: citeproc-py doesn't support all known styles, so the export can fail
-        logger.error("Failed to export citation '%s' to CSL style '%s'.",
-                     doc["ref"], os.path.basename(style_name), exc_info=exc)
+        logger.error("Failed to export citations to CSL style '%s'.",
+                     os.path.basename(style_name), exc_info=exc)
+        return [""] * len(documents)
 
-    return ""
+    return [str(item).replace("..", ".") for item in items]
+
+
+def export_document(doc: Document,
+                    style_name: str | None = None,
+                    formatter_name: str | None = None) -> str:
+    results = export_documents([doc],
+                               style_name=style_name,
+                               formatter_name=formatter_name)
+    return results[0] if results else ""
 
 
 def exporter(documents: list[Document]) -> str:
@@ -239,6 +250,7 @@ def exporter(documents: list[Document]) -> str:
     style_name = papis.config.getstring("csl-style")
 
     return "\n\n".join(
-        export_document(doc, style_name=style_name, formatter_name=formatter_name)
-        for doc in documents
+        export_documents(documents,
+                         style_name=style_name,
+                         formatter_name=formatter_name)
     ).strip()
