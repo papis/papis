@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import papis.logging
 
@@ -8,6 +8,46 @@ if TYPE_CHECKING:
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
+
+
+def _to_bibtexparser_v1(entry: dict[str, Any], *, indent: int) -> str:
+    from bibtexparser import dumps  # type: ignore[attr-defined]
+    from bibtexparser.bibdatabase import BibDatabase  # type: ignore[attr-defined]
+    from bibtexparser.bwriter import BibTexWriter  # type: ignore[attr-defined]
+
+    db = BibDatabase()
+    db.entries = [entry]
+
+    writer = BibTexWriter()
+    writer.add_trailing_comma = True
+    writer.indent = " " * indent
+
+    return str(dumps(db, writer=writer).strip())
+
+
+def _to_bibtexparser_v2(entry: dict[str, Any], *, indent: int) -> str:
+    from bibtexparser import BibtexFormat, Library  # type: ignore[attr-defined]
+    from bibtexparser.model import Entry, Field  # type: ignore[attr-defined]
+
+    key = entry.pop("ID")
+    entry_type = entry.pop("ENTRYTYPE")
+    bibentry = Entry(
+        entry_type=entry_type,
+        key=key,
+        fields=[
+            Field(key=key, value=value, enclosing="{")
+            for key, value in entry.items()
+        ]
+    )
+
+    library = Library(blocks=[bibentry])
+    bibfmt = BibtexFormat()  # type: ignore[no-untyped-call]
+    bibfmt.indent = " " * indent
+    bibfmt.trailing_comma = True
+
+    from bibtexparser import write_string  # type: ignore[attr-defined]
+
+    return write_string(library, bibtex_format=bibfmt).strip()
 
 
 def to_bibtex(document: Document, *,
@@ -84,8 +124,6 @@ def to_bibtex(document: Document, *,
 
     logger.debug("Using ref '%s'.", ref)
 
-    from bibtexparser.latexenc import string_to_latex
-
     # process keys
     entry = {
         "ID": ref,
@@ -98,6 +136,7 @@ def to_bibtex(document: Document, *,
         bibtex_key_converter,
         bibtex_keys,
         bibtex_verbatim_fields,
+        text_to_latex,
     )
 
     for key in sorted(document):
@@ -126,7 +165,8 @@ def to_bibtex(document: Document, *,
             bib_value = str(document[override_key])
 
         if not bibtex_unicode and bib_key not in bibtex_verbatim_fields:
-            bib_value = string_to_latex(bib_value)
+            bib_value = text_to_latex(bib_value)
+            bib_value = bib_value.replace(r"\{", "{").replace(r"\}", "}")
 
         entry[bib_key] = bib_value
 
@@ -136,19 +176,10 @@ def to_bibtex(document: Document, *,
         if files:
             entry["file"] = ";".join(files)
 
-    # dump the BibTeX data using bibtexparser
-    from bibtexparser import dumps
-    from bibtexparser.bibdatabase import BibDatabase
-    from bibtexparser.bwriter import BibTexWriter
-
-    db = BibDatabase()
-    db.entries = [entry]
-
-    writer = BibTexWriter()
-    writer.add_trailing_comma = True
-    writer.indent = " " * indent
-
-    return str(dumps(db, writer=writer).strip())
+    try:
+        return _to_bibtexparser_v2(entry, indent=indent)
+    except ImportError:
+        return _to_bibtexparser_v1(entry, indent=indent)
 
 
 def exporter(documents: list[Document]) -> str:

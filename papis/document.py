@@ -55,9 +55,12 @@ class KeyConversionPair(NamedTuple):
     rules: list[KeyConversion]
 
 
-def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
-                          data: dict[str, Any],
-                          keep_unknown_keys: bool = False) -> dict[str, Any]:
+def keyconversion_to_data(
+        conversions: Sequence[KeyConversionPair],
+        data: dict[str, Any],
+        keep_unknown_keys: bool = False,
+        default_action: Callable[[Any], Any] | None = None,
+    ) -> dict[str, Any]:
     r"""Function to convert between dictionaries.
 
     This can be used to define a fixed set of translation rules between, e.g.,
@@ -104,7 +107,6 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
     new_data = {}
 
     for key_pair in conversions:
-
         from_key = key_pair.from_key
         if from_key not in data:
             continue
@@ -113,8 +115,7 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
             papis_key = str(rule.get("key") or from_key)
             papis_value = data[from_key]
 
-            action = rule.get("action")
-            if action:
+            if (action := rule.get("action", default_action)) is not None:
                 try:
                     new_value = action(papis_value)
                 except Exception as exc:
@@ -137,10 +138,28 @@ def keyconversion_to_data(conversions: Sequence[KeyConversionPair],
         for key, value in data.items():
             if key in from_keys:
                 continue
-            new_data[key] = value
 
-    if "author_list" in new_data:
-        new_data["author"] = author_list_to_author(new_data)
+            new_value = value
+            if default_action is not None:
+                try:
+                    new_value = default_action(new_value)
+                except Exception as exc:
+                    logger.debug(
+                        "Error converting value for key '%s': %r.",
+                        key, papis_value, exc_info=exc
+                    )
+                    new_value = None
+
+            if isinstance(new_value, str):
+                new_value = new_value.strip()
+
+            new_data[key] = new_value
+
+    if (author_list := new_data.get("author_list")) is not None:
+        new_data["author"] = author_list_to_author({"author_list": author_list})
+
+    if (editor_list := new_data.get("editor_list")) is not None:
+        new_data["editor"] = author_list_to_author({"author_list": editor_list})
 
     return new_data
 
@@ -252,23 +271,19 @@ def guess_authors_separator(authors: str) -> str:
 def split_author_name(author: str) -> dict[str, Any]:
     """Split an author name into a given and family name.
 
-    This uses :func:`bibtexparser.customization.splitname` to correctly
-    split and determine the first and last names of an author in the list.
     Note that this is just a heuristic and can give incorrect results for
     certain author names.
 
     :param author: a string containing an author name.
     :returns: a :class:`dict` with the family and given name of the author.
     """
-    from bibtexparser.customization import splitname
+    from papis.bibtex import latex_to_text, splitname
 
     parts = splitname(author)
     given = " ".join(parts["first"])
     family = " ".join(parts["von"] + parts["last"] + parts["jr"])
 
-    from bibtexparser.latexenc import latex_to_unicode
-
-    return {"family": latex_to_unicode(family), "given": latex_to_unicode(given)}
+    return {"family": latex_to_text(family), "given": latex_to_text(given)}
 
 
 def split_authors_name(authors: str | Sequence[str],

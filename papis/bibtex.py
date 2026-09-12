@@ -16,6 +16,8 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
+    from bibtexparser.model import Field
+
     from papis.document import Document, DocumentLike, KeyConversionPair
     from papis.strings import AnyString
 
@@ -296,8 +298,23 @@ ref_allowed_characters = r"([^a-zA-Z0-9._:]+|(?<!\\)[._:])"
 bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlraw"})
 
 
+def _bibtexparser_version() -> str:
+    try:
+        from bibtexparser.latexenc import latex_to_unicode  # ruff: ignore[unused-import]
+        return "v1"
+    except ImportError:
+        return "v2"
+
+
+def _strip_braces(text: str) -> str:
+    if text.startswith("{") and text.endswith("}"):
+        text = text[1:-1]
+
+    return text
+
+
 @cache
-def _get_bibtexparser_key_conversion() -> list[KeyConversionPair]:
+def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
     from bibtexparser.latexenc import latex_to_unicode
 
     from papis.document import KeyConversionPair, split_authors_name
@@ -308,7 +325,7 @@ def _get_bibtexparser_key_conversion() -> list[KeyConversionPair]:
         KeyConversionPair("link", [{"key": "url", "action": None}]),
         KeyConversionPair("title", [{
             "key": "title",
-            "action": lambda x: latex_to_unicode(x.replace("\n", " "))
+            "action": lambda x: latex_to_unicode(x.replace("\n", " ")),
             }]),
         KeyConversionPair("author", [{
             "key": "author_list",
@@ -317,44 +334,7 @@ def _get_bibtexparser_key_conversion() -> list[KeyConversionPair]:
     ]
 
 
-def bibtexparser_entry_to_papis(entry: dict[str, Any]) -> dict[str, Any]:
-    """Convert the keys of a BibTeX entry parsed by :mod:`bibtexparser` to a
-    papis-compatible format.
-
-    :param entry: a dictionary with keys parsed by :mod:`bibtexparser`.
-    :returns: a dictionary with keys converted to a papis-compatible format.
-    """
-
-    from papis.document import keyconversion_to_data
-
-    key_conversion = _get_bibtexparser_key_conversion()
-    return keyconversion_to_data(key_conversion, entry, keep_unknown_keys=True)
-
-
-def bibtex_to_dict(bibtex: str) -> list[DocumentLike]:
-    """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
-
-    This will convert an entry like:
-
-    .. code:: tex
-
-        @article{ref,
-            author = { ... },
-            title = { ... },
-            ...,
-        }
-
-    to a dictionary such as:
-
-    .. code:: python
-
-        { "type": "article", "author": "...", "title": "...", ...}
-
-    :param bibtex: a path to a BibTeX file or a string containing BibTeX
-        formatted data. If it is a file, its contents are passed to
-        :class:`~bibtexparser.bparser.BibTexParser`.
-    :returns: a list of entries from the BibTeX data in a compatible format.
-    """
+def _bibtex_to_dict_v1(bibtex: str) -> list[DocumentLike]:
     from bibtexparser.bparser import BibTexParser
 
     with papis.logging.quiet("bibtexparser.bparser"):
@@ -373,7 +353,161 @@ def bibtex_to_dict(bibtex: str) -> list[DocumentLike]:
 
         entries = parser.parse(text, partial=True).entries
 
-    return [bibtexparser_entry_to_papis(entry) for entry in entries]
+    from papis.document import keyconversion_to_data
+
+    key_conversion = _get_bibtexparser_key_conversion_v1()
+    return [keyconversion_to_data(key_conversion, entry, keep_unknown_keys=True)
+            for entry in entries]
+
+
+@cache
+def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
+    from papis.document import KeyConversionPair
+
+    def bibtexparser_author_list(authors: Field) -> list[dict[str, str]]:
+        assert authors.key in {"author", "editor"}
+        return [
+            {
+                "given": _strip_braces(" ".join([*author.first])),
+                "family": _strip_braces(
+                    " ".join([*author.von, *author.last, *author.jr])),
+            }
+            for author in authors.value
+        ]
+
+    return [
+        KeyConversionPair("link", [{"key": "url"}]),  # type: ignore[typeddict-item]
+        KeyConversionPair("URL", [{"key": "url"}]),  # type: ignore[typeddict-item]
+        KeyConversionPair("author", [{
+            "key": "author_list",
+            "action": bibtexparser_author_list,
+        }]),
+        KeyConversionPair("editor", [{
+            "key": "editor_list",
+            "action": bibtexparser_author_list,
+        }]),
+    ]
+
+
+def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
+    import bibtexparser.middlewares as m
+    from bibtexparser import parse_file, parse_string  # type: ignore[attr-defined]
+
+    middleware = [
+        # NOTE: LatexDecodingMiddleware normally strips braces, which confuses
+        # SplitNameParts for single-name institutions and things that were
+        # enclosed in braces. This keeps that and adds some more stripping later
+        m.LatexDecodingMiddleware(keep_braced_groups=True),
+        m.MonthIntMiddleware(),
+        m.SeparateCoAuthors(),
+        m.SplitNameParts(),
+    ]
+
+    if os.path.exists(bibtex):
+        library = parse_file(bibtex, append_middleware=middleware)
+    else:
+        library = parse_string(bibtex, append_middleware=middleware)
+
+    from papis.document import keyconversion_to_data
+
+    def bibtexparser_field_value(field: Field) -> Any:
+        if isinstance(field.value, str):
+            # NOTE: some titles or abstracts have some new lines in the middle
+            # of them. This removes them early because it's easy.
+            value = field.value.replace("\u2013", "--")
+            return _strip_braces(" ".join(value.split()))
+        elif isinstance(field.value, (int, float)):
+            return field.value
+        else:
+            raise TypeError(
+                f"field '{field.key}' has unknown value type: {field.value!r}"
+            )
+
+    key_conversion = _get_bibtexparser_key_conversion_v2()
+
+    result = []
+    for entry in library.entries:
+        data = keyconversion_to_data(key_conversion, entry.fields_dict,
+                                     keep_unknown_keys=True,
+                                     default_action=bibtexparser_field_value)
+        data["ref"] = entry.key
+        data["type"] = entry.entry_type
+        result.append(data)
+
+    return result
+
+
+def latex_to_text(latex: str) -> str:
+    try:
+        from bibtexparser.middlewares import LatexDecodingMiddleware
+
+        m = LatexDecodingMiddleware()
+        result, _ = m._transform_python_value_string(latex)
+    except ImportError:
+        from bibtexparser.latexenc import latex_to_unicode  # type: ignore[no-redef]
+
+        result = latex_to_unicode(latex)
+
+    return result
+
+
+def text_to_latex(text: str) -> str:
+    try:
+        from bibtexparser.middlewares import LatexEncodingMiddleware
+
+        m = LatexEncodingMiddleware()
+        result, _ = m._transform_python_value_string(text)
+    except ImportError:
+        from bibtexparser.latexenc import string_to_latex  # type: ignore[no-redef]
+
+        result = string_to_latex(text)
+
+    return result
+
+
+def splitname(author: str) -> dict[str, list[str]]:
+    from dataclasses import asdict
+
+    try:
+        from bibtexparser.middlewares.names import parse_single_name_into_parts
+
+        return asdict(parse_single_name_into_parts(author))
+    except ImportError:
+        from bibtexparser.customization import splitname  # type: ignore[no-redef]
+
+        return splitname(author)  # type: ignore[no-any-return]
+
+
+def bibtex_to_dict(bibtex: str | bytes) -> list[DocumentLike]:
+    """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
+
+    This will convert an entry like:
+
+    .. code:: tex
+
+        @article{ref,
+            author = { ... },
+            title = { ... },
+            ...,
+        }
+
+    to a dictionary such as:
+
+    .. code:: python
+
+        { "type": "article", "author": "...", "title": "...", ...}
+
+    :param bibtex: a path to a BibTeX file or a string containing BibTeX data.
+    :returns: a list of entries from the BibTeX data in a compatible format.
+    """
+    if isinstance(bibtex, bytes):
+        bibtex = bibtex.decode()
+
+    # TODO: remove when we don't want to support bibtexparser<2.0.0 anymore
+    try:
+        return _bibtex_to_dict_v2(bibtex)
+    except ImportError:
+        return _bibtex_to_dict_v1(bibtex)
 
 
 def ref_cleanup(ref: str,
