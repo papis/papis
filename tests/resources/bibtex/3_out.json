@@ -14,6 +14,17 @@
       "given": "Henry"
     }
   ],
+  "editor": "Doe, John and Smith, Jane",
+  "editor_list": [
+    {
+      "family": "Doe",
+      "given": "John"
+    },
+    {
+      "family": "Smith",
+      "given": "Jane"
+    }
+  ],
   "ref": "bibtextest3",
   "type": "article"
 }

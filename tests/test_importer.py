@@ -128,7 +128,8 @@ def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> N
     assert isinstance(importers[1], USENIXDownloader)
 
 
-def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
+def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration,
+                                   monkeypatch: pytest.MonkeyPatch) -> None:
     from papis.importer import get_matching_importers_by_uri
 
     importers = get_matching_importers_by_uri("this_is_not_an_uri")
@@ -142,6 +143,11 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
 
     from papis.downloaders.fallback import FallbackDownloader
     from papis.downloaders.usenix import USENIXDownloader
+    from papis.importer.bibtex import BibTeXImporter
+
+    # NOTE: the URL has some embedded BibTeX that we do not care to catch here
+    monkeypatch.setattr(BibTeXImporter, "match",
+                        lambda *args, **kwargs: None)
 
     importers = get_matching_importers_by_uri(
         "https://www.usenix.org/conference/nsdi22/presentation/goyal",

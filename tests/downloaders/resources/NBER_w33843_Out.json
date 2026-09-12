@@ -21,12 +21,12 @@
   ],
   "doi": "10.3386/w33843",
   "institution": "National Bureau of Economic Research",
-  "month": "May",
+  "month": 5,
   "number": "33843",
   "ref": "NBERw33843",
   "series": "Working Paper Series",
   "title": "Meaning At Work",
-  "type": "Working Paper",
+  "type": "techreport",
   "url": "http://www.nber.org/papers/w33843",
   "year": "2025"
 }

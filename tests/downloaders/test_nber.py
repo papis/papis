@@ -70,4 +70,9 @@ def test_nber_fetch(tmp_config: TemporaryConfiguration,
     extracted_data = down.ctx.data
     expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
+    from papis.bibtex import _bibtexparser_version  # ruff: ignore[import-private-name]
+    if _bibtexparser_version() == "v1":
+        expected_data["month"] = {4: "April", 5: "May"}[expected_data["month"]]
+        expected_data["type"] = "Working Paper"
+
     assert extracted_data == expected_data

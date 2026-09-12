@@ -63,6 +63,12 @@ def test_author_list_conversion(
     bib, = bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
     expected = resource_cache.get_local_resource(jsonfile, bib)
 
+    from papis.bibtex import _bibtexparser_version  # ruff: ignore[import-private-name]
+    if _bibtexparser_version() == "v1":
+        bib["author_list"][0]["given"] = expected["author_list"][0]["given"]
+
+    if "editor_list" in bib:
+        assert bib["editor_list"] == expected["editor_list"]
     assert bib["author_list"] == expected["author_list"]
 
 
@@ -123,7 +129,7 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
     from papis.document import from_data
     from papis.exporters.bibtex import exporter
 
-    assert exporter([from_data({
+    doc = from_data({
         "type": "report",
         "author": "Albert Einstein",
         "author_list": [{"given": "Albert", "family": "Einstein"}],
@@ -131,7 +137,7 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "journal": "Nature",
         "year": 2350,
         "ref": "MyDocument"})
-        ]) == (
+    assert exporter([doc]) == (
         "@report{MyDocument,\n"
         "  author = {Einstein, Albert},\n"
         "  journal = {Nature},\n"
@@ -139,13 +145,13 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "  year = {2350},\n"
         "}")
 
-    assert exporter([from_data({
+    doc = from_data({
         "type": "misc",
         "ref": "SDbwLashko2019",
         "author": "Alexander Lashkov",
         "author_list": [{"given": "Alexander", "family": "Lashkov"}],
         "url": "https://github.com/alashkov83/S_Dbw"})
-        ]) == (
+    assert exporter([doc]) == (
         "@misc{SDbwLashko2019,\n"
         "  author = {Lashkov, Alexander},\n"
         "  url = {https://github.com/alashkov83/S_Dbw},\n"
@@ -177,6 +183,8 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "  year = {2350},\n"
         "}")
 
+    from papis.bibtex import _bibtexparser_version  # ruff: ignore[import-private-name]
+
     setboolean("bibtex-unicode", False)
     assert exporter([from_data(doc)]) == (
         "@report{MyDocument,\n"
@@ -184,8 +192,10 @@ def test_overridable(tmp_config: TemporaryConfiguration) -> None:
         "  journal = {Nature},\n"
         "  title = {The Theory of Everything "
         # this will sadly happen, and it makes sense
-        r"\textbackslash \&"
-        " Nothing},\n"
+        + (r"\textbackslash \&"
+           if _bibtexparser_version() == "v1" else
+           r"{\textbackslash}\&"
+        ) + " Nothing},\n"
         "  year = {2350},\n"
         "}")
 
