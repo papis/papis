@@ -362,6 +362,8 @@ def fetch_importers(importers: Iterable[Importer], *,
 
     from requests.exceptions import RequestException
 
+    from papis.exceptions import SourceError
+
     result = []
     for importer in importers:
         try:
@@ -374,6 +376,9 @@ def fetch_importers(importers: Iterable[Importer], *,
                     importer.fetch_data()
                 except NotImplementedError:
                     importer.fetch()
+        except SourceError as exc:
+            logger.error("Failed to fetch data from importer '%s': '%s'.",
+                         importer.name, importer.uri, exc_info=exc)
         except RequestException as exc:
             # NOTE: this is probably some HTTP error, so we better let the
             # user know if there's something wrong with their network

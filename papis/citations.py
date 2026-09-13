@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeAlias
 
 import papis.config
 import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -84,7 +85,12 @@ def fetch_citations(doc: Document) -> Citations:
     from papis.tui.utils import progress_bar
 
     for doi in progress_bar(dois):
-        crossref_data = get_data(dois=[doi])
+        try:
+            crossref_data = get_data(dois=[doi])
+        except SourceError as exc:
+            logger.error("%s", exc)
+            continue
+
         if crossref_data:
             dois_with_data.extend(crossref_data)
 
