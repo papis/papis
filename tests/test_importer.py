@@ -114,18 +114,27 @@ def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> N
         # 4. a downloader name + valid uri
         ("usenix",
          "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov"),
+        # 5. a valid importer name + valid uri
+        ("ieee", "https://ieeexplore.ieee.org/document/10301652"),
     ]
 
     importers = get_matching_importers_by_name(name_and_uris)
-    assert len(importers) == 1
+    assert len(importers) == 2
     assert isinstance(importers[0], DOIImporter)
 
+    from papis.importer.ieee import IEEEImporter
+
+    assert isinstance(importers[1], IEEEImporter)
+
+    from papis.downloaders.ieee import IEEEDownloader
     from papis.downloaders.usenix import USENIXDownloader
 
     importers = get_matching_importers_by_name(name_and_uris, include_downloaders=True)
-    assert len(importers) == 2
+    assert len(importers) == 4
     assert isinstance(importers[0], DOIImporter)
-    assert isinstance(importers[1], USENIXDownloader)
+    assert isinstance(importers[1], IEEEImporter)
+    assert isinstance(importers[2], USENIXDownloader)
+    assert isinstance(importers[3], IEEEDownloader)
 
 
 def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
@@ -142,6 +151,7 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
 
     from papis.downloaders.fallback import FallbackDownloader
     from papis.downloaders.usenix import USENIXDownloader
+    from papis.importer.ieee import IEEEImporter
 
     importers = get_matching_importers_by_uri(
         "https://www.usenix.org/conference/nsdi22/presentation/goyal",
@@ -149,6 +159,11 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration) -> None:
     assert len(importers) == 2
     assert isinstance(importers[0], FallbackDownloader)
     assert isinstance(importers[1], USENIXDownloader)
+
+    importers = get_matching_importers_by_uri(
+        "https://ieeexplore.ieee.org/document/10301652")
+    assert len(importers) == 1
+    assert isinstance(importers[0], IEEEImporter)
 
 
 def test_doi_importer_does_not_match_local_paths(
