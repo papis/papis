@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # TODO: this should be removed when we no longer support bibtexparser v1
+      - name: Pin bibtexparser to v1 for CI
+        run: sed -i '/bibtexparser = final.bibtexparser_2;/d' flake.nix
       - name: Install nix
         uses: nixbuild/nix-quick-install-action@v35
       - name: Restore and save nix store from cache

@@ -24,6 +24,8 @@
 
             inherit (pkgs) sphinx-lint;
 
+            bibtexparser = final.bibtexparser_2;
+
             types-pygments = final.buildPythonPackage rec {
               pname = "types-Pygments";
               version = "2.19.0.20250305";
