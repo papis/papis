@@ -38,3 +38,11 @@ class InvalidLibraryError(RuntimeError):
 
 class MissingLibraryDirectoryError(InvalidLibraryError):
     """Exception raised when a library does not have 'dir' set."""
+
+
+class SourceError(Exception):
+    """Raised when a source query could not be completed.
+
+    This covers transport errors, malformed responses, and HTTP failures (except those
+    that merely imply that a record couldn't be found).
+    """

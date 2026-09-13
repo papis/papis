@@ -4,12 +4,10 @@ import re
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
-import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
-
-logger = papis.logging.get_logger(__name__)
 
 # NOTE: general API information can be found at
 #   https://dblp.org/faq/How+to+use+the+dblp+search+API.html
@@ -120,33 +118,55 @@ def search(
     if url is None:
         raise ValueError(f"Unknown API endpoint '{api}'")
 
+    from requests.exceptions import RequestException
+
     from papis.utils import get_session
 
-    with get_session() as session:
-        response = session.get(
-            url,
-            params={
-                "q": query,
-                "format": output_format,
-                "h": str(max_results),
-                "f": "0",
-                "c": str(max_completions),
-            })
+    try:
+        with get_session() as session:
+            response = session.get(
+                url,
+                params={
+                    "q": query,
+                    "format": output_format,
+                    "h": str(max_results),
+                    "f": "0",
+                    "c": str(max_completions),
+                })
+    except RequestException as exc:
+        raise SourceError(f"Could not query DBLP: {exc}") from exc
+
+    if not response.ok:
+        raise SourceError(
+            f"Could not query DBLP: HTTP {response.status_code} "
+            f"({response.reason})")
 
     return response.content.decode()
 
 
 def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
     import json
-    response = json.loads(
-        search(query=query, output_format="json", max_results=max_results)
-        )
-    result = response.get("result")
-    hits = result["hits"].get("hit")
 
+    try:
+        response = json.loads(
+            search(query=query, output_format="json", max_results=max_results)
+            )
+    except json.JSONDecodeError as exc:
+        raise SourceError(f"Unexpected response from DBLP: {exc}") from exc
+
+    result = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(result, dict):
+        raise SourceError(
+            "Unexpected response from DBLP: expected a JSON object with a "
+            f"'result' object, got '{type(response).__name__}'.")
+
+    status = result.get("status")
+    text = status.get("text") if isinstance(status, dict) else status
+    if text != "OK":
+        raise SourceError(f"Could not query DBLP: '{text}'.")
+
+    hits = result["hits"].get("hit")
     if hits is None:
-        logger.error("Could not retrieve results from DBLP. Error: '%s'.",
-                     result["status"]["text"])
         return []
 
     from papis.document import keyconversion_to_data
