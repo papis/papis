@@ -1,3 +1,29 @@
+# VERSION 0.16.1 (September 13th, 2026)
+
+## Dependency Changes
+
+* Added support for `bibtexparser` 2.0.0. This is a major rewrite and may have
+  some unintended breakage. `bibtexparser<2.0.0` is still supported for the
+  time being, but will be removed in the next release.
+
+## Other noteworthy features
+
+* Allow creating library dir on-demand in `papis add`
+  ([#1234](https://github.com/papis/papis/pull/1234)).
+* Add support for `bibtexparser>=2.0.0`
+  ([#1242](https://github.com/papis/papis/pull/1242)).
+
+## Bug Fixes
+
+* Fix separator handling when splitting authors
+  ([#988](https://github.com/papis/papis/pull/998)).
+* Handle errors from the editor in `papis add --edit`
+  ([1211](https://github.com/papis/papis/pull/1211)).
+* Fix saving in wrong citation file
+  ([#1215](https://github.com/papis/papis/pull/1215)).
+* Fix CSL export for some styles
+  ([#1231](https://github.com/papis/papis/pull/1231)).
+
 # VERSION 0.16.0 (August 18th, 2026)
 
 ## Dependency Changes
