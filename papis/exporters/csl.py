@@ -180,7 +180,7 @@ def export_documents(documents: list[Document],
         logger.error("Cannot find style '%s'. You can download or create this "
                      "style yourself and place it in '%s'.",
                      os.path.basename(style_name), get_styles_folder())
-        return [""] * len(documents)
+        return []
 
     from citeproc.source import BibliographySource
 
@@ -201,7 +201,7 @@ def export_documents(documents: list[Document],
         logger.error("Formatter '%s' is not supported for CSL export. "
                      "Check your 'csl-formatter' setting in the configuration file.",
                      formatter_name)
-        return [""] * len(documents)
+        return []
 
     style = CitationStylesStyle(style_name, validate=False)
     bib = CitationStylesBibliography(style, source, fmt)
@@ -223,18 +223,9 @@ def export_documents(documents: list[Document],
         # NOTE: citeproc-py doesn't support all known styles, so the export can fail
         logger.error("Failed to export citations to CSL style '%s'.",
                      os.path.basename(style_name), exc_info=exc)
-        return [""] * len(documents)
+        return []
 
     return [str(item).replace("..", ".") for item in items]
-
-
-def export_document(doc: Document,
-                    style_name: str | None = None,
-                    formatter_name: str | None = None) -> str:
-    results = export_documents([doc],
-                               style_name=style_name,
-                               formatter_name=formatter_name)
-    return results[0] if results else ""
 
 
 def exporter(documents: list[Document]) -> str:

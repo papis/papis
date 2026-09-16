@@ -12,7 +12,7 @@ def test_csl_export(tmp_config: TemporaryConfiguration) -> None:
     citeproc = pytest.importorskip("citeproc")
 
     from papis.document import from_data
-    from papis.exporters.csl import export_document
+    from papis.exporters.csl import export_documents
 
     doc = from_data({
         "type": "article",
@@ -24,7 +24,8 @@ def test_csl_export(tmp_config: TemporaryConfiguration) -> None:
         "pages": "1-24",
         "ref": "MyDocument"})
 
-    result = export_document(doc, style_name="harvard1", formatter_name="rst")
+    results = export_documents([doc], style_name="harvard1", formatter_name="rst")
+    result = results[0]
 
     # NOTE: older versions used a "harvard" style and newer versions use a
     # "harvard-cite-them-right" style that's quite different, see:
