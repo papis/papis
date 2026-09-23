@@ -169,42 +169,6 @@ serve = "papis.commands.serve:cli"
 tag = "papis.commands.tag:cli"
 update = "papis.commands.update:cli"
 
-[project.entry-points."papis.downloader"]
-acl = "papis.downloaders.acl:ACLAnthologyDownloader"
-acm = "papis.downloaders.acm:ACMDownloader"
-acs = "papis.downloaders.acs:ACSDownloader"
-annualreviews = "papis.downloaders.annualreviews:AnnualReviewsDownloader"
-aps = "papis.downloaders.aps:APSDownloader"
-arxiv = "papis.downloaders.arxiv:ArxivDownloader"
-doi = "papis.downloaders.crossref:CrossrefDownloader"
-fallback = "papis.downloaders.fallback:FallbackDownloader"
-frontiersin = "papis.downloaders.frontiersin:FrontiersDownloader"
-get = "papis.downloaders.get:DocumentDownloader"
-hal = "papis.downloaders.hal:HALDownloader"
-ieee = "papis.downloaders.ieee:IEEEDownloader"
-iopscience = "papis.downloaders.iopscience:IOPscienceDownloader"
-lingbuzz = "papis.downloaders.lingbuzz:LingbuzzDownloader"
-nber = "papis.downloaders.nber:NberDownloader"
-projecteuclid = "papis.downloaders.projecteuclid:ProjectEuclidDownloader"
-sciencedirect = "papis.downloaders.sciencedirect:ScienceDirectDownloader"
-scitationaip = "papis.downloaders.scitationaip:AIPDownloader"
-springer = "papis.downloaders.springer:SpringerLinkDownloader"
-tandfonline = "papis.downloaders.tandfonline:TaylorFrancisDownloader"
-thesesfr = "papis.downloaders.thesesfr:TheseFrDownloader"
-usenix = "papis.downloaders.usenix:USENIXDownloader"
-worldscientific = "papis.downloaders.worldscientific:WorldScientificDownloader"
-
-[project.entry-points."papis.explorer"]
-arxiv = "papis.explorers.arxiv:cli"
-bibtex = "papis.explorers.bibtex:cli"
-citations = "papis.explorers.citations:cli"
-crossref = "papis.explorers.crossref:cli"
-dblp = "papis.explorers.dblp:cli"
-isbn = "papis.explorers.isbn:cli"
-json = "papis.explorers.json:cli"
-lib = "papis.explorers.library:cli"
-yaml = "papis.explorers.yaml:cli"
-
 [project.entry-points."papis.exporter"]
 bibtex = "papis.exporters.bibtex:exporter"
 csl = "papis.exporters.csl:exporter"
@@ -217,20 +181,39 @@ yaml = "papis.exporters.yaml:exporter"
 jinja2 = "papis.format.jinja:Jinja2Formatter"
 python = "papis.format.python:PythonFormatter"
 
-[project.entry-points."papis.importer"]
-arxiv = "papis.importer.arxiv:ArxivImporter"
-bibtex = "papis.importer.bibtex:BibTeXImporter"
-crossref = "papis.importer.crossref:CrossrefImporter"
-dblp = "papis.importer.dblp:DBLPImporter"
-doi = "papis.importer.doi:DOIImporter"
-folder = "papis.importer.library:FromFolderImporter"
-isbn = "papis.importer.isbn:ISBNImporter"
-lib = "papis.importer.library:FromLibraryImporter"
-pdf2arxivid = "papis.importer.arxiv:ArxivFromPDFImporter"
-pdf2doi = "papis.importer.doi:DOIFromPDFImporter"
-pmid = "papis.importer.pubmed:PubMedImporter"
-yaml = "papis.importer.yaml:YAMLImporter"
-zenodo = "papis.importer.zenodo:ZenodoImporter"
+[project.entry-points."papis.source"]
+arxiv = "papis.sources.handlers.arxiv:ArxivHandler"
+crossref = "papis.sources.handlers.crossref:CrossrefHandler"
+dblp = "papis.sources.handlers.dblp:DblpHandler"
+doi = "papis.sources.handlers.doi:DoiHandler"
+isbn = "papis.sources.handlers.isbn:IsbnHandler"
+pmid = "papis.sources.handlers.pmid:PmidHandler"
+zenodo = "papis.sources.handlers.zenodo:ZenodoHandler"
+# formats
+bibtex = "papis.sources.handlers.formats.bibtex:BibTeXHandler"
+json = "papis.sources.handlers.formats.json:JsonHandler"
+yaml = "papis.sources.handlers.formats.yaml:YamlHandler"
+# web
+acl = "papis.sources.handlers.web.acl:ACLHandler"
+acm = "papis.sources.handlers.web.acm:ACMHandler"
+acs = "papis.sources.handlers.web.acs:ACSHandler"
+annualreviews = "papis.sources.handlers.web.annualreviews:AnnualReviewsHandler"
+aps = "papis.sources.handlers.web.aps:APSHandler"
+fallback = "papis.sources.handlers.web:FallbackHandler"
+frontiersin = "papis.sources.handlers.web.frontiersin:FrontiersInHandler"
+hal = "papis.sources.handlers.web.hal:HALHandler"
+ieee = "papis.sources.handlers.ieee:IEEEHandler"
+iopscience = "papis.sources.handlers.web.iopscience:IOPscienceHandler"
+lingbuzz = "papis.sources.handlers.web.lingbuzz:LingbuzzHandler"
+nber = "papis.sources.handlers.web.nber:NberHandler"
+projecteuclid = "papis.sources.handlers.web.projecteuclid:ProjectEuclidHandler"
+sciencedirect = "papis.sources.handlers.web.sciencedirect:ScienceDirectHandler"
+aip = "papis.sources.handlers.web.aip:AIPHandler"
+springer = "papis.sources.handlers.web.springer:SpringerHandler"
+taylorandfrancis = "papis.sources.handlers.web.taylorandfrancis:TaylorAndFrancisHandler"
+thesesfr = "papis.sources.handlers.web.thesesfr:ThesesFrHandler"
+usenix = "papis.sources.handlers.web.usenix:USENIXHandler"
+worldscientific = "papis.sources.handlers.web.worldscientific:WorldScientificHandler"
 
 [project.entry-points."papis.picker"]
 fzf = "papis.pick.fzf:FzfPicker"
@@ -359,7 +342,8 @@ extend-ignore-re = [
 extend-exclude = [
     "examples/scripts/LTWA.json",
     "tests/data",
-    "tests/downloaders/resources",
+    "tests/sources/handlers/resources",
+    "tests/sources/handlers/web/resources",
     "tests/resources",
 ]
 
@@ -367,8 +351,11 @@ extend-exclude = [
 # NOTE: in docs
 formater = "formater"
 rela = "rela"
-# NOTE: these appear in some queries and urls
+# NOTE: these appear in some queries, urls, identifiers, and venue names
 ACI = "ACI"
 ein = "ein"
 selv = "selv"
 Rin = "Rin"
+shs = "shs"
+Comput = "Comput"
+TOU = "TOU"

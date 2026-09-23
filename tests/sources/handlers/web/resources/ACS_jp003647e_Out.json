@@ -1,0 +1,48 @@
+{
+  "abstract": "Abstract. Heisenberg Hamiltonians, with distance-dependent spin couplings and σ-bond potential, have proved to be\nvery efficient for the treatment of conju",
+  "author": "Ghailane, Rachida and Malrieu, Jean Paul and Maynau, Daniel",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Laboratoire de Chimie Théorique, Faculté des Sciences, Université Mohamed V, Rabat&#xe5f8;Maroc, and\nLaboratoire de Phyique Quantique, IRSAMC, Université Paul Sabatier, 118 Route de Narbonne 31062,\nToulouse Cedex "
+        }
+      ],
+      "family": "Ghailane",
+      "given": "Rachida"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Laboratoire de Chimie Théorique, Faculté des Sciences, Université Mohamed V, Rabat&#xe5f8;Maroc, and\nLaboratoire de Phyique Quantique, IRSAMC, Université Paul Sabatier, 118 Route de Narbonne 31062,\nToulouse Cedex "
+        }
+      ],
+      "family": "Malrieu",
+      "given": "Jean Paul"
+    },
+    {
+      "affiliation": [
+        {
+          "name": "Laboratoire de Chimie Théorique, Faculté des Sciences, Université Mohamed V, Rabat&#xe5f8;Maroc, and\nLaboratoire de Phyique Quantique, IRSAMC, Université Paul Sabatier, 118 Route de Narbonne 31062,\nToulouse Cedex "
+        }
+      ],
+      "family": "Maynau",
+      "given": "Daniel"
+    }
+  ],
+  "doc_url": "https://pubs.acs.org/jpcafh/article-pdf/105/13/3365/39010069/jp003647e.pdf",
+  "doi": "10.1021/jp003647e",
+  "firstpage": "3365",
+  "issn": "1089-5639",
+  "issue": "13",
+  "journal": "The Journal of Physical Chemistry A",
+  "journal_abbrev": "J. Phys. Chem. A",
+  "lastpage": "3370",
+  "pages": "3365--3370",
+  "publication_date": "2001/04/05",
+  "publisher": "American Chemical Society",
+  "title": "Heisenberg Hamiltonian for Poly-ynes. Extraction and Tests",
+  "type": "article",
+  "url": "https://dx.doi.org/10.1021/jp003647e",
+  "volume": "105"
+}

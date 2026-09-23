@@ -17,6 +17,15 @@ if TYPE_CHECKING:
     from _pytest.config.argparsing import Parser
     from _pytest.fixtures import SubRequest
 
+    from papis.sources.handler import (
+        FileReference,
+        Followup,
+        LookupInput,
+        SearchInput,
+        SearchOutput,
+        SourceHandler,
+    )
+
 PAPIS_UPDATE_RESOURCES = os.environ.get("PAPIS_UPDATE_RESOURCES", "none").lower()
 if PAPIS_UPDATE_RESOURCES not in {"none", "remote", "local", "both"}:
     raise ValueError("unsupported value of 'PAPIS_UPDATE_RESOURCES'")
@@ -416,6 +425,10 @@ class TemporaryConfiguration:
         for db in DATABASES.values():
             db.clear()
 
+        # NOTE: the databases above are still bound to the (now deleted) library, so
+        # drop them from the cache as well.
+        DATABASES.clear()
+
         # NOTE: remove any handlers and reset the logger level
         import logging
         papis_logger = logging.getLogger("papis")
@@ -646,6 +659,165 @@ class ResourceCache:
                 raise ValueError(f"Unknown file extension: '{ext}'")
 
 
+def _make_source_handler(
+    name: str,
+    *,
+    priority: int = 5,
+    **class_attrs: Any,
+) -> type[SourceHandler]:
+    """Build a fake handler from *class_attrs*.
+
+    The default lookup declines to match, so attaching ``search`` or ``parse`` through
+    *class_attrs* gets exactly that capability without also supporting lookup.
+    """
+    from papis.sources.handler import LookupOutput, SourceHandler
+
+    def match_for_lookup(
+        cls: type[SourceHandler], evidence: LookupInput
+    ) -> SourceHandler | None:
+        return None
+
+    def lookup(self: SourceHandler, evidence: LookupInput) -> LookupOutput:
+        return LookupOutput()
+
+    return type(
+        "FakeHandler",
+        (SourceHandler,),
+        {
+            "name": name,
+            "priority": priority,
+            "match_for_lookup": classmethod(match_for_lookup),
+            "lookup": lookup,
+            **class_attrs,
+        },
+    )
+
+
+def make_lookup_handler(
+    name: str,
+    *,
+    priority: int = 5,
+    match_result: bool = True,
+    document: dict[str, Any] | None = None,
+    files: Sequence[str | FileReference] | None = None,
+    followup: Followup | None = None,
+    message: str | None = None,
+    match_exc: Exception | None = None,
+    lookup_exc: Exception | None = None,
+    returns_none: bool = False,
+    **class_attrs: Any,
+) -> type[SourceHandler]:
+    """A fake handler with a lookup answer fixed by the arguments.
+
+    Entries in *files* that are plain paths are wrapped in a ``FileReference``.
+    """
+    from papis.sources.handler import FileReference, LookupOutput
+
+    def match_for_lookup(
+        cls: type[SourceHandler], evidence: LookupInput
+    ) -> SourceHandler | None:
+        if match_exc is not None:
+            raise match_exc
+        return cls() if match_result else None
+
+    def lookup(self: SourceHandler, evidence: LookupInput) -> LookupOutput | None:
+        if lookup_exc is not None:
+            raise lookup_exc
+        if returns_none:
+            return None
+        return LookupOutput(
+            document=document,
+            files=[
+                file if isinstance(file, FileReference) else FileReference(path=file)
+                for file in (files or [])
+            ],
+            followup=followup,
+            message=message,
+        )
+
+    return _make_source_handler(
+        name,
+        priority=priority,
+        match_for_lookup=classmethod(match_for_lookup),
+        lookup=lookup,
+        **class_attrs,
+    )
+
+
+def make_search_handler(
+    name: str,
+    *,
+    search_fields: tuple[str, ...] = ("author", "title"),
+    documents: list[dict[str, Any]]
+        | Callable[[SearchInput, int], list[dict[str, Any]]]
+        | None = None,
+    search_exc: Exception | None = None,
+    priority: int = 5,
+    on_search: Callable[[SearchInput, int], None] | None = None,
+    returns_none: bool = False,
+) -> type[SourceHandler]:
+    """A fake handler with a search answer fixed by the arguments.
+
+    *documents* is the result list, or a callable receiving the query and
+    ``max_results`` when the query should shape the result. *on_search*
+    observes those arguments without touching the result, for tests about the
+    plumbing (e.g. that ``max_results`` is passed through) rather than the data.
+    *returns_none* models a handler that breaks its contract and returns `None`.
+    """
+    from papis.sources.handler import SearchOutput
+
+    def search_impl(
+        cls: type[SourceHandler], query: SearchInput, *, max_results: int
+    ) -> SearchOutput | None:
+        if search_exc is not None:
+            raise search_exc
+        if on_search is not None:
+            on_search(query, max_results)
+        if returns_none:
+            return None
+
+        if callable(documents):
+            return SearchOutput(documents=documents(query, max_results))
+        return SearchOutput(
+            documents=[{"title": name}] if documents is None else documents
+        )
+
+    return _make_source_handler(
+        name,
+        priority=priority,
+        search_fields=search_fields,
+        search=classmethod(search_impl),
+    )
+
+
+def make_parse_handler(
+    name: str,
+    *,
+    documents: list[dict[str, Any]] | None = None,
+    message: str | None = None,
+    parse_exc: Exception | None = None,
+    priority: int = 5,
+    returns_none: bool = False,
+) -> type[SourceHandler]:
+    """A fake handler with a parse answer fixed by the arguments.
+
+    *returns_none* models content the handler cannot process.
+    """
+    from papis.sources.handler import ParseOutput
+
+    def parse_impl(cls: type[SourceHandler], content: str) -> ParseOutput | None:
+        if parse_exc is not None:
+            raise parse_exc
+        if returns_none:
+            return None
+        return ParseOutput(
+            documents=[{"title": name}] if documents is None else documents,
+            message=message,
+        )
+
+    return _make_source_handler(name, priority=priority, parse=classmethod(parse_impl))
+
+
 @pytest.fixture(autouse=True)
 def _doctest_tmp_config(request: SubRequest) -> Iterator[None]:
     """A fixture for doctests to ensure that they run in a clean environment.
@@ -738,33 +910,43 @@ def resource_cache(request: SubRequest) -> ResourceCache:
 
 
 @pytest.fixture
-def make_fake_importer(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
-    """Create a fake importer with the given *data* and *files*.
+def handler_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Callable[..., None]:
+    """Return a factory that installs exactly the given handler classes.
 
-    The returned factory patches the importer matching functions so that the fake
-    importer is the only match. This allows CLI testing without network access.
+    The registry's discovery is replaced, so that the given classes are what
+    discovery "finds", in the given order. The classes themselves come from
+    :func:`make_lookup_handler` and friends.
+
+    .. code:: python
+
+        def test_me(handler_registry: Callable[..., None]) -> None:
+            handler_registry(make_lookup_handler("fake", document={"title": "T"}))
     """
-
-    def make_fake_importer(data: dict[str, object],
-                           files: list[str] | None = None) -> None:
-        import papis.importer
-
-        class FakeImporter(papis.importer.Importer):
-            def __init__(self, uri: str) -> None:
-                super().__init__(name="fake", uri=uri)
-
-            def fetch(self) -> None:
-                self.ctx.data = dict(data)
-                self.ctx.files = list(files or [])
+    def _install(*classes: type[SourceHandler]) -> None:
+        import papis.sources.handler as handler_module
 
         monkeypatch.setattr(
-            papis.importer, "get_matching_importers_by_uri",
-            lambda uri, *, include_downloaders=False: [FakeImporter(uri)])
+            handler_module, "discover_handlers",
+            lambda: {cls.name: cls for cls in classes})
         monkeypatch.setattr(
-            papis.importer, "get_matching_importers_by_doc",
-            lambda doc, *, include_downloaders=False: [FakeImporter("fake://auto")])
+            handler_module, "registry", handler_module.HandlerRegistry())
 
-    return make_fake_importer
+    return _install
+
+
+@pytest.fixture
+def client_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Callable[..., None]:
+    """Return a factory that installs exactly the given client source handlers."""
+    def _install(*classes: type[SourceHandler]) -> None:
+        import papis.sources.client as client_module
+
+        monkeypatch.setattr(client_module, "CLIENT_HANDLERS", list(classes))
+
+    return _install
 
 
 def pytest_addoption(parser: Parser) -> None:

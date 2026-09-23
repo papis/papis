@@ -14,59 +14,11 @@ DBLP_RESOURCEDIR = os.path.join(
     "resources", "dblp"
 )
 
-DBLP_KEYS_VALID = [
-    "books/sp/02/ST2002",
-    "conf/iccg/EncarnacaoAFFGM93",
-    "journals/aam/Davis23",
-    "phd/dnb/Wein23",
-    "series/sci/2023-1062",
-]
-
-DBLP_KEYS_INVALID = [
-    "books/sp/02",
-    "books/sp/02/ST2002-unknown",
-    "series/sci",
-]
-
-
-@pytest.mark.xfail(reason="online service is flaky")
-def test_valid_dblp_key_online(tmp_config: TemporaryConfiguration) -> None:
-    """Checks that only real dblp keys validate."""
-    from papis.dblp import is_valid_dblp_key
-
-    for key in DBLP_KEYS_VALID:
-        assert is_valid_dblp_key(key)
-
-    for key in DBLP_KEYS_INVALID:
-        assert not is_valid_dblp_key(key)
-
-
-@pytest.mark.xfail(reason="online service is flaky")
-def test_importer_match_online(tmp_config: TemporaryConfiguration) -> None:
-    """Checks that only real dblp keys and URLs match."""
-    from papis.dblp import DBLP_URL_FORMAT
-    from papis.importer.dblp import DBLPImporter
-
-    for key in DBLP_KEYS_VALID:
-        url = DBLP_URL_FORMAT.format(uri=key)
-        importer = DBLPImporter.match(url)
-        assert importer is not None
-
-        importer = DBLPImporter.match(key)
-        assert importer is not None
-
-    # NOTE: this relies on dblp.org answering non-ok status codes for well-shaped but
-    # nonexistent keys
-    for key in DBLP_KEYS_INVALID:
-        importer = DBLPImporter.match(key)
-        assert importer is None
-
-    for url in [
-            "https://dblp.net/rec/books/sp/02/ST2002.html",
-            "https://dblp.org/rec/books/sp/02/ST2002.bib",
-            ]:
-        importer = DBLPImporter.match(url)
-        assert importer is None
+# NOTE: the online tests are gone: the importer's entry point was pruned in
+# Phase 3 of the importers refactor, and the `is_valid_*` online probes were
+# removed as well; match-time existence verdicts are superseded by the
+# (hermetic, syntactic) DblpHandler matching tests in
+# tests/sources/handlers/test_dblp.py.
 
 
 @pytest.mark.resource_setup(cachedir="resources/dblp")
@@ -97,31 +49,6 @@ def test_get_data(tmp_config: TemporaryConfiguration,
 
     expected = resource_cache.get_local_resource("get_data_out.json", data)
     assert data == expected
-
-
-@pytest.mark.resource_setup(cachedir="resources/dblp")
-def test_importer_fetch(tmp_config: TemporaryConfiguration,
-                        monkeypatch: pytest.MonkeyPatch,
-                        resource_cache: ResourceCache) -> None:
-    from papis.dblp import DBLP_URL_FORMAT
-    from papis.importer.dblp import DBLPImporter
-
-    url = DBLP_URL_FORMAT.format(uri=DBLP_KEYS_VALID[-1])
-    infile = "dblp_1.bib"
-    outfile = "dblp_1_out.json"
-
-    with monkeypatch.context() as m:
-        importer = DBLPImporter.match(url)
-        assert importer is not None
-
-        m.setattr(importer, "_get_body", lambda url:
-                    resource_cache.get_remote_resource(infile, url))
-
-        importer.fetch()
-        extracted_data = importer.ctx.data
-        expected_data = resource_cache.get_local_resource(outfile, extracted_data)
-
-        assert extracted_data == expected_data
 
 
 def _fake_response(status_code: int = 200, content: bytes = b"") -> Any:

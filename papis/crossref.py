@@ -19,6 +19,24 @@ logger = papis.logging.get_logger(__name__)
 #: Base URL for DOIs.
 DOI_ORG_URL = "https://doi.org/"
 
+#: DOI-shaped text, including the URL representation of a DOI (i.e. percent-encoded
+#: characters). The pattern cannot detect the end of a DOI when, in an URL, it is
+#: followed by a path segment (e.g. ``/full``).
+#: See: https://www.crossref.org/blog/dois-and-matching-regular-expressions/
+DOI_PATTERN = r"10\.\d{4,9}/[^\s\"'<>&?#]+"
+
+
+def find_doi(text: str) -> str | None:
+    """Extract a DOI from *text*, or ``None``."""
+    match = re.compile(DOI_PATTERN).search(text)
+    if match is not None:
+        return match.group(0).rstrip(").,;")
+
+    from doi import find_doi_in_text
+
+    return find_doi_in_text(text)
+
+
 #: Filters used to narrow Crossref works queries. The official list of filters
 #: can be found in the
 #: `REST API documentation <https://github.com/CrossRef/rest-api-doc#filter-names>`__.
@@ -103,6 +121,35 @@ CROSSREF_TO_BIBTEX_CONVERTER = {
     "dataset": "dataset",
     "book-series": "incollection",
     "edited-book": "book",
+}
+
+#: A mapping of BibTeX types to Crossref types (see :data:`CROSSREF_TYPES`). Crossref
+#: types are many-to-one with BibTeX types (see :data:`CROSSREF_TO_BIBTEX_CONVERTER`),
+#: so every entry here is chosen among the Crossref types that convert back to the same
+#: "BibTeX type.
+BIBTEX_TO_CROSSREF_CONVERTER = {
+    "article": "journal-article",
+    "book": "book",
+    "collection": "journal",
+    "dataset": "dataset",
+    "inbook": "book-chapter",
+    "incollection": "component",
+    "inproceedings": "proceedings-article",
+    "conference": "proceedings-article",
+    "misc": "other",
+    "online": "posted-content",
+    "electronic": "posted-content",
+    "www": "posted-content",
+    "mvcollection": "book-set",
+    "mvproceedings": "proceedings-series",
+    "proceedings": "proceedings",
+    "reference": "reference-book",
+    "inreference": "reference-entry",
+    "report": "report",
+    "techreport": "report",
+    "thesis": "dissertation",
+    "mastersthesis": "dissertation",
+    "phdthesis": "dissertation",
 }
 
 

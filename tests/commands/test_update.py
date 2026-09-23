@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 import papis.database
-from papis.testing import PapisRunner, ResourceCache, TemporaryLibrary
+from papis.testing import (
+    PapisRunner,
+    ResourceCache,
+    TemporaryLibrary,
+    make_lookup_handler,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from papis.document import Document, DocumentLike
+    from papis.sources.handler import LookupInput
+    from papis.sources.lookup import LookupResult
 
 
 def _get_resource_file(filename: str) -> str:
@@ -815,14 +822,225 @@ def test_update_bibtex_cli(
 
     from papis.bibtex import bibtex_to_dict
 
-    (data,) = bibtex_to_dict(filename)
+    with open(filename, encoding="utf-8") as fd:
+        (data,) = bibtex_to_dict(fd.read())
 
     (doc,) = db.query_dict({"author": "Wannier"})
     assert doc["doi"] == data["doi"]
 
 
+def test_update_from_sources_looks_up_per_document(
+    tmp_library: TemporaryLibrary,
+    monkeypatch: pytest.MonkeyPatch,
+    handler_registry: Callable[..., None],
+) -> None:
+    """'--from' is looked up once per document, like the legacy importers."""
+    import papis.sources.lookup
+    from papis.commands.update import cli
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler("fake", document={"title": "New title"}))
+
+    real_lookup = papis.sources.lookup.lookup
+    calls: list[LookupInput] = []
+
+    def _counting_lookup(
+            evidence: LookupInput, *,
+            sources: list[str] | None = None) -> list[LookupResult]:
+        calls.append(evidence)
+        return real_lookup(evidence, sources=sources)
+
+    # NOTE: patch the name as the client module bound it ('lookup_item' calls it)
+    monkeypatch.setattr("papis.sources.client.lookup", _counting_lookup)
+
+    ndocs = len(papis.database.get().get_all_documents())
+    assert ndocs > 1
+
+    result = cli_runner.invoke(
+        cli, ["-a", "--batch", "--from", "fake", "some-input"])
+    assert result.exit_code == 0
+
+    # NOTE: '--from' evidence is document-independent, but it is fetched for
+    # every document (legacy importer flow), not once for all of them
+    assert len(calls) == ndocs
+
+
+def test_update_interactive_keeps_user_changes_cli(
+    tmp_library: TemporaryLibrary,
+    monkeypatch: pytest.MonkeyPatch,
+    handler_registry: Callable[..., None],
+) -> None:
+    """Interactive merging never overwrites user changes silently."""
+    import papis.utils
+    from papis.commands.update import cli
+
+    db = papis.database.get()
+    handler_registry(make_lookup_handler(
+        "fake", document={"title": "Source title", "marker": "from-source"}))
+
+    merged: list[str] = []
+
+    def _reject(document: Document, data: DocumentLike, data_name: str) -> None:
+        merged.append(data_name)
+
+    monkeypatch.setattr(
+        papis.utils, "update_doc_from_data_interactively", _reject)
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli, ["--auto", "--set", "title", "User title", "krishnamurti"])
+    assert result.exit_code == 0
+
+    # the user resolved the merge for the source's data, and their choice stands
+    assert merged == ["fake"]
+
+    (doc,) = db.query_dict({"author": "Krishnamurti"})
+    assert doc["title"] == "User title"
+    assert "marker" not in doc
+
+
+def test_update_from_no_source_picker_cli(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        ) -> None:
+    """Explicit '--from' results merge in command-line order without selection."""
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.update import cli
+
+    handler_registry(
+        make_lookup_handler("fake-a", document={"title": "A-title", "a": "A"}),
+        make_lookup_handler("fake-b", document={"title": "B-title", "b": "B"}))
+
+    def _fail(options: Any, message: str, **kwargs: Any) -> list[int]:
+        raise AssertionError("'--from' results must not be offered for selection")
+
+    offered: list[str] = []
+
+    def _record(doc: Any, data: Any, name: str) -> None:
+        offered.append(name)
+        doc.update(data)
+
+    monkeypatch.setattr(papis.tui.utils, "select_range", _fail)
+    monkeypatch.setattr(papis.utils, "update_doc_from_data_interactively", _record)
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli, ["--from", "fake-a", "x", "--from", "fake-b", "y", "krishnamurti"])
+    assert result.exit_code == 0
+
+    # with the document data as base nothing merges silently
+    assert offered == ["fake-a", "fake-b"]
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Krishnamurti"})
+
+    # the later '--from' pair wins the conflicting key
+    assert doc["title"] == "B-title"
+    assert doc["a"] == "A"
+    assert doc["b"] == "B"
+
+
+def test_update_auto_picker_cli(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        ) -> None:
+    """'--auto' results are inferred guesses: the user picks the sources."""
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.update import cli
+
+    handler_registry(
+        make_lookup_handler("fake-a", document={"title": "A-title", "a": "A"}),
+        make_lookup_handler("fake-b", document={"title": "B-title", "b": "B"}))
+
+    options: list[str] = []
+
+    def _select(candidates: list[str], message: str, **kwargs: Any) -> list[int]:
+        options.extend(candidates)
+        return [0]
+
+    monkeypatch.setattr(papis.tui.utils, "select_range", _select)
+    monkeypatch.setattr(
+        papis.utils, "update_doc_from_data_interactively",
+        _update_doc_from_data_interactively)
+    monkeypatch.setattr(
+        "papis.document.describe", lambda document: document["title"])
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(cli, ["--auto", "krishnamurti"])
+    assert result.exit_code == 0
+
+    assert options == [
+        "[fake-a] A-title (files: none)",
+        "[fake-b] B-title (files: none)",
+    ]
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Krishnamurti"})
+
+    # the deselected source contributes nothing
+    assert doc["title"] == "A-title"
+    assert doc["a"] == "A"
+    assert "b" not in doc
+
+
+def test_update_from_and_auto_cli(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        ) -> None:
+    """'--from' and '--auto' combine as in 'papis add': both are looked up and
+    the explicit '--from' data wins, without being offered for selection."""
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.update import cli
+
+    handler_registry(
+        make_lookup_handler(
+            "fake-auto", document={"title": "auto-title", "auto": "A"}),
+        make_lookup_handler(
+            "fake-from", document={"title": "from-title", "from": "F"}))
+
+    offered: list[str] = []
+
+    def _select(candidates: list[str], message: str, **kwargs: Any) -> list[int]:
+        offered.extend(candidates)
+        return [0]
+
+    monkeypatch.setattr(papis.tui.utils, "select_range", _select)
+    monkeypatch.setattr(
+        papis.utils, "update_doc_from_data_interactively",
+        _update_doc_from_data_interactively)
+    monkeypatch.setattr(
+        "papis.document.describe", lambda document: document["title"])
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli, ["--auto", "--from", "fake-from", "x", "krishnamurti"])
+    assert result.exit_code == 0
+
+    # NOTE: the '--auto' fan-out matches every source, including the pinned one,
+    #   so both appear for selection (as with fan-out in 'papis add'); the
+    #   explicit result itself is never offered for selection
+    assert offered == [
+        "[fake-auto] auto-title (files: none)",
+        "[fake-from] from-title (files: none)",
+    ]
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Krishnamurti"})
+
+    # both sources contribute, the explicit one wins the conflict
+    assert doc["auto"] == "A"
+    assert doc["from"] == "F"
+    assert doc["title"] == "from-title"
+
+
 def test_update_auto_cli(tmp_library: TemporaryLibrary,
-                         make_fake_importer: Callable[..., None],
+                         handler_registry: Callable[..., None],
                          ) -> None:
     """``--auto`` merges importer data without fetching any files."""
     from papis.commands.update import cli
@@ -832,9 +1050,10 @@ def test_update_auto_cli(tmp_library: TemporaryLibrary,
     files_before = doc.get_files()
 
     cli_runner = PapisRunner()
-    make_fake_importer(
-        {"title": "New title", "year": 2020},
-        ["/path/that/does/not/exist.pdf"])
+    handler_registry(make_lookup_handler(
+        "fake",
+        document={"title": "New title", "year": 2020},
+        files=["/path/that/does/not/exist.pdf"]))
 
     result = cli_runner.invoke(
         cli, ["--auto", "--batch", "krishnamurti"])
@@ -851,7 +1070,7 @@ def test_update_auto_cli(tmp_library: TemporaryLibrary,
 
 def test_update_auto_unchanged_cli(tmp_library: TemporaryLibrary,
                                    monkeypatch: pytest.MonkeyPatch,
-                                   make_fake_importer: Callable[..., None],
+                                   handler_registry: Callable[..., None],
                                    ) -> None:
     """No document rewrite if ``--auto`` provides only existing values."""
     import papis.commands.update
@@ -861,9 +1080,10 @@ def test_update_auto_unchanged_cli(tmp_library: TemporaryLibrary,
     db = papis.database.get()
     doc, = db.query_dict({"author": "krishnamurti"})
 
-    make_fake_importer(
-        {"title": doc["title"], "year": doc["year"]},
-        ["/path/that/does/not/exist.pdf"])
+    handler_registry(make_lookup_handler(
+        "fake",
+        document={"title": doc["title"], "year": doc["year"]},
+        files=["/path/that/does/not/exist.pdf"]))
 
     calls: list[tuple[object, ...]] = []
     monkeypatch.setattr(papis.commands.update, "run",
@@ -873,3 +1093,100 @@ def test_update_auto_unchanged_cli(tmp_library: TemporaryLibrary,
         cli, ["--auto", "--batch", "krishnamurti"])
     assert result.exit_code == 0
     assert calls == []
+
+
+def test_update_source_error_warns(
+    tmp_library: TemporaryLibrary,
+    handler_registry: Callable[..., None],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A failed source is warned about and does not abort the command."""
+    from papis.commands.update import cli
+    from papis.exceptions import SourceError
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler("fake", lookup_exc=SourceError("boom")))
+
+    with caplog.at_level("WARNING"):
+        result = cli_runner.invoke(cli, ["--auto", "--batch", "krishnamurti"])
+
+    assert result.exit_code == 0
+    assert "fake" in caplog.text
+    assert "boom" in caplog.text
+
+
+def test_update_auto_preserves_underscore_files_and_notes(
+    tmp_library: TemporaryLibrary,
+    handler_registry: Callable[..., None],
+) -> None:
+    """An update must not rewrite (normalize/rename) unchanged files or notes."""
+    from papis.commands.update import cli
+    from papis.database import get
+
+    db = get()
+    doc, = db.query_dict({"author": "krishnamurti"})
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    old = doc["files"][0]
+    basename, ext = os.path.splitext(old)
+    filename = f"{basename}_x{ext}"
+    os.replace(os.path.join(folder, old), os.path.join(folder, filename))
+    doc["files"] = [filename]
+
+    notes = "My_Notes.TEX"
+    with open(os.path.join(folder, notes), "w", encoding="utf-8") as fd:
+        fd.write("% notes\n")
+
+    doc["notes"] = notes
+    doc.save()
+    db.update(doc)
+
+    handler_registry(make_lookup_handler(
+        "fake",
+        document={"title": "New title", "year": 2020},
+        files=["/nonexistent.pdf"]))
+
+    result = PapisRunner().invoke(cli, ["--auto", "--batch", "krishnamurti"])
+    assert result.exit_code == 0
+
+    doc, = db.query_dict({"author": "krishnamurti"})
+    assert doc["files"] == [filename]
+    assert doc.get_files() == [os.path.join(folder, filename)]
+
+    assert doc["notes"] == notes
+    assert os.path.exists(os.path.join(folder, notes))
+    assert not os.path.exists(os.path.join(folder, "my-notes.tex"))
+
+
+def test_update_auto_evidence_fields_are_text(
+    tmp_library: TemporaryLibrary,
+    monkeypatch: pytest.MonkeyPatch,
+    handler_registry: Callable[..., None],
+) -> None:
+    """``--auto`` hands the handlers text: a document's lists (authors, tags) and
+    missing values are not identifiers."""
+    import papis.sources.lookup as lookup_module
+    from papis.commands.update import cli
+
+    handler_registry(make_lookup_handler("fake", document={"title": "Source title"}))
+
+    captured: list[LookupInput] = []
+    real_lookup = lookup_module.lookup
+
+    def _capture(
+        evidence: LookupInput, *, sources: list[str] | None = None
+    ) -> list[LookupResult]:
+        captured.append(evidence)
+        return real_lookup(evidence, sources=sources)
+
+    # NOTE: the command imports the name when it runs, so patching it on its
+    # module is enough
+    monkeypatch.setattr(lookup_module, "lookup", _capture)
+
+    cli_runner = PapisRunner()
+    assert cli_runner.invoke(cli, ["--auto", "--batch", "krishnamurti"]).exit_code == 0
+
+    assert captured
+    for evidence in captured:
+        assert all(isinstance(value, str) for value in evidence.fields.values())

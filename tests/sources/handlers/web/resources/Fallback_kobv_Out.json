@@ -1,0 +1,29 @@
+{
+  "abstract": "We consider the modeling of operation modes for complex compressor stations (i.e., ones with several in- or outlets) in gas networks. In particular, we propose a refined model that allows to precompute tighter relaxations for each operation mode. These relaxations may be used to strengthen the compressor station submodels in gas network optimization problems. We provide a procedure to obtain the refined model from the input data for the original model. This procedure is based on a nontrivial reduction of the graph representing the gas flow through the compressor station in an operation mode.",
+  "author": "Hiller, Benjamin and Saitenmacher, René and Walther, Tom",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Hiller",
+      "given": "Benjamin"
+    },
+    {
+      "affiliation": [],
+      "family": "Saitenmacher",
+      "given": "René"
+    },
+    {
+      "affiliation": [],
+      "family": "Walther",
+      "given": "Tom"
+    }
+  ],
+  "date": "2017-11-16",
+  "doc_url": "https://opus4.kobv.de/opus4-trr154/files/200/ZR-17-65.pdf",
+  "keywords": "model reformulation",
+  "language": "eng",
+  "publication_date": "2017-11-16",
+  "title": "Analysis of operating modes of complex compressor stations",
+  "url": "https://opus4.kobv.de/opus4-trr154/frontdoor/index/index/start/0/rows/10/sortfield/score/sortorder/desc/searchtype/simple/query/trr154/docId/200",
+  "year": "2017-11-16"
+}

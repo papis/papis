@@ -7,7 +7,6 @@ the `manual`_).
 """
 from __future__ import annotations
 
-import os
 import re
 import string
 from functools import cache
@@ -367,14 +366,7 @@ def _bibtex_to_dict_v1(bibtex: str) -> list[DocumentLike]:
             homogenize_fields=False,
             interpolate_strings=True)
 
-        if os.path.exists(bibtex):
-            with open(bibtex, encoding="utf-8") as fd:
-                logger.debug("Reading in file: '%s'.", bibtex)
-                text = fd.read()
-        else:
-            text = bibtex
-
-        entries = parser.parse(text, partial=True).entries
+        entries = parser.parse(bibtex, partial=True).entries
 
     from papis.document import keyconversion_to_data
 
@@ -447,7 +439,7 @@ def _get_latex_decoder(*, keep_braced_groups: bool = False) -> LatexNodes2Text:
 
 def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
     import bibtexparser.middlewares as m
-    from bibtexparser import parse_file, parse_string  # type: ignore[attr-defined]
+    from bibtexparser import parse_string  # type: ignore[attr-defined]
 
     class VerbatimLatexDecoding(m.LatexDecodingMiddleware):
         """Decode LaTeX in free-text fields, but leave verbatim fields untouched."""
@@ -474,10 +466,7 @@ def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
         m.SplitNameParts(),
     ]
 
-    if os.path.exists(bibtex):
-        library = parse_file(bibtex, append_middleware=middleware)
-    else:
-        library = parse_string(bibtex, append_middleware=middleware)
+    library = parse_string(bibtex, append_middleware=middleware)
 
     from papis.document import keyconversion_to_data
 
@@ -547,7 +536,7 @@ def splitname(author: str) -> dict[str, list[str]]:
 
 
 def bibtex_to_dict(bibtex: str | bytes) -> list[DocumentLike]:
-    """Convert a BibTeX file (or string) to a list of Papis-compatible dictionaries.
+    """Convert BibTeX data to a list of Papis-compatible dictionaries.
 
     This will convert an entry like:
 
@@ -565,7 +554,7 @@ def bibtex_to_dict(bibtex: str | bytes) -> list[DocumentLike]:
 
         { "type": "article", "author": "...", "title": "...", ...}
 
-    :param bibtex: a path to a BibTeX file or a string containing BibTeX data.
+    :param bibtex: a string containing BibTeX data (read files beforehand).
     :returns: a list of entries from the BibTeX data in a compatible format.
     """
     if isinstance(bibtex, bytes):

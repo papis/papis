@@ -131,7 +131,7 @@ import papis.cli
 import papis.config
 import papis.logging
 from papis.commands import AliasedGroup
-from papis.explorers.bibtex import cli as bibtex_explorer
+from papis.sources.client import log_source_result
 
 logger = papis.logging.get_logger(__name__)
 
@@ -141,6 +141,31 @@ papis.config.register_default_settings({"bibtex": {
     "auto-read": "",
     "default-save-bibfile": ""
 }})
+
+
+def _read(ctx: click.Context, bibfile: str) -> None:
+    """Read `bibfile` into ``ctx.obj["documents"]``."""
+    logger.info("Reading BibTeX file '%s'...", bibfile)
+
+    from papis.document import Document, from_data
+    from papis.gather import read_content
+    from papis.sources.handler import ParseInput
+    from papis.sources.parse import parse
+
+    content = read_content(bibfile)
+    if content is None:
+        logger.warning("Could not read '%s': not readable as text.", bibfile)
+        return
+
+    docs: list[Document] = []
+    if content:
+        for result in parse(ParseInput(content=content), sources=["bibtex"]):
+            log_source_result(logger, result, sources={"bibtex"})
+            docs.extend(from_data(d) for d in result.documents)
+
+    ctx.obj["documents"] += docs
+
+    logger.info("Found %d documents.", len(docs))
 
 
 @click.group("bibtex", cls=AliasedGroup, chain=True)
@@ -161,10 +186,16 @@ def cli(ctx: click.Context, no_auto_read: bool) -> None:
     bibfile = papis.config.getstring("default-read-bibfile", section="bibtex")
     if not no_auto_read and bibfile and os.path.exists(bibfile):
         logger.info("Auto-reading '%s'.", bibfile)
-        bibtex_explorer.callback(bibfile)
+        _read(ctx, bibfile)
 
 
-cli.add_command(bibtex_explorer, "read")
+@cli.command("read")
+@click.help_option("-h", "--help")
+@click.argument("bibfile", type=click.Path(exists=True))
+@click.pass_context
+def read(ctx: click.Context, bibfile: str) -> None:
+    """Import documents from a BibTeX file."""
+    _read(ctx, bibfile)
 
 
 @cli.command("add")

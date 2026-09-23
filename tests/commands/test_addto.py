@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import papis.database
 from papis.testing import PapisRunner, TemporaryLibrary, create_random_file
@@ -86,7 +86,6 @@ def test_addto_cli(tmp_library: TemporaryLibrary, nfiles: int = 5) -> None:
 def _mock_download_document(
         url: str,
         expected_document_extension: str | None = None,
-        _cookies: dict[str, Any] | None = None,
         filename: str | None = None,
         ) -> str | None:
     # certain markers in the url signal the failure case
@@ -122,7 +121,7 @@ def test_addto_cli_urls(tmp_library: TemporaryLibrary,
     inputfile = tmp_library.create_random_file("pdf", input_base)
 
     with monkeypatch.context() as mp:
-        mp.setattr("papis.downloaders.download_document", _mock_download_document)
+        mp.setattr("papis.gather.download_document", _mock_download_document)
         cli_runner = PapisRunner()
         args = ["--files", inputfile, "--urls", PDF_URL, "author:popper"]
         result = cli_runner.invoke(cli, args)
@@ -160,7 +159,7 @@ def test_addto_cli_badfiles(tmp_library: TemporaryLibrary,
     from itertools import chain
 
     with monkeypatch.context() as mp:
-        mp.setattr("papis.downloaders.download_document", _mock_download_document)
+        mp.setattr("papis.gather.download_document", _mock_download_document)
         cli_runner = PapisRunner()
         args = [
             "--files", "/path/to/nonexistant/file.pdf",

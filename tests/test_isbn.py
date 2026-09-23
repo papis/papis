@@ -24,18 +24,6 @@ def test_get_data_online(tmp_config: TemporaryConfiguration) -> None:
     assert result[0]["language"] != ""
 
 
-def test_importer_match(tmp_config: TemporaryConfiguration) -> None:
-    from papis.importer.isbn import ISBNImporter
-
-    assert ISBNImporter.match("9780486670478")
-    assert ISBNImporter.match("this-is-not-an-isbn") is None
-
-    # NOTE: ISBN for Wesseling - An Introduction to Multigrid Methods
-    importer = ISBNImporter.match("9781930217089")
-    assert importer
-    assert importer.uri == "9781930217089"
-
-
 @pytest.mark.resource_setup(cachedir="resources/isbn")
 @pytest.mark.parametrize("basename", ["test_isbn_1"])
 def test_isbn_to_papis(tmp_config: TemporaryConfiguration,

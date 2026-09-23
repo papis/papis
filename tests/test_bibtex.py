@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 if TYPE_CHECKING:
-    from papis.testing import ResourceCache, TemporaryConfiguration
+    from papis.testing import ResourceCache, TemporaryConfiguration, TemporaryLibrary
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
 
@@ -130,7 +130,8 @@ def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
     from papis.bibtex import bibtex_to_dict
 
     bibpath = os.path.join(BIBTEX_RESOURCES, "1.bib")
-    bib, = bibtex_to_dict(bibpath)
+    with open(bibpath, encoding="utf-8") as fd:
+        bib, = bibtex_to_dict(fd.read())
     expected_keys = {
         "title",
         "author",
@@ -174,7 +175,8 @@ def test_author_list_conversion(
 
     from papis.bibtex import bibtex_to_dict
 
-    bib, = bibtex_to_dict(os.path.join(BIBTEX_RESOURCES, bibfile))
+    with open(os.path.join(BIBTEX_RESOURCES, bibfile), encoding="utf-8") as fd:
+        bib, = bibtex_to_dict(fd.read())
     expected = resource_cache.get_local_resource(jsonfile, bib)
 
     from papis.bibtex import _bibtexparser_version  # ruff: ignore[import-private-name]
@@ -368,3 +370,59 @@ def test_import_institution(tmp_config: TemporaryConfiguration) -> None:
 
     from_result = exporter([from_data(to_result)])
     assert from_result == orig
+
+
+def test_bibtex_read_cli(tmp_library: TemporaryLibrary) -> None:
+    """`papis bibtex read` imports all documents from the content."""
+    import os
+
+    from papis.commands.bibtex import cli
+    from papis.testing import PapisRunner
+
+    bibfile = os.path.join(tmp_library.tmpdir, "readme.bib")
+    with open(bibfile, "w", encoding="utf-8") as fd:
+        fd.write(
+            "@article{key,\n"
+            "  author = {D. Bohm},\n"
+            "  title = {Quantum Theory},\n"
+            "  year = {1951},\n"
+            "}\n"
+            "@book{other,\n"
+            "  author = {J. Doe},\n"
+            "  title = {Another Book},\n"
+            "}\n")
+
+    outfile = os.path.join(tmp_library.tmpdir, "out.bib")
+    result = PapisRunner().invoke(
+        cli,
+        ["--noar", "read", bibfile, "save", "--force", outfile])
+    assert result.exit_code == 0
+
+    with open(outfile, encoding="utf-8") as fd:
+        exported = fd.read()
+
+    # unlike the lookup flow (which truncates multi-entry content), reading
+    # a bibtex file takes every entry
+    assert "Quantum Theory" in exported
+    assert "Bohm" in exported
+    assert "Another Book" in exported
+    assert "Doe" in exported
+
+
+def test_bibtex_read_empty_file_cli(
+        tmp_library: TemporaryLibrary,
+        caplog: pytest.LogCaptureFixture) -> None:
+    """An empty file is a valid empty bibliography (no warning, zero documents)."""
+    from papis.commands.bibtex import cli
+    from papis.testing import PapisRunner
+
+    emptyfile = os.path.join(tmp_library.tmpdir, "empty.bib")
+    with open(emptyfile, "w", encoding="utf-8"):
+        pass
+
+    with caplog.at_level("INFO"):
+        result = PapisRunner().invoke(cli, ["--noar", "read", emptyfile])
+
+    assert result.exit_code == 0
+    assert "Found 0 documents." in caplog.text
+    assert "not readable as text" not in caplog.text

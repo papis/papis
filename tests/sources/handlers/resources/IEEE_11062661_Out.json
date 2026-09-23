@@ -1,0 +1,62 @@
+{
+  "abstract": "Integrated sensing and communication (ISAC) allows the same hardware platform and resources to function sensing and communication simultaneously, which reduces the hardware size and addresses the spectrum congestion concerns. However, the sharing of the hardware and resources of the sensing and communication functions raises resource managements. Traditional optimization approaches are developed based on rigid mathematical models in ISAC systems. However, they face computation complexity and may not achieve the desired performance under the dynamics of the ISAC system environments. Machine learning with ability in learning features/patterns of data as well as approximating mathematical models has recently proposed to effectively solve the complicated ISAC problems. In this survey, we thus provide a comprehensive literature review on applications of learning algorithms for ISAC systems. Particularly, we review learning approaches proposed for emerging issues in ISAC systems, including beamforming designing/tracking, waveform design, spectrum allocation, time allocation, and power allocation, angle of arrival (AoA)/angle of departure (AoD) estimation, signal classification, and security issues. Moreover, we present applications of advanced learning methods for wireless sensing, which is considered to be an emerging sensing service of the next-generation networks. We conclude the survey with highlighting technical issues of learning algorithms and discussing future research directions.",
+  "author": "Luong, Nguyen Cong and Huynh-The, Thien and Vu, Thai-Hoc and Van Le, Duc and Nguyen, Huy T. and Hai, Nguyen Duc and Nguyen, Gia-Vuong and Anh, Nguyen Duc Duy and Niyato, Dusit and Kim, Dong In and Pham, Quoc-Viet",
+  "author_list": [
+    {
+      "family": "Luong",
+      "given": "Nguyen Cong"
+    },
+    {
+      "family": "Huynh-The",
+      "given": "Thien"
+    },
+    {
+      "family": "Vu",
+      "given": "Thai-Hoc"
+    },
+    {
+      "family": "Van Le",
+      "given": "Duc"
+    },
+    {
+      "family": "Nguyen",
+      "given": "Huy T."
+    },
+    {
+      "family": "Hai",
+      "given": "Nguyen Duc"
+    },
+    {
+      "family": "Nguyen",
+      "given": "Gia-Vuong"
+    },
+    {
+      "family": "Anh",
+      "given": "Nguyen Duc Duy"
+    },
+    {
+      "family": "Niyato",
+      "given": "Dusit"
+    },
+    {
+      "family": "Kim",
+      "given": "Dong In"
+    },
+    {
+      "family": "Pham",
+      "given": "Quoc-Viet"
+    }
+  ],
+  "doi": "10.1109/COMST.2025.3584333",
+  "issn": "1553-877X",
+  "journal": "IEEE Communications Surveys & Tutorials",
+  "keywords": "Surveys;Integrated sensing and communication;Resource management;Classification algorithms;Array signal processing;Wireless communication;Reviews;Optimization;Wireless sensor networks;Robot sensing systems;Integrated sensing and communication;machine learning;resource management;waveform design;wireless sensing",
+  "month": "",
+  "number": "",
+  "pages": "2572-2611",
+  "ref": "11062661",
+  "title": "Advanced Learning Algorithms for Integrated Sensing and Communication (ISAC) Systems in 6G and Beyond: A Comprehensive Survey",
+  "type": "article",
+  "volume": "28",
+  "year": "2026"
+}

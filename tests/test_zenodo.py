@@ -6,14 +6,13 @@ import pytest
 import requests
 
 if TYPE_CHECKING:
-    from papis.testing import ResourceCache, TemporaryConfiguration, TemporaryLibrary
+    from papis.testing import ResourceCache, TemporaryConfiguration
 
 
 @pytest.mark.resource_setup(cachedir="resources/zenodo")
 @pytest.mark.parametrize("markdownify", [True, False])
 @pytest.mark.parametrize("zenodo_id", ["7391177", "10794563"])
-def test_zenodo_id_to_data(tmp_library: TemporaryLibrary,
-                           resource_cache: ResourceCache,
+def test_zenodo_id_to_data(resource_cache: ResourceCache,
                            monkeypatch: pytest.MonkeyPatch,
                            markdownify: bool,
                            zenodo_id: str) -> None:

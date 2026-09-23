@@ -32,18 +32,13 @@ import papis.logging
 from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import arxiv
 
     from papis.document import KeyConversionPair
 
 logger = papis.logging.get_logger(__name__)
-
-#: Official arXiv API endpoint.
-ARXIV_API_URL = "https://arxiv.org/api/query"
-#: Base URL for arXiv article abstract pages.
-ARXIV_ABS_URL = "https://arxiv.org/abs"
-#: Base URL for arXiv article file pages.
-ARXIV_PDF_URL = "https://arxiv.org/pdf"
 
 
 @cache
@@ -102,24 +97,44 @@ def arxiv_to_papis(result: arxiv.Result) -> dict[str, Any]:
     return data
 
 
+def _query_term(name: str, value: str | Sequence[str]) -> str:
+    """Build a query term for *name* from *value*."""
+    values = [value] if isinstance(value, str) else value
+    terms = []
+    for item in values:
+        # NOTE: the query language has no escape for a quote inside a phrase, so drop
+        # them (and collapse whitespace) instead of breaking the query.
+        # See <https://info.arxiv.org/help/api/user-manual.html#51-details-of-query-construction>.
+        text = " ".join(item.replace('"', " ").split())
+        if not text:
+            continue
+
+        if " " in text or "(" in text or ")" in text:
+            terms.append(f'{name}:"{text}"')
+        else:
+            terms.append(f"{name}:{text}")
+
+    if len(terms) > 1:
+        return f"({' OR '.join(terms)})"
+
+    return terms[0] if terms else ""
+
+
 def get_data(
         query: str = "",
-        author: str = "",
-        title: str = "",
-        abstract: str = "",
-        comment: str = "",
-        journal: str = "",
-        report_number: str = "",
-        category: str = "",
-        id_list: str = "",
-        page: int = 0,
+        author: str | Sequence[str] = "",
+        title: str | Sequence[str] = "",
+        abstract: str | Sequence[str] = "",
+        comment: str | Sequence[str] = "",
+        journal: str | Sequence[str] = "",
+        report_number: str | Sequence[str] = "",
+        category: str | Sequence[str] = "",
+        id_list: str | Sequence[str] = "",
         max_results: int = 30
         ) -> list[dict[str, Any]]:
     """
     Retrieve data from arXiv based on the given query parameters.
     """
-    from urllib.parse import quote
-
     # form query
     search_params = {
         "all": query,
@@ -132,17 +147,19 @@ def get_data(
         "rn": report_number
     }
     search_query = " AND ".join(
-        [f"{key}:{quote(value)}" for key, value in search_params.items() if value]
+        [term for term in (_query_term(key, value)
+                           for key, value in search_params.items()) if term]
     )
     logger.debug("Performing query: '%s'.", search_query)
 
     # gather results
     import arxiv
 
+    ids = [id_list] if isinstance(id_list, str) else list(id_list)
     search = arxiv.Search(
         query=search_query,
         max_results=max_results,
-        id_list=id_list.split(";"),
+        id_list=ids,
         )
 
     from requests.exceptions import RequestException
@@ -152,39 +169,6 @@ def get_data(
         return [arxiv_to_papis(result) for result in client.results(search)]
     except (arxiv.ArxivError, RequestException) as exc:
         raise SourceError(f"Could not query arXiv: {exc}") from exc
-
-
-def validate_arxivid(arxivid: str) -> None:
-    """
-    Check if the given arXiv identifier exists.
-
-    This function tries to perform a web query for the identifier. If it is not
-    found, a :exc:`ValueError` is raised.
-    """
-    from papis.utils import get_session
-
-    with get_session() as session:
-        response = session.get(f"{ARXIV_ABS_URL}/{arxivid}")
-
-    if not response.ok:
-        raise ValueError(
-            f"HTTP ({response.status_code} {response.reason}): "
-            f"'{arxivid}' not an arxivid")
-
-
-def is_arxivid(arxivid: str) -> bool:
-    """
-    Check if a given arXiv identifier exists.
-
-    This function uses :func:`validate_arxivid` to check the identifier, but is
-    meant to be used in a boolean expression.
-    """
-    try:
-        validate_arxivid(arxivid)
-    except ValueError:
-        return False
-    else:
-        return True
 
 
 def pdf_to_arxivid(
@@ -225,33 +209,41 @@ def pdf_to_arxivid(
     return None
 
 
-# NOTE: sometimes it is defined in javascript too, so this regex is very broad.
-_ARXIVID_FORBIDDEB_CHARACTERS = r'"\(\)\s%!$^\'<>@,;:#?&'
+# NOTE: identifiers may be defined in javascript, hence the broad set of separators and
+# the optional quotes. Matching new style (``1701.08223v2``) or old style
+# (``hep-th/9901001``).
+_ARXIVID_CORE = (
+    r"(?:\d{4}\.\d{4,5}(?:v\d+)?|[a-z-]+(?:\.[A-Za-z-]+)?/\d{7}(?:v\d+)?)"
+)
+
 _ARXIVID_REGEX = re.compile(
-    r"arxiv(.org|.com)?"
-    r"(/abs|/pdf)?"
-    r"\s*(=|:|/|\()\s*"
-    r"(\"|')?"
-    fr"(?P<arxivid>[^{_ARXIVID_FORBIDDEB_CHARACTERS}]+)"
-    r'("|\'|\))?',
+    r"arxiv(?:\.org|\.com)?"
+    r"(?:/abs|/pdf)?"
+    r"\s*(?:=|:|/|\()\s*"
+    r"[\"']?"
+    fr"(?P<arxivid>{_ARXIVID_CORE})"
+    r"(?!\d)"
+    r"[\"'\)]?",
     re.I
 )
+
+# NOTE: a bare identifier must be the whole input (minus surrounding white space)
+_ARXIVID_BARE_REGEX = re.compile(rf"\A\s*({_ARXIVID_CORE})\s*\Z", re.I)
 
 
 def find_arxivid_in_text(text: str) -> str | None:
     """
     Find an arXiv identifier in the given *text*.
 
-    This function searches for the arXiv identifier using a simple regular
-    expression. This regular expression is not exact, so there could be false
-    positives. To ensure that the returned value is a valid arXiv identifier,
-    use :func:`validate_arxivid` or :func:`is_arxivid`.
+    Two forms are recognized: an identifier introduced by an ``arxiv`` marker (URLs,
+    ``arXiv:`` prefixes, javascript assignments, ...), which may be located anywhere in
+    the text, and a bare identifier that forms the whole input.
 
     :returns: an arXiv identifier, if any could be found, or *None* otherwise.
     """
-    for match in _ARXIVID_REGEX.finditer(text):
-        aid = match.group("arxivid")
-        aid = aid[:-4] if aid.endswith(".pdf") else aid
-        return aid
+    match = _ARXIVID_REGEX.search(text)
+    if match:
+        return match.group("arxivid")
 
-    return None
+    match = _ARXIVID_BARE_REGEX.match(text)
+    return match.group(1) if match else None

@@ -157,6 +157,26 @@ def test_get_data_invalid_response(tmp_config: TemporaryConfiguration,
         papis.crossref.get_data(dois=["10.0000/foo"])
 
 
+def test_bibtex_to_crossref_types() -> None:
+    """Every mapped type is a valid Crossref type that converts back to the
+    same BibTeX type (aliases included)."""
+    from papis.bibtex import bibtex_type_aliases
+    from papis.crossref import (
+        BIBTEX_TO_CROSSREF_CONVERTER,
+        CROSSREF_TO_BIBTEX_CONVERTER,
+        CROSSREF_TYPES,
+    )
+
+    for bibtex_type, crossref_type in BIBTEX_TO_CROSSREF_CONVERTER.items():
+        assert crossref_type in CROSSREF_TYPES
+
+        converted = CROSSREF_TO_BIBTEX_CONVERTER[crossref_type]
+        expected = bibtex_type_aliases.get(bibtex_type, bibtex_type)
+        assert converted == expected, (
+            f"'{bibtex_type}' -> '{crossref_type}' -> '{converted}'"
+        )
+
+
 @pytest.mark.xfail(reason="online service is flaky")
 def test_doi_to_data_online(tmp_config: TemporaryConfiguration) -> None:
     """Checks that DOI metadata can be fetched from the online crossref service."""

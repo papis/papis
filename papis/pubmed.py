@@ -76,19 +76,6 @@ def pubmed_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     return new_data
 
 
-def is_valid_pmid(pmid: str) -> bool:
-    pmid = pmid.strip()
-    if not pmid.isdigit():
-        return False
-
-    from papis.utils import get_session
-
-    with get_session() as session:
-        response = session.get(PUBMED_URL.format(pmid=pmid, database=PUBMED_DATABASE))
-
-    return response.ok
-
-
 def get_data(query: str = "") -> dict[str, Any]:
     import json
 
@@ -115,7 +102,7 @@ def get_data(query: str = "") -> dict[str, Any]:
     try:
         data = json.loads(response.content.decode())
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-        raise SourceError(f"Unexpected response from PubMed: {exc}") from exc
+        raise SourceError("Unexpected response from PubMed: not valid JSON") from exc
 
     if not data:
         return {}

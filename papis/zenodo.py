@@ -136,25 +136,9 @@ def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     key_conversion = _get_zenodo_key_conversion()
 
     from papis.document import keyconversion_to_data
-    return keyconversion_to_data(key_conversion, data)
-
-
-def is_valid_record_id(record_id: str) -> bool:
-    """Checks if a record is a valid Zenodo record, first checking its form and then
-    testing against Zenodo
-
-    :param record_id: a Zenodo record id
-    :return: whether the record is valid
-    """
-    record_id = record_id.strip()
-    if not record_id.isdigit():
-        return False
-
-    from papis.utils import get_session
-    with get_session() as session:
-        response = session.get(ZENODO_URL.format(record_id=record_id))
-
-    return response.ok
+    data = keyconversion_to_data(key_conversion, data)
+    data["eprinttype"] = "zenodo"
+    return data
 
 
 def _get_zenodo_response(record_id: str) -> str | None:
@@ -198,7 +182,7 @@ def get_data(record_id: str) -> dict[str, Any]:
     try:
         json_data = json.loads(data)
     except json.JSONDecodeError as exc:
-        raise SourceError(f"Unexpected response from Zenodo: {exc}") from exc
+        raise SourceError("Unexpected response from Zenodo: not valid JSON") from exc
 
     if not isinstance(json_data, dict):
         raise SourceError(

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import re
 import tempfile
 from typing import TYPE_CHECKING, Any
 
@@ -12,40 +11,10 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     import bs4
-    import requests
 
 logger = papis.logging.get_logger(__name__)
 
 DOWNLOADERS_EXTENSION_NAME = "papis.downloader"
-
-
-class WebImporter(Importer):
-    """Importer that tries to get data and files from implemented downloaders.
-
-    This importer simply calls :func:`get_info_from_url` on the given URI.
-    """
-
-    def __init__(self, uri: str = "") -> None:
-        super().__init__(uri=uri, name="url")
-
-    @classmethod
-    def match(cls, uri: str) -> Importer | None:
-        return (
-            WebImporter(uri=uri)
-            if re.match(r" *http(s)?.*", uri) is not None
-            else None
-        )
-
-    @cache
-    def fetch(self) -> None:
-        self.logger.info("Attempting to import from URL '%s'.", self.uri)
-        self.ctx = get_info_from_url(self.uri)
-
-    def fetch_data(self) -> None:
-        self.fetch()
-
-    def fetch_files(self) -> None:
-        self.fetch()
 
 
 class Downloader(Importer):
@@ -211,11 +180,13 @@ class Downloader(Importer):
         else:
             rawdata = self.get_document_data()
             if rawdata and self.check_document_format():
+                from papis.gather import _TEMP_DIR
+
                 if self.document_filename:
                     from papis.paths import make_unique_file
 
                     filename = make_unique_file(
-                        os.path.join(tempfile.gettempdir(), self.document_filename)
+                        os.path.join(_TEMP_DIR.name, self.document_filename)
                     )
                     with open(filename, mode="wb") as f:
                         f.write(rawdata)
@@ -226,7 +197,7 @@ class Downloader(Importer):
 
                     with tempfile.NamedTemporaryFile(
                             mode="wb+", delete=False,
-                            suffix=extension) as f:
+                            suffix=extension, dir=_TEMP_DIR.name) as f:
                         f.write(rawdata)
                         filename = f.name
 
@@ -362,8 +333,10 @@ class Downloader(Importer):
 
         self.logger.info("Downloading file from '%s'.", url)
 
+        from papis.gather import get_filename_from_response
+
         response = self.session.get(url, cookies=self.cookies)
-        self.document_filename = _get_filename_from_response(response)
+        self.document_filename = get_filename_from_response(response)
         self.document_data = response.content
 
     def check_document_format(self) -> bool:
@@ -387,186 +360,3 @@ class Downloader(Importer):
                 "the expected types: '%s'",
                 "', '".join(self.expected_document_extensions))
             return False
-
-
-def get_available_downloaders() -> list[type[Downloader]]:
-    """Get all declared downloader classes."""
-    from papis.plugin import get_plugins
-
-    return list(get_plugins(DOWNLOADERS_EXTENSION_NAME).values())
-
-
-def get_matching_downloaders(url: str) -> list[Downloader]:
-    """Get downloaders matching the given *url*.
-
-    :param url: a URL to match.
-    :returns: a list of downloaders (sorted by priority).
-    """
-    available_downloaders = get_available_downloaders()
-    logger.debug("Found available downloaders: '%s'.",
-                 "', '".join([d.__module__ for d in available_downloaders]))
-
-    matches = [d
-               for maybe_downloader in available_downloaders
-               for d in [maybe_downloader.match(url)]
-               if d is not None]  # List[Downloader]
-
-    logger.debug("Found downloaders matching query '%s': '%s'.",
-                 url, "', '".join([d.name for d in matches]))
-
-    return sorted(matches, key=lambda d: d.priority, reverse=True)
-
-
-def get_downloader_by_name(name: str) -> type[Downloader]:
-    """Get a specific downloader by its name.
-
-    :param name: the name of the downloader. Note that this is the name of
-        the entry point used to define the downloader. In general, this should
-        be the same as its name, but this is not enforced.
-    :returns: a downloader class.
-    """
-    from papis.plugin import InvalidPluginTypeError, get_plugin_by_name
-
-    cls = get_plugin_by_name(DOWNLOADERS_EXTENSION_NAME, name)
-    if not issubclass(cls, Downloader):
-        raise InvalidPluginTypeError(DOWNLOADERS_EXTENSION_NAME, name)
-
-    return cls  # type: ignore[no-any-return]
-
-
-def get_info_from_url(
-        url: str,
-        expected_doc_format: str | None = None
-        ) -> Context:
-    """Get information directly from the given *url*.
-
-    :param url: the URL of a resource.
-    :param expected_doc_format: an expected document file type, that is used to
-        override the file type defined by the chosen downloader.
-    """
-
-    downloaders = get_matching_downloaders(url)
-    if not downloaders:
-        logger.warning("No matching downloader found for '%s'.", url)
-        return Context()
-
-    logger.debug("Found %d matching downloaders.", len(downloaders))
-
-    down = downloaders[0]
-    logger.info("Using downloader '%s'.", down)
-
-    if (
-            down.expected_document_extensions is None
-            and expected_doc_format is not None):
-        down.expected_document_extensions = (expected_doc_format,)
-
-    down.fetch()
-    return down.ctx
-
-
-def _get_filename_from_response(response: requests.Response) -> str | None:
-    filename = None
-
-    # NOTE: we can guess the filename from the response headers
-    #   Content-Disposition: inline; filename="some_file_name.ext"
-    #   Content-Disposition: attachment; filename="some_file_name.ext"
-    key = "Content-Disposition"
-    if not filename and key in response.headers:
-        from email.message import EmailMessage
-
-        msg = EmailMessage()
-        msg[key] = response.headers[key]
-        filename = msg.get_filename()
-
-    key = "Content-Type"
-    if not filename and key in response.headers:
-        from email.message import EmailMessage
-
-        msg = EmailMessage()
-        msg[key] = response.headers[key]
-
-        from mimetypes import guess_extension
-
-        ext = guess_extension(msg.get_content_type())
-
-        from urllib.parse import urlsplit
-
-        result = urlsplit(response.url)
-        if result.path.strip("/"):
-            basename = os.path.basename(result.path)
-        else:
-            basename = result.netloc
-        filename = f"{basename}{ext}"
-
-    return filename
-
-
-def download_document(
-        url: str,
-        expected_document_extension: str | None = None,
-        cookies: dict[str, Any] | None = None,
-        filename: str | None = None,
-        ) -> str | None:
-    """Download a document from *url* and store it in a local file.
-
-    An appropriate filename is deduced from the HTTP response in most cases.
-    If this is not possible, a temporary file is created instead. To ensure that
-    the desired filename is chosen, provide the *filename* argument instead.
-
-    :param url: the URL of a remote file.
-    :param expected_document_extension: an expected file extension. If *None*, then
-        an extension is guessed from the file contents or from the *filename*.
-    :param filename: a file name for the document, regardless of the given URL and
-        extension.
-
-    :returns: an absolute path to a local file containing the data from *url*.
-    """
-    if cookies is None:
-        cookies = {}
-
-    from papis.utils import get_session
-
-    try:
-        with get_session() as session:
-            response = session.get(url, cookies=cookies, allow_redirects=True)
-    except Exception as exc:
-        logger.error("Failed to fetch '%s'.", url, exc_info=exc)
-        return None
-
-    if not response.ok:
-        logger.error("Could not download document '%s'. (HTTP status: %s %d).",
-                     url, response.reason, response.status_code)
-        return None
-
-    if not filename:
-        filename = _get_filename_from_response(response)
-
-    # try go guess an extension
-    ext = expected_document_extension
-    if ext is None:
-        if filename is None:
-            from papis.filetype import guess_content_extension
-            ext = guess_content_extension(response.content)
-            ext = f".{ext}"
-        else:
-            _, ext = os.path.splitext(filename)
-    else:
-        if not ext.startswith("."):
-            ext = f".{ext}"
-
-    # write out the file contents
-    if filename:
-        root, _ = os.path.splitext(os.path.basename(filename))
-        outfile = os.path.join(tempfile.gettempdir(), f"{root}{ext}")
-
-        with open(outfile, mode="wb") as f:
-            f.write(response.content)
-    else:
-        with tempfile.NamedTemporaryFile(
-                mode="wb+",
-                suffix=f"{ext}",
-                delete=False) as f:
-            f.write(response.content)
-            outfile = f.name
-
-    return outfile

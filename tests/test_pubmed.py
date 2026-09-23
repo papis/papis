@@ -81,44 +81,6 @@ def test_get_data_online(tmp_config: TemporaryConfiguration) -> None:
     assert data["author_list"]
 
 
-@pytest.mark.resource_setup(cachedir="resources/pubmed")
-def test_importer_fetch(
-    tmp_config: TemporaryConfiguration,
-    monkeypatch: pytest.MonkeyPatch,
-    resource_cache: ResourceCache,
-) -> None:
-    """Checks that the pubmed importer fetches data correctly."""
-    import papis.utils
-    from papis.importer.pubmed import PubMedImporter
-
-    monkeypatch.setattr(
-        papis.utils, "get_session", lambda: _fake_session({"28012456": 200})
-    )
-
-    importer = PubMedImporter(uri="28012456")
-    importer.fetch_data()
-
-    expected = resource_cache.get_local_resource("28012456_out.json", importer.ctx.data)
-    assert importer.ctx.data == expected
-
-
-def test_importer_match(
-    tmp_config: TemporaryConfiguration, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Checks that only valid PMIDs match."""
-    import papis.utils
-    from papis.importer.pubmed import PubMedImporter
-
-    session = _fake_session({"28012456": 200})
-    monkeypatch.setattr(papis.utils, "get_session", lambda: session)
-
-    assert PubMedImporter.match("28012456")
-    assert PubMedImporter.match("   1397  ") is None  # NOTE: unknown ID (404)
-    assert PubMedImporter.match("ABC1") is None  # NOTE: not a number
-    assert PubMedImporter.match("1ABC") is None
-    assert len(session.calls) == 2  # only the digit-only IDs
-
-
 def _fake_response(status_code: int = 200, content: bytes = b"") -> Any:
     """Return a replacement for ``requests.Session.get``."""
     def get(self: Any, url: str, **kwargs: Any) -> requests.Response:

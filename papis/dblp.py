@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
@@ -16,7 +15,6 @@ DBLP_API_ENDPOINTS = {
     "author": "https://dblp.org/search/author/api",
     "venue": "https://dblp.org/search/venue/api",
 }
-DBLP_URL_FORMAT = "https://dblp.org/rec/{uri}.html"
 DBLP_BIB_FORMAT = "https://dblp.org/rec/{uri}.bib"
 
 DBLP_FORMATS = frozenset(["xml", "json", "jsonp"])
@@ -152,7 +150,7 @@ def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
             search(query=query, output_format="json", max_results=max_results)
             )
     except json.JSONDecodeError as exc:
-        raise SourceError(f"Unexpected response from DBLP: {exc}") from exc
+        raise SourceError("Unexpected response from DBLP: not valid JSON") from exc
 
     result = response.get("result") if isinstance(response, dict) else None
     if not isinstance(result, dict):
@@ -173,18 +171,3 @@ def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
 
     key_conversion = _get_dblp_key_conversion()
     return [keyconversion_to_data(key_conversion, hit["info"]) for hit in hits]
-
-
-def is_valid_dblp_key(key: str) -> bool:
-    # FIXME: Is there some documentation on the form of the keys? From a quick
-    # skim, they seem to be of the form
-    #   <venue type>/<venue id>/<document id>
-
-    if not re.match(r"[^\/]+\/[^\/]+\/[^\/]+", key):
-        return False
-
-    from papis.utils import get_session
-
-    with get_session() as session:
-        response = session.get(DBLP_URL_FORMAT.format(uri=key))
-        return response.ok

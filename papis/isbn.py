@@ -78,7 +78,7 @@ def json_request(url: str, params: dict[str, str] | None = None, *,
     try:
         return response.json()
     except requests.exceptions.JSONDecodeError as exc:
-        raise SourceError(f"Unexpected response from ISBN: {exc}") from exc
+        raise SourceError("Unexpected response from ISBN: not valid JSON") from exc
 
 
 def googlebooks_isbn_search(query: str) -> str | None:

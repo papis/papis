@@ -34,6 +34,37 @@ ARXIV_TEST_URLS = [
     ("http://arxiv.com/pdf/1110.3658.pdf", "1110.3658"),
 ]
 
+#: Bare identifiers, i.e. the whole input is the id (modulo whitespace).
+ARXIV_TEST_BARE_IDS = [
+    "1701.08223",
+    "1701.08223v2",
+    "1205.0093",
+    "hep-th/9901001",
+    "math.GT/0309136",
+    "cs/0111010",
+    "HEP-TH/9901001",
+    "  1701.08223  ",
+    "hep-th/9901001\n",
+]
+
+#: Inputs that must not yield any identifier.
+ARXIV_TEST_NO_IDS = [
+    "1701.082231",                  # too many digits after the dot
+    "1701.08223v",                  # version without a number
+    "hep-th/990100",                # old style ids have exactly 7 digits
+    "hep-th/99010012",
+    "9901001",                      # old style without a category
+    "2024.1234 embedded",           # not the whole input
+    "In 2024.1234 we",
+    "v2 1701.08223",
+    "1701.08223, 1701.08224",       # two ids
+    "10.1103/PhysRevD.100.014501",  # a DOI
+    "1701.08223.pdf",
+    "arXiv:2024.123456",            # too long, do not truncate
+    "arXiv:my-cool-paper",
+    "arXiv 1701.08223",             # marker without a separator
+]
+
 
 def _load_arxiv_result() -> arxiv.Result:
     """Reconstruct a real :class:`arxiv.Result` from a captured API response."""
@@ -106,77 +137,57 @@ def test_get_data(tmp_config: TemporaryConfiguration,
     expected = resource_cache.get_local_resource("get_data_out.json", data)
     assert data == expected
     assert len(client.searches) == 1
-    assert client.searches[0].query == "ti:Finite%20Temperature AND au:Garnet%20Chan"
+    assert client.searches[0].query == 'ti:"Finite Temperature" AND au:"Garnet Chan"'
     assert client.searches[0].max_results == 1
+
+
+def test_get_data_query_construction(
+        tmp_config: TemporaryConfiguration,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Query terms are unencoded and multi-word values are phrases.
+
+    The ``arxiv`` client URL-encodes the query itself, so pre-encoding a term
+    here would double-encode it (and make it match nothing).
+    """
+    import papis.arxiv
+
+    class FakeClient:
+        def __init__(self) -> None:
+            self.searches: list[arxiv.Search] = []
+
+        def results(self, search: arxiv.Search) -> list[arxiv.Result]:
+            self.searches.append(search)
+            return []
+
+    client = FakeClient()
+    monkeypatch.setattr("arxiv.Client", lambda: client)
+
+    papis.arxiv.get_data(query="gauge theory", max_results=1)
+    papis.arxiv.get_data(
+        author=["Witten", "Garnet Chan"], category="cs.AI", max_results=1)
+    papis.arxiv.get_data(title='A "quoted" title', max_results=1)
+
+    assert [search.query for search in client.searches] == [
+        'all:"gauge theory"',
+        '(au:Witten OR au:"Garnet Chan") AND cat:cs.AI',
+        'ti:"A quoted title"',
+    ]
 
 
 def test_find_arxiv_id(tmp_config: TemporaryConfiguration) -> None:
     from papis.arxiv import find_arxivid_in_text
 
-    for url, arxivid in ARXIV_TEST_URLS:
-        assert find_arxivid_in_text(url) == arxivid, (
-            f"Could not retrieve correct arxivid from {url}")
+    for text, arxivid in ARXIV_TEST_URLS:
+        assert find_arxivid_in_text(text) == arxivid, (
+            f"Could not retrieve correct arxivid from {text}")
 
+    for text in ARXIV_TEST_BARE_IDS:
+        assert find_arxivid_in_text(text) == text.strip(), (
+            f"Could not retrieve bare arxivid from {text}")
 
-def test_downloader_match(tmp_config: TemporaryConfiguration) -> None:
-    from papis.arxiv import ARXIV_ABS_URL
-    from papis.downloaders.arxiv import ArxivDownloader
-
-    down = ArxivDownloader.match("arxiv.org/sdf")
-    assert isinstance(down, ArxivDownloader)
-
-    down = ArxivDownloader.match("arxiv.com/!@#!@$!%!@%!$chemed.6b00559")
-    assert down is None
-
-    for uri, arxivid in ARXIV_TEST_URLS[-2:]:
-        down = ArxivDownloader.match(uri)
-        assert isinstance(down, ArxivDownloader)
-        assert down
-        assert down.arxivid == arxivid
-        assert down.uri == f"{ARXIV_ABS_URL}/{arxivid}"
-
-
-@pytest.mark.xfail(reason="online service is flaky")
-@pytest.mark.parametrize("url", [
-    "https://arxiv.org/abs/1001.3032",
-    "https://arxiv.org/abs/1001.3032vunknown",
-    ])
-def test_importer_downloader_fetch_online(tmp_config: TemporaryConfiguration,
-                                        url: str) -> None:
-    """End-to-end fetch against the online arxiv service."""
-    from papis.downloaders import get_matching_downloaders
-    from papis.downloaders.arxiv import ArxivDownloader
-
-    downs = get_matching_downloaders(url)
-    assert len(downs) >= 1
-
-    down = downs[0]
-    assert down.name == "arxiv"
-    assert isinstance(down, ArxivDownloader)
-    assert down.expected_document_extensions == ("pdf",)
-
-    doc = down.get_document_data()
-    if down.result:
-        assert doc is not None
-        assert down.check_document_format()
-    else:
-        assert down.arxivid is not None
-        assert doc is None
-
-
-@pytest.mark.xfail(reason="online service is flaky")
-def test_validate_arxivid_online(tmp_config: TemporaryConfiguration) -> None:
-    """Existence check against arxiv's online abstract pages."""
-    from papis.arxiv import validate_arxivid
-    # good
-    validate_arxivid("1206.6272")
-    validate_arxivid("1206.6272v1")
-    validate_arxivid("1206.6272v2")
-
-    # bad
-    for bad in ["1206.6272v3", "blahv2"]:
-        with pytest.raises(ValueError, match="not an arxivid"):
-            validate_arxivid(bad)
+    for text in ARXIV_TEST_NO_IDS:
+        assert find_arxivid_in_text(text) is None, (
+            f"Unexpected arxivid retrieved from {text}")
 
 
 def test_get_data_no_results(tmp_config: TemporaryConfiguration,
