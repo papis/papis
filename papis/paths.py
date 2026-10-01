@@ -5,6 +5,8 @@ import pathlib
 import sys
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
+from typing_extensions import deprecated
+
 import papis.config
 import papis.logging
 
@@ -60,16 +62,15 @@ def unique_suffixes(chars: str | None = None, skip: int = 0) -> Iterator[str]:
     yield from islice(ids(), max(skip, 0), None)
 
 
+@deprecated(
+    "'papis.paths.normalize_path' is deprecated and will be removed in Papis "
+    "0.17. Prefer 'papis.paths.normalize_path_part' instead."
+)
 def normalize_path(
         path: str, *,
         lowercase: bool | None = None,
         extra_chars: str | None = None,
         separator: str | None = None) -> str:
-    from warnings import warn
-    warn("'papis.paths.normalize_path' is deprecated and will be removed in Papis "
-         "0.17. Prefer 'papis.paths.normalize_path_part' instead.",
-         DeprecationWarning, stacklevel=2)
-
     return normalize_path_part(
         path,
         lowercase=lowercase,
@@ -236,17 +237,15 @@ def get_document_file_name(
     return "{}{}.{}".format(stem, f"-{suffix}" if suffix else "", ext)
 
 
+@deprecated(
+    "'papis.paths.get_document_hash_folder' is deprecated and will be removed. "
+    "Use 'papis.paths.get_document_folder' instead."
+)
 def get_document_hash_folder(
         doc: DocumentLike,
         paths: Iterable[str] | None = None, *,
         file_read_limit: int = 2000,
         seed: str | None = None) -> str:
-    from warnings import warn
-
-    warn("'get_document_hash_folder' is deprecated and will be removed. "
-         "Use 'papis.paths.get_document_folder' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.document import from_data
     doc = from_data(doc)
 

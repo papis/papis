@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeVar
 
+from typing_extensions import deprecated
+
 import papis.logging
 
 if TYPE_CHECKING:
@@ -452,16 +454,20 @@ def collect_from_importers(
 
 # DEPRECATED
 
+@deprecated(
+    "'papis.importer.available_importers' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.importer.get_available_importers' instead."
+
+)
 def available_importers() -> list[str]:
-    from warnings import warn
-
-    warn("'papis.importer.available_importers' is deprecated and will be "
-         "removed in Papis v0.16. Use 'papis.importer.get_available_importers' "
-         "instead.", DeprecationWarning, stacklevel=2)
-
     return get_available_importers()
 
 
+@deprecated(
+    "'papis.importer.get_importers' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.importer.get_available_importers' "
+    "and 'papis.importer.get_importer_by_name' instead."
+)
 def get_importers() -> list[type[Importer]]:
     """Get a list of available importer classes."""
     from papis.plugin import get_plugins

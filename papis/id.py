@@ -4,6 +4,8 @@ import hashlib
 import random
 from typing import TYPE_CHECKING
 
+from typing_extensions import deprecated
+
 import papis.logging
 
 if TYPE_CHECKING:
@@ -42,25 +44,20 @@ def compute_an_id(doc: Document,
     return hashlib.md5(string.encode()).hexdigest()
 
 
+@deprecated(
+    "'papis.id.key_name' is deprecated and will be removed in Papis v0.15. "
+    "Use 'papis.id.ID_KEY_NAME' instead."
+)
 def key_name() -> str:
     """Get Papis ID key name."""
-    from warnings import warn
-
-    warn("This function is deprecated and will be removed in the next "
-         "version of Papis (after 0.15). Use 'papis.id.ID_KEY_NAME' instead.",
-         DeprecationWarning, stacklevel=2)
-
     return ID_KEY_NAME
 
 
+@deprecated(
+    "'papis.id.has_id' is deprecated and will be removed in Papis v0.15. "
+    "Check for the 'papis.id.ID_KEY_NAME' key directly in the document instead.",
+)
 def has_id(doc: DocumentLike) -> bool:
-    from warnings import warn
-
-    warn("This function is deprecated and will be removed in the next "
-         "version of Papis (after 0.15). Check for the 'papis.id.ID_KEY_NAME' "
-         "key directly in the document instead.",
-         DeprecationWarning, stacklevel=2)
-
     return ID_KEY_NAME in doc
 
 

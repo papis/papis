@@ -107,6 +107,7 @@ import os
 from typing import TYPE_CHECKING, Any
 
 import click
+from typing_extensions import deprecated
 
 import papis.cli
 import papis.config
@@ -120,38 +121,35 @@ if TYPE_CHECKING:
 logger = papis.logging.get_logger(__name__)
 
 
+@deprecated(
+    "'papis.commands.add.get_file_name' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.get_document_file_name' instead.",
+)
 def get_file_name(
         doc: Document,
         original_filepath: str,
         suffix: str = "",
         file_name_format: AnyString | None = None,
         base_name_limit: int = 150) -> str:
-    from warnings import warn
-    warn("'get_file_name' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.get_document_file_name' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.paths import get_document_file_name
     return get_document_file_name(doc, original_filepath, suffix,
                                   base_name_limit=base_name_limit)
 
 
+@deprecated(
+    "'papis.commands.add.get_hash_folder' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.get_document_folder' instead.",
+)
 def get_hash_folder(data: dict[str, Any], document_paths: list[str]) -> str:
-    from warnings import warn
-    warn("'get_hash_folder' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.get_document_hash_folder' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.paths import get_document_hash_folder
     return get_document_hash_folder(data, document_paths)
 
 
+@deprecated(
+    "'papis.commands.add.ensure_new_folder' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.get_document_unique_folder' instead.",
+)
 def ensure_new_folder(path: str) -> str:
-    from warnings import warn
-    warn("'ensure_new_folder' is deprecated and will be removed in the next "
-         "version. Use 'papis.paths.get_document_unique_folder' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.paths import _make_unique_folder
     return _make_unique_folder(path)
 

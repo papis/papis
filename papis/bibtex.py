@@ -12,6 +12,8 @@ import string
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
+from typing_extensions import deprecated
+
 import papis.config
 import papis.logging
 
@@ -629,12 +631,10 @@ def author_list_to_author(doc: Document,
     return " and ".join(result)
 
 
+@deprecated(
+    "'papis.bibtex.to_bibtex' is deprecated and will be removed in Papis v0.16. "
+    "Use 'papis.exporters.bibtex.to_bibtex' instead."
+)
 def to_bibtex(document: Document, *, indent: int = 2) -> str:
-    from warnings import warn
-
-    warn("'papis.bibtex.to_bibtex' is deprecated and will be removed in Papis v0.16. "
-         "Use 'papis.exporters.bibtex.to_bibtex' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.exporters.bibtex import to_bibtex as _to_bibtex
-    return _to_bibtex(document, indent=indent)
+    import papis.exporters.bibtex
+    return papis.exporters.bibtex.to_bibtex(document, indent=indent)
