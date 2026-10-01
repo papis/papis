@@ -3,6 +3,7 @@ from __future__ import annotations
 import click
 
 import papis.logging
+from papis.exceptions import SourceError
 from papis.explorers import as_explorer
 
 logger = papis.logging.get_logger(__name__)
@@ -44,7 +45,12 @@ def cli(
     from papis.dblp import get_data
     from papis.document import from_data
 
-    data = get_data(query=query, max_results=max_results)
+    try:
+        data = get_data(query=query, max_results=max_results)
+    except SourceError as exc:
+        logger.error("%s", exc)
+        return
+
     docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 
