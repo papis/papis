@@ -14,7 +14,7 @@ import papis.logging
 from papis.database.base import Database
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Generator, Sequence
 
     from papis.document import Document
     from papis.library import Library
@@ -131,7 +131,7 @@ def _make_sqlite_schema(table: str, columns: Sequence[str]) -> str:
 
 
 @contextmanager
-def transaction(conn: sqlite3.Connection, mode: str = "DEFERRED") -> Iterator[None]:
+def transaction(conn: sqlite3.Connection, mode: str = "DEFERRED") -> Generator[None]:
     if mode not in {"DEFERRED", "IMMEDIATE", "EXCLUSIVE"}:
         raise ValueError(f"Unsupported transaction mode '{mode}'")
 

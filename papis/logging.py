@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 import colorama as c
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
 
 
 PAPIS_DEBUG = "PAPIS_DEBUG" in os.environ
@@ -101,7 +101,7 @@ def _disable_color(color: str = "auto") -> bool:
 
 
 @contextmanager
-def quiet(name: str, level: int = logging.WARNING) -> Iterator[None]:
+def quiet(name: str, level: int = logging.WARNING) -> Generator[None]:
     """Temporarily sets the logging in the given module to ``WARNING``."""
     logger = logging.getLogger(name)
 
