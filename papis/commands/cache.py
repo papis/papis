@@ -55,6 +55,7 @@ import os
 import click
 
 import papis.cli
+import papis.logging
 from papis.commands import AliasedGroup
 
 logger = papis.logging.get_logger(__name__)

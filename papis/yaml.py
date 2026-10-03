@@ -11,7 +11,7 @@ import papis.logging
 try:
     from yaml import CSafeDumper as Dumper, CSafeLoader as Loader
 except ImportError:
-    from yaml import (  # type: ignore[assignment]
+    from yaml import (
         SafeDumper as Dumper,
         SafeLoader as Loader,
     )

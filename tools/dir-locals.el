@@ -1,21 +1,32 @@
 ;;; Directory Local Variables
 ;;; For more information see (info "(emacs) Directory Variables")
 
-((flycheck-mode . ((eval . (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))))
- (python-mode . ((eval . (let
-                             ((root
-                               (expand-file-name (project-root
-                                                  (project-current)))))
-                           (setq-local python-shell-interpreter
-                                       (format "%s/env/bin/python" root)
-                                       flycheck-pycheckers-args
-                                       (format "--venv-path=%s/env" root)
-                                       flycheck-python-flake8-executable
-                                       (format "%s/env/bin/flake8" root)
-                                       flycheck-python-mypy-executable
-                                       (format "%s/env/bin/mypy" root)
-                                       flycheck-python-pylint-executable
-                                       (format "%s/env/bin/pylint" root))))
+((python-mode . ((eval . (with-eval-after-load 'flycheck
+                           (flycheck-define-checker python-ty
+                                                    "A Python type checker using ty."
+                                                    :command ("ty" "check"
+                                                              "--color=never"
+                                                              "--output-format=concise"
+                                                              source-original)
+                                                    :working-directory flycheck-python-find-project-root
+                                                    :error-patterns
+                                                    ((error line-start
+                                                            (file-name) ":" line ":" column ": error"
+                                                            (optional "[" (id (one-or-more (not (any "]")))) "]")
+                                                            " " (message) line-end)
+                                                     (warning line-start
+                                                              (file-name) ":" line ":" column ": warning"
+                                                              (optional "[" (id (one-or-more (not (any "]")))) "]")
+                                                              " " (message) line-end)
+                                                     (info line-start
+                                                           (file-name) ":" line ":" column ": info"
+                                                           (optional "[" (id (one-or-more (not (any "]")))) "]")
+                                                           " " (message) line-end))
+                                                    :predicate flycheck-buffer-saved-p
+                                                    :modes (python-mode python-ts-mode))
+                           (flycheck-add-next-checker 'python-ruff '(t . python-ty))))
                  (mode . flycheck)
                  (mode . company)
-                 (flycheck-pycheckers-checkers . (mypy3 flake8)))))
+                 (flycheck-checker . python-ruff)
+                 (flycheck-disabled-checkers . (python-mypy python-flake8
+                                                            python-pylint)))))

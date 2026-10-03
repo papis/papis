@@ -10,14 +10,14 @@ from papis.testing import TemporaryConfiguration
 
 
 def test_default_opener(tmp_config: TemporaryConfiguration) -> None:
-    import papis.config
+    from papis.defaults import get_default_opener
 
     if sys.platform.startswith("darwin"):
-        assert papis.defaults.get_default_opener() == "open"
+        assert get_default_opener() == "open"
     elif sys.platform.startswith("win"):
-        assert papis.defaults.get_default_opener() == "cmd.exe /c start"
+        assert get_default_opener() == "cmd.exe /c start"
     else:
-        assert papis.defaults.get_default_opener() == "xdg-open"
+        assert get_default_opener() == "xdg-open"
 
 
 def test_get_config_paths(tmp_config: TemporaryConfiguration) -> None:

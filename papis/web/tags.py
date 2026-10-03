@@ -33,7 +33,7 @@ def _tag(tag: str, libname: str) -> t.html_tag:
 def tags_list_div(tags: Tags, libname: str) -> None:
     with t.span(cls=PAPIS_TAGS_CLASS):
         wh.icon("hashtag")
-        for tag in papis.web.tags.ensure_tags_list(tags):
+        for tag in ensure_tags_list(tags):
             _tag(tag=tag, libname=libname)
 
 

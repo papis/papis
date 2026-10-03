@@ -27,6 +27,8 @@ def test_pwd(tmp_library: TemporaryLibrary) -> None:
 
 
 def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
+    from papis.yaml import data_to_yaml
+
     db = papis.database.get()
     cli_runner = PapisRunner()
 
@@ -60,7 +62,7 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     # NOTE: modifying `doc` directly may modify the version in the database, so
     # this modifies the info file behind its back completely to check the update
     doc_dict = {**dict(doc), "tags": "test-update"}
-    papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
+    data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
 
     query_results = db.query_dict({"tags": "test-update"})
     assert len(query_results) == 0
@@ -78,7 +80,7 @@ def test_rm_add_update(tmp_library: TemporaryLibrary) -> None:
     time.sleep(1)
 
     doc_dict = {**dict(doc), "tags": "test-update-newer"}
-    papis.yaml.data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
+    data_to_yaml(doc.get_info_file(), doc_dict, allow_unicode=True)
 
     query_results = db.query_dict({"tags": "test-update-newer"})
     assert len(query_results) == 0

@@ -18,22 +18,22 @@ class PromptToolkitPicker(Picker[T]):
 
     def __call__(
             self,
-            options: Sequence[T],
+            items: Sequence[T],
             header_filter: Callable[[T], str] = str,
             match_filter: Callable[[T], str] = str,
             default_index: int = 0
             ) -> list[T]:
         from papis.tui.picker import PickerApplication
 
-        if len(options) == 0:
+        if len(items) == 0:
             return []
 
-        if len(options) == 1:
-            return [options[0]]
+        if len(items) == 1:
+            return [items[0]]
 
         def run() -> list[T]:
             picker = PickerApplication(
-                options,
+                items,
                 default_index,
                 header_filter,
                 match_filter

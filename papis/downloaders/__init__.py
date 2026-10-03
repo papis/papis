@@ -109,7 +109,7 @@ class Downloader(Importer):
         self.session.close()
 
     @classmethod
-    def match(cls, url: str) -> Downloader | None:
+    def match(cls, url: str) -> Downloader | None:  # ty: ignore[invalid-method-override]
         """Check if the downloader can process the given URL.
 
         For example, an importer that supports links from the arXiv can check
@@ -431,7 +431,7 @@ def get_downloader_by_name(name: str) -> type[Downloader]:
     if not issubclass(cls, Downloader):
         raise InvalidPluginTypeError(DOWNLOADERS_EXTENSION_NAME, name)
 
-    return cls  # type: ignore[no-any-return]
+    return cls
 
 
 def get_info_from_url(
@@ -471,7 +471,7 @@ def _get_filename_from_response(response: requests.Response) -> str | None:
     #   Content-Disposition: inline; filename="some_file_name.ext"
     #   Content-Disposition: attachment; filename="some_file_name.ext"
     key = "Content-Disposition"
-    if not filename and key in response.headers:
+    if not filename and key in response.headers:  # ty: ignore[redundant-condition]
         from email.message import EmailMessage
 
         msg = EmailMessage()

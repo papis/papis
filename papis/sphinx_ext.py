@@ -22,20 +22,19 @@ import os
 import sys
 from typing import TYPE_CHECKING, Any, ClassVar
 
-import docutils
 from docutils.parsers.rst import Directive
 from sphinx_click.ext import ClickDirective
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from docutils.nodes import TextElement
+    from docutils.nodes import Element, TextElement
     from sphinx.addnodes import pending_xref
     from sphinx.application import Sphinx
     from sphinx.environment import BuildEnvironment
 
 
-class CustomClickDirective(ClickDirective):     # type: ignore[misc]
+class CustomClickDirective(ClickDirective):
     """A custom
     `sphinx_click.ClickDirective <https://sphinx-click.readthedocs.io/en/latest/>`__
     that removes the automatic title from the generated documentation. Otherwise it
@@ -131,6 +130,8 @@ class PapisConfig(Directive):
         else:
             default_type = None
 
+        from docutils.statemachine import StringList
+
         lines = [
             f".. confval:: {key}",
             "",
@@ -141,9 +142,11 @@ class PapisConfig(Directive):
             f"    :default: ``{default!r}``",
             "",
         ] + [f"    {line}" for line in self.content]
-        self.content = docutils.statemachine.StringList(lines)
+        self.content = StringList(lines)
 
-        node = docutils.nodes.paragraph()
+        from docutils.nodes import paragraph
+
+        node = paragraph()
         node.document = self.state.document
         self.state.nested_parse(self.content, self.content_offset, node)
 
@@ -226,7 +229,7 @@ def process_autodoc_missing_reference(
         env: BuildEnvironment,
         node: pending_xref,
         contnode: TextElement
-        ) -> TextElement | None:
+        ) -> Element | TextElement | None:
     """Fix missing references due to string annotations.
 
     This uses an alias dictionary called ``papis_missing_reference_aliases``
@@ -308,11 +311,11 @@ def process_autodoc_missing_reference(
 
         if new_node is None:
             py_domain = env.get_domain(domain)
-            new_node = py_domain.resolve_xref(  # type: ignore[assignment,unused-ignore]
+            new_node = py_domain.resolve_xref(
                 env, node["refdoc"], app.builder, reftype, objname,
                 node, contnode)
 
-    return new_node  # type: ignore[no-any-return,unused-ignore]
+    return new_node
 
 
 def setup(app: Sphinx) -> dict[str, Any]:

@@ -17,8 +17,9 @@ if TYPE_CHECKING:
 
     # NOTE: these were introduced in click 8.4.0. We cannot use them directly
     # in the class definitions because they're evaluated eagerly there.
-    FormatPatternParamTypeBase = click.ParamType[str | FormatPattern]  # type: ignore[type-arg]
-    StringParamTypeBase = click.ParamType[str]  # type: ignore[type-arg]
+    _ParamType: Any = click.ParamType
+    FormatPatternParamTypeBase = _ParamType[str | FormatPattern]
+    StringParamTypeBase = _ParamType[str]
 else:
     FormatPatternParamTypeBase = click.ParamType
     StringParamTypeBase = click.ParamType
@@ -130,8 +131,10 @@ def _query_shell_complete(ctx: click.Context,
         else papis.config.getstring("default-query-string")
     )
 
+    from papis.logging import quiet
+
     # NOTE: suppress all logging to avoid spamming the screen during completion
-    with papis.logging.quiet("papis", level=logging.ERROR):
+    with quiet("papis", level=logging.ERROR):
         comps_and_helps = (
             (
                 _clean_completions(format(fmt, doc)),
@@ -339,6 +342,6 @@ def bypass(
     group.add_command(command, command_name)
 
     def _decorator(new_callback: Callable[..., Any]) -> None:
-        command.bypassed = command.callback     # type: ignore[attr-defined]
+        command.bypassed = command.callback  # ty: ignore[unresolved-attribute]
         command.callback = new_callback
     return _decorator

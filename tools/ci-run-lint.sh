@@ -3,6 +3,6 @@
 EXIT_STATUS=0
 
 ruff check || EXIT_STATUS=$?
-python -m mypy || EXIT_STATUS=$?
+ty check || EXIT_STATUS=$?
 
 exit $EXIT_STATUS

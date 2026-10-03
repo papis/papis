@@ -100,7 +100,7 @@ test = [
 ]
 # Type-checking
 typing = [
-    "mypy>=1.0",
+    "ty",
     "types-beautifulsoup4",
     "types-Pygments",
     "types-docutils",
@@ -321,34 +321,6 @@ multiline-quotes = "double"
 [tool.ruff.lint.isort]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
-pretty = true
-files = [ "papis", "tests", "examples", "tools" ]
-warn_unused_ignores = false
-show_column_numbers = true
-hide_error_codes = false
-
-[[tool.mypy.overrides]]
-module = [
-    "arxiv.*",
-    "citeproc.*",
-    "bibtexparser.*",
-    "colorama.*",
-    "dominate.*",
-    "filetype.*",
-    "habanero.*",
-    "sphinx_click.*",
-    "whoosh.*",
-]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-# NOTE: sphinx > 9.0.0 requires Python >= 3.12 for type checking, so we ignore it
-module = ["sphinx.*"]
-follow_imports = "skip"
 
 [tool.typos.default]
 extend-ignore-re = [

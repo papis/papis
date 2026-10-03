@@ -82,7 +82,7 @@ def create_random_file(filetype: str | None = None,
     return fd.name
 
 
-PAPIS_TEST_DOCUMENTS = [
+PAPIS_TEST_DOCUMENTS: tuple[dict[str, Any], ...] = (
     {
         "author": "doc without files",
         "title": "Title of doc without files",
@@ -155,7 +155,7 @@ PAPIS_TEST_DOCUMENTS = [
         "year": "2020",
         "_test_files": 1
     },
-]
+)
 
 
 def populate_library(libdir: str, filetype: str | None = None) -> None:
@@ -504,9 +504,12 @@ class PapisRunner(click.testing.CliRunner):
         if hasattr(self, "mix_stderr") and "mix_stderr" not in kwargs:
             self.mix_stderr = False
 
-    def invoke(self,        # type: ignore[override]
+    # NOTE: this is meant to work on multiple versions of click, so don't be
+    # inclined to improve the signature to better match upstream for now.
+    def invoke(self,  # ty: ignore[invalid-method-override]
                cli: click.Command,
-               args: Sequence[str], **kwargs: Any) -> click.testing.Result:
+               args: str | Sequence[str] | None = None,
+               **kwargs: Any) -> click.testing.Result:
         """A simple wrapper around the :meth:`click.testing.CliRunner.invoke`
         method that does not catch exceptions by default.
         """

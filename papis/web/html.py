@@ -16,12 +16,11 @@ def fa(name: str, namespace: str = "fa") -> str:
 
 
 def flex(where: str, cls: str = "", **kwargs: Any) -> t.html_tag:
-    return t.div(cls=cls + " d-flex justify-content-" + where, **kwargs)
+    return t.div(cls=f"{cls} d-flex justify-content-{where}", **kwargs)
 
 
-def alert(node: t.html_tag, type_: str, **kwargs: Any) -> t.html_tag:
-    with node(cls=(f"alert alert-{type_} "
-                   + "alert-dismissible fade show"),
+def alert(node: type[t.html_tag], type_: str, **kwargs: Any) -> t.html_tag:
+    with node(cls=f"alert alert-{type_} alert-dismissible fade show",
               role="alert",
               **kwargs) as result:
         t.button(type="button",

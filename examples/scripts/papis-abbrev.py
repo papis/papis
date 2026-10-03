@@ -45,8 +45,7 @@ from __future__ import annotations
 import json
 import os
 
-import papis.api
-import papis.document
+import papis.config
 import papis.logging
 
 papis.logging.setup()
@@ -170,15 +169,16 @@ def run(query: str, all_: bool = True) -> int:
         logger.error("Did you forget to copy or symlink it to your config directory?")
         return 1
 
-    documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib_name(),
-        search=query
-    )
+    from papis.api import get_documents_in_lib, get_lib_name, pick_doc
+
+    documents = get_documents_in_lib(get_lib_name(), search=query)
 
     if all_:
         picked_documents = documents
     else:
-        picked_documents = list(papis.api.pick_doc(documents))
+        picked_documents = list(pick_doc(documents))
+
+    from papis.document import to_dict
 
     for doc in picked_documents:
         if "journal" not in doc:
@@ -187,7 +187,7 @@ def run(query: str, all_: bool = True) -> int:
             full_journal_title = doc["journal"]
 
             # Get the data from the picked document
-            data = papis.document.to_dict(doc)
+            data = to_dict(doc)
 
             # Set the new abbrev_journal_title
             data["abbrev_journal_title"] = ltwa_abbreviate(full_journal_title)

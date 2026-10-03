@@ -15,7 +15,7 @@ def test_colorama() -> None:
     assert colorama.Style.RESET_ALL
     assert colorama.Fore.RED
     assert colorama.Fore.YELLOW
-    assert colorama.init
+    assert hasattr(colorama, "init")
 
 
 def test_prompt_toolkit() -> None:
@@ -42,6 +42,6 @@ def test_prompt_toolkit() -> None:
     try:
         from prompt_toolkit.data_structures import Point
     except ImportError:
-        from prompt_toolkit.layout.screen import (  # type: ignore[attr-defined]
+        from prompt_toolkit.layout.screen import (
             Point,  # ruff:ignore[unused-import]
         )

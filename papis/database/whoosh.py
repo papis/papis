@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from collections.abc import KeysView
 
     from whoosh.fields import FieldType, Schema
-    from whoosh.index import Index
+    from whoosh.index import FileIndex
     from whoosh.writing import IndexWriter
 
     from papis.document import Document
@@ -233,7 +233,7 @@ class WhooshDatabase(Database):
             self._add_document_with_writer(doc, writer, schema_keys)
         writer.commit()
 
-    def _get_index(self) -> Index:
+    def _get_index(self) -> FileIndex:
         """Gets the index for the current library
         """
         from whoosh.index import open_dir

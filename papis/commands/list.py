@@ -122,8 +122,10 @@ def list_plugins(show_paths: bool = False,
         from papis.doctor import REGISTERED_CHECKS
         results = []
         for name, check in REGISTERED_CHECKS.items():
+            # NOTE: not all Callables have a __name__, so we guard against it
+            func_name = getattr(check.operate, "__name__", "operate")
             results.append(
-                _format(name, f"{check.operate.__module__}.{check.operate.__name__}")
+                _format(name, f"{check.operate.__module__}.{func_name}")
             )
             if verbose and check.operate.__doc__ is not None:
                 descr = make_short_help(check.operate.__doc__,

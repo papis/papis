@@ -316,8 +316,14 @@ def duplicated_values_check(doc: Document) -> list[Error]:
             continue
 
         seen = {}
-        dupes = [f for f in value
-                 if (h := make_hashable(f)) in seen or seen.update({h: f})]
+        dupes = []
+        for f in value:
+            h = make_hashable(f)
+            if h in seen:
+                dupes.append(f)
+            else:
+                seen.update({h: f})
+
         if not dupes:
             continue
 

@@ -4,6 +4,7 @@ import os
 import tempfile
 
 import papis.database
+from papis.bibtex import bibtex_to_dict
 from papis.testing import PapisRunner, TemporaryLibrary
 
 
@@ -16,7 +17,7 @@ def test_export_run(tmp_library: TemporaryLibrary) -> None:
     # bibtex
     exported_bibtex = run(docs, to_format="bibtex")
     assert exported_bibtex
-    data = papis.bibtex.bibtex_to_dict(exported_bibtex)
+    data = bibtex_to_dict(exported_bibtex)
     assert isinstance(data, list)
     assert len(data) == len(docs)
 
@@ -125,7 +126,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     docs = [doc1, doc2]
 
     text = run(docs, to_format="bibtex")
-    data = papis.bibtex.bibtex_to_dict(text)
+    data = bibtex_to_dict(text)
 
     cli_runner = PapisRunner()
     outfile = os.path.join(tmp_library.tmpdir, "test.bib")
@@ -140,7 +141,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     with open(outfile, encoding="utf-8") as fd:
         single_text = fd.read()
 
-    single_data = papis.bibtex.bibtex_to_dict(single_text)
+    single_data = bibtex_to_dict(single_text)
     assert len(single_data) == 1
 
     result = cli_runner.invoke(
@@ -153,7 +154,7 @@ def test_export_bibtex_append(tmp_library: TemporaryLibrary) -> None:
     with open(outfile, encoding="utf-8") as fd:
         appended_text = fd.read()
 
-    appended_data = papis.bibtex.bibtex_to_dict(appended_text)
+    appended_data = bibtex_to_dict(appended_text)
     assert len(appended_data) == len(data)
 
     # NOTE: The intention is that these will match, this is a problem to be
@@ -175,7 +176,9 @@ def test_export_folder_cli(tmp_library: TemporaryLibrary) -> None:
     assert os.path.exists(outdir)
     assert os.path.isdir(outdir)
 
-    doc = papis.document.from_folder(outdir)
+    from papis.document import from_folder
+
+    doc = from_folder(outdir)
     assert doc is not None
     assert "Krishnamurti" in doc["author"]
 

@@ -883,7 +883,7 @@ class _Option(NamedTuple):
     name: str | None
 
 
-class _TrackingOptionParser(click.parser._OptionParser):
+class _TrackingOptionParser(click.parser._OptionParser):  # ty: ignore[unresolved-attribute]
     """A modified option parser that remembers the argument order."""
 
     def parse_args(self, args: list[str]) -> Any:

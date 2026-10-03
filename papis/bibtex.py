@@ -300,7 +300,7 @@ bibtex_verbatim_fields = frozenset({"doi", "eprint", "file", "pdf", "url", "urlr
 
 def _bibtexparser_version() -> str:
     try:
-        from bibtexparser.latexenc import latex_to_unicode  # ruff: ignore[unused-import]
+        from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[unresolved-import] # ruff: ignore[unused-import]
         return "v1"
     except ImportError:
         return "v2"
@@ -315,7 +315,7 @@ def _strip_braces(text: str) -> str:
 
 @cache
 def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
-    from bibtexparser.latexenc import latex_to_unicode
+    from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[unresolved-import]
 
     from papis.document import KeyConversionPair, split_authors_name
 
@@ -335,7 +335,7 @@ def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
 
 
 def _bibtex_to_dict_v1(bibtex: str) -> list[DocumentLike]:
-    from bibtexparser.bparser import BibTexParser
+    from bibtexparser.bparser import BibTexParser  # ty: ignore[unresolved-import]
 
     with papis.logging.quiet("bibtexparser.bparser"):
         parser = BibTexParser(
@@ -376,8 +376,8 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
         ]
 
     return [
-        KeyConversionPair("link", [{"key": "url"}]),  # type: ignore[typeddict-item]
-        KeyConversionPair("URL", [{"key": "url"}]),  # type: ignore[typeddict-item]
+        KeyConversionPair("link", [{"key": "url", "action": None}]),
+        KeyConversionPair("URL", [{"key": "url", "action": None}]),
         KeyConversionPair("author", [{
             "key": "author_list",
             "action": bibtexparser_author_list,
@@ -391,7 +391,7 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
 
 def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
     import bibtexparser.middlewares as m
-    from bibtexparser import parse_file, parse_string  # type: ignore[attr-defined]
+    from bibtexparser import parse_file, parse_string
 
     middleware = [
         # NOTE: LatexDecodingMiddleware normally strips braces, which confuses
@@ -444,7 +444,7 @@ def latex_to_text(latex: str) -> str:
         m = LatexDecodingMiddleware()
         result, _ = m._transform_python_value_string(latex)
     except ImportError:
-        from bibtexparser.latexenc import latex_to_unicode  # type: ignore[no-redef]
+        from bibtexparser.latexenc import latex_to_unicode  # ty: ignore[unresolved-import]
 
         result = latex_to_unicode(latex)
 
@@ -458,7 +458,7 @@ def text_to_latex(text: str) -> str:
         m = LatexEncodingMiddleware()
         result, _ = m._transform_python_value_string(text)
     except ImportError:
-        from bibtexparser.latexenc import string_to_latex  # type: ignore[no-redef]
+        from bibtexparser.latexenc import string_to_latex  # ty: ignore[unresolved-import]
 
         result = string_to_latex(text)
 
@@ -473,9 +473,9 @@ def splitname(author: str) -> dict[str, list[str]]:
 
         return asdict(parse_single_name_into_parts(author))
     except ImportError:
-        from bibtexparser.customization import splitname  # type: ignore[no-redef]
+        from bibtexparser.customization import splitname  # ty: ignore[unresolved-import]
 
-        return splitname(author)  # type: ignore[no-any-return]
+        return splitname(author)
 
 
 def bibtex_to_dict(bibtex: str | bytes) -> list[DocumentLike]:

@@ -39,14 +39,14 @@ from typing import TYPE_CHECKING, Any
 
 import click
 
-import papis.api
 import papis.cli
 import papis.config
-import papis.document
 import papis.logging
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    from papis.document import Document
 
 papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.check")
@@ -58,7 +58,7 @@ papis.config.register_default_settings({
 })
 
 
-def check_files(document: papis.document.Document) -> bool:
+def check_files(document: Document) -> bool:
     """Check for the existence of the document's files.
 
     :returns: *False* if some file does not exist, *True* otherwise
@@ -83,7 +83,7 @@ def check_files(document: papis.document.Document) -> bool:
 
 
 def run(keys: Sequence[str],
-        documents: Sequence[papis.document.Document],
+        documents: Sequence[Document],
         ) -> Sequence[dict[str, Any]]:
     result = []
     for document in documents:
@@ -110,7 +110,10 @@ def run(keys: Sequence[str],
 )
 def cli(query: str, keys: list[str]) -> None:
     """Check document from a given library"""
-    documents = papis.database.get().query(query)
+    from papis.database import get_database
+
+    db = get_database()
+    documents = db.query(query)
     troubled_docs = run(keys, documents)
 
     for doc in troubled_docs:

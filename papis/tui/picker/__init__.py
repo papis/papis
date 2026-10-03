@@ -118,41 +118,41 @@ def create_keybindings(app: PickerApplication[Any]) -> KeyBindings:
     def _escape_error(event: KeyPressEvent) -> None:
         app.error_toolbar.text = ""
 
-    @kb.add("c-n",                                      # type: ignore[misc]
+    @kb.add("c-n",
             filter=~has_focus(app.info_window))
-    @kb.add(str(keys_info["move_down_key"]["key"]),     # type: ignore[misc]
+    @kb.add(str(keys_info["move_down_key"]["key"]),
             filter=~has_focus(app.info_window))
     def _down(event: KeyPressEvent) -> None:
         app.options_list.move_down()
         app.refresh()
         app.update()
 
-    @kb.add(                                            # type: ignore[misc]
+    @kb.add(
         keys_info["move_down_while_info_window_active_key"]["key"],
         filter=has_focus(app.info_window))
     def _down_info(event: KeyPressEvent) -> None:
         _down(event)
         app.update_info_window()
 
-    @kb.add("c-p",                                      # type: ignore[misc]
+    @kb.add("c-p",
             filter=~has_focus(app.info_window))
-    @kb.add(keys_info["move_up_key"]["key"],            # type: ignore[misc]
+    @kb.add(keys_info["move_up_key"]["key"],
             filter=~has_focus(app.info_window))
     def _up(event: KeyPressEvent) -> None:
         app.options_list.move_up()
         app.refresh()
         app.update()
 
-    @kb.add(                                            # type: ignore[misc]
+    @kb.add(
         keys_info["move_up_while_info_window_active_key"]["key"],
         filter=has_focus(app.info_window))
     def _up_info(event: KeyPressEvent) -> None:
         _up(event)
         app.update_info_window()
 
-    @kb.add("q",                                        # type: ignore[misc]
+    @kb.add("q",
             filter=has_focus(app.help_window))
-    @kb.add("escape",                                   # type: ignore[misc]
+    @kb.add("escape",
             filter=has_focus(app.help_window))
     def _help_quit(event: KeyPressEvent) -> None:
         app.layout.focus(app.help_window.window)
@@ -160,23 +160,23 @@ def create_keybindings(app: PickerApplication[Any]) -> KeyBindings:
         app.message_toolbar.text = ""
         app.layout.focus(app.options_list.search_buffer)
 
-    @kb.add("q",                                        # type: ignore[misc]
+    @kb.add("q",
             filter=has_focus(app.info_window))
-    @kb.add("s-tab",                                    # type: ignore[misc]
+    @kb.add("s-tab",
             filter=has_focus(app.info_window))
-    @kb.add("escape",                                   # type: ignore[misc]
+    @kb.add("escape",
             filter=has_focus(app.info_window))
     def _info(event: KeyPressEvent) -> None:
         app.layout.focus(app.options_list.search_buffer)
         app.message_toolbar.text = ""
 
-    @kb.add(                                            # type: ignore[misc]
+    @kb.add(
         keys_info["focus_command_line_key"]["key"],
         filter=~has_focus(app.command_line_prompt))
     def _command_window(event: KeyPressEvent) -> None:
         app.layout.focus(app.command_line_prompt.window)
 
-    @kb.add("enter",                                    # type: ignore[misc]
+    @kb.add("enter",
             filter=has_focus(app.command_line_prompt))
     def _enter(event: KeyPressEvent) -> None:
         app.layout.focus(app.options_list.search_buffer)
@@ -186,7 +186,7 @@ def create_keybindings(app: PickerApplication[Any]) -> KeyBindings:
             app.error_toolbar.text = str(e)
         app.command_line_prompt.clear()
 
-    @kb.add("escape",                                   # type: ignore[misc]
+    @kb.add("escape",
             filter=has_focus(app.command_line_prompt))
     def _escape_when_commandline_has_focus(event: KeyPressEvent) -> None:
         app.layout.focus(app.options_list.search_buffer)
@@ -209,12 +209,12 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
         app.deselect()
         app.exit()
 
-    @kb.add("enter",                                    # type: ignore[misc]
+    @kb.add("enter",
             filter=has_focus(app.options_list.search_buffer))
     def select(event: Command | KeyPressEvent) -> None:
         app.exit()
 
-    @kb.add(keys_info["open_document_key"]["key"],      # type: ignore[misc]
+    @kb.add(keys_info["open_document_key"]["key"],
             filter=has_focus(app.options_list.search_buffer))
     def open(event: Command | KeyPressEvent) -> None:
         from papis.commands.open import run
@@ -231,7 +231,7 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
 
         app.renderer.clear()
 
-    @kb.add(keys_info["browse_document_key"]["key"],      # type: ignore[misc]
+    @kb.add(keys_info["browse_document_key"]["key"],
             filter=has_focus(app.options_list.search_buffer))
     def browse(event: Command | KeyPressEvent) -> None:
         from papis.commands.browse import run
@@ -239,7 +239,7 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
         for doc in docs:
             run(doc)
 
-    @kb.add(keys_info["edit_document_key"]["key"],      # type: ignore[misc]
+    @kb.add(keys_info["edit_document_key"]["key"],
             filter=has_focus(app.options_list.search_buffer))
     def edit(event: Command | KeyPressEvent) -> None:
         from papis.commands.edit import run
@@ -247,7 +247,7 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
         for doc in docs:
             run(doc)
 
-    @kb.add(keys_info["edit_notes_key"]["key"],         # type: ignore[misc]
+    @kb.add(keys_info["edit_notes_key"]["key"],
             filter=has_focus(app.options_list.search_buffer))
     def edit_notes(event: KeyPressEvent) -> None:
         from papis.commands.edit import edit_notes
@@ -256,13 +256,13 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
             edit_notes(doc)
         app.renderer.clear()
 
-    @kb.add(keys_info["show_help_key"]["key"],          # type: ignore[misc]
+    @kb.add(keys_info["show_help_key"]["key"],
             filter=~has_focus(app.help_window))
     def help(event: Command | KeyPressEvent) -> None:
         app.layout.focus(app.help_window.window)
         app.message_toolbar.text = "Press q to quit"
 
-    @kb.add(keys_info["show_info_key"]["key"],          # type: ignore[misc]
+    @kb.add(keys_info["show_info_key"]["key"],
             filter=~has_focus(app.info_window))
     def info(event: Command | KeyPressEvent) -> None:
         app.update_info_window()
@@ -295,7 +295,7 @@ def get_commands(app: PickerApplication[Any]) -> tuple[list[Command], KeyBinding
     ], kb)
 
 
-class PickerApplication(Application, Generic[Option]):  # type: ignore[type-arg]
+class PickerApplication(Application, Generic[Option]):
     """A full screen picker widget.
 
     This application implements a TUI picker that is used to select documents

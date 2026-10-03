@@ -12,9 +12,11 @@ import papis.web.epubjs
 import papis.web.header
 import papis.web.html as wh
 import papis.web.info
+import papis.web.navbar
 import papis.web.notes
 import papis.web.paths as wp
 import papis.web.pdfjs
+import papis.web.tags
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -70,7 +72,7 @@ def html(libname: str, doc: Document) -> t.html_tag:
 
                 with t.ul(cls="nav nav-tabs"):
 
-                    def _tab_element(content: Callable[..., t.html_tag],
+                    def _tab_element(content: Callable[..., Any],
                                      args: list[Any],
                                      href: str,
                                      active: bool = False) -> t.html_tag:

@@ -50,7 +50,7 @@ def cli(ctx: click.Context,
         documents = get_documents_in_lib(get_lib_name(), search=query)
 
     if not _all:
-        documents = pick_doc(documents)  # type: ignore[assignment]
+        documents = pick_doc(documents)
 
     if not documents:
         from papis.strings import no_documents_retrieved_message

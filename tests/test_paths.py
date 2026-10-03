@@ -135,7 +135,7 @@ def test_get_document_file_name(tmp_library: TemporaryLibrary) -> None:
 
     # check over limit
     base_name_limit = 100
-    doc = papis.document.from_data({"title": "b" * 200})
+    doc = from_data({"title": "b" * 200})
     filename = get_document_file_name(doc, path,
                                       base_name_limit=base_name_limit,
                                       suffix="2")

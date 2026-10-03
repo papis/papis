@@ -16,16 +16,19 @@ A simple usage of this command is::
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
-import papis.api
-import papis.document
+import papis.config
 import papis.logging
+
+if TYPE_CHECKING:
+    from papis.document import Document
 
 papis.logging.setup()
 logger = papis.logging.get_logger("papis.commands.ga")
 
 
-def add(doc: papis.document.Document) -> None:
+def add(doc: Document) -> None:
     path = os.path.expanduser(papis.config.get_lib().path)
     cmd = ["git", "-C", path, "add", *doc.get_files(), doc.get_info_file()]
 
@@ -36,15 +39,14 @@ def add(doc: papis.document.Document) -> None:
 
 
 def run(query: str, all_: bool = False) -> int:
-    documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib_name(),
-        search=query
-    )
+    from papis.api import get_documents_in_lib, get_lib_name, pick_doc
+
+    documents = get_documents_in_lib(get_lib_name(), search=query)
 
     if all_:
         picked_documents = documents
     else:
-        picked_documents = list(papis.api.pick_doc(documents))
+        picked_documents = list(pick_doc(documents))
 
     for doc in picked_documents:
         add(doc)
