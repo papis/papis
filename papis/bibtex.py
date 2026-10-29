@@ -8,6 +8,7 @@ the `manual`_).
 from __future__ import annotations
 
 import os
+import re
 import string
 from functools import cache
 from typing import TYPE_CHECKING, Any
@@ -16,7 +17,9 @@ import papis.config
 import papis.logging
 
 if TYPE_CHECKING:
-    from bibtexparser.model import Field
+    from bibtexparser.library import Library
+    from bibtexparser.model import Block, Entry, Field
+    from pylatexenc.latex2text import LatexNodes2Text
 
     from papis.document import Document, DocumentLike, KeyConversionPair
     from papis.strings import AnyString
@@ -313,6 +316,26 @@ def _strip_braces(text: str) -> str:
     return text
 
 
+#: Matches math mode, text enclosed by `$` or `\(` and `\)`.
+_math_mode = re.compile(r"(\$[^$]+\$|\\\(.*?\\\))")
+
+
+def _normalize_bibtex_text(value: str) -> str:
+    """Convert a parsed BibTeX text value to plain text."""
+    # NOTE: Whitespace is collapsed because ``.bib`` values are commonly wrapped over
+    # several lines and BibTeX treats multiple whitespaces as a single one.
+    value = " ".join(value.split())
+    value = value.replace("\u2013", "--").replace("\u2014", "---")
+
+    # NOTE: We strip braces, except when they are a part of math mode, where they
+    # impact meaning.
+    parts = _math_mode.split(value)
+    for i in range(0, len(parts), 2):
+        parts[i] = parts[i].replace("{", "").replace("}", "")
+
+    return "".join(parts)
+
+
 @cache
 def _get_bibtexparser_key_conversion_v1() -> list[KeyConversionPair]:
     from bibtexparser.latexenc import latex_to_unicode
@@ -377,7 +400,6 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
 
     return [
         KeyConversionPair("link", [{"key": "url"}]),  # type: ignore[typeddict-item]
-        KeyConversionPair("URL", [{"key": "url"}]),  # type: ignore[typeddict-item]
         KeyConversionPair("author", [{
             "key": "author_list",
             "action": bibtexparser_author_list,
@@ -389,15 +411,64 @@ def _get_bibtexparser_key_conversion_v2() -> list[KeyConversionPair]:
     ]
 
 
+@cache
+def _get_latex_decoder(*, keep_braced_groups: bool = False) -> LatexNodes2Text:
+    """Return a decoder for LaTeX in BibTeX values.
+
+    :param keep_braced_groups: keep protection braces so that, e.g.,
+        ``{{Barnes and Noble}}`` stays a single name for `SplitNameParts`.
+    """
+    from pylatexenc.latex2text import (
+        LatexNodes2Text,
+        MacroTextSpec,
+        SpecialsTextSpec,
+        get_default_latex_context_db,
+    )
+
+    # NOTE: the default LaTeX decoder (pylatexenc) of bibtexparser v2 renders an
+    # unescaped '&' as whitespace. Free-text fields regularly use it as ordinary
+    # text, so we map it to itself. The URL macro spec is the default, which we
+    # need to set explicitly.
+    latex_context = get_default_latex_context_db()
+    latex_context.add_context_category(
+        "papis-defaults", prepend=True,
+        macros=[MacroTextSpec("url", simplify_repl="%s")],
+        specials=[SpecialsTextSpec("&", "&")],
+    )
+
+    return LatexNodes2Text(
+        latex_context=latex_context,
+        keep_braced_groups=keep_braced_groups,
+        # NOTE: Explicitly setting what is the default when not passing one's own
+        # decoder to `LatexDecodingMiddleware`.
+        math_mode="verbatim",
+    )
+
+
 def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
     import bibtexparser.middlewares as m
     from bibtexparser import parse_file, parse_string  # type: ignore[attr-defined]
 
+    class VerbatimLatexDecoding(m.LatexDecodingMiddleware):
+        """Decode LaTeX in free-text fields, but leave verbatim fields untouched."""
+
+        def transform_entry(self, entry: Entry, library: Library) -> Block:
+            fields = entry.fields
+            try:
+                # NOTE: bibtexparser does not support excluding fields from a middleware
+                # (https://github.com/sciunto-org/python-bibtexparser/issues/635), so we
+                # hide them
+                entry.fields = [
+                    field for field in fields
+                    if field.key.lower() not in bibtex_verbatim_fields
+                ]
+                return super().transform_entry(entry, library)
+            finally:
+                entry.fields = fields
+
     middleware = [
-        # NOTE: LatexDecodingMiddleware normally strips braces, which confuses
-        # SplitNameParts for single-name institutions and things that were
-        # enclosed in braces. This keeps that and adds some more stripping later
-        m.LatexDecodingMiddleware(keep_braced_groups=True),
+        m.NormalizeFieldKeys(),
+        VerbatimLatexDecoding(decoder=_get_latex_decoder(keep_braced_groups=True)),
         m.MonthIntMiddleware(),
         m.SeparateCoAuthors(),
         m.SplitNameParts(),
@@ -412,10 +483,7 @@ def _bibtex_to_dict_v2(bibtex: str) -> list[DocumentLike]:
 
     def bibtexparser_field_value(field: Field) -> Any:
         if isinstance(field.value, str):
-            # NOTE: some titles or abstracts have some new lines in the middle
-            # of them. This removes them early because it's easy.
-            value = field.value.replace("\u2013", "--")
-            return _strip_braces(" ".join(value.split()))
+            return _normalize_bibtex_text(field.value)
         elif isinstance(field.value, (int, float)):
             return field.value
         else:
@@ -441,7 +509,7 @@ def latex_to_text(latex: str) -> str:
     try:
         from bibtexparser.middlewares import LatexDecodingMiddleware
 
-        m = LatexDecodingMiddleware()
+        m = LatexDecodingMiddleware(decoder=_get_latex_decoder())
         result, _ = m._transform_python_value_string(latex)
     except ImportError:
         from bibtexparser.latexenc import latex_to_unicode  # type: ignore[no-redef]
