@@ -340,6 +340,7 @@ module = [
     "dominate.*",
     "filetype.*",
     "habanero.*",
+    "pylatexenc.*",
     "sphinx_click.*",
     "whoosh.*",
 ]

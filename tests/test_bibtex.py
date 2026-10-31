@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -10,6 +10,120 @@ if TYPE_CHECKING:
     from papis.testing import ResourceCache, TemporaryConfiguration
 
 BIBTEX_RESOURCES = os.path.join(os.path.dirname(__file__), "resources", "bibtex")
+
+
+@pytest.mark.parametrize(
+    ("bibtex", "expected"),
+    [
+        # ampersands are ordinary text, not LaTeX alignment characters
+        (r"@article{k, title={Cats & Dogs}}", {"title": "Cats & Dogs"}),
+        # field keys are case-insensitive in BibTeX and lowercase in papis
+        (r"@article{k, TITLE={T}, ISSN={1234-5678}}",
+         {"title": "T", "issn": "1234-5678"}),
+        # braces are LaTeX grouping (e.g. to protect capitalisation)
+        (r"@article{k, title={{Preserved Case} and {More}}}",
+         {"title": "Preserved Case and More"}),
+        # verbatim fields are literal values and must not be decoded as LaTeX
+        (r"@misc{k, url={https://x.com/~u/a%20b?x=1&y=2}}",
+         {"url": "https://x.com/~u/a%20b?x=1&y=2"}),
+        (r"@article{k, doi={10.1063/1.2967935~XX}}",
+         {"doi": "10.1063/1.2967935~XX"}),
+        (r"@misc{k, file={~/papers/a%20b.pdf}}", {"file": "~/papers/a%20b.pdf"}),
+    ],
+)
+def test_bibtex_to_dict_converts_fields(
+        tmp_config: TemporaryConfiguration,
+        bibtex: str,
+        expected: dict[str, Any]) -> None:
+    """Fields are converted to the expected values."""
+    from papis.bibtex import bibtex_to_dict
+
+    bib, = bibtex_to_dict(bibtex)
+    assert {key: bib.get(key) for key in expected} == expected
+
+
+@pytest.mark.parametrize(
+    ("bibtex", "expected"),
+    [
+        (r"@article{k, journal={Alice \& Bob}}", {"journal": "Alice & Bob"}),
+        (r"@article{k, abstract={R{\'e}sum{\'e} \`a}}",
+         {"abstract": "Résumé à"}),
+        # braces in math mode are meaningful and are kept
+        (r"@article{k, title={On $x^{10}$ and {DNA}}}",
+         {"title": "On $x^{10}$ and DNA"}),
+        (r"@article{k, title={On \(x^{10}\) and {DNA}}}",
+         {"title": r"On \(x^{10}\) and DNA"}),
+        # but they are stripped outside of math mode
+        (r"@article{k, title={$x^{10}$ {DNA} $y^{2}$}}",
+         {"title": "$x^{10}$ DNA $y^{2}$"}),
+    ],
+)
+def test_bibtex_to_dict_decodes_latex(
+        tmp_config: TemporaryConfiguration,
+        bibtex: str,
+        expected: dict[str, Any]) -> None:
+    """LaTeX in free-text fields is decoded (bibtexparser 2 only)."""
+    from papis.bibtex import (
+        _bibtexparser_version,  # ruff: ignore[import-private-name]
+        bibtex_to_dict,
+    )
+
+    if _bibtexparser_version() == "v1":
+        pytest.skip("bibtexparser v1 only decodes titles")
+
+    bib, = bibtex_to_dict(bibtex)
+    assert {key: bib.get(key) for key in expected} == expected
+
+
+@pytest.mark.parametrize(
+    ("latex", "expected"),
+    [
+        # an unescaped '&' is ordinary text, not a LaTeX alignment character
+        (r"Cats & Dogs", "Cats & Dogs"),
+        (r"A \& B", "A & B"),
+        # protection braces are not kept for, e.g., author names
+        (r"{Barnes and Noble}", "Barnes and Noble"),
+    ],
+)
+def test_latex_to_text(latex: str, expected: str) -> None:
+    """LaTeX in plain strings is decoded the same way as BibTeX fields (bar braces)."""
+    from papis.bibtex import (
+        _bibtexparser_version,  # ruff: ignore[import-private-name]
+        latex_to_text,
+    )
+
+    if _bibtexparser_version() == "v1":
+        pytest.skip("bibtexparser v1 uses a different LaTeX decoder")
+
+    assert latex_to_text(latex) == expected
+
+
+@pytest.mark.parametrize(
+    ("bibtex", "expected"),
+    [
+        (r"@article{k, month=jan}", {"month": 1}),
+        (r"@article{k, month={4}}", {"month": 4}),
+        (r"@article{k, month={Jul}}", {"month": 7}),
+        # unrecognised month values are kept as-is
+        (r"@article{k, month={Spring}}", {"month": "Spring"}),
+        (r"@article{k, month={13}}", {"month": "13"}),
+    ],
+)
+def test_bibtex_to_dict_converts_months(
+        tmp_config: TemporaryConfiguration,
+        bibtex: str,
+        expected: dict[str, Any]) -> None:
+    """Months are stored as numbers (bibtexparser 2 only)."""
+    from papis.bibtex import (
+        _bibtexparser_version,  # ruff: ignore[import-private-name]
+        bibtex_to_dict,
+    )
+
+    if _bibtexparser_version() == "v1":
+        pytest.skip("bibtexparser v1 keeps months as strings")
+
+    bib, = bibtex_to_dict(bibtex)
+    assert {key: bib.get(key) for key in expected} == expected
 
 
 def test_bibtex_to_dict(tmp_config: TemporaryConfiguration) -> None:
