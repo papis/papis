@@ -6,6 +6,8 @@ import re
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias
 
+from typing_extensions import deprecated
+
 import papis.config
 import papis.logging
 
@@ -556,12 +558,12 @@ def biblatex_key_convert_check(doc: Document) -> list[Error]:
 FIELD_TYPE_CHECK_NAME = "field-type"
 
 
-def get_key_type_check_keys() -> dict[str, type]:
-    from warnings import warn
-    warn("'papis.doctor.get_key_type_check_keys' is deprecated and will "
-         "be removed in Papis v0.17. Use 'papis.document.get_document_field_types' "
-         "instead.", DeprecationWarning, stacklevel=2)
+@deprecated(
+    "'papis.doctor.get_key_type_check_keys' is deprecated and will be removed in "
+    "Papis v0.17. Use 'papis.document.get_document_field_types' instead."
 
+)
+def get_key_type_check_keys() -> dict[str, type]:
     from papis.document import get_document_field_types
     return get_document_field_types()
 

@@ -4,10 +4,10 @@ from typing import Any
 
 
 def _ref(doc: dict[str, Any]) -> str | None:
-    from papis.id import get as get_id, has_id
+    from papis.id import ID_KEY_NAME
 
-    if has_id(doc):
-        return get_id(doc)
+    if (papis_id := doc.get(ID_KEY_NAME)):
+        return str(papis_id)
 
     return None
 
@@ -20,10 +20,11 @@ def format_if_has_id(doc: dict[str, Any],
     Formats the string *fmt* only if *doc* has the ``papis_id`` key, since the
     path requires it.
     """
-    from papis.id import has_id
+    from papis.id import ID_KEY_NAME
 
-    if has_id(doc):
+    if ID_KEY_NAME in doc:
         return fmt.format(*args, **kwargs)
+
     return ""
 
 

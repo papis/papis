@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import click
 import platformdirs
+from typing_extensions import deprecated
 
 import papis.logging
 from papis.exceptions import (
@@ -727,16 +728,12 @@ def get_lib_from_name(libname_or_path: str) -> Library:
     return lib
 
 
+@deprecated(
+    "'papis.config.get_lib_dirs' is deprecated and will be removed in Papis 0.17. "
+    "Use 'papis.config.get_lib().path' instead.",
+)
 def get_lib_dirs() -> list[str]:
     """Get the directories of the current library."""
-    from warnings import warn
-
-    warn(
-        "'papis.config.get_lib_dirs' is deprecated "
-        "and will be removed in Papis 0.17. "
-        "Use 'papis.config.get_lib().path' instead.",
-        DeprecationWarning, stacklevel=2)
-
     return [get_lib().path]
 
 
