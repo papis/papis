@@ -9,6 +9,7 @@ from papis.crossref import (
     CROSSREF_SORT_VALUES,
     get_data,
 )
+from papis.exceptions import SourceError
 from papis.explorers import as_explorer
 
 logger = papis.logging.get_logger(__name__)
@@ -79,14 +80,19 @@ def cli(ctx: click.Context,
     logger.info("Looking up Crossref documents...")
 
     from papis.document import from_data
-    data = get_data(
-        query=query,
-        author=author,
-        title=title,
-        max_results=max_results,
-        filters=dict(filters),
-        sort=sort,
-        order=order)
+    try:
+        data = get_data(
+            query=query,
+            author=author,
+            title=title,
+            max_results=max_results,
+            filters=dict(filters),
+            sort=sort,
+            order=order)
+    except SourceError as exc:
+        logger.error("%s", exc)
+        return
+
     docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 

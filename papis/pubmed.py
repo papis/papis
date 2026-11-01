@@ -3,6 +3,8 @@ from __future__ import annotations
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
+from papis.exceptions import SourceError
+
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
 
@@ -88,17 +90,39 @@ def is_valid_pmid(pmid: str) -> bool:
 
 
 def get_data(query: str = "") -> dict[str, Any]:
+    import json
+
+    from requests.exceptions import RequestException
+
     from papis import PAPIS_USER_AGENT
     from papis.utils import get_session
 
     # NOTE: being nice and using the project version as a user agent
     # as requested in https://api.ncbi.nlm.nih.gov/lit/ctxp
-    with get_session() as session:
-        response = session.get(
-            PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
-            headers={"user-agent": PAPIS_USER_AGENT},
-            )
+    try:
+        with get_session() as session:
+            response = session.get(
+                PUBMED_URL.format(pmid=query.strip(), database=PUBMED_DATABASE),
+                headers={"user-agent": PAPIS_USER_AGENT},
+                )
+    except RequestException as exc:
+        raise SourceError(f"Could not query PubMed: {exc}") from exc
 
-    import json
+    if not response.ok:
+        raise SourceError(
+            f"Could not query PubMed: HTTP {response.status_code} ({response.reason})")
 
-    return pubmed_data_to_papis_data(json.loads(response.content.decode()))
+    try:
+        data = json.loads(response.content.decode())
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise SourceError(f"Unexpected response from PubMed: {exc}") from exc
+
+    if not data:
+        return {}
+
+    if not isinstance(data, dict):
+        raise SourceError(
+            f"Unexpected response from PubMed: expected a JSON object, "
+            f"got '{type(data).__name__}'.")
+
+    return pubmed_data_to_papis_data(data)

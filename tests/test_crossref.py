@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -65,3 +66,68 @@ def test_doi_to_data(tmp_config: TemporaryConfiguration,
     result = _get_test_json(outfile)
 
     assert data == result
+
+
+class _NotFoundError(Exception):
+    status_code = 404
+
+
+class _NotFoundWithResponseError(Exception):
+    def __init__(self) -> None:
+        super().__init__("404 Not Found")
+        self.response = SimpleNamespace(status_code=404)
+
+
+class _ServerError(Exception):
+    status_code = 500
+
+
+def _raise(exc: Exception) -> Any:
+    raise exc
+
+
+@pytest.mark.parametrize("exc", [
+    _NotFoundError("missing"),
+    _NotFoundWithResponseError(),
+    ])
+def test_get_data_not_found(tmp_config: TemporaryConfiguration,
+                            monkeypatch: pytest.MonkeyPatch,
+                            exc: Exception) -> None:
+    import papis.crossref
+
+    monkeypatch.setattr(
+        papis.crossref, "_get_crossref_works", lambda **kwargs: _raise(exc))
+
+    assert papis.crossref.get_data(dois=["10.0000/not-found"]) == []
+
+
+@pytest.mark.parametrize("exc", [
+    _ServerError("server error"),
+    RuntimeError("connection reset"),
+    ])
+def test_get_data_error(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch,
+                        exc: Exception) -> None:
+    import papis.crossref
+    from papis.exceptions import SourceError
+
+    monkeypatch.setattr(
+        papis.crossref, "_get_crossref_works", lambda **kwargs: _raise(exc))
+
+    with pytest.raises(SourceError, match="Could not query Crossref"):
+        papis.crossref.get_data(dois=["10.0000/foo"])
+
+
+@pytest.mark.parametrize("results", [{"no-message": None}, 42])
+def test_get_data_invalid_response(tmp_config: TemporaryConfiguration,
+                                   monkeypatch: pytest.MonkeyPatch,
+                                   results: Any) -> None:
+    import papis.crossref
+    from papis.exceptions import SourceError
+
+    monkeypatch.setattr(
+        papis.crossref, "_get_crossref_works", lambda **kwargs: results)
+
+    with pytest.raises(
+            SourceError, match="Unexpected response from Crossref"):
+        papis.crossref.get_data(dois=["10.0000/foo"])

@@ -3,6 +3,7 @@ from __future__ import annotations
 import click
 
 import papis.logging
+from papis.exceptions import SourceError
 from papis.explorers import as_explorer
 from papis.isbn import ISBN_SERVICE_NAMES, get_data
 
@@ -35,7 +36,13 @@ def cli(ctx: click.core.Context, query: str, service: str) -> None:
     logger.info("Looking up ISBN documents...")
 
     from papis.document import from_data
-    data = get_data(query=query, service=service)
+
+    try:
+        data = get_data(query=query, service=service)
+    except SourceError as exc:
+        logger.error("%s", exc)
+        return
+
     docs = [from_data(data=d) for d in data]
     ctx.obj["documents"] += docs
 

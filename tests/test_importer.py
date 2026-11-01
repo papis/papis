@@ -180,3 +180,24 @@ def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
     importers = get_matching_importers_by_doc(doc)
     assert len(importers) == 1
     assert isinstance(importers[0], DOIImporter)
+
+
+def test_fetch_importers_source_error(
+        tmp_config: TemporaryConfiguration,
+        caplog: pytest.LogCaptureFixture) -> None:
+    from papis.exceptions import SourceError
+    from papis.importer import Context, Importer, fetch_importers
+
+    class FailingImporter(Importer):
+        def __init__(self, uri: str = "", **kwargs: Any) -> None:
+            super().__init__(uri="source-error", name="FailingImporter",
+                             ctx=Context())
+
+        @staticmethod
+        def fetch() -> None:
+            raise SourceError("boom")
+
+    with caplog.at_level("ERROR"):
+        assert fetch_importers([FailingImporter()]) == []
+
+    assert "FailingImporter" in caplog.text
