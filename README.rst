@@ -211,6 +211,8 @@ extend Papis' features or integrate it with other software.
      - you?
    * - `papis-tui <https://github.com/supersambo/papis-tui>`__
      - `Stephan Schlögl <https://github.com/supersambo>`__
+   * - `ptui <https://github.com/tobna/ptui>`__
+     - `Tobias Nauen <https://github.com/tobna>`__
 
    * - `papis-vim <https://github.com/papis/papis-vim>`__
      - you?
