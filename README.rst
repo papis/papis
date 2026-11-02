@@ -200,7 +200,7 @@ extend Papis' features or integrate it with other software.
    * - Project
      - Maintained by
 
-   * - `papis (core) <https://github.com/papis/papis-rofi/>`__
+   * - `papis (core) <https://github.com/papis/papis/>`__
      - `Alejandro Gallo <https://alejandrogallo.github.io/>`__,
        `Julian Hauser <https://github.com/jghauser>`__,
        `Alex Fikl <https://github.com/alexfikl>`__
@@ -211,6 +211,8 @@ extend Papis' features or integrate it with other software.
      - you?
    * - `papis-tui <https://github.com/supersambo/papis-tui>`__
      - `Stephan Schlögl <https://github.com/supersambo>`__
+   * - `ptui <https://github.com/tobna/ptui>`__
+     - `Tobias Nauen <https://github.com/tobna>`__
 
    * - `papis-vim <https://github.com/papis/papis-vim>`__
      - you?
@@ -222,7 +224,7 @@ extend Papis' features or integrate it with other software.
 
    * - `papis-zotero <https://github.com/papis/papis-zotero>`__
      - `Alex Fikl <https://github.com/alexfikl>`__
-   * - `papis-libgen <https://github.com/papis/papis-zotero>`__
+   * - `papis-libgen <https://github.com/papis/papis-libgen>`__
      - you?
 
    * - `papis-firefox <https://github.com/papis/papis-firefox>`__
