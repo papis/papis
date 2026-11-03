@@ -22,6 +22,10 @@ ARXIV_TEST_URLS = [
     ("http://arxiv.org/pdf/1110.3658.pdf", "1110.3658"),
     ("https://arxiv.com/pdf/1110.3658.pdf", "1110.3658"),
     ("http://arxiv.com/pdf/1110.3658.pdf", "1110.3658"),
+    ("https://www.alphaxiv.org/abs/2512.16649", "2512.16649"),
+    ("https://www.alphaxiv.org/pdf/2512.16649", "2512.16649"),
+    ("https://www.alphaxiv.org/abs/2512.16649v1", "2512.16649v1"),
+    ("https://alphaxiv.org/overview/2512.16649.md", "2512.16649"),
 ]
 
 

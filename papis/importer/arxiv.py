@@ -28,7 +28,16 @@ class ArxivImporter(Importer):
 
     @classmethod
     def match(cls, uri: str) -> ArxivImporter | None:
-        from papis.arxiv import ARXIV_ABS_URL, find_arxivid_in_text, is_arxivid
+        from papis.arxiv import (
+            ARXIV_ABS_URL,
+            find_arxivid_in_alphaxiv_url,
+            find_arxivid_in_text,
+            is_arxivid,
+        )
+
+        arxivid = find_arxivid_in_alphaxiv_url(uri)
+        if arxivid:
+            return ArxivImporter(f"{ARXIV_ABS_URL}/{arxivid}", arxivid)
 
         arxivid = find_arxivid_in_text(uri)
         if arxivid:
