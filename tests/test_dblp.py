@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 import requests
@@ -106,3 +106,71 @@ def test_importer_fetch(tmp_config: TemporaryConfiguration,
         expected_data = resource_cache.get_local_resource(outfile, extracted_data)
 
         assert extracted_data == expected_data
+
+
+def _fake_response(status_code: int = 200, content: bytes = b"") -> Any:
+    """Return a replacement for ``requests.Session.get``."""
+    def get(self: Any, url: str, **kwargs: Any) -> requests.Response:
+        response = requests.Response()
+        response.url = url
+        response.status_code = status_code
+        response._content = content
+        return response
+
+    return get
+
+
+def test_search_http_error(tmp_config: TemporaryConfiguration,
+                           monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.dblp
+    from papis.exceptions import SourceError
+
+    monkeypatch.setattr(requests.Session, "get", _fake_response(500))
+
+    with pytest.raises(SourceError, match="Could not query DBLP"):
+        papis.dblp.search(query="test")
+
+
+def test_get_data_no_results(tmp_config: TemporaryConfiguration,
+                             monkeypatch: pytest.MonkeyPatch) -> None:
+    import json as jsonlib
+
+    import papis.dblp
+
+    payload = {"result": {
+        "status": {"code": 200, "text": "OK"},
+        "hits": {"total": "0"},
+        }}
+    monkeypatch.setattr(
+        papis.dblp, "search", lambda **kwargs: jsonlib.dumps(payload))
+
+    assert papis.dblp.get_data(query="test") == []
+
+
+def test_get_data_error_status(tmp_config: TemporaryConfiguration,
+                               monkeypatch: pytest.MonkeyPatch) -> None:
+    import json as jsonlib
+
+    import papis.dblp
+    from papis.exceptions import SourceError
+
+    payload = {"result": {"status": {"code": 500, "text": "Invalid query"}}}
+    monkeypatch.setattr(
+        papis.dblp, "search", lambda **kwargs: jsonlib.dumps(payload))
+
+    with pytest.raises(
+            SourceError, match="Could not query DBLP: 'Invalid query'"):
+        papis.dblp.get_data(query="test")
+
+
+@pytest.mark.parametrize("response", ["<html>", "[1, 2, 3]", "{}"])
+def test_get_data_invalid_response(tmp_config: TemporaryConfiguration,
+                                   monkeypatch: pytest.MonkeyPatch,
+                                   response: str) -> None:
+    import papis.dblp
+    from papis.exceptions import SourceError
+
+    monkeypatch.setattr(papis.dblp, "search", lambda **kwargs: response)
+
+    with pytest.raises(SourceError, match="Unexpected response from DBLP"):
+        papis.dblp.get_data(query="test")

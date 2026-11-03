@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
@@ -233,7 +234,7 @@ def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]]:
+def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]] | None:
     import habanero
 
     from papis import PAPIS_USER_AGENT
@@ -288,23 +289,32 @@ def get_data(
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as exc:
-        logger.error("Error getting works from Crossref.", exc_info=exc)
-        return []
+        # NOTE: habanero can raise its own RequestError or httpx.HTTPStatusError, which
+        # carry the `status_code` in different places
+        status = getattr(exc, "status_code", None)
+        if status is None:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+
+        if status in {404, 410}:
+            return []
+
+        raise SourceError(f"Could not query Crossref: {exc}") from exc
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if "message" not in results:
-            logger.error("Error retrieving data from Crossref: incorrect message.")
-            return []
+            raise SourceError(
+                "Unexpected response from Crossref: missing 'message'.")
         message = results["message"]
         if "items" in message:
             docs = message["items"]
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving data from Crossref: incorrect message.")
-        return []
+        raise SourceError(
+            "Unexpected response from Crossref: expected a 'list' or 'dict', "
+            f"got '{type(results).__name__}'.")
 
     logger.debug("Retrieved %s documents.", len(docs))
     return [crossref_data_to_papis_data(d) for d in docs]
