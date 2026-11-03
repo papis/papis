@@ -5,7 +5,6 @@ import re
 import subprocess
 import sys
 from typing import TYPE_CHECKING, Any, Literal, TypeVar, overload
-from warnings import warn
 
 try:
     # NOTE: multiprocessing is not available on some platforms (e.g. Android)
@@ -16,6 +15,7 @@ except ImportError:
     HAS_MULTIPROCESSING = False
 
 import platformdirs
+from typing_extensions import deprecated
 
 import papis.config
 import papis.logging
@@ -274,20 +274,20 @@ def get_folders(folder: str) -> list[str]:
     return folders
 
 
+@deprecated(
+    "'papis.utils.create_identifier' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.unique_suffixes' instead."
+)
 def create_identifier(input_list: str | None = None, skip: int = 0) -> Iterator[str]:
-    warn("'papis.utils.create_identifier' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.paths.unique_suffixes' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.paths import unique_suffixes
     yield from unique_suffixes(input_list, skip=skip)
 
 
+@deprecated(
+    "'papis.utils.clean_document_name' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.normalize_path_part' instead."
+)
 def clean_document_name(doc_path: str, is_path: bool = True) -> str:
-    warn("'papis.utils.clean_document_name' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.paths.normalize_path_part' instead.",
-         DeprecationWarning, stacklevel=2)
-
     if is_path:
         doc_path = os.path.basename(doc_path)
 
@@ -427,6 +427,11 @@ def get_cache_home() -> str:
     return cachedir
 
 
+@deprecated(
+    "'papis.utils.get_matching_importer_or_downloader' is deprecated and will be "
+    "removed in Papis v0.16. Use 'papis.importer.get_matching_importers_by_uri' and "
+    "'papis.importer.fetch_importers' instead."
+)
 def get_matching_importer_or_downloader(
         uri: str,
         download_files: bool | None = None,
@@ -443,18 +448,17 @@ def get_matching_importer_or_downloader(
     if download_files is None:
         download_files = False
 
-    warn("'papis.utils.get_matching_importer_or_downloader' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.get_matching_importers_by_uri' and "
-         "'papis.importer.fetch_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.importer import fetch_importers, get_matching_importers_by_uri
 
     matching_importers = get_matching_importers_by_uri(uri, include_downloaders=True)
     return fetch_importers(matching_importers, download_files=download_files)
 
 
+@deprecated(
+    "'papis.utils.get_matching_importer_by_name' is deprecated and will be removed "
+    "in Papis v0.16. Use 'papis.importer.get_matching_importers_by_name' and "
+    "'papis.importer.fetch_importers' instead."
+)
 def get_matching_importer_by_name(
         name_and_uris: Iterable[tuple[str, str]],
         download_files: bool | None = None,
@@ -471,18 +475,16 @@ def get_matching_importer_by_name(
     if download_files is None:
         download_files = False
 
-    warn("'papis.utils.get_matching_importer_by_name' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.get_matching_importers_by_name' and "
-         "'papis.importer.fetch_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.importer import fetch_importers, get_matching_importers_by_name
 
     matching_importers = get_matching_importers_by_name(name_and_uris)
     return fetch_importers(matching_importers, download_files=download_files)
 
 
+@deprecated(
+    "'papis.utils.collect_importer_data' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.importer.collect_from_importers' instead."
+)
 def collect_importer_data(
         importers: Iterable[Importer],
         batch: bool = True,
@@ -500,28 +502,23 @@ def collect_importer_data(
     if use_files is None:
         use_files = False
 
-    warn("'papis.utils.collect_importer_data' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.collect_from_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
     from papis.importer import collect_from_importers
     return collect_from_importers(importers, batch=batch, use_files=use_files)
 
 
+@deprecated(
+    "'papis.utils.is_relative_to' is deprecated and will be removed in "
+    "Papis v0.16. Use 'papis.paths.is_relative_to' instead.",
+)
 def is_relative_to(path: str, other: str) -> bool:
-    warn("'papis.utils.is_relative_to' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.paths.is_relative_to' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.paths import is_relative_to as _is_relative_to
-    return _is_relative_to(path, other)
+    import papis.paths
+    return papis.paths.is_relative_to(path, other)
 
 
+@deprecated(
+    "'papis.utils.symlink' is deprecated and will be removed in Papis v0.16. "
+    "Use 'papis.paths.symlink' instead."
+)
 def symlink(source: str, destination: str) -> None:
-    warn("'papis.utils.symlink' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.paths.symlink' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.paths import symlink as _symlink
-    return _symlink(source, destination)
+    import papis.paths
+    return papis.paths.symlink(source, destination)

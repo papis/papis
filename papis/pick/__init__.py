@@ -4,6 +4,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
+from typing_extensions import deprecated
+
 import papis.config
 import papis.logging
 
@@ -77,13 +79,11 @@ def get_picker_by_name(name: str) -> type[Picker[Any]]:
     return cls  # type: ignore[no-any-return]
 
 
+@deprecated(
+    "'papis.pick.get_picker' is deprecated and will be removed in Papis v0.16. "
+    "Use 'papis.pick.get_picker_by_name' instead.",
+)
 def get_picker(name: str) -> type[Picker[Any]]:
-    from warnings import warn
-
-    warn("'papis.pick.get_picker' is deprecated and will be removed in "
-         "Papis v0.16. Use 'papis.pick.get_picker_by_name' instead.",
-         DeprecationWarning, stacklevel=2)
-
     return get_picker_by_name(name)
 
 

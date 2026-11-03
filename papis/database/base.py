@@ -4,6 +4,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from typing_extensions import deprecated
+
 if TYPE_CHECKING:
     from papis.document import Document
     from papis.library import Library
@@ -150,33 +152,25 @@ class Database(ABC):
 
         return new_id
 
+    @deprecated(
+        "Calling 'Database.get_lib()' directly is deprecated and will be removed in "
+        "Papis v0.16. Use the 'Database.lib.name' member directly."
+    )
     def get_lib(self) -> str:
-        from warnings import warn
-
-        warn(f"Calling '{type(self).__name__}.get_lib' directly is deprecated "
-             "and will be removed in the next version of Papis (after 0.15). Use "
-             "the 'self.lib.name' member directly.",
-             DeprecationWarning, stacklevel=2)
-
         return self.lib.name
 
+    @deprecated(
+        "Calling 'Database.get_dirs' directly is deprecated and will be removed in "
+        "Papis v0.16. Use the 'Database.lib.path' member directly."
+    )
     def get_dirs(self) -> list[str]:
-        from warnings import warn
-
-        warn(f"Calling '{type(self).__name__}.get_dirs' directly is deprecated "
-             "and will be removed in the next version of Papis (after 0.15). Use "
-             "the 'self.lib.path' member directly.",
-             DeprecationWarning, stacklevel=2)
-
         return [self.lib.path]
 
+    @deprecated(
+        "'Database.get_id_key' is deprecated and will be removed in Papis v0.16. "
+        "Use 'papis.id.ID_KEY_NAME' instead."
+    )
     @staticmethod
     def get_id_key() -> str:
-        from warnings import warn
-
-        warn("This function is deprecated and will be removed in the next "
-             "version of Papis (after 0.15). Use 'papis.id.ID_KEY_NAME' instead.",
-             DeprecationWarning, stacklevel=2)
-
         from papis.id import ID_KEY_NAME
         return ID_KEY_NAME
