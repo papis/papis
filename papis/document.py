@@ -825,10 +825,13 @@ def new(
     temp_dir = tempfile.mkdtemp()
     doc = Document(folder=temp_dir, data=data)
 
-    # Compute a unique Papis ID for the document
     from papis.database import get as get_database
+    from papis.id import ID_KEY_NAME
 
     db = get_database()
+
+    # Generate a new Papis ID
+    doc.pop(ID_KEY_NAME, None)
     db.maybe_compute_id(doc)
 
     # Derive the structured author list if only a flat author was given

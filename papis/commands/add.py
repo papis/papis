@@ -115,6 +115,7 @@ import papis.logging
 if TYPE_CHECKING:
     from papis.citations import Citations
     from papis.document import Document
+    from papis.sources.lookup import LookupResult
     from papis.strings import AnyString
 
 logger = papis.logging.get_logger(__name__)
@@ -393,7 +394,7 @@ def run(paths: list[str],
     help="Add a document into a given library."
 )
 @click.help_option("--help", "-h")
-@click.argument("files", type=click.Path(), nargs=-1)
+@click.argument("items", type=click.Path(), nargs=-1)
 @click.option(
     "-s", "--set", "set_list",
     help="Set some information before.",
@@ -417,13 +418,13 @@ def run(paths: list[str],
     type=papis.cli.FormatPatternParamType(),
     default=None)
 @click.option(
-    "--from", "from_importer",
-    help="Add document from a specific importer.",
+    "--from", "from_sources",
+    help="Add document from a specific source.",
     type=str,
     nargs=2,
     multiple=True,
     default=(),)
-@papis.cli.bool_flag("--list-importers", help="List all supported importers.")
+@papis.cli.bool_flag("--list-sources", help="List all supported sources.")
 @papis.cli.bool_flag(
     "-b", "--batch",
     help="Batch mode (do not prompt or otherwise).")
@@ -456,23 +457,22 @@ def run(paths: list[str],
 @papis.cli.git_option(help="Git add and commit the new document.")
 @papis.cli.bool_flag(
     "--download-files/--no-download-files",
-    help="Download file with importer if available or not.",
+    help="Download files with the source if available.",
     default=lambda: papis.config.getboolean("add-download-files"))
 @papis.cli.bool_flag(
     "--fetch-citations/--no-fetch-citations",
     help="Fetch citations from a DOI (Digital Object Identifier).",
     default=lambda: papis.config.getboolean("add-fetch-citations"))
 @click.pass_context
-def cli(
-        ctx: click.Context,
-        files: list[str],
+def cli(ctx: click.Context,
+        items: list[str],
         set_list: list[tuple[str, str]],
         subfolder: str,
         pick_subfolder: bool,
         folder_name: AnyString,
         file_name: AnyString | None,
-        from_importer: list[tuple[str, str]],
-        list_importers: bool,
+        from_sources: list[tuple[str, str]],
+        list_sources: bool,
         batch: bool,
         confirm: bool,
         open_file: bool,
@@ -492,20 +492,19 @@ def cli(
         confirm = False
         open_file = False
 
-    # gather importers / downloaders
-    from papis.importer import (
-        collect_from_importers,
-        fetch_importers,
-        get_available_importers,
-        get_matching_importers_by_name,
-        get_matching_importers_by_uri,
+    from papis.gather import gather
+    from papis.sources.client import (
+        log_source_result,
+        lookup_item,
+        merge,
     )
 
-    if list_importers:
+    if list_sources:
         from papis.commands.list import list_plugins
-        for o in list_plugins(show_importers=True, verbose=True):
-            click.echo(o)
-        ctx.exit(0)
+
+        for line in list_plugins(show_sources=True, verbose=True):
+            click.echo(line)
+        return
 
     # ensure that the library directory exists
     lib = papis.config.get_lib()
@@ -529,48 +528,54 @@ def cli(
                          lib.name)
             ctx.exit(1)
 
-    # gather up importer data
-    known_importers = get_available_importers()
-    extra_importers = {name for name, _ in from_importer}.difference(known_importers)
-    if extra_importers:
-        logger.error("Unknown importers chosen with '--from': ['%s'].",
-                     "', '".join(extra_importers))
-        logger.error("Supported importers are: ['%s'].", "', '".join(known_importers))
+    inferred_results: list[LookupResult] = []
+    explicit_results: list[LookupResult] = []
+    local_files: list[str] = []
+
+    try:
+        all_items: list[tuple[str, tuple[str, ...]]] = [
+            (item, ()) for item in items]
+        all_items += [(item, (source,)) for source, item in from_sources]
+        for item, sources in all_items:
+            gathered = gather(item)
+            results = lookup_item(gathered.evidence, sources)
+            for result in results:
+                log_source_result(logger, result, sources=set(sources))
+
+            # NOTE: a `--from` item's file is likely to be a metadata file, which we
+            # don't want to attach.
+            if sources:
+                explicit_results.extend(results)
+            else:
+                inferred_results.extend(results)
+                local_files.extend(gathered.local_files)
+
+    except ValueError as exc:
+        logger.error("%s", exc)
         ctx.exit(1)
 
-    if from_importer:
-        importers = get_matching_importers_by_name(from_importer)
-    elif files:
-        from itertools import chain
+    # NOTE: positional item results are merged according to priority order or may be
+    # picked interactively. '--from' item results are merged in CLI order.
+    data, merged_files = merge(
+        inferred_results, pick=not batch, resolve_fields=not batch)
+    data, from_files = merge(
+        explicit_results, base=data, resolve_fields=not batch)
+    merged_files.extend(from_files)
 
-        importers = list(
-            chain.from_iterable(
-                get_matching_importers_by_uri(f, include_downloaders=True)
-                for f in files))
+    if download_files:
+        for ref in merged_files:
+            # NOTE: this is to support legacy downloaders/importers
+            if ref.path is not None:
+                local_files.append(ref.path)
+            elif ref.url is not None:
+                from papis.gather import download_document
 
-        if importers and not batch:
-            from papis.tui.utils import select_range
-
-            logger.info("These importers were automatically matched. "
-                        "Select the ones you want to use.")
-
-            matching_indices = select_range(
-                ["{} (files: {}) ".format(
-                    imp.name,
-                    ", ".join(imp.ctx.files) if imp.ctx.files else "none")
-                 for imp in importers],
-                "Select matching importers (for instance 0, 1, 3-10, a, all...)")
-
-            importers = [importers[i] for i in matching_indices]
-    else:
-        importers = []
-
-    # merge importer data + commandline data into a single set
-    importers = fetch_importers(importers, download_files=download_files)
-    imported = collect_from_importers(importers, batch=batch, use_files=download_files)
-
-    data = imported.data
-    files = [f for f in files if os.path.exists(f)] + imported.files
+                path = download_document(
+                    ref.url,
+                    expected_document_extension=ref.extension,
+                    filename=ref.filename)
+                if path is not None:
+                    local_files.append(path)
 
     # gather up user provided data
     if set_list:
@@ -583,10 +588,10 @@ def cli(
                 dict(set_list),
                 "command-line")
 
-    if not data and not files:
-        logger.error("No document is created, since no metadata or files have been "
-                     "obtained. Try providing a filename, an URL or use "
-                     "`--from [importer] [uri]` to extract metadata for the "
+    if not data and not local_files:
+        logger.error("No document is created, since no data or files have been "
+                     "found. Try providing a filename, an URL or use "
+                     "`--from [source] [item]` to extract metadata for the "
                      "document.")
         ctx.exit(1)
 
@@ -613,7 +618,7 @@ def cli(
         citations = []
 
     try:
-        run(files,
+        run(local_files,
             data=data,
             folder_name=folder_name,
             file_name=file_name,

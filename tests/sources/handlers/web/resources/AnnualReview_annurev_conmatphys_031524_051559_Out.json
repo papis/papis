@@ -1,0 +1,31 @@
+{
+  "abstract": "To explore information&apos;s role in the physics of living systems, experimentalists have recently turned to making materials from robots. These systems offer unique opportunities because they are easy to control and interpret, yet each machine retains the capacity to sense and compute. Here, we review recent work on robotic matter, emphasizing how internal states, local sensing, and feedback at the microscale enable macroscale properties that are fundamentally distinct from traditional condensed matter or other active matter systems. We argue that this field is poised to evolve rapidly, thanks to technological innovations including semiconductor miniaturization, heterogeneous materials integration, and low-power computation. Finally, we highlight outstanding experimental and theoretical challenges that robots are well positioned to address, including the tradeoffs between robot size and intelligence and the difficulty of preserving information flows when robot actions are coarse-grained into macroscopic variables.",
+  "author": "Miskin, Marc Z.",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Department of Electrical and Systems Engineering, University of Pennsylvania, Philadelphia, Pennsylvania, USA; email: mmiskin@seas.upenn.edu"
+        }
+      ],
+      "family": "Miskin",
+      "given": "Marc Z."
+    }
+  ],
+  "date": "2026/03/13",
+  "doc_url": "https://www.annualreviews.org/deliver/fulltext/conmatphys/17/1/annurev-conmatphys-031524-051559.pdf?itemId=%2Fcontent%2Fjournals%2F10.1146%2Fannurev-conmatphys-031524-051559&mimeType=pdf&containerItemId=content/journals/conmatphys",
+  "doi": "10.1146/annurev-conmatphys-031524-051559",
+  "firstpage": "449",
+  "issn": "1947-5454",
+  "issue": "Volume 17, 2026",
+  "journal": "Annual Review of Condensed Matter Physics",
+  "lastpage": "471",
+  "online_date": "2026/03/13",
+  "pages": "449--471",
+  "publication_date": "2026/03/13",
+  "publisher": "Annual Reviews",
+  "title": "Robotic Matter",
+  "type": "Text",
+  "url": "https://www.annualreviews.org/content/journals/10.1146/annurev-conmatphys-031524-051559",
+  "volume": "17"
+}

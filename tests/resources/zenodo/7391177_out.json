@@ -70,6 +70,7 @@
   "day": 1,
   "doi": "10.5281/zenodo.7391177",
   "eprint": 7391177,
+  "eprinttype": "zenodo",
   "license": "other-open",
   "month": 10,
   "note": "If you use this software, please cite it using these metadata.",

@@ -1,0 +1,82 @@
+[
+  {
+    "author": "Yu, Shufan and Liu, Qingtang and Johnson-Glenberg, Mina C. and Han, Miaomiao and Ma, Jingjing and Ba, Shen and Wu, Linjing",
+    "author_list": [
+      {
+        "family": "Yu",
+        "given": "Shufan"
+      },
+      {
+        "family": "Liu",
+        "given": "Qingtang"
+      },
+      {
+        "family": "Johnson-Glenberg",
+        "given": "Mina C."
+      },
+      {
+        "family": "Han",
+        "given": "Miaomiao"
+      },
+      {
+        "family": "Ma",
+        "given": "Jingjing"
+      },
+      {
+        "family": "Ba",
+        "given": "Shen"
+      },
+      {
+        "family": "Wu",
+        "given": "Linjing"
+      }
+    ],
+    "doi": "10.1016/J.COMPEDU.2023.104764",
+    "pages": "104764",
+    "title": "Promoting musical instrument learning in virtual reality environment: Effects of embodiment and visual cues.",
+    "type": "article",
+    "url": "https://dblp.org/rec/journals/ce/YuLJHMBW23",
+    "volume": "198",
+    "year": 2023
+  },
+  {
+    "author": "Johnson-Glenberg, Mina C. and Yu, Christine S. P. and 0005, Frank Liu and Amador, Charles and Bao, Yueming and Yu, Shufan and LiKamWa, Robert",
+    "author_list": [
+      {
+        "family": "Johnson-Glenberg",
+        "given": "Mina C."
+      },
+      {
+        "family": "Yu",
+        "given": "Christine S. P."
+      },
+      {
+        "family": "0005",
+        "given": "Frank Liu"
+      },
+      {
+        "family": "Amador",
+        "given": "Charles"
+      },
+      {
+        "family": "Bao",
+        "given": "Yueming"
+      },
+      {
+        "family": "Yu",
+        "given": "Shufan"
+      },
+      {
+        "family": "LiKamWa",
+        "given": "Robert"
+      }
+    ],
+    "doi": "10.3389/FRVIR.2023.1047833",
+    "journal": "Frontiers in Virtual Reality",
+    "title": "Embodied mixed reality with passive haptics in STEM education: randomized control study with chemistry titration.",
+    "type": "article",
+    "url": "https://dblp.org/rec/journals/frvir/JohnsonGlenbergYLABYL23",
+    "volume": "4",
+    "year": 2023
+  }
+]

@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     import requests
 
     from papis.document import Document, DocumentLike
-    from papis.importer import Context, Importer
 
 #: Invariant :class:`typing.TypeVar`
 A = TypeVar("A")
@@ -425,88 +424,6 @@ def get_cache_home() -> str:
         os.makedirs(cachedir)
 
     return cachedir
-
-
-def get_matching_importer_or_downloader(
-        uri: str,
-        download_files: bool | None = None,
-        only_data: bool | None = None
-        ) -> list[Importer]:
-    # FIXME: this is here for backwards compatibility and should be removed
-    # before we release the next version
-    if only_data is not None and download_files is not None:
-        raise ValueError("Cannot pass both 'only_data' and 'download_files'")
-
-    if only_data is not None:
-        download_files = not only_data
-
-    if download_files is None:
-        download_files = False
-
-    warn("'papis.utils.get_matching_importer_or_downloader' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.get_matching_importers_by_uri' and "
-         "'papis.importer.fetch_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.importer import fetch_importers, get_matching_importers_by_uri
-
-    matching_importers = get_matching_importers_by_uri(uri, include_downloaders=True)
-    return fetch_importers(matching_importers, download_files=download_files)
-
-
-def get_matching_importer_by_name(
-        name_and_uris: Iterable[tuple[str, str]],
-        download_files: bool | None = None,
-        only_data: bool | None = None,
-        ) -> list[Importer]:
-    # FIXME: this is here for backwards compatibility and should be removed
-    # before we release the next version
-    if only_data is not None and download_files is not None:
-        raise ValueError("Cannot pass both 'only_data' and 'download_files'")
-
-    if only_data is not None:
-        download_files = not only_data
-
-    if download_files is None:
-        download_files = False
-
-    warn("'papis.utils.get_matching_importer_by_name' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.get_matching_importers_by_name' and "
-         "'papis.importer.fetch_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.importer import fetch_importers, get_matching_importers_by_name
-
-    matching_importers = get_matching_importers_by_name(name_and_uris)
-    return fetch_importers(matching_importers, download_files=download_files)
-
-
-def collect_importer_data(
-        importers: Iterable[Importer],
-        batch: bool = True,
-        use_files: bool | None = None,
-        only_data: bool | None = None,
-        ) -> Context:
-    # FIXME: this is here for backwards compatibility and should be removed
-    # before we release the next version
-    if only_data is not None and use_files is not None:
-        raise ValueError("Cannot pass both 'only_data' and 'use_files'")
-
-    if only_data is not None:
-        use_files = not only_data
-
-    if use_files is None:
-        use_files = False
-
-    warn("'papis.utils.collect_importer_data' is deprecated "
-         "and will be removed in Papis v0.16. "
-         "Use 'papis.importer.collect_from_importers' instead.",
-         DeprecationWarning, stacklevel=2)
-
-    from papis.importer import collect_from_importers
-    return collect_from_importers(importers, batch=batch, use_files=use_files)
 
 
 def is_relative_to(path: str, other: str) -> bool:

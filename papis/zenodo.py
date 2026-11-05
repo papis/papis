@@ -4,6 +4,7 @@ from functools import cache
 from typing import Any
 
 import papis.logging
+from papis.exceptions import SourceError
 
 logger = papis.logging.get_logger(__name__)
 
@@ -135,36 +136,33 @@ def zenodo_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     key_conversion = _get_zenodo_key_conversion()
 
     from papis.document import keyconversion_to_data
-    return keyconversion_to_data(key_conversion, data)
+    data = keyconversion_to_data(key_conversion, data)
+    data["eprinttype"] = "zenodo"
+    return data
 
 
-def is_valid_record_id(record_id: str) -> bool:
-    """Checks if a record is a valid Zenodo record, first checking its form and then
-    testing against Zenodo
+def _get_zenodo_response(record_id: str) -> str | None:
+    from requests.exceptions import RequestException
 
-    :param record_id: a Zenodo record id
-    :return: whether the record is valid
-    """
-    record_id = record_id.strip()
-    if not record_id.isdigit():
-        return False
-
-    from papis.utils import get_session
-    with get_session() as session:
-        response = session.get(ZENODO_URL.format(record_id=record_id))
-
-    return response.ok
-
-
-def _get_zenodo_response(record_id: str) -> str:
     from papis import PAPIS_USER_AGENT
     from papis.utils import get_session
 
-    with get_session() as session:
-        response = session.get(
-            ZENODO_URL.format(record_id=record_id.strip()),
-            headers={"user-agent": PAPIS_USER_AGENT},
-        )
+    try:
+        with get_session() as session:
+            response = session.get(
+                ZENODO_URL.format(record_id=record_id.strip()),
+                headers={"user-agent": PAPIS_USER_AGENT},
+            )
+    except RequestException as exc:
+        raise SourceError(f"Could not query Zenodo: {exc}") from exc
+
+    # NOTE: a missing record is reported with a 404, which is not an error.
+    if response.status_code in {404, 410}:
+        return None
+
+    if not response.ok:
+        raise SourceError(
+            f"Could not query Zenodo: HTTP {response.status_code} ({response.reason})")
 
     return response.content.decode()
 
@@ -176,17 +174,19 @@ def get_data(record_id: str) -> dict[str, Any]:
     :return: a processed zenodo record
     """
     data = _get_zenodo_response(record_id)
+    if data is None:
+        return {}
 
     import json
 
     try:
         json_data = json.loads(data)
     except json.JSONDecodeError as exc:
-        logger.error("Failed to decode response from Zenodo.", exc_info=exc)
+        raise SourceError("Unexpected response from Zenodo: not valid JSON") from exc
 
-    if isinstance(json_data, dict):
-        return json_data
-    else:
-        logger.error("Zenodo response has unsupported type: '%s'",
-                     type(json_data).__name__)
-        return {}
+    if not isinstance(json_data, dict):
+        raise SourceError(
+            f"Unexpected response from Zenodo: expected a JSON object, "
+            f"got '{type(json_data).__name__}'.")
+
+    return json_data

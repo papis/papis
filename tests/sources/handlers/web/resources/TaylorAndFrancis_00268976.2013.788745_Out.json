@@ -1,0 +1,26 @@
+{
+  "abstract": "Perturbation Theory is the key tool to understand the physics of the quantum many-body problem. It has led to the diagrammatic techniques [1,2] and the fundamental linked cluster theorem. From this...",
+  "author": "Malrieu, Jean-Paul and Angeli, Celestino",
+  "author_list": [
+    {
+      "affiliation": [],
+      "family": "Malrieu",
+      "given": "Jean-Paul"
+    },
+    {
+      "affiliation": [],
+      "family": "Angeli",
+      "given": "Celestino"
+    }
+  ],
+  "doi": "10.1080/00268976.2013.788745",
+  "journal": "Molecular Physics",
+  "keywords": "Møller–Plesset perturbation theory; Epstein–Nesbet perturbation theory; divergences in perturbation theory; linked cluster theorem; coupled cluster",
+  "language": "EN",
+  "month": 7,
+  "publisher": "Taylor & Francis Group",
+  "title": "The Møller–Plesset perturbation revisited: origin of high-order divergences",
+  "type": "article",
+  "url": "https://www.tandfonline.com/doi/abs/10.1080/00268976.2013.788745",
+  "year": 2013
+}

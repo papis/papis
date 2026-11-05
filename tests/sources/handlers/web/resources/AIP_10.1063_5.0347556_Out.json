@@ -1,0 +1,27 @@
+{
+  "abstract": "An implication of Faraday's Law is that the rate of change of the poloidal flux relative to the toroidal flux associated with a magnetic surface is given by the",
+  "author": "Boozer, Allen H.",
+  "author_list": [
+    {
+      "affiliation": [
+        {
+          "name": "Columbia University, New York, New York 10027, USA"
+        }
+      ],
+      "family": "Boozer",
+      "given": "Allen H."
+    }
+  ],
+  "doc_url": "https://pubs.aip.org/aip/pop/article-pdf/doi/10.1063/5.0347556/21143342/092505_1_5.0347556.pdf",
+  "doi": "10.1063/5.0347556",
+  "issn": "1070-664X",
+  "issue": "9",
+  "journal": "Physics of Plasmas",
+  "journal_abbrev": "Phys. Plasmas",
+  "publication_date": "2026/09/01",
+  "publisher": "AIP Publishing",
+  "title": "The toroidal flux and separatrix effects in tokamaks",
+  "type": "article",
+  "url": "https://pubs.aip.org/aip/pop/article/33/9/092505/3404740/The-toroidal-flux-and-separatrix-effects-in",
+  "volume": "33"
+}

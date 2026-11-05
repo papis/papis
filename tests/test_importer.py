@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from papis.importer import Importer
+
 if TYPE_CHECKING:
     from papis.testing import TemporaryConfiguration
 
@@ -84,99 +86,35 @@ def test_cache(tmp_config: TemporaryConfiguration) -> None:
     assert importer.ctx.data["time"] == data["time"]
 
 
-def test_get_importer(tmp_config: TemporaryConfiguration) -> None:
+def _make_fake_importer(name: str) -> type[Importer]:
+    """Build a fake :class:`Importer` subclass (as a third-party plugin would)."""
+    return type(name, (Importer,), {
+        "name": name,
+        "__module__": "tests.test_importer",
+    })
+
+
+def test_get_importer(tmp_config: TemporaryConfiguration,
+                      monkeypatch: pytest.MonkeyPatch) -> None:
+    import papis.plugin
     from papis.importer import Importer, get_available_importers, get_importer_by_name
     from papis.plugin import PluginNotFoundError
 
-    names = get_available_importers()
-    assert isinstance(names, list)
-    assert names
+    fake = _make_fake_importer("fake")
+    monkeypatch.setattr(papis.plugin, "get_plugin_names",
+                        lambda ns: ["fake"])
 
-    for name in names:
-        cls = get_importer_by_name(name)
-        assert issubclass(cls, Importer)
+    def _get_plugin_by_name(ns: str, name: str) -> Any:
+        if name == "fake":
+            return fake
+        raise PluginNotFoundError(ns, name)
+
+    monkeypatch.setattr(papis.plugin, "get_plugin_by_name", _get_plugin_by_name)
+
+    names = get_available_importers()
+    assert names == ["fake"]
+    assert get_importer_by_name("fake") is fake
+    assert issubclass(get_importer_by_name("fake"), Importer)
 
     with pytest.raises(PluginNotFoundError):
         _ = get_importer_by_name("this_is_not_a_known_importer_hopefully")
-
-
-def test_get_matching_importers_by_name(tmp_config: TemporaryConfiguration) -> None:
-    from papis.importer import get_matching_importers_by_name
-    from papis.importer.doi import DOIImporter
-
-    name_and_uris = [
-        # 1. a valid importer name + valid uri
-        ("doi", "10.1103/physrevb.89.140501"),
-        # 2. a valid importer name + invalid uri
-        ("doi", "this_does_not_look_like_a_doi_hopefully"),
-        # 3. an invalid importer name
-        ("this_importer_does_not_exist", "unknown"),
-        # 4. a downloader name + valid uri
-        ("usenix",
-         "https://www.usenix.org/conference/usenixsecurity22/presentation/bulekov"),
-    ]
-
-    importers = get_matching_importers_by_name(name_and_uris)
-    assert len(importers) == 1
-    assert isinstance(importers[0], DOIImporter)
-
-    from papis.downloaders.usenix import USENIXDownloader
-
-    importers = get_matching_importers_by_name(name_and_uris, include_downloaders=True)
-    assert len(importers) == 2
-    assert isinstance(importers[0], DOIImporter)
-    assert isinstance(importers[1], USENIXDownloader)
-
-
-def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration,
-                                   monkeypatch: pytest.MonkeyPatch) -> None:
-    from papis.importer import get_matching_importers_by_uri
-
-    importers = get_matching_importers_by_uri("this_is_not_an_uri")
-    assert len(importers) == 0
-
-    from papis.importer.arxiv import ArxivImporter
-
-    importers = get_matching_importers_by_uri("https://arxiv.org/abs/1110.3658")
-    assert len(importers) == 1
-    assert isinstance(importers[0], ArxivImporter)
-
-    from papis.downloaders.fallback import FallbackDownloader
-    from papis.downloaders.usenix import USENIXDownloader
-    from papis.importer.bibtex import BibTeXImporter
-
-    # NOTE: the URL has some embedded BibTeX that we do not care to catch here
-    monkeypatch.setattr(BibTeXImporter, "match",
-                        lambda *args, **kwargs: None)
-
-    importers = get_matching_importers_by_uri(
-        "https://www.usenix.org/conference/nsdi22/presentation/goyal",
-        include_downloaders=True)
-    assert len(importers) == 2
-    assert isinstance(importers[0], FallbackDownloader)
-    assert isinstance(importers[1], USENIXDownloader)
-
-
-def test_doi_importer_does_not_match_local_paths(
-        tmp_config: TemporaryConfiguration) -> None:
-    import os
-
-    from papis.importer.doi import DOIImporter
-
-    # NOTE: a space makes the doi.org handle URL invalid, which used to crash
-    # the importer matching instead of skipping it (see #1201)
-    path = os.path.join(tmp_config.tmpdir, "some presentation.txt")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("this is not a doi\n")
-
-    assert DOIImporter.match(path) is None
-
-
-def test_matching_importers_by_doc(tmp_config: TemporaryConfiguration) -> None:
-    from papis.importer import get_matching_importers_by_doc
-    from papis.importer.doi import DOIImporter
-
-    doc = {"doi": "10.1103/physrevb.89.140501"}
-    importers = get_matching_importers_by_doc(doc)
-    assert len(importers) == 1
-    assert isinstance(importers[0], DOIImporter)

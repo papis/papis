@@ -38,7 +38,7 @@ Examples
     .. code:: sh
 
         papis list --libraries
-        papis list --importers
+        papis list --sources
         papis list --exporters
         papis list --doctors
 
@@ -71,9 +71,7 @@ logger = papis.logging.get_logger(__name__)
 def list_plugins(show_paths: bool = False,
                  show_libraries: bool = False,
                  show_exporters: bool = False,
-                 show_explorers: bool = False,
-                 show_importers: bool = False,
-                 show_downloaders: bool = False,
+                 show_sources: bool = False,
                  show_pickers: bool = False,
                  show_doctor: bool = False,
                  verbose: bool = False) -> list[str]:
@@ -136,17 +134,30 @@ def list_plugins(show_paths: bool = False,
         from papis.exporters import EXPORTER_NAMESPACE_NAME
         return _stringify(EXPORTER_NAMESPACE_NAME)
 
-    if show_explorers:
-        from papis.explorers import EXPLORER_NAMESPACE_NAME
-        return _stringify(EXPLORER_NAMESPACE_NAME)
+    if show_sources:
+        from papis.sources.client import get_known_sources
 
-    if show_importers:
-        from papis.importer import IMPORTER_NAMESPACE_NAME
-        return _stringify(IMPORTER_NAMESPACE_NAME)
+        results = []
+        for handler in get_known_sources():
+            capabilities = []
+            if "lookup" in handler.capabilities:
+                capabilities.append("lookup")
+            if "search" in handler.capabilities:
+                fields = ["free-text", *handler.search_fields]
+                capabilities.append(f"search ({', '.join(fields)})")
+            if "parse" in handler.capabilities:
+                capabilities.append("parse")
 
-    if show_downloaders:
-        from papis.downloaders import DOWNLOADERS_EXTENSION_NAME
-        return _stringify(DOWNLOADERS_EXTENSION_NAME)
+            ids = f"{handler.__module__}.{handler.__name__}"
+            results.append(_format(handler.name, ids))
+
+            if verbose and handler.__doc__:
+                descr = make_short_help(handler.__doc__, "No description available.")
+                results.append(f"    {descr}")
+
+            results.append(f"    Capabilities: {', '.join(capabilities)}.")
+
+        return results
 
     if show_pickers:
         from papis.pick import PICKER_NAMESPACE_NAME
@@ -240,14 +251,8 @@ run = list_documents
     "--exporters", "show_exporters",
     help="List available exporters.")
 @papis.cli.bool_flag(
-    "--explorers", "show_explorers",
-    help="List available explorers.")
-@papis.cli.bool_flag(
-    "--importers", "show_importers",
-    help="List available importers.")
-@papis.cli.bool_flag(
-    "--downloaders", "show_downloaders",
-    help="List available downloaders.")
+    "--sources", "show_sources",
+    help="List available sources.")
 @papis.cli.bool_flag(
     "--pickers", "show_pickers",
     help="List available pickers.")
@@ -275,9 +280,7 @@ def cli(query: str,
         show_paths: bool,
         show_libraries: bool,
         show_exporters: bool,
-        show_explorers: bool,
-        show_importers: bool,
-        show_downloaders: bool,
+        show_sources: bool,
         show_pickers: bool,
         show_doctor: bool,
         template: str | None,
@@ -292,9 +295,7 @@ def cli(query: str,
         show_paths=show_paths,
         show_libraries=show_libraries,
         show_exporters=show_exporters,
-        show_explorers=show_explorers,
-        show_importers=show_importers,
-        show_downloaders=show_downloaders,
+        show_sources=show_sources,
         show_pickers=show_pickers,
         show_doctor=show_doctor,
         verbose=not quiet)

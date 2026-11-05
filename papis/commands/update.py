@@ -152,13 +152,13 @@ Examples
 
         papis update --auto "author:dyson"
 
-- Update your document from a DOI using the importer functionality:
+- Update your document by looking up metadata with the DOI:
 
     .. code:: sh
 
         papis update --from doi '10.1103/PhysRev.47.777' 'author:einstein'
 
-  For a list of all supported importers use ``papis update --list-importers``.
+  For a list of all supported sources use ``papis update --list-sources``.
 
 - When you update the ``files`` or ``notes`` fields, the corresponding files on
   disk are renamed to match the new value:
@@ -229,11 +229,13 @@ import click
 import papis.cli
 import papis.config
 import papis.logging
+from papis.sources.client import log_source_result
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
     from papis.document import Document
+    from papis.sources.lookup import LookupResult
     from papis.strings import AnyString, FormatPattern
 
 logger = papis.logging.get_logger(__name__)
@@ -796,10 +798,10 @@ def run(
     from papis.paths import normalize_path_part
 
     # normalize new document files
-    if "files" in data:
+    if "files" in data and data["files"] != document.get("files", []):
         data["files"] = [normalize_path_part(filename) for filename in data["files"]]
 
-    if "notes" in data:
+    if "notes" in data and data["notes"] != document.get("notes"):
         data["notes"] = normalize_path_part(data["notes"])
 
     # gather all files to rename
@@ -915,7 +917,7 @@ class _OrderedCommand(click.Command):
 @papis.cli.sort_option()
 @papis.cli.bool_flag(
     "--auto",
-    help="Automatically select importers and downloaders based on document metadata."
+    help="Automatically select sources based on document metadata."
 )
 @papis.cli.bool_flag(
     "--auto-doctor/--no-auto-doctor",
@@ -924,14 +926,14 @@ class _OrderedCommand(click.Command):
 )
 @click.option(
     "--from",
-    "from_importer",
-    help="Add document from a specific importer.",
+    "from_sources",
+    help="Update document metadata from a specific source.",
     type=(str, str),
     nargs=2,
     multiple=True,
     default=(),
 )
-@papis.cli.bool_flag("--list-importers", help="List all supported importers.")
+@papis.cli.bool_flag("--list-sources", help="List all supported sources.")
 @click.option(
     "-s", "--set", "to_set",
     help="Set the key to the given value.",
@@ -981,8 +983,8 @@ def cli(
     query: str,
     git: bool,
     doc_folder: tuple[str, ...],
-    from_importer: list[tuple[str, str]],
-    list_importers: bool,
+    from_sources: list[tuple[str, str]],
+    list_sources: bool,
     batch: bool,
     auto: bool,
     auto_doctor: bool,
@@ -997,18 +999,20 @@ def cli(
     sort_reverse: bool,
 ) -> None:
     """Update document metadata."""
-    from papis.importer import (
-        collect_from_importers,
-        fetch_importers,
-        get_available_importers,
-        get_matching_importers_by_doc,
-        get_matching_importers_by_name,
+    from papis.gather import gather
+    from papis.sources.client import (
+        lookup_followups,
+        lookup_item,
+        merge,
     )
+    from papis.sources.handler import LookupInput
+    from papis.sources.lookup import lookup
 
-    if list_importers:
+    if list_sources:
         from papis.commands.list import list_plugins
-        for o in list_plugins(show_importers=True, verbose=True):
-            click.echo(o)
+
+        for line in list_plugins(show_sources=True, verbose=True):
+            click.echo(line)
         return
 
     # retrieve documents
@@ -1020,20 +1024,11 @@ def cli(
         logger.warning(no_documents_retrieved_message)
         return
 
-    # retrieve importers
-    known_importers = get_available_importers()
-    extra_importers = {name for name, _ in from_importer}.difference(known_importers)
-    if extra_importers:
-        logger.error("Unknown importers chosen with '--from': ['%s'].",
-                     "', '".join(extra_importers))
-        logger.error("Supported importers are: ['%s'].", "', '".join(known_importers))
-        ctx.exit(1)
-        return
-
-    if from_importer:
-        from_importers = get_matching_importers_by_name(from_importer)
-    else:
-        from_importers = []
+    # gather evidence for '--from' items
+    from_evidence: list[tuple[str, LookupInput]] = [
+        (source, gather(item).evidence) for source, item in from_sources
+    ]
+    requested_sources = {source for source, _ in from_sources}
 
     # retrieve user provided operations
     operations = _process_command_line_operations(
@@ -1074,24 +1069,35 @@ def cli(
         if ApplyStatus.Failed in status:
             ret = 1
 
-        # get metadata from importers and merge them all together
-        if from_importer:
-            importers = from_importers
-        elif auto:
-            importers = get_matching_importers_by_doc(document)
-        else:
-            importers = []
+        # get metadata from source handlers and merge them all together
+        explicit_results: list[LookupResult] = []
+        for source, evidence in from_evidence:
+            try:
+                explicit_results.extend(lookup_item(evidence, (source,)))
+            except ValueError as exc:
+                logger.error("%s", exc)
+                ctx.exit(1)
 
-        importers = fetch_importers(importers, download_files=False)
-        imported = collect_from_importers(importers, batch=batch, use_files=False)
+        for result in explicit_results:
+            log_source_result(logger, result, sources=requested_sources)
 
-        # merge user and importer data
-        # FIXME: add interactive merging to avoid overwriting user changes
-        for key, value in imported.data.items():
-            if new_data.get(key) == value:
-                continue
+        inferred_results: list[LookupResult] = []
+        if auto:
+            evidence = LookupInput(fields={
+                key: str(value) for key, value in document.items()
+                if isinstance(value, (str, int, float))})
+            inferred_results = lookup_followups(lookup(evidence))
 
-            new_data[key] = value
+            for result in inferred_results:
+                log_source_result(logger, result, sources=None)
+
+        # merge user and source data, with explicit data winning over inferred
+        pre_merge_data = dict(new_data)
+        new_data, _ = merge(
+            inferred_results, base=new_data, pick=not batch, resolve_fields=not batch
+        )
+        new_data, _ = merge(explicit_results, base=new_data, resolve_fields=not batch)
+        if new_data != pre_merge_data:
             status |= ApplyStatus.Changed
 
         if ApplyStatus.Changed not in status:

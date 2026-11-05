@@ -1,0 +1,43 @@
+[
+  {
+    "abstract": "We describe a formulation of the density matrix embedding theory at finite temperature. We present a generalization of the ground-state bath orbital construction that embeds a mean-field finite-temperature density matrix up to a given order in the Hamiltonian, or the Hamiltonian up to a given order in the density matrix. We assess the performance of the finite-temperature density matrix embedding on the 1D Hubbard model both at half-filling and away from it, and the 2D Hubbard model at half-filling, comparing to exact data where available, as well as results from finite-temperature density matrix renormalization group, dynamical mean-field theory, and dynamical cluster approximations. The accuracy of finite-temperature density matrix embedding appears comparable to that of the ground-state theory, with at most a modest increase in bath size, and competitive with that of cluster dynamical mean-field theory.",
+    "author": "Sun, Chong and Ray, Ushnish and Cui, Zhi-Hao and Stoudenmire, Miles and Ferrero, Michel and Chan, Garnet Kin-Lic",
+    "author_list": [
+      {
+        "family": "Sun",
+        "given": "Chong"
+      },
+      {
+        "family": "Ray",
+        "given": "Ushnish"
+      },
+      {
+        "family": "Cui",
+        "given": "Zhi-Hao"
+      },
+      {
+        "family": "Stoudenmire",
+        "given": "Miles"
+      },
+      {
+        "family": "Ferrero",
+        "given": "Michel"
+      },
+      {
+        "family": "Chan",
+        "given": "Garnet Kin-Lic"
+      }
+    ],
+    "doc_url": "https://arxiv.org/pdf/1911.07439v1",
+    "doi": "10.1103/PhysRevB.101.075131",
+    "eprint": "1911.07439v1",
+    "eprintclass": "cond-mat.str-el",
+    "eprinttype": "arxiv",
+    "journal": "Phys. Rev. B 101, 075131 (2020)",
+    "month": 11,
+    "title": "Finite temperature density matrix embedding theory",
+    "type": "article",
+    "url": "http://arxiv.org/abs/1911.07439v1",
+    "year": 2019
+  }
+]

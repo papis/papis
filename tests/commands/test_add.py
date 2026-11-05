@@ -3,12 +3,20 @@ from __future__ import annotations
 import os
 import shutil
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from papis.document import Document
-from papis.testing import PapisRunner, TemporaryConfiguration, TemporaryLibrary
+from papis.testing import (
+    PapisRunner,
+    TemporaryConfiguration,
+    TemporaryLibrary,
+    make_lookup_handler,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def make_document(name: str, dir: str, nfiles: int = 0) -> Document:
@@ -221,6 +229,87 @@ def test_add_from_folder_cli(tmp_library: TemporaryLibrary,
 
     assert doc["title"] == "Republic"
     assert len(doc.get_files()) == 1
+
+
+def test_add_from_folder_no_download_files_cli(
+        tmp_library: TemporaryLibrary) -> None:
+    """'--no-download-files' drops client source files (legacy parity)."""
+    from papis.commands.add import cli
+
+    doc = make_document("test-add-from-folder", tmp_library.tmpdir, nfiles=1)
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "--no-download-files", "--from", "folder", folder])
+    assert result.exit_code == 0
+
+    from papis.database import get_database
+    db = get_database()
+
+    from papis.database.cache import PickleDatabase
+    if not isinstance(db, PickleDatabase):
+        return
+
+    db.documents = None
+    doc, = db.query_dict({"author": "Plato"})
+
+    assert doc["title"] == "Republic"
+    assert len(doc.get_files()) == 0
+
+
+def test_add_from_library_name_cli(tmp_library: TemporaryLibrary,
+                                  monkeypatch: pytest.MonkeyPatch,
+                                  caplog: pytest.LogCaptureFixture) -> None:
+    """The library client source matches library names: 'papis add <lib>'
+    offers importing from it (the legacy suggestion path)."""
+    import papis.pick
+    import papis.tui.utils
+    from papis.commands.add import cli
+
+    picked: list[Any] = []
+
+    def fake_pick(x: list[Any], **k: Any) -> list[Any]:
+        docs = [max(x, key=lambda d: len(d.get_files()))] if x else []
+        picked.extend(docs)
+        return docs
+
+    monkeypatch.setattr(papis.pick, "pick", fake_pick)
+    # NOTE: the duplicate report is a TUI pager that cannot run headless
+    monkeypatch.setattr(papis.tui.utils, "text_area", lambda *args, **kwargs: None)
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(cli, ["--batch", tmp_library.libname])
+    assert result.exit_code == 0
+
+    # the library's documents were offered and the picked one was imported
+    # faithfully: copying it into the same library is then declined as a
+    # duplicate by 'add' itself (see 'run')
+    assert picked
+    assert "No new document is created" in caplog.text
+
+
+def test_add_from_unknown_source_cli(
+        tmp_library: TemporaryLibrary,
+        caplog: pytest.LogCaptureFixture) -> None:
+    from papis.commands.add import cli
+    cli_runner = PapisRunner()
+
+    result = cli_runner.invoke(cli, ["--from", "bogus", "some-input"])
+    assert result.exit_code == 1
+    assert "unknown source 'bogus'" in caplog.text
+
+    # a pinned source that cannot classify its input is a 'no_match' warning,
+    # but no document is created, so the command exits with an error
+    result = cli_runner.invoke(cli, ["--from", "lib", "nope"])
+    assert result.exit_code == 1
+    assert "Source 'lib': did not match the given input" in caplog.text
+
+    result = cli_runner.invoke(cli, ["--from", "folder", "nope"])
+    assert result.exit_code == 1
+    assert "Source 'folder': did not match the given input" in caplog.text
 
 
 def test_add_bibtex_cli(tmp_library: TemporaryLibrary,
@@ -536,3 +625,536 @@ def test_add_cli_missing_library_interactive(
              "--set", "title", "Sidereus Nuncius"])
         assert result.exit_code == 1
         assert not os.path.exists(nonexistent_lib_no)
+
+
+def test_add_set_precedence_cli(tmp_library: TemporaryLibrary,
+                                handler_registry: Callable[..., None],
+                                ) -> None:
+    """``--set`` overwrites importer data."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler(
+        "fake", document={"author": "Bohm", "title": "My effect"}))
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "--set", "author", "Plato", filename])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Plato"})
+
+    assert doc["title"] == "My effect"
+
+    files = doc.get_files()
+    assert len(files) == 1
+    assert os.path.exists(files[0])
+
+
+def test_add_importer_files_cli(tmp_library: TemporaryLibrary,
+                                handler_registry: Callable[..., None],
+                                ) -> None:
+    """Explicit files and files from the importer are both collected."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    extra_file = tmp_library.create_random_file()
+    handler_registry(make_lookup_handler(
+        "fake", document={"author": "Bohm", "title": "My effect"}, files=[extra_file]))
+
+    filename = tmp_library.create_random_file()
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "--download-files", filename])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+
+    files = doc.get_files()
+    assert len(files) == 2
+    assert all(os.path.exists(f) for f in files)
+
+
+def test_add_from_pinned_file_is_evidence_only(
+        tmp_library: TemporaryLibrary,
+        handler_registry: Callable[..., None],
+        ) -> None:
+    """A '--from' item's gathered file is evidence, not document content."""
+    from papis.commands.add import cli
+
+    handler_registry(make_lookup_handler(
+        "fake", document={"author": "Bohm", "title": "Pinned"}))
+    filename = tmp_library.create_random_file()
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(cli, ["--batch", "--from", "fake", filename])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+    assert doc.get_files() == []
+
+
+def test_add_no_importer_data_cli(tmp_library: TemporaryLibrary,
+                                  handler_registry: Callable[..., None],
+                                  ) -> None:
+    """No document is created when sources provide no data and no file exists."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler("fake"))
+
+    import papis.database
+
+    db = papis.database.get()
+    ndocs = len(db.get_all_documents())
+
+    result = cli_runner.invoke(
+        cli,
+        ["--batch", "/path/that/does/not/exist.pdf"])
+    assert result.exit_code == 1
+
+    assert len(db.get_all_documents()) == ndocs
+
+
+def test_add_doi_cli(tmp_library: TemporaryLibrary,
+                     monkeypatch: pytest.MonkeyPatch,
+                     handler_registry: Any) -> None:
+    """Add a document from a bare DOI (end-to-end, service mocked)."""
+    import papis.crossref
+    from papis.sources.handlers.doi import DoiHandler
+
+    handler_registry(DoiHandler)
+    monkeypatch.setattr(
+        papis.crossref, "doi_to_data",
+        lambda doi: {"title": "From a DOI", "author": "A. Einstein", "doi": doi})
+
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli, ["--batch", "10.1103/PhysRevLett.123.156401"])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"doi": "10.1103/PhysRevLett.123.156401"})
+    assert doc["title"] == "From a DOI"
+
+
+def test_add_arxiv_cli(tmp_library: TemporaryLibrary,
+                       monkeypatch: pytest.MonkeyPatch,
+                       handler_registry: Any) -> None:
+    """Add a document from a bare arXiv ID, downloading the PDF reference."""
+    import papis.arxiv
+    import papis.utils
+    from papis.sources.handlers.arxiv import ArxivHandler
+
+    handler_registry(ArxivHandler)
+    monkeypatch.setattr(
+        papis.arxiv, "get_data",
+        lambda **kwargs: [{
+            "title": "From arXiv",
+            "author": "A. Author",
+            "doc_url": "https://arxiv.org/pdf/1701.08223",
+            }])
+
+    pdf_path = os.path.join(tmp_library.tmpdir, "arxiv.pdf")
+    with open(pdf_path, "w", encoding="utf-8") as fd:
+        fd.write("fake pdf")
+
+    monkeypatch.setattr(
+        "papis.gather.download_document",
+        lambda url, **kwargs: pdf_path)
+
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(cli, ["--batch", "1701.08223"])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"title": "From arXiv"})
+    assert len(doc.get_files()) == 1
+
+
+def test_add_rejects_wrong_file_type(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        caplog: pytest.LogCaptureFixture) -> None:
+    """A file reference's expected extension (FileReference.extension) guards
+    the download: an HTML page served in place of the arXiv PDF is dropped
+    instead of being attached."""
+    import papis.arxiv
+    import papis.utils
+    from papis.sources.handlers.arxiv import ArxivHandler
+
+    handler_registry(ArxivHandler)
+    monkeypatch.setattr(
+        papis.arxiv, "get_data",
+        lambda **kwargs: [{
+            "title": "From arXiv",
+            "author": "A. Author",
+            "doc_url": "https://arxiv.org/pdf/1701.08223",
+            }])
+
+    class FakeResponse:
+        ok = True
+        status_code = 200
+        reason = "OK"
+        url = "https://arxiv.org/pdf/1701.08223"
+
+        def __init__(self) -> None:
+            self.content = b"<html><body>consent</body></html>"
+            self.headers = {"Content-Type": "text/html"}
+
+    class FakeSession:
+        def __init__(self) -> None:
+            self.response = FakeResponse()
+
+        def get(self, url: str, **kwargs: object) -> FakeResponse:
+            return self.response
+
+        def __enter__(self) -> FakeSession:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+    monkeypatch.setattr(
+        papis.utils, "get_session",
+        lambda: FakeSession())  # ruff: ignore[unnecessary-lambda]
+
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    with caplog.at_level("ERROR"):
+        result = cli_runner.invoke(cli, ["--batch", "1701.08223"])
+    assert result.exit_code == 0
+    assert "expected type 'pdf'" in caplog.text
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"title": "From arXiv"})
+    assert len(doc.get_files()) == 0
+
+
+def test_add_website_cli(tmp_library: TemporaryLibrary,
+                         monkeypatch: pytest.MonkeyPatch,
+                         handler_registry: Any) -> None:
+    """Add from a journal URL, end-to-end: page scrape + BibTeX followup
+    (publisher data wins) + PDF reference download."""
+    import papis.utils
+    from papis.sources.handlers.formats.bibtex import BibTeXHandler
+    from papis.sources.handlers.web.aps import APSHandler
+
+    handler_registry(APSHandler, BibTeXHandler)
+
+    html_path = os.path.join(
+        os.path.dirname(__file__), "..", "sources", "handlers", "web",
+        "resources", "APS_PhysRevLett.122.145901.html")
+    with open(html_path, encoding="utf-8") as fd:
+        html = fd.read()
+
+    class FakeSession:
+        ok = True
+        status_code = 200
+        reason = "OK"
+
+        def get(self, url: str, timeout: int | None = None) -> FakeSession:
+            if "/export/" in url:
+                self.headers = {"Content-Type": "text/plain"}
+                self.content = (
+                    b"@article{prl,\n"
+                    b"  title = {Publisher title},\n"
+                    b"  author = {Publisher, Author},\n"
+                    b"  year = {2019},\n"
+                    b"  doi = {10.1103/PhysRevLett.122.145901},\n"
+                    b"}\n")
+            else:
+                self.headers = {"Content-Type": "text/html"}
+                self.content = html.encode()
+            return self
+
+        def __enter__(self) -> FakeSession:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+    monkeypatch.setattr(
+        papis.utils, "get_session",
+        lambda: FakeSession())  # ruff: ignore[unnecessary-lambda]
+
+    pdf_path = os.path.join(tmp_library.tmpdir, "aps.pdf")
+    with open(pdf_path, "w", encoding="utf-8") as fd:
+        fd.write("fake pdf")
+
+    monkeypatch.setattr(
+        "papis.gather.download_document",
+        lambda url, **kwargs: pdf_path)
+
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(
+        cli, ["--batch",
+              "https://journals.aps.org/prl/abstract/"
+              "10.1103/PhysRevLett.122.145901"])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"doi": "10.1103/PhysRevLett.122.145901"})
+    # the followup (BibTeX export) data wins over the scraped meta
+    assert doc["title"] == "Publisher title"
+    # scraped fields that the export lacks are kept
+    assert doc["journal"] == "Physical Review Letters"
+    assert len(doc.get_files()) == 1
+
+
+def test_add_source_error_warns(
+    tmp_library: TemporaryLibrary,
+    handler_registry: Callable[..., None],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A failed source is warned about and does not abort the command."""
+    from papis.commands.add import cli
+    from papis.exceptions import SourceError
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler("fake", lookup_exc=SourceError("boom")))
+
+    filename = tmp_library.create_random_file()
+    with caplog.at_level("WARNING"):
+        result = cli_runner.invoke(cli, ["--batch", filename])
+
+    assert result.exit_code == 0
+    assert "fake" in caplog.text
+    assert "boom" in caplog.text
+
+
+def test_add_surfaces_result_message(
+    tmp_library: TemporaryLibrary,
+    handler_registry: Callable[..., None],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A non-fatal caveat the handler reports as a result message is surfaced
+    by the client (it could not cross an API boundary from a server log)."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler(
+        "fake",
+        document={"title": "T"},
+        message="The content contains 2 entries; picking the first."))
+
+    filename = tmp_library.create_random_file()
+    with caplog.at_level("WARNING"):
+        result = cli_runner.invoke(cli, ["--batch", filename])
+
+    assert result.exit_code == 0
+    assert "2 entries" in caplog.text
+
+
+def test_add_fan_out_no_match_is_not_surfaced(
+    tmp_library: TemporaryLibrary,
+    handler_registry: Callable[..., None],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A plain file is gathered unpinned: fan-out declines are expected and
+    not shown to the user."""
+    from papis.commands.add import cli
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler("fake", match_result=False))
+
+    filename = tmp_library.create_random_file()
+    with caplog.at_level("WARNING"):
+        result = cli_runner.invoke(cli, ["--batch", filename])
+
+    assert result.exit_code == 0
+    assert "did not match" not in caplog.text
+
+
+def test_add_from_order_decides_precedence_cli(
+        tmp_library: TemporaryLibrary,
+        handler_registry: Callable[..., None],
+        ) -> None:
+    """Later '--from' pairs win conflicts: client sources take part in the
+    list-order precedence like any handler (see 'papis.sources.client.merge')."""
+    from papis.commands.add import cli
+
+    doc = make_document("folder-source", tmp_library.tmpdir, nfiles=0)
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    cli_runner = PapisRunner()
+    handler_registry(make_lookup_handler(
+        "fake", document={"author": "Bohm", "title": "My effect"}))
+
+    # the folder is first: the source data wins the conflicts
+    result = cli_runner.invoke(
+        cli, ["--batch", "--from", "folder", folder, "--from", "fake", "x"])
+    assert result.exit_code == 0
+
+    # ... and with the arguments reversed the folder data wins
+    result = cli_runner.invoke(
+        cli, ["--batch", "--from", "fake", "x", "--from", "folder", folder])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+    assert doc["title"] == "My effect"
+
+    doc, = db.query_dict({"title": "Republic"})
+    assert doc["author"] == "Plato"
+
+
+def test_add_from_order_folds_client_sources_cli(
+        tmp_library: TemporaryLibrary,
+        handler_registry: Any) -> None:
+    """'--from' results fold in command-line order (later pairs win conflicts),
+    client sources included."""
+    from papis.commands.add import cli
+
+    handler_registry(
+        make_lookup_handler(
+            "fake-a", document={"author": "A-author", "title": "A-title", "a": "A"}
+        ),
+        make_lookup_handler("fake-b", document={"title": "B-title", "b": "B"}))
+
+    doc = make_document("folder-source", tmp_library.tmpdir, nfiles=0)
+    folder = doc.get_main_folder()
+    assert folder is not None
+
+    cli_runner = PapisRunner()
+    result = cli_runner.invoke(cli, [
+        "--batch",
+        "--from", "fake-a", "x",
+        "--from", "folder", folder,
+        "--from", "fake-b", "y",
+        ])
+    assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Plato"})
+
+    # 'fake-a' (1st) loses to the folder record (2nd): the folder wins
+    # 'author', which 'fake-b' (3rd) does not touch
+    assert doc["author"] == "Plato"
+    assert doc["a"] == "A"
+    # the folder record (2nd) loses to 'fake-b' (3rd)
+    assert doc["title"] == "B-title"
+
+
+def test_add_interactive_selection_cli(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        ) -> None:
+    """A deselected inferred result contributes neither data nor files."""
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.add import cli
+    from papis.sources.handler import FileReference
+
+    handler_registry(
+        make_lookup_handler(
+            "fake-a", document={"author": "Bohm", "title": "My effect"}),
+        make_lookup_handler(
+            "fake-b",
+            document={"title": "Other"},
+            files=[FileReference(path=tmp_library.create_random_file())]))
+
+    cli_runner = PapisRunner()
+
+    with monkeypatch.context() as m:
+        # keep only the 'fake-a' result in the source-selection stage
+        m.setattr(
+            papis.tui.utils, "select_range",
+            lambda options, message, **kwargs: [
+                i for i, option in enumerate(options)
+                if option.startswith("[fake-a]")])
+        m.setattr(papis.utils, "update_doc_from_data_interactively",
+                  lambda doc, d, name: doc.update(d))
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
+
+        result = cli_runner.invoke(cli, ["--download-files", "x"])
+        assert result.exit_code == 0
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+
+    assert doc["title"] == "My effect"
+    # the deselected 'fake-b' result contributes no data and no files
+    assert doc.get_files() == []
+
+
+def test_add_from_no_source_picker_cli(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch,
+        handler_registry: Any,
+        ) -> None:
+    """Explicit '--from' results fold in command-line order without selection."""
+    import papis.tui.utils
+    import papis.utils
+    from papis.commands.add import cli
+
+    handler_registry(
+        make_lookup_handler("fake-a", document={"author": "Bohm", "title": "First"}),
+        make_lookup_handler("fake-b", document={"title": "Second"}))
+
+    def _fail(options: Any, message: str, **kwargs: Any) -> list[int]:
+        raise AssertionError("'--from' results must not be offered for selection")
+
+    offered: list[str] = []
+
+    def _record(doc: Document, data: Any, name: str) -> None:
+        offered.append(name)
+        doc.update(data)
+
+    cli_runner = PapisRunner()
+
+    with monkeypatch.context() as m:
+        m.setattr(papis.tui.utils, "select_range", _fail)
+        m.setattr(papis.utils, "update_doc_from_data_interactively", _record)
+        m.setattr(papis.utils, "open_file", lambda x: None)
+        m.setattr(papis.tui.utils, "confirm", lambda *args: True)
+
+        result = cli_runner.invoke(
+            cli, ["--from", "fake-a", "x", "--from", "fake-b", "y"])
+        assert result.exit_code == 0
+
+    # the first result merges silently, later '--from' pairs resolve fields
+    assert offered == ["fake-b"]
+
+    import papis.database
+
+    db = papis.database.get()
+    doc, = db.query_dict({"author": "Bohm"})
+
+    # the later '--from' pair wins the conflicting key
+    assert doc["title"] == "Second"

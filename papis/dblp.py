@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-import re
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
-import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
-
-logger = papis.logging.get_logger(__name__)
 
 # NOTE: general API information can be found at
 #   https://dblp.org/faq/How+to+use+the+dblp+search+API.html
@@ -18,7 +15,6 @@ DBLP_API_ENDPOINTS = {
     "author": "https://dblp.org/search/author/api",
     "venue": "https://dblp.org/search/venue/api",
 }
-DBLP_URL_FORMAT = "https://dblp.org/rec/{uri}.html"
 DBLP_BIB_FORMAT = "https://dblp.org/rec/{uri}.bib"
 
 DBLP_FORMATS = frozenset(["xml", "json", "jsonp"])
@@ -120,51 +116,58 @@ def search(
     if url is None:
         raise ValueError(f"Unknown API endpoint '{api}'")
 
+    from requests.exceptions import RequestException
+
     from papis.utils import get_session
 
-    with get_session() as session:
-        response = session.get(
-            url,
-            params={
-                "q": query,
-                "format": output_format,
-                "h": str(max_results),
-                "f": "0",
-                "c": str(max_completions),
-            })
+    try:
+        with get_session() as session:
+            response = session.get(
+                url,
+                params={
+                    "q": query,
+                    "format": output_format,
+                    "h": str(max_results),
+                    "f": "0",
+                    "c": str(max_completions),
+                })
+    except RequestException as exc:
+        raise SourceError(f"Could not query DBLP: {exc}") from exc
+
+    if not response.ok:
+        raise SourceError(
+            f"Could not query DBLP: HTTP {response.status_code} "
+            f"({response.reason})")
 
     return response.content.decode()
 
 
 def get_data(query: str = "", max_results: int = 30) -> list[dict[str, Any]]:
     import json
-    response = json.loads(
-        search(query=query, output_format="json", max_results=max_results)
-        )
-    result = response.get("result")
-    hits = result["hits"].get("hit")
 
+    try:
+        response = json.loads(
+            search(query=query, output_format="json", max_results=max_results)
+            )
+    except json.JSONDecodeError as exc:
+        raise SourceError("Unexpected response from DBLP: not valid JSON") from exc
+
+    result = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(result, dict):
+        raise SourceError(
+            "Unexpected response from DBLP: expected a JSON object with a "
+            f"'result' object, got '{type(response).__name__}'.")
+
+    status = result.get("status")
+    text = status.get("text") if isinstance(status, dict) else status
+    if text != "OK":
+        raise SourceError(f"Could not query DBLP: '{text}'.")
+
+    hits = result["hits"].get("hit")
     if hits is None:
-        logger.error("Could not retrieve results from DBLP. Error: '%s'.",
-                     result["status"]["text"])
         return []
 
     from papis.document import keyconversion_to_data
 
     key_conversion = _get_dblp_key_conversion()
     return [keyconversion_to_data(key_conversion, hit["info"]) for hit in hits]
-
-
-def is_valid_dblp_key(key: str) -> bool:
-    # FIXME: Is there some documentation on the form of the keys? From a quick
-    # skim, they seem to be of the form
-    #   <venue type>/<venue id>/<document id>
-
-    if not re.match(r"[^\/]+\/[^\/]+\/[^\/]+", key):
-        return False
-
-    from papis.utils import get_session
-
-    with get_session() as session:
-        response = session.get(DBLP_URL_FORMAT.format(uri=key))
-        return response.ok

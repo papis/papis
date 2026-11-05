@@ -396,7 +396,7 @@ def download_remote_files(in_document_paths: Iterable[str]) -> list[str | None]:
         remote file, *None* is used instead.
     """
 
-    from papis.downloaders import download_document
+    from papis.gather import download_document
 
     new_files: list[str | None] = []
     for in_file_path in in_document_paths:
@@ -459,7 +459,7 @@ def rename_document_files(
     exts = Counter([pathlib.Path(d).suffix for d in known_files])
     suffixes = {ext: unique_suffixes(skip=n - 1) for ext, n in exts.items()}
 
-    from papis.downloaders import download_document
+    from papis.gather import download_document
 
     new_files = []
     for in_file_path in in_document_paths:

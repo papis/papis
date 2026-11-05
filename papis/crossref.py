@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     from papis.document import KeyConversionPair
@@ -17,6 +18,24 @@ logger = papis.logging.get_logger(__name__)
 
 #: Base URL for DOIs.
 DOI_ORG_URL = "https://doi.org/"
+
+#: DOI-shaped text, including the URL representation of a DOI (i.e. percent-encoded
+#: characters). The pattern cannot detect the end of a DOI when, in an URL, it is
+#: followed by a path segment (e.g. ``/full``).
+#: See: https://www.crossref.org/blog/dois-and-matching-regular-expressions/
+DOI_PATTERN = r"10\.\d{4,9}/[^\s\"'<>&?#]+"
+
+
+def find_doi(text: str) -> str | None:
+    """Extract a DOI from *text*, or ``None``."""
+    match = re.compile(DOI_PATTERN).search(text)
+    if match is not None:
+        return match.group(0).rstrip(").,;")
+
+    from doi import find_doi_in_text
+
+    return find_doi_in_text(text)
+
 
 #: Filters used to narrow Crossref works queries. The official list of filters
 #: can be found in the
@@ -102,6 +121,35 @@ CROSSREF_TO_BIBTEX_CONVERTER = {
     "dataset": "dataset",
     "book-series": "incollection",
     "edited-book": "book",
+}
+
+#: A mapping of BibTeX types to Crossref types (see :data:`CROSSREF_TYPES`). Crossref
+#: types are many-to-one with BibTeX types (see :data:`CROSSREF_TO_BIBTEX_CONVERTER`),
+#: so every entry here is chosen among the Crossref types that convert back to the same
+#: "BibTeX type.
+BIBTEX_TO_CROSSREF_CONVERTER = {
+    "article": "journal-article",
+    "book": "book",
+    "collection": "journal",
+    "dataset": "dataset",
+    "inbook": "book-chapter",
+    "incollection": "component",
+    "inproceedings": "proceedings-article",
+    "conference": "proceedings-article",
+    "misc": "other",
+    "online": "posted-content",
+    "electronic": "posted-content",
+    "www": "posted-content",
+    "mvcollection": "book-set",
+    "mvproceedings": "proceedings-series",
+    "proceedings": "proceedings",
+    "reference": "reference-book",
+    "inreference": "reference-entry",
+    "report": "report",
+    "techreport": "report",
+    "thesis": "dissertation",
+    "mastersthesis": "dissertation",
+    "phdthesis": "dissertation",
 }
 
 
@@ -233,7 +281,7 @@ def crossref_data_to_papis_data(data: dict[str, Any]) -> dict[str, Any]:
     return new_data
 
 
-def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]]:
+def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]] | None:
     import habanero
 
     from papis import PAPIS_USER_AGENT
@@ -288,23 +336,32 @@ def get_data(
     try:
         results = _get_crossref_works(filter=filters, **kwargs)
     except Exception as exc:
-        logger.error("Error getting works from Crossref.", exc_info=exc)
-        return []
+        # NOTE: habanero can raise its own RequestError or httpx.HTTPStatusError, which
+        # carry the `status_code` in different places
+        status = getattr(exc, "status_code", None)
+        if status is None:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+
+        if status in {404, 410}:
+            return []
+
+        raise SourceError(f"Could not query Crossref: {exc}") from exc
 
     if isinstance(results, list):
         docs = [d["message"] for d in results]
     elif isinstance(results, dict):
         if "message" not in results:
-            logger.error("Error retrieving data from Crossref: incorrect message.")
-            return []
+            raise SourceError(
+                "Unexpected response from Crossref: missing 'message'.")
         message = results["message"]
         if "items" in message:
             docs = message["items"]
         else:
             docs = [message]
     else:
-        logger.error("Error retrieving data from Crossref: incorrect message.")
-        return []
+        raise SourceError(
+            "Unexpected response from Crossref: expected a 'list' or 'dict', "
+            f"got '{type(results).__name__}'.")
 
     logger.debug("Retrieved %s documents.", len(docs))
     return [crossref_data_to_papis_data(d) for d in docs]
