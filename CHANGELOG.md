@@ -1,3 +1,9 @@
+# VERSION TBD (TDB)
+
+## Dependency Changes
+
+* Added support for Python 3.15.
+
 # VERSION 0.16.1 (September 13th, 2026)
 
 ## Dependency Changes
