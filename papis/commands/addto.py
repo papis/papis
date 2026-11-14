@@ -38,13 +38,15 @@ import papis.cli
 import papis.logging
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
 
 
 def run(document: Document,
-        filepaths: list[str],
+        filepaths: Sequence[str],
         file_name: str | None = None,
         link: bool = False,
         git: bool = False) -> None:
@@ -152,8 +154,8 @@ def run(document: Document,
 def cli(query: str,
         git: bool,
         link: bool,
-        files: list[str],
-        urls: list[str],
+        files: tuple[str, ...],
+        urls: tuple[str, ...],
         file_name: str | None,
         sort_field: str | None,
         doc_folder: tuple[str, ...],

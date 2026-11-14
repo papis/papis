@@ -230,7 +230,7 @@ def cli_add(ctx: click.Context,
               multiple=True)
 @click.pass_context
 def cli_update(ctx: click.Context, _all: bool,
-               fromdb: bool, todb: bool, keys: list[str]) -> None:
+               fromdb: bool, todb: bool, keys: tuple[str, ...]) -> None:
     """Update documents from and to the library."""
     if fromdb and todb:
         logger.error("Cannot pass both '--from' and '--to'.")
@@ -346,7 +346,7 @@ def cli_open(ctx: click.Context) -> None:
 @papis.cli.all_option()
 @click.pass_context
 def cli_edit(ctx: click.Context,
-             set_tuples: list[tuple[str, str]],
+             set_tuples: tuple[tuple[str, str], ...],
              _all: bool) -> None:
     """
     Edit documents by adding keys or opening an editor.
@@ -565,7 +565,7 @@ def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
               default=("doi", "url", "year", "title", "author"),
               type=papis.cli.KeyParamType())
 @click.pass_context
-def cli_doctor(ctx: click.Context, key: list[str]) -> None:
+def cli_doctor(ctx: click.Context, key: tuple[str, ...]) -> None:
     """
     Check BibTeX file for correctness.
 
@@ -597,7 +597,7 @@ def cli_doctor(ctx: click.Context, key: list[str]) -> None:
               required=True,
               type=click.Path(exists=True))
 @click.pass_context
-def cli_filter_cited(ctx: click.Context, _files: list[str]) -> None:
+def cli_filter_cited(ctx: click.Context, _files: tuple[str, ...]) -> None:
     """
     Filter cited documents from the BibTeX file.
 
@@ -629,7 +629,7 @@ def cli_filter_cited(ctx: click.Context, _files: list[str]) -> None:
               required=True,
               type=click.Path(exists=True))
 @click.pass_context
-def cli_iscited(ctx: click.Context, _files: list[str]) -> None:
+def cli_iscited(ctx: click.Context, _files: tuple[str, ...]) -> None:
     """
     Check which documents are not cited.
 

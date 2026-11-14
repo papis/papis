@@ -119,7 +119,7 @@ def run(ctx: click.Context,
         log: str,
         logfile: str | None,
         pick_lib: bool,
-        set_list: list[tuple[str, str]],
+        set_list: tuple[tuple[str, str], ...],
         color: str,
         np: int | None) -> None:
     if np:
