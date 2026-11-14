@@ -50,8 +50,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--python-version", help="Python version",
-        choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(8, 15))],
-        default="3.13")
+        choices=[f"{major}.{minor}" for major, minor in zip(repeat(3), range(10, 16))],
+        default="3.10")
     parser.add_argument("dockerfile", type=pathlib.Path, default="Dockerfile")
     parser.add_argument(
         "--norun",
