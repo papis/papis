@@ -56,7 +56,7 @@ def cli(ctx: click.Context,
         author: str,
         title: str,
         max_results: int,
-        filters: list[tuple[str, str]],
+        filters: tuple[tuple[str, str], ...],
         order: str,
         sort: str) -> None:
     """

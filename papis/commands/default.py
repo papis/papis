@@ -103,7 +103,7 @@ def generate_profile_writing_function(profiler: cProfile.Profile,
 @click.option(
     "--logfile",
     help="File to dump the log.",
-    type=str,
+    type=click.Path(dir_okay=False),
     default=lambda: os.environ.get("PAPIS_LOG_FILE"))
 @click.option(
     "--np",
@@ -119,7 +119,7 @@ def run(ctx: click.Context,
         log: str,
         logfile: str | None,
         pick_lib: bool,
-        set_list: list[tuple[str, str]],
+        set_list: tuple[tuple[str, str], ...],
         color: str,
         np: int | None) -> None:
     if np:

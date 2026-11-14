@@ -124,6 +124,7 @@ def run(keep: Document,
 @click.option("-o",
               "--out",
               help="Create the resulting document in this path.",
+              type=click.Path(file_okay=False),
               default=None)
 @papis.cli.git_option(help="Merge in git.")
 def cli(query: str,

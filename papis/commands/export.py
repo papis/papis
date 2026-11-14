@@ -116,6 +116,7 @@ def run(documents: list[Document], to_format: str) -> str:
     "-o",
     "--out",
     help="Output file (or directory if used with --folder) for document metadata.",
+    type=click.Path(),
     default=None,
 )
 @click.option(

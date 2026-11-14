@@ -257,6 +257,7 @@ run = list_documents
 @click.option(
     "--template",
     help="Template file containing a papis format to list documents.",
+    type=click.Path(exists=True, dir_okay=False),
     default=None)
 @papis.cli.bool_flag(
     "--quiet",
