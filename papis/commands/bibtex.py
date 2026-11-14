@@ -439,7 +439,8 @@ def cli_rm(ctx: click.Context) -> None:
 
 @cli.command("ref")
 @click.help_option("-h", "--help")
-@click.option("-o", "--out", help="Output ref to a file.", default=None)
+@click.option("-o", "--out", help="Output ref to a file.",
+              type=click.Path(dir_okay=False), default=None)
 @click.pass_context
 def cli_ref(ctx: click.Context, out: str | None) -> None:
     """Print the reference for a document."""
@@ -512,7 +513,7 @@ def cli_sort(ctx: click.Context, key: str | None, reverse: bool) -> None:
 @click.option("-o",
               help="Output the discarded documents to a file.",
               default=None,
-              type=str)
+              type=click.Path(dir_okay=False))
 @click.pass_context
 def cli_unique(ctx: click.Context, key: str, o: str | None) -> None:
     """Remove duplicate BibTeX entries."""

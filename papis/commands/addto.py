@@ -135,6 +135,7 @@ def run(document: Document,
 @papis.cli.sort_option()
 @click.option("-f",
               "--files",
+              type=click.Path(),
               help="File paths or URLs to documents.",
               multiple=True)
 @click.option("-u", "--urls", help="(deprecated) use -f", multiple=True)
