@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-import papis.api
-import papis.document
+import papis.config
+from papis.document import from_data, split_authors_name
 
 if TYPE_CHECKING:
     from papis.testing import TemporaryConfiguration
@@ -20,7 +20,7 @@ def test_files_check(tmp_config: TemporaryConfiguration) -> None:
 
     with tempfile.NamedTemporaryFile("w", encoding="utf-8") as tmp:
         folder = os.path.dirname(tmp.name)
-        doc = papis.document.from_data({
+        doc = from_data({
             "files": [os.path.basename(tmp.name), "non-existent-file"],
             })
 
@@ -47,7 +47,7 @@ def test_keys_missing_check(tmp_config: TemporaryConfiguration) -> None:
     papis.config.set("doctor-keys-missing-keys-extend",
                      ["ref"])
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
@@ -61,7 +61,7 @@ def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import keys_missing_check
 
     papis.config.set("doctor-keys-missing-keys", ["author_list", "author"])
-    full_doc = papis.document.from_data(
+    full_doc = from_data(
         {
             "title": "DNA sequencing with chain-terminating inhibitors",
             "author": "John Doe, Jane Doe",
@@ -101,7 +101,7 @@ def test_keys_missing_check_authors(tmp_config: TemporaryConfiguration) -> None:
 def test_refs_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import refs_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
@@ -136,9 +136,9 @@ def test_duplicated_keys_check(tmp_config: TemporaryConfiguration) -> None:
     # check extend functionality
     papis.config.set("doctor-duplicated-keys-keys-extend", ["year"])
     docs = [
-        papis.document.from_data({"ref": "ref1", "year": 1901}),
-        papis.document.from_data({"ref": "ref2", "year": 1901}),
-        papis.document.from_data({"ref": "ref1", "year": 2024}),
+        from_data({"ref": "ref1", "year": 1901}),
+        from_data({"ref": "ref2", "year": 1901}),
+        from_data({"ref": "ref1", "year": 2024}),
     ]
 
     errors = duplicated_keys_check(docs[0])
@@ -154,7 +154,7 @@ def test_duplicated_keys_check(tmp_config: TemporaryConfiguration) -> None:
 def test_duplicated_values_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import duplicated_values_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "files": ["a.pdf"],
         #: NOTE: this also tests entries that are not hashable
         "author_list": [{"given": "John", "family": "Smith", "affiliation": []}]
@@ -163,7 +163,7 @@ def test_duplicated_values_check(tmp_config: TemporaryConfiguration) -> None:
     errors = duplicated_values_check(doc)
     assert not errors
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "files": ["a.pdf", "b.pdf", "c.pdf", "a.pdf"],
         #: NOTE: this also tests entries that are not hashable
         "author_list": [
@@ -192,7 +192,7 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
     import papis.bibtex
     from papis.doctor import bibtex_type_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
@@ -222,7 +222,7 @@ def test_bibtex_type_check(tmp_config: TemporaryConfiguration) -> None:
 def test_field_type_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import field_type_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "author_list": [{"given": "F.", "family": "Sanger"}],
         "year": ["2023"],
         "projects": "test-key-project",
@@ -292,7 +292,7 @@ def test_field_type_check(tmp_config: TemporaryConfiguration) -> None:
 def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import html_codes_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
@@ -325,7 +325,7 @@ def test_html_codes_check(tmp_config: TemporaryConfiguration) -> None:
 def test_html_tags_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import html_tags_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "DNA sequencing with chain-terminating inhibitors",
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         })
@@ -386,7 +386,7 @@ def test_html_tags_check_jats(tmp_config: TemporaryConfiguration,
               encoding="utf-8") as f:
         expected = f.read()
 
-    doc = papis.document.from_data({"abstract": abstract})
+    doc = from_data({"abstract": abstract})
 
     error, = html_tags_check(doc)
     assert error.payload == "abstract"
@@ -400,7 +400,7 @@ def test_html_tags_check_jats(tmp_config: TemporaryConfiguration,
 def test_biblatex_issue_to_number(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import biblatex_key_convert_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         "title": "DNA sequencing with chain-terminating inhibitors",
         "issue": "0",
@@ -471,7 +471,7 @@ def test_string_cleaner_author_regex(tmp_config: TemporaryConfiguration) -> None
 def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import string_cleaner_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "author": "Sanger, F. and Nicklen, S. and Coulson, A. R.",
         "title": "DNA sequencing with chain-terminating inhibitors",
         "abstract":
@@ -526,8 +526,7 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
     orig_value = doc["author"]
 
     doc["author"] = "Sanger, F and Nicklen, S and Coulson, A. R."
-    doc["author_list"] = (
-        papis.document.split_authors_name(doc["author"], separator="and"))
+    doc["author_list"] = split_authors_name(doc["author"], separator="and")
 
     error, = string_cleaner_check(doc)
     assert error.payload == "author"
@@ -540,8 +539,7 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
 
     # check author with no space
     doc["author"] = "Sanger, F. and Nicklen, S. and Coulson, A.R."
-    doc["author_list"] = (
-        papis.document.split_authors_name(doc["author"], separator="and"))
+    doc["author_list"] = split_authors_name(doc["author"], separator="and")
 
     error, = string_cleaner_check(doc)
     assert error.payload == "author"
@@ -567,7 +565,7 @@ def test_string_cleaner(tmp_config: TemporaryConfiguration) -> None:
 def test_string_cleaner_missing_author(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import string_cleaner_check
 
-    doc = papis.document.from_data({
+    doc = from_data({
         "author": "Caravaggio and M Merisi da Caravaggio",
         "author_list": [
             {"family": "Caravaggio"},
@@ -588,7 +586,7 @@ def test_empty_fields_check(tmp_config: TemporaryConfiguration) -> None:
     from papis.doctor import empty_fields_check
 
     # check: no empty fields
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "Test Title",
         "author": "Doe, John",
         "year": 2023,
@@ -635,7 +633,7 @@ def test_empty_fields_check(tmp_config: TemporaryConfiguration) -> None:
     assert "note" not in doc
 
     # check: non-empty values are not flagged
-    doc = papis.document.from_data({
+    doc = from_data({
         "title": "Test",
         "year": 0,
         "bool_field": False,

@@ -245,7 +245,7 @@ def _get_crossref_works(**kwargs: Any) -> dict[str, Any] | list[dict[str, Any]]:
         ua_string=PAPIS_USER_AGENT,
     )
 
-    return cr.works(**kwargs)  # type: ignore[no-any-return]
+    return cr.works(**kwargs)
 
 
 def get_data(

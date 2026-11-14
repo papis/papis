@@ -11,14 +11,14 @@ class CrossrefDownloader(Downloader):
         self.doi = doi
 
     @classmethod
-    def match(cls, uri: str) -> CrossrefDownloader | None:
+    def match(cls, url: str) -> CrossrefDownloader | None:
         from doi import find_doi_in_text
 
-        doi = find_doi_in_text(uri)
+        doi = find_doi_in_text(url)
         if not doi:
             return None
 
-        return CrossrefDownloader(uri, doi)
+        return CrossrefDownloader(url, doi)
 
     def fetch(self) -> None:
         if not self.doi:

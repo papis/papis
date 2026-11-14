@@ -27,9 +27,8 @@ import re
 
 import click
 
-import papis.api
 import papis.cli
-import papis.document
+import papis.config
 import papis.logging
 
 papis.logging.setup()
@@ -52,10 +51,10 @@ def main(query: str, confirm: bool) -> None:
     """
     Search tags of the library and open a document
     """
-    documents = papis.api.get_documents_in_lib(
-        papis.api.get_lib_name(),
-        search=query
-    )
+    from papis.api import get_documents_in_lib, get_lib_name, open_dir, pick, pick_doc
+    from papis.document import describe
+
+    documents = get_documents_in_lib(get_lib_name(), search=query)
 
     # Create an empty tag list
     tag_list: set[str] = set()
@@ -77,7 +76,7 @@ def main(query: str, confirm: bool) -> None:
             pass
         else:
             logger.error("'tags' key has unknown type '%s': '%s'",
-                         type(tags).__name__, papis.document.describe(doc))
+                         type(tags).__name__, describe(doc))
             continue
 
         tag_list |= set(tags)
@@ -90,7 +89,7 @@ def main(query: str, confirm: bool) -> None:
     # Allow the list set (no duplicates) ) to be sorted into alphabetical
     # order and picked from
     sorted_tags = sorted(tag_list)
-    picked_tags = papis.api.pick(sorted_tags)
+    picked_tags = pick(sorted_tags)
     if len(picked_tags) == 1:
         picked_tag, = picked_tags
     else:
@@ -99,8 +98,8 @@ def main(query: str, confirm: bool) -> None:
         picked_tag = picked_tags[0]
 
     logger.info("Picked tag '%s'", picked_tag)
-    docs = papis.api.get_documents_in_lib(search={"tags": picked_tag})
-    docs = list(papis.api.pick_doc(docs))
+    docs = get_documents_in_lib(search={"tags": picked_tag})
+    docs = list(pick_doc(docs))
 
     from papis.tui.utils import confirm as confirm_dialog
     for doc in docs:
@@ -110,11 +109,11 @@ def main(query: str, confirm: bool) -> None:
 
         if confirm:
             if not confirm_dialog(
-                    f"Open folder for '{papis.document.describe(doc)}'?"
+                    f"Open folder for '{describe(doc)}'?"
                     ):
                 continue
 
-        papis.api.open_dir(folder, wait=False)
+        open_dir(folder, wait=False)
 
 
 if __name__ == "__main__":

@@ -74,7 +74,7 @@ def get_picker_by_name(name: str) -> type[Picker[Any]]:
     if cls is None or not issubclass(cls, Picker):
         raise InvalidPluginTypeError(PICKER_NAMESPACE_NAME, name)
 
-    return cls  # type: ignore[no-any-return]
+    return cls
 
 
 def get_picker(name: str) -> type[Picker[Any]]:

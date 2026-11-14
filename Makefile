@@ -46,10 +46,10 @@ ruff:								## Run ruff check (linting checks)
 	@echo -e "\e[1;32mruff clean!\e[0m"
 .PHONY: ruff
 
-mypy:								## Run mypy (type annotations)
-	$(PYTHON) -m mypy
-	@echo -e "\e[1;32mmypy clean!\e[0m"
-.PHONY: mypy
+ty:									## Run ty (type annotations)
+	ty check
+	@echo -e "\e[1;32mty clean!\e[0m"
+.PHONY: ty
 
 typos:								## Run typos (spellchecking)
 	typos --sort

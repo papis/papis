@@ -44,7 +44,7 @@ def get_entrypoint_by_name(namespace: str, name: str) -> EntryPoint | None:
     """
     entrypoints = entry_points(group=namespace).select(name=name)
     if len(entrypoints) == 1:
-        return entrypoints[name]  # type: ignore[no-any-return]
+        return entrypoints[name]
 
     return None
 

@@ -55,7 +55,7 @@ class ArxivDownloader(Downloader):
             return {}
 
         from papis.arxiv import arxiv_to_papis
-        return arxiv_to_papis(self.result)
+        return arxiv_to_papis(result)
 
     def get_document_url(self) -> str | None:
         result = self.result

@@ -33,7 +33,7 @@ class ColoramaFormatter(logging.Formatter):
         #: used with ``logger.info(..., exc_info=ext)``.
         self.full_tb: bool = full_tb
 
-    def formatException(self, exc_info: tuple[Any, ...]) -> str:    # ruff:ignore[invalid-function-name]
+    def formatException(self, ei: tuple[Any, ...]) -> str:    # ruff:ignore[invalid-function-name]
         """Format and return the specified exception information as a string.
 
         If :attr:`full_tb` is *True*, then the full traceback is shown. Otherwise,
@@ -44,19 +44,18 @@ class ColoramaFormatter(logging.Formatter):
 
         if self.full_tb:
             buffer = io.StringIO()
-            traceback.print_exception(exc_info[0], exc_info[1], exc_info[2],
-                                      None, buffer)
+            traceback.print_exception(ei[0], ei[1], ei[2], None, buffer)
             tb = buffer.getvalue().strip()
             buffer.close()
 
             return "\n".join(f"  ┆ {line}" for line in tb.split("\n"))
         else:
-            msg = str(exc_info[1])
+            msg = str(ei[1])
             if len(msg) > 48:
                 msg = "{}...".format(msg[:48].rsplit(" ", 1)[0])
 
             return (
-                f"(Caught exception '{exc_info[0].__name__}: {msg}'. "
+                f"(Caught exception '{ei[0].__name__}: {msg}'. "
                 "Use `--log DEBUG` to see traceback)")
 
     def format(self, record: logging.LogRecord) -> str:

@@ -6,7 +6,7 @@ import dominate.util as tu
 import papis.config
 
 
-def katex_header() -> t.html_tag:
+def katex_header() -> None:
     """
     Everything connected to Katex
     """

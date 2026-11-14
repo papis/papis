@@ -146,15 +146,15 @@ def transaction(conn: sqlite3.Connection, mode: str = "DEFERRED") -> Generator[N
 
 
 class JSONEncoder(json.JSONEncoder):
-    def default(self, obj: object) -> Any:
+    def default(self, o: Any) -> Any:
         import datetime
 
         # NOTE: this is needed because PyYAML automatically transforms ISO dates to
         # a `datetime.date` object, which the JSON encoder does not natively support.
-        if isinstance(obj, datetime.date):
-            return obj.isoformat()
+        if isinstance(o, datetime.date):
+            return o.isoformat()
 
-        return super().default(obj)
+        return super().default(o)
 
 
 class SQLiteDatabase(Database):
@@ -245,32 +245,32 @@ class SQLiteDatabase(Database):
                 if os.path.exists(filename):
                     os.remove(filename)
 
-    def add(self, doc: Document) -> None:
+    def add(self, document: Document) -> None:
         from papis.document import describe
-        logger.debug("Adding document: '%s'.", describe(doc))
+        logger.debug("Adding document: '%s'.", describe(document))
 
-        folder = doc.get_main_folder()
+        folder = document.get_main_folder()
         if folder is None:
             from papis.exceptions import DocumentFolderNotFound
-            raise DocumentFolderNotFound(describe(doc))
+            raise DocumentFolderNotFound(describe(document))
 
         conn = self.connection
         with transaction(conn):
             conn.execute(
                 f"INSERT INTO {SQLITE_TABLE_NAME}(papis_id, doc_folder, doc) "
                     "VALUES(?, ?, ?)",
-                (self.maybe_compute_id(doc),
+                (self.maybe_compute_id(document),
                  folder,
-                 json.dumps(doc, cls=JSONEncoder)))
+                 json.dumps(document, cls=JSONEncoder)))
 
-    def update(self, doc: Document) -> None:
+    def update(self, document: Document) -> None:
         from papis.document import describe
-        logger.debug("Updating document: '%s'.", describe(doc))
+        logger.debug("Updating document: '%s'.", describe(document))
 
-        folder = doc.get_main_folder()
+        folder = document.get_main_folder()
         if folder is None:
             from papis.exceptions import DocumentFolderNotFound
-            raise DocumentFolderNotFound(describe(doc))
+            raise DocumentFolderNotFound(describe(document))
 
         conn = self.connection
         with transaction(conn):
@@ -279,22 +279,22 @@ class SQLiteDatabase(Database):
                 "    SET doc_folder = ?, doc = ?"
                 "WHERE papis_id = ?",
                 (folder,
-                 json.dumps(doc, cls=JSONEncoder),
-                 self.maybe_compute_id(doc)))
+                 json.dumps(document, cls=JSONEncoder),
+                 self.maybe_compute_id(document)))
 
-    def delete(self, doc: Document) -> None:
+    def delete(self, document: Document) -> None:
         from papis.document import describe
-        logger.debug("Deleting document: '%s'.", describe(doc))
+        logger.debug("Deleting document: '%s'.", describe(document))
 
         conn = self.connection
         with transaction(conn):
             cursor = conn.execute(
                 f"DELETE FROM {SQLITE_TABLE_NAME} WHERE papis_id = ?",
-                (self.maybe_compute_id(doc),))
+                (self.maybe_compute_id(document),))
 
         if cursor.rowcount == 0:
             from papis.exceptions import DocumentFolderNotFound
-            raise DocumentFolderNotFound(describe(doc))
+            raise DocumentFolderNotFound(describe(document))
 
     def query(self, query_string: str) -> list[Document]:
         logger.debug("Querying database for '%s'.", query_string)
