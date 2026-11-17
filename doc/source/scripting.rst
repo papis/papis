@@ -115,6 +115,16 @@ This is an example of using Papis with the window manager ``i3``:
     bindsym Escape mode "default"
   }
 
+Example: Preview public CS references
+------------------------------------
+
+The optional `Parallel example
+<https://github.com/papis/papis/blob/main/examples/scripts/parallel.rst>`__
+searches public software documentation and computer science references. It
+previews titles and original source URLs, lets you select a saved result, and
+passes the selection to ``papis explore json`` for native ingestion. The example
+includes setup instructions and a disposable-library walkthrough.
+
 Useful links
 ------------
 
