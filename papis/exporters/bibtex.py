@@ -11,7 +11,7 @@ logger = papis.logging.get_logger(__name__)
 
 
 def _to_bibtexparser_v1(entry: dict[str, Any], *, indent: int) -> str:
-    from bibtexparser import dumps  # ty: ignore[import-not-found]
+    from bibtexparser import dumps  # ty: ignore[missing-module-member]
     from bibtexparser.bibdatabase import BibDatabase  # ty: ignore[import-not-found]
     from bibtexparser.bwriter import BibTexWriter  # ty: ignore[import-not-found]
 
