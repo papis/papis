@@ -47,5 +47,6 @@ class FallbackDownloader(Downloader):
         url = self.ctx.data.get("pdf_url")
         if url is not None:
             self.logger.debug("Using document URL: '%s'.", url)
-
-        return str(url)
+            return str(url)
+        else:
+            return None
