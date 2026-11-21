@@ -136,18 +136,25 @@ def test_matching_importers_by_uri(tmp_config: TemporaryConfiguration,
     assert len(importers) == 0
 
     from papis.importer.arxiv import ArxivImporter
+    from papis.importer.bibtex import BibTeXImporter
+
+    # NOTE: the remote URLs below embed BibTeX snippets that the BibTeX
+    # importer would also match, so we disable it to check the arXiv importer.
+    monkeypatch.setattr(BibTeXImporter, "match",
+                        lambda *args, **kwargs: None)
 
     importers = get_matching_importers_by_uri("https://arxiv.org/abs/1110.3658")
     assert len(importers) == 1
     assert isinstance(importers[0], ArxivImporter)
 
+    importers = get_matching_importers_by_uri("https://www.alphaxiv.org/abs/1110.3658")
+    assert len(importers) == 1
+    assert isinstance(importers[0], ArxivImporter)
+    assert importers[0].arxivid == "1110.3658"
+    assert importers[0].url == "https://arxiv.org/abs/1110.3658"
+
     from papis.downloaders.fallback import FallbackDownloader
     from papis.downloaders.usenix import USENIXDownloader
-    from papis.importer.bibtex import BibTeXImporter
-
-    # NOTE: the URL has some embedded BibTeX that we do not care to catch here
-    monkeypatch.setattr(BibTeXImporter, "match",
-                        lambda *args, **kwargs: None)
 
     importers = get_matching_importers_by_uri(
         "https://www.usenix.org/conference/nsdi22/presentation/goyal",

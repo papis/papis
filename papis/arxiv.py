@@ -235,6 +235,42 @@ _ARXIVID_REGEX = re.compile(
     re.I
 )
 
+# alphaXiv mirrors arXiv papers on a discussion site, and its URLs
+# (e.g. https://www.alphaxiv.org/abs/2512.16649) embed an arXiv identifier.
+_ALPHAXIVID_REGEX = re.compile(
+    r"alphaxiv\.org"
+    r"(/abs|/overview|/pdf)?"
+    r"\s*(=|:|/|\()\s*"
+    r"(\"|')?"
+    fr"(?P<arxivid>[^{_ARXIVID_FORBIDDEB_CHARACTERS}]+)"
+    r'("|\'|\))?',
+    re.I
+)
+
+
+def find_arxivid_in_alphaxiv_url(text: str) -> str | None:
+    """
+    Find an arXiv identifier in the given *text*.
+
+    This function searches for the arXiv identifier embedded in an alphaXiv
+    URL (e.g. ``alphaxiv.org/abs/2512.16649`` or
+    ``alphaxiv.org/overview/2512.16649.md``). The regular expression is not
+    exact, so there could be false positives. To ensure that the returned
+    value is a valid arXiv identifier, use :func:`validate_arxivid` or
+    :func:`is_arxivid`.
+
+    :returns: an arXiv identifier, if any could be found, or *None* otherwise.
+    """
+    for match in _ALPHAXIVID_REGEX.finditer(text):
+        aid = match.group("arxivid")
+        for suffix in (".md", ".pdf"):
+            if aid.endswith(suffix):
+                aid = aid[:-len(suffix)]
+                break
+        return aid
+
+    return None
+
 
 def find_arxivid_in_text(text: str) -> str | None:
     """
@@ -247,6 +283,10 @@ def find_arxivid_in_text(text: str) -> str | None:
 
     :returns: an arXiv identifier, if any could be found, or *None* otherwise.
     """
+    aid = find_arxivid_in_alphaxiv_url(text)
+    if aid:
+        return aid
+
     for match in _ARXIVID_REGEX.finditer(text):
         aid = match.group("arxivid")
         aid = aid[:-4] if aid.endswith(".pdf") else aid
