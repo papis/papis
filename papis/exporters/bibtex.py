@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 import papis.logging
@@ -8,6 +9,25 @@ if TYPE_CHECKING:
     from papis.document import Document
 
 logger = papis.logging.get_logger(__name__)
+
+_CASE_WORD_RE = re.compile(r"(?<!\\)\b[^\W\d_]+")
+
+# NOTE: These are the fields marked as `[titlecase]` in `biblatex.def`, so we
+# keep them here as well. We might want to make this configurable..
+BIBTEX_PROTECT_CASE_FIELDS = frozenset({
+    # title-like fields
+    "title", "subtitle", "origtitle", "shorttitle", "titleaddon",
+    "booktitle", "booksubtitle", "booktitleaddon",
+    "maintitle", "mainsubtitle", "maintitleaddon",
+    "journal", "journaltitle", "journalsubtitle", "shortjournal", "journaltitleaddon",
+    "issuetitle", "issuesubtitle", "issuetitleaddon",
+    "eventtitle",
+    # proper-name fields
+    "publisher", "origpublisher",
+    "organization", "institution", "school",
+    "series", "shortseries",
+    "venue",
+})
 
 
 def _to_bibtexparser_v1(entry: dict[str, Any], *, indent: int) -> str:
@@ -50,10 +70,19 @@ def _to_bibtexparser_v2(entry: dict[str, Any], *, indent: int) -> str:
     return write_string(library, bibtex_format=bibfmt).strip()
 
 
+def _bibtex_protect_case(text: str) -> str:
+    def protect(match: re.Match[str]) -> str:
+        word = match.group()
+        return f"{{{word}}}" if any(c.isupper() for c in word) else word
+
+    return _CASE_WORD_RE.sub(protect, text)
+
+
 def to_bibtex(document: Document, *,
               bibtex_unicode: bool | None = None,
               bibtex_journal_key: str | None = None,
               bibtex_export_file: bool | None = None,
+              bibtex_protect_case: bool | None = None,
               indent: int = 2) -> str:
     """Convert a document to a BibTeX containing only valid metadata.
 
@@ -68,6 +97,8 @@ def to_bibtex(document: Document, *,
     * :confval:`bibtex-journal-key` is used to define the field name for the journal.
     * :confval:`bibtex-export-file` is used to also add a ``"file"`` field to
       the BibTeX entry, which can be used by e.g. Zotero to import documents.
+    * :confval:`bibtex-protect-case` is used to control whether uppercase words
+      are wrapped in braces to protect their case regardless of the BibTeX style.
 
     :param indent: set indentation for the BibTeX fields.
     :returns: a string containing the document metadata in a BibTeX format.
@@ -91,6 +122,9 @@ def to_bibtex(document: Document, *,
                            "Use 'bibtex-export-file' instead.")
         except DefaultSettingValueMissing:
             bibtex_export_file = getboolean("bibtex-export-file")
+
+    if bibtex_protect_case is None:
+        bibtex_protect_case = getboolean("bibtex-protect-case")
 
     from papis.bibtex import bibtex_type_converter, bibtex_types
 
@@ -163,6 +197,8 @@ def to_bibtex(document: Document, *,
         override_key = f"{bib_key}_latex"
         if override_key in document:
             bib_value = str(document[override_key])
+        elif bibtex_protect_case and bib_key in BIBTEX_PROTECT_CASE_FIELDS:
+            bib_value = _bibtex_protect_case(bib_value)
 
         if not bibtex_unicode and bib_key not in bibtex_verbatim_fields:
             bib_value = text_to_latex(bib_value)

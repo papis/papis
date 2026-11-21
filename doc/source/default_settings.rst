@@ -394,6 +394,14 @@ BibTeX options
     as `Biber <https://github.com/plk/biber>`__, support Unicode by default and
     should be used whenever possible.
 
+.. papis-config:: bibtex-protect-case
+
+   A flag used to choose whether uppercase words in title-like and
+   proper-name-like fields are wrapped in braces when exporting to BibTeX.
+   Wrapping a word in braces, e.g. ``On the {Einstein}--{Podolsky}--{Rosen}
+   paradox``, will force the BibTeX engine to maintain the capitalization of
+   those words even when it lowercases surrounding text.
+
 .. papis-config:: bibtex-export-file
 
     A flag that can be used to add a ``"file"`` field to exported BibTeX entries.
