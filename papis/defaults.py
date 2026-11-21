@@ -118,6 +118,7 @@ settings: dict[str, Any] = {
     "extra-bibtex-types": [],
     "bibtex-unicode": False,
     "bibtex-export-file": False,
+    "bibtex-protect-case": False,
     "multiple-authors-separator": " and ",
     "multiple-authors-format": _f("{au[family]}, {au[given]}"),
 
