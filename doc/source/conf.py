@@ -283,8 +283,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("configuration", "papis-config-settings", "Papis configuration",
+    ("commands/default", "papis", "Papis",
      [papis.__author__], 1),
+    ("configuration", "papis", "Papis configuration",
+     [papis.__author__], 5),
     ("library_structure", "papis-library-structure", "Papis library structure",
      [papis.__author__], 1),
     ("info_file", "papis-info-file", "Papis info.yaml file",
