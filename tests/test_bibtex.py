@@ -272,6 +272,80 @@ def test_to_bibtex_formatting(tmp_config: TemporaryConfiguration) -> None:
         "}")
 
 
+def test_protect_case() -> None:
+    """Test wrapping words that contain uppercase letters in braces."""
+    from papis.exporters.bibtex import _bibtex_protect_case  # ruff: ignore[import-private-name]
+
+    for text, expected in [
+            ("On the Einstein--Podolsky--Rosen paradox",
+             "{On} the {Einstein}--{Podolsky}--{Rosen} paradox"),
+            ("SIAM Journal on Numerical Analysis",
+             "{SIAM} {Journal} on {Numerical} {Analysis}"),
+            ("the DNA-binding protein", "the {DNA}-binding protein"),
+            ("Müller and Öztürk", "{Müller} and {Öztürk}"),
+            (r"\LaTeX", r"\LaTeX"),
+            ("The {NASA} mission", "{The} {{NASA}} mission"),
+            ("iPhone and macOS", "{iPhone} and {macOS}"),
+            ("all lowercase words", "all lowercase words"),
+            ]:
+        assert _bibtex_protect_case(text) == expected
+
+
+def test_to_bibtex_protect_case(tmp_config: TemporaryConfiguration) -> None:
+    from papis.document import from_data
+    from papis.exporters.bibtex import to_bibtex
+
+    doc = from_data({
+        "type": "article",
+        "ref": "einstein1935",
+        "title": "On the Einstein--Podolsky--Rosen paradox",
+        "titleaddon": "The DNA Story",
+        "booktitle": "The DNA Story",
+        "maintitleaddon": "The DNA Story",
+        "eventtitle": "SIAM Conference on Numerical Analysis",
+        "author": "Einstein, Albert",
+        "journal": "SIAM Journal on Numerical Analysis",
+        "publisher": "SIAM",
+        "doi": "10.1234/ABCdef",
+        "url": "https://example.com/SomePage",
+        "year": 1935,
+        })
+    assert to_bibtex(doc, bibtex_protect_case=True, bibtex_unicode=True) == (
+        "@article{einstein1935,\n"
+        "  author = {Einstein, Albert},\n"
+        "  booktitle = {{The} {DNA} {Story}},\n"
+        "  doi = {10.1234/ABCdef},\n"
+        "  eventtitle = {{SIAM} {Conference} on {Numerical} {Analysis}},\n"
+        "  journal = {{SIAM} {Journal} on {Numerical} {Analysis}},\n"
+        "  maintitleaddon = {{The} {DNA} {Story}},\n"
+        "  publisher = {{SIAM}},\n"
+        "  title = {{On} the {Einstein}--{Podolsky}--{Rosen} paradox},\n"
+        "  titleaddon = {{The} {DNA} {Story}},\n"
+        "  url = {https://example.com/SomePage},\n"
+        "  year = {1935},\n"
+        "}")
+
+
+def test_to_bibtex_protect_case_config(tmp_config: TemporaryConfiguration) -> None:
+    import papis.config
+    from papis.document import from_data
+    from papis.exporters.bibtex import to_bibtex
+
+    doc = from_data({"type": "misc", "ref": "ref", "title": "The DNA Story"})
+
+    # disabled by default
+    result = to_bibtex(doc, bibtex_unicode=True)
+    assert "title = {The DNA Story}" in result
+
+    papis.config.set("bibtex-protect-case", True)
+    result = to_bibtex(doc, bibtex_unicode=True)
+    assert "title = {{The} {DNA} {Story}}" in result
+
+    # explicit arguments take precedence over the configuration
+    result = to_bibtex(doc, bibtex_unicode=True, bibtex_protect_case=False)
+    assert "title = {The DNA Story}" in result
+
+
 def test_overridable(tmp_config: TemporaryConfiguration) -> None:
     from papis.config import set as setboolean
     from papis.document import from_data
