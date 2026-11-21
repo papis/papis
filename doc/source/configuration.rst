@@ -220,5 +220,54 @@ for most users it will be in::
 
     ~/.config/papis/config.py
 
+Import order
+~~~~~~~~~~~~
+
+The ``config.py`` file is loaded after the static INI configuration file. This
+means that settings defined in your static configuration file are already loaded
+when ``config.py`` is executed.
+
+Usage of ``register_default_settings``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can register custom configuration options and default values using
+``papis.config.register_default_settings``. Note that the static configuration file
+takes precedence over any default settings registered via ``register_default_settings``.
+
+.. code:: python
+
+    import papis.config
+
+    papis.config.register_default_settings({
+        "my-setting": "default-value",
+    })
+
+Dynamic features
+~~~~~~~~~~~~~~~~
+
+Since ``config.py`` is standard Python code, you can use it to dynamically modify
+configuration options, register custom checks, and more:
+
+* **Adding libraries dynamically:**
+
+  .. code:: python
+
+      import os
+      import papis.config
+
+      if os.path.exists(os.path.expanduser("~/Work/papers")):
+          papis.config.set("work", "dir", "~/Work/papers")
+
+* **Registering ``papis doctor`` checks:**
+
+  .. code:: python
+
+      import papis.doctor
+
+      @papis.doctor.check("check-custom-folder")
+      def check_custom_folder():
+          # Custom check logic
+          pass
+
 
 .. include:: default_settings.rst
