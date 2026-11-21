@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any
 
 import papis.config
 import papis.logging
+from papis.exceptions import SourceError
 
 if TYPE_CHECKING:
     import arxiv
@@ -138,18 +139,19 @@ def get_data(
     # gather results
     import arxiv
 
-    try:
-        search = arxiv.Search(
-            query=search_query,
-            max_results=max_results,
-            id_list=id_list.split(";"),
-            )
-    except arxiv.ArxivError as exc:
-        logger.error("Failed to download metadata from arXiv.", exc_info=exc)
-        return []
+    search = arxiv.Search(
+        query=search_query,
+        max_results=max_results,
+        id_list=id_list.split(";"),
+        )
 
-    client = arxiv.Client()
-    return [arxiv_to_papis(result) for result in client.results(search)]
+    from requests.exceptions import RequestException
+
+    try:
+        client = arxiv.Client()
+        return [arxiv_to_papis(result) for result in client.results(search)]
+    except (arxiv.ArxivError, RequestException) as exc:
+        raise SourceError(f"Could not query arXiv: {exc}") from exc
 
 
 def validate_arxivid(arxivid: str) -> None:

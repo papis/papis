@@ -11,6 +11,7 @@ import requests
 
 import papis.config
 import papis.logging
+from papis.exceptions import SourceError
 from papis.utils import get_session
 
 logger = papis.logging.get_logger(__name__)
@@ -57,16 +58,27 @@ def notisbn(isbn: str | None) -> bool:
     return sum((1 + 2 * (i % 2)) * int(isbn[i]) for i in range(13)) % 10 != 0
 
 
-def json_request(url: str, params: dict[str, str] | None = None) -> Any | None:
-    with get_session() as session:
-        response = session.get(url, params=params)
-    if not response.ok:
-        return None
+def json_request(url: str, params: dict[str, str] | None = None, *,
+                 http_not_found_is_absent: bool = False) -> Any | None:
+    from requests.exceptions import RequestException
+
     try:
-        data = response.json()
-    except requests.exceptions.JSONDecodeError:
+        with get_session() as session:
+            response = session.get(url, params=params)
+    except RequestException as exc:
+        raise SourceError(f"Could not query ISBN: {exc}") from exc
+
+    if http_not_found_is_absent and response.status_code in {404, 410}:
         return None
-    return data
+
+    if not response.ok:
+        raise SourceError(
+            f"Could not query ISBN: HTTP {response.status_code} ({response.reason})")
+
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError as exc:
+        raise SourceError(f"Unexpected response from ISBN: {exc}") from exc
 
 
 def googlebooks_isbn_search(query: str) -> str | None:
@@ -89,31 +101,46 @@ def googlebooks_isbn_search(query: str) -> str | None:
 
 
 def isbn_from_words(query: str) -> str | None:
+    from requests.exceptions import RequestException
+
     search_url = "http://www.google.com/search"
     params = {"q": f"ISBN {query}"}
 
-    with get_session() as session:
-        session.headers.update({
-            "Content-Type": 'text/plain; charset="UTF-8"',
-            "Content-Transfer-Encoding": "Quoted-Printable",
-        })
-        response = session.get(search_url, params=params)
+    try:
+        with get_session() as session:
+            session.headers.update({
+                "Content-Type": 'text/plain; charset="UTF-8"',
+                "Content-Transfer-Encoding": "Quoted-Printable",
+            })
+            response = session.get(search_url, params=params)
+    except RequestException as exc:
+        raise SourceError(f"Could not query ISBN: {exc}") from exc
+
     if not response.ok:
-        return None
+        raise SourceError(
+            f"Could not query ISBN: HTTP {response.status_code} ({response.reason})")
+
     regex = re.compile(
         r"97[89]-?[0-9]{10}|97[89]-[-0-9]{13}|[-0-9]{9,15}[0-9xX]",
         re.M,
     )
     potential_isbns = regex.findall(response.text)
+
+    # NOTE: no ISBN-shaped text means there is nothing to look up (this used
+    # to raise an UnboundLocalError instead of reporting an absence).
+    isbn = None
     for i in potential_isbns:
         if not notisbn(i):
             isbn = googlebooks_isbn_search(i)
             if isbn is not None:
                 break
+
     return isbn
 
 
 def meta_goob(isbn: str) -> dict[str, Any] | None:
+    # NOTE: this is a query endpoint: a missing ISBN is reported with a 200 and
+    # no 'items' (i.e. 'totalItems': 0), so a 404 means the URL is broken.
     url = "https://www.googleapis.com/books/v1/volumes"
     params = {
         "q": f"isbn:{isbn}",
@@ -154,6 +181,8 @@ def meta_goob(isbn: str) -> dict[str, Any] | None:
 
 
 def meta_openl(isbn: str) -> dict[str, Any] | None:
+    # NOTE: this is a query endpoint: a missing ISBN is reported with a 200 and
+    # an empty envelope ({}), so a 404 means the URL is broken.
     url = "https://openlibrary.org/api/books.json"
     params = {"bibkeys": f"ISBN:{isbn}", "jscmd": "data"}
     data = json_request(url, params)
@@ -181,8 +210,10 @@ def meta_openl(isbn: str) -> dict[str, Any] | None:
 
 
 def meta_wiki(isbn: str) -> dict[str, Any] | None:
+    # NOTE: this is a record endpoint: a missing ISBN is reported with a 404,
+    # which is an absence, not an error.
     url = f"https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/{isbn}"
-    data = json_request(url)
+    data = json_request(url, http_not_found_is_absent=True)
     if not data:
         return None
     try:
@@ -228,9 +259,9 @@ def get_data(query: str = "",
         service = papis.config.getstring("isbn-service")
 
     if service not in ISBN_SERVICE_NAMES:
-        logger.error("ISBN service '%s' is not known. Available services: '%s'.",
-                     service, "', '".join(ISBN_SERVICE_NAMES))
-        return []
+        raise SourceError(
+            "Unknown ISBN service '{}'. Available services: '{}'."
+            .format(service, "', '".join(ISBN_SERVICE_NAMES)))
 
     if isbn_like:
         isbn = strip_isbnlike(isbn_like)
@@ -243,11 +274,15 @@ def get_data(query: str = "",
         isbn = isbn_from_words(query)
     data = meta(isbn, service=service)
 
-    if isinstance(data, dict):
-        return [data_to_papis(data)]
-    else:
-        logger.error("Could not retrieve ISBN data.")
+    if data is None:
         return []
+
+    if not isinstance(data, dict):
+        raise SourceError(
+            f"Unexpected response from ISBN: expected a JSON object, "
+            f"got '{type(data).__name__}'.")
+
+    return [data_to_papis(data)]
 
 
 def data_to_papis(data: dict[str, Any]) -> dict[str, Any]:

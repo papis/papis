@@ -103,3 +103,44 @@ def test_validate_arxivid(tmp_config: TemporaryConfiguration) -> None:
     for bad in ["1206.6272v3", "blahv2"]:
         with pytest.raises(ValueError, match="not an arxivid"):
             validate_arxivid(bad)
+
+
+def test_get_data_no_results(tmp_config: TemporaryConfiguration,
+                             monkeypatch: pytest.MonkeyPatch) -> None:
+    import arxiv
+
+    import papis.arxiv
+
+    class _Client:
+        @staticmethod
+        def results(search: object) -> list[object]:
+            return []
+
+    monkeypatch.setattr(arxiv, "Client", _Client)
+
+    assert papis.arxiv.get_data(query="test") == []
+
+
+@pytest.mark.parametrize("exc_type", ["arxiv", "requests"])
+def test_get_data_error(tmp_config: TemporaryConfiguration,
+                        monkeypatch: pytest.MonkeyPatch,
+                        exc_type: str) -> None:
+    import arxiv
+    import requests
+
+    import papis.arxiv
+    from papis.exceptions import SourceError
+
+    error: Exception = arxiv.ArxivError("http://export.arxiv.org", 0, "boom")
+    if exc_type == "requests":
+        error = requests.ConnectionError("no route to host")
+
+    class _Client:
+        @staticmethod
+        def results(search: object) -> list[object]:
+            raise error
+
+    monkeypatch.setattr(arxiv, "Client", _Client)
+
+    with pytest.raises(SourceError, match="Could not query arXiv"):
+        papis.arxiv.get_data(query="test")

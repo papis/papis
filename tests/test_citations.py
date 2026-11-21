@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import papis.citations
 import papis.config
 from papis.document import Document
 
 if TYPE_CHECKING:
+    import pytest
+
     from papis.testing import TemporaryConfiguration
 
 
@@ -114,3 +116,28 @@ def test_get_metadata_citations_filters_non_doi() -> None:
 
     assert len(result) == 1
     assert result[0]["doi"] == "10.1000/1"
+
+
+def test_fetch_citations_crossref_error(
+        tmp_config: TemporaryConfiguration,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """A failed Crossref query is logged and remaining citations are fetched."""
+    import papis.crossref
+    from papis.exceptions import SourceError
+
+    doc = Document(
+        folder=tmp_config.libdir,
+        data={
+            "title": "Test Doc",
+            "citations": [{"doi": "10.1000/cited1"}],
+        },
+    )
+
+    def get_data(**kwargs: Any) -> Any:
+        raise SourceError("boom")
+
+    monkeypatch.setattr(papis.crossref, "get_data", get_data)
+    monkeypatch.setattr(
+        papis.citations, "get_citations_from_database", lambda dois: [])
+
+    assert papis.citations.fetch_citations(doc) == []

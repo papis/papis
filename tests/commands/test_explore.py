@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import subprocess
 import tempfile
+from typing import Any
 
 import pytest
 
@@ -105,3 +106,30 @@ def test_explore_cmd_batch(tmp_library: TemporaryLibrary) -> None:
         cli_runner.invoke(
             cli,
             ["lib", "krishnamurti", "cmd", "sh -c 'exit 1'"])
+
+
+@pytest.mark.parametrize(("explorer", "target"), [
+    ("crossref", "papis.explorers.crossref"),
+    ("arxiv", "papis.arxiv"),
+    ("dblp", "papis.dblp"),
+    ("isbn", "papis.explorers.isbn"),
+    ])
+def test_explore_source_error(tmp_library: TemporaryLibrary,
+                              monkeypatch: pytest.MonkeyPatch,
+                              explorer: str,
+                              target: str) -> None:
+    """A failed source query is logged and does not abort the command."""
+    import importlib
+
+    from papis.exceptions import SourceError
+
+    module = importlib.import_module(f"papis.explorers.{explorer}")
+    target_module = importlib.import_module(target)
+
+    def get_data(**kwargs: Any) -> Any:
+        raise SourceError("boom")
+
+    monkeypatch.setattr(target_module, "get_data", get_data)
+
+    result = PapisRunner().invoke(module.cli, ["-q", "test"])
+    assert result.exit_code == 0
