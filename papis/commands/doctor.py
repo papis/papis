@@ -182,6 +182,8 @@ def process_errors(errors: list[Error],
     if not errors:
         return
 
+    import subprocess
+
     import colorama as c
 
     from papis.api import save_doc
@@ -225,7 +227,19 @@ def process_errors(errors: list[Error],
                 error.doc.save()
 
                 click.pause("Press any key to edit...")
-                edit_run(error.doc)
+
+                # NOTE: during a bulk review the whole loop is aborted when the
+                # editor exits with an error (e.g. `:cq` in vim), so that the
+                # user does not have to kill the process (see gh-1117)
+                try:
+                    edit_run(error.doc, raise_on_error=True)
+                except subprocess.CalledProcessError as exc:
+                    logger.error(
+                        "Editor exited with code %d. Stopping the review of "
+                        "the remaining errors.",
+                        exc.returncode)
+                    break
+
             elif fix and error.fix_action:
                 save_doc(error.doc)
 

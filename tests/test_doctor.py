@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -10,7 +10,8 @@ import papis.config
 from papis.document import from_data, split_authors_name
 
 if TYPE_CHECKING:
-    from papis.testing import TemporaryConfiguration
+    from papis.document import Document
+    from papis.testing import TemporaryConfiguration, TemporaryLibrary
 
 DOCTOR_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
 
@@ -644,3 +645,53 @@ def test_empty_fields_check(tmp_config: TemporaryConfiguration) -> None:
 
     errors = empty_fields_check(doc)
     assert not errors
+
+
+def test_process_errors_edit_stops_on_editor_failure(
+        tmp_library: TemporaryLibrary,
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    import subprocess
+
+    import click
+
+    import papis.commands.edit
+    import papis.database
+    import papis.yaml
+    from papis.commands.doctor import process_errors
+    from papis.doctor import gather_errors
+
+    # NOTE: the interactive pause before each edit is not relevant here
+    monkeypatch.setattr(click, "pause", lambda *args, **kwargs: None)
+
+    # NOTE: simulate an editor that always exits with an error (e.g. `:cq` in
+    # vim) and record every document that `papis doctor --edit` tries to edit
+    edited: list[str | None] = []
+
+    def failing_edit_run(document: Document, **kwargs: Any) -> None:
+        edited.append(document.get_info_file())
+        raise subprocess.CalledProcessError(1, ["editor"])
+
+    monkeypatch.setattr(papis.commands.edit, "run", failing_edit_run)
+
+    db = papis.database.get()
+    first_doc, second_doc = db.get_all_documents()[:2]
+
+    first_doc["files"] = ["does-not-exist.pdf"]
+    second_doc["files"] = ["does-not-exist.pdf"]
+    errors = gather_errors([first_doc, second_doc], checks=["files"])
+    assert len(errors) == 2
+
+    second_title = second_doc["title"]
+    first_doc["title"] = "edited title"
+    second_doc["title"] = "edited title"
+
+    process_errors(errors, fix=False, edit=True)
+
+    # NOTE: the loop stops after the first editor failure instead of opening the
+    # editor for all the remaining documents (see gh-1117)
+    assert len(edited) == 1
+
+    first_doc_data = papis.yaml.yaml_to_data(first_doc.get_info_file())
+    second_doc_data = papis.yaml.yaml_to_data(second_doc.get_info_file())
+    assert first_doc_data["title"] == "edited title"
+    assert second_doc_data["title"] == second_title

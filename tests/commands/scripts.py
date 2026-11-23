@@ -24,6 +24,13 @@ def ls(filename: str) -> None:
     print(filename)
 
 
+def fail(filename: str) -> None:
+    # NOTE: this function is used by 'test_edit_run_failure_raises' and
+    # 'test_process_errors_edit_stops_on_editor_failure' to provide a
+    # cross-platform way to simulate an editor that exits with an error
+    print(f"Attempted to edit '{filename}'")
+
+
 if __name__ == "__main__":
     cmd, filename = sys.argv[-2:]
 
@@ -35,6 +42,9 @@ if __name__ == "__main__":
             echo(filename)
         elif cmd == "ls":
             ls(filename)
+        elif cmd == "fail":
+            fail(filename)
+            ret = 1
         else:
             ret = 1
     except Exception:

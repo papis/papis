@@ -27,7 +27,15 @@ logger = papis.logging.get_logger(__name__)
 
 def run(document: Document,
         wait: bool = True,
-        git: bool = False) -> None:
+        git: bool = False,
+        raise_on_error: bool = False) -> None:
+    """Edit the info file of a document.
+
+    :param wait: if *True*, wait for the editor to finish before continuing.
+    :param git: if *True*, commit the changes to the git repository.
+    :param raise_on_error: if *True*, a ``subprocess.CalledProcessError`` is
+        raised when the editor exits with an error, instead of only logging it.
+    """
     from papis.document import describe, to_dict
 
     info_file_path = document.get_info_file()
@@ -43,6 +51,9 @@ def run(document: Document,
     try:
         general_open(info_file_path, "editor", wait=wait)
     except subprocess.CalledProcessError as exc:
+        if raise_on_error:
+            raise
+
         logger.error("Editor exited with code %d. Document is not updated.",
                      exc.returncode)
         return
