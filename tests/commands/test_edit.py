@@ -112,3 +112,24 @@ def test_edit_run_failure(tmp_library: TemporaryLibrary) -> None:
 
     doc, = db.query_dict({"title": old_title})
     assert doc["title"] == old_title
+
+
+@pytest.mark.library_setup(settings={"editor": get_mock_script("fail")})
+def test_edit_run_failure_raises(tmp_library: TemporaryLibrary) -> None:
+    import subprocess
+
+    from papis.commands.edit import run
+
+    db = papis.database.get()
+    docs = db.get_all_documents()
+    doc = docs[0]
+
+    old_title = doc["title"]
+    with pytest.raises(subprocess.CalledProcessError):
+        run(doc, raise_on_error=True)
+
+    db.clear()
+    db.initialize()
+
+    doc, = db.query_dict({"title": old_title})
+    assert doc["title"] == old_title
